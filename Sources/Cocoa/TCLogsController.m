@@ -1,7 +1,7 @@
 /*
  *  TCLogsController.m
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -130,7 +130,7 @@
 		// Build logs containers
 		logs = [[NSMutableDictionary alloc] init];
 		klogs = [[NSMutableArray alloc] init];
-		knames = [[NSMutableDictionary alloc] init];
+		kalias = [[NSMutableDictionary alloc] init];
 		allLogs = [[NSMutableArray alloc] init];
 		
 		[klogs addObject:TCLogsAllKey];
@@ -156,7 +156,7 @@
 	
 	[logs release];
 	[klogs release];
-	[knames release];
+	[kalias release];
 	[allLogs release];
 	
 	[allLastKey release];
@@ -253,7 +253,7 @@
 			else if ([key isEqualToString:TCLogsGlobalKey])
 				str = NSLocalizedString(@"logs_global_logs", @"");
 			else
-				str = [knames objectForKey:key];
+				str = [kalias objectForKey:key];
 				
 			[str retain];	
 		});
@@ -286,7 +286,7 @@
 					if ([str isEqualToString:TCLogsGlobalKey])
 						str = NSLocalizedString(@"logs_global_logs", @"");
 					else
-						str = [NSString stringWithFormat:@"%@ (%@)", [knames objectForKey:str], str];
+						str = [NSString stringWithFormat:@"%@ (%@)", [kalias objectForKey:str], str];
 				}
 				
 				[str retain];
@@ -500,7 +500,7 @@
 			
 			[logs setObject:array forKey:key];
 			
-			// Add the if not global (already add 
+			// Add the if not global (already added)
 			if ([key isEqualToString:TCLogsGlobalKey] == NO)
 			{
 				// Add separator
@@ -514,11 +514,37 @@
 			[array release];
 		}
 		
-		// Add the log in the array
+		
+		// -- Add the log in the array --
+
+		// > Remove first item if more than 500
+		if ([array count] > 500)
+			[array removeObjectAtIndex:0];
+		
+		// > Add
 		[array addObject:text];
 		
 		
-		// Add the item in the full log
+		
+		// -- Add the item in the full log --
+
+		// > Remove the first item (and item until we reach a title) if more than 2000
+		if ([allLogs count] > 2000)
+		{
+			[allLogs removeObjectAtIndex:0];
+			
+			while ([allLogs count] > 0)
+			{
+				NSNumber *title = [[allLogs objectAtIndex:0] objectForKey:TCLogsTitleKey];
+				
+				if ([title boolValue])
+					break;
+				else
+					[allLogs removeObjectAtIndex:0];
+			}
+		}
+		
+		// > Add the key as title if different than the previous one
 		if (!allLastKey || [allLastKey isEqualToString:key] == NO)
 		{
 			[key retain];
@@ -529,6 +555,7 @@
 			[allLogs addObject:[NSDictionary dictionaryWithObjectsAndKeys:key, TCLogsContentKey, [NSNumber numberWithBool:YES], TCLogsTitleKey, nil]];
 		}
 		
+		// > Add
 		[allLogs addObject:[NSDictionary dictionaryWithObject:text forKey:TCLogsContentKey]];
 		
 		
@@ -538,10 +565,7 @@
 		SEL				oselector = [[observer objectForKey:@"selector"] pointerValue];
 		
 		[oobject performSelector:oselector withObject:text];
-		
-		
-		// FIXME use a limit to the amount of log stocked (500 by address, something like this)
-		
+				
 		// Refresh
 		dispatch_async(dispatch_get_main_queue(), ^{
 			[entriesView reloadData]; 
@@ -550,7 +574,7 @@
 	});
 }
 
-- (void)addBuddyLogEntryFromAddress:(NSString *)address name:(NSString *)name andText:(NSString *)log, ...
+- (void)addBuddyLogEntryFromAddress:(NSString *)address alias:(NSString *)alias andText:(NSString *)log, ...
 {
 	va_list		ap;
 	NSString	*msg;
@@ -562,9 +586,9 @@
 	
 	va_end(ap);
 	
-	// Add the name
+	// Add the alias
 	dispatch_async(mainQueue, ^{
-		[knames setObject:name forKey:address];
+		[kalias setObject:alias forKey:address];
 	});
 	
 	// Add the rendered log

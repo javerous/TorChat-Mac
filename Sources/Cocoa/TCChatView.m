@@ -1,7 +1,7 @@
 /*
  *  TCChatView.m
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -44,6 +44,48 @@
 
 
 /*
+** TCLineView
+*/
+#pragma mark -
+#pragma mark TCLineView
+
+@interface TCLineView : NSView
+
+@end
+
+@implementation TCLineView
+
+- (BOOL)isFlipped
+{
+	return YES;
+}
+
+- (void)setFrame:(NSRect)rect
+{
+	// Resize (subview - autoresize)
+	[super setFrame:rect];
+	
+	// Reset The size
+	rect.size.height = 0;
+	
+	// COmpute the max size from subviews
+	for (NSView *view in self.subviews)
+	{
+		NSRect r = [view frame];
+		
+		if (r.origin.y + r.size.height > rect.size.height)
+			rect.size.height = r.origin.y + r.size.height;
+	}
+	
+	// Update with new size
+	[super setFrame:rect];
+}
+
+@end
+
+
+
+/*
 ** TCChatView
 */
 #pragma mark -
@@ -68,6 +110,9 @@
 	event_font = [[NSFont fontWithName:@"Helvetica" size:12] retain];
 	last_stamp = nil;
 	
+	remoteAvatars = [[NSMutableArray alloc] init];
+	localAvatars = [[NSMutableArray alloc] init];
+	
 	[self setDocumentView:contentView];
 }
 
@@ -76,6 +121,12 @@
 	[contentView release];
 	[last_stamp release];
 	[event_font release];
+	
+	[localAvatar release];
+	[remoteAvatar release];
+	
+	[remoteAvatars release];
+	[localAvatars release];
 		
     [super dealloc];
 }
@@ -196,7 +247,6 @@
 		
 	[stamp setStringValue:msg];
 		
-		
 	// Add it to the view
 	[contentView addSubview:stamp];
 		
@@ -222,32 +272,62 @@
 	NSRect			r = [contentView frame];
 	float			delta = 0;
 	tcbubble_style	style = 0;
+	NSImageView		*avatar = nil;
+	TCLineView		*line = [[TCLineView alloc] initWithFrame:NSMakeRect(0, 0, 150, 100)];
 
-	// Select style
+	// Configure the line
+	[line setAutoresizesSubviews:YES];
+
+
+	// Configure for chat parts
 	if (user == tcchat_local)
 	{
 		style = tcbubble_gray;
 		delta = 50;
+		
+		avatar = [[NSImageView alloc] initWithFrame:NSMakeRect(9, 0, 32, 32)];
+		[avatar setImage:localAvatar];
+		
+		[localAvatars addObject:avatar];
 	}
 	else if (user == tcchat_remote)
 	{
 		style = tcbubble_blue;
 		delta = 0;
+		
+		avatar = [[NSImageView alloc] initWithFrame:NSMakeRect(109, 0, 32, 32)];
+		[avatar setImage:remoteAvatar];
+		
+		[avatar setAutoresizingMask:NSViewMinXMargin];
+		
+		[remoteAvatars addObject:avatar];
 	}
-	
-	// Build a bubble
+			
+	// Build and configure a bubble
 	bubble = [TCChatBubble bubbleWithText:text andStyle:style];
-	[bubble setFrame:NSMakeRect(delta, r.size.height, r.size.width - 50, 100)];
-
-	// Update current size
-	r.size.height += [bubble frame].size.height;
+	[bubble setFrame:NSMakeRect(delta, 0, 100, 100)];
+	[bubble setAutoresizingMask:NSViewWidthSizable];	
+	
+	// Add items to the line
+	[line addSubview:avatar];
+	[line addSubview:bubble];
+	
+	// Resize the line
+	[line setFrame:NSMakeRect(0, r.size.height, r.size.width, 0)];
+		
+	// Update page size from line size
+	r.size.height += [line frame].size.height;
 	
 	// Add the bubble to the document view
-	[contentView addSubview:bubble];
+	[contentView addSubview:line];
 	[contentView setFrame:r];
 		
 	// Scroll to end
 	[self scrollToEnd];
+	
+	// Clean
+	[avatar release];
+	[line release];
 }
 
 - (void)scrollToEnd
@@ -258,6 +338,32 @@
 	[content scrollToPoint:pt];
 	
 	[self reflectScrolledClipView:content];
+}
+
+- (void)setLocalAvatar:(NSImage *)image
+{
+	// Hold the image
+	[image retain];
+	[localAvatar release];
+	
+	localAvatar = image;
+	
+	// Update current avatar
+	for (NSImageView *view in localAvatars)
+		[view setImage:image];
+}
+
+- (void)setRemoteAvatar:(NSImage *)image
+{
+	// Hold the image
+	[image retain];
+	[remoteAvatar release];
+	
+	remoteAvatar = image;
+	
+	// Update current avatar
+	for (NSImageView *view in remoteAvatars)
+		[view setImage:image];
 }
 
 @end

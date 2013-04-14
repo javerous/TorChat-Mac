@@ -1,5 +1,5 @@
 /*
- *  TCStringExtension.h
+ *  TCBuddyCell.h
  *
  *  Copyright 2011 Avérous Julien-Pierre
  *
@@ -22,31 +22,31 @@
 
 
 
-#import <Cocoa/Cocoa.h>
-
-
-/*
-** NSString - TCStringExtension
-*/
-#pragma mark -
-#pragma mark NSString - TCStringExtension
-
-@interface NSString (TCStringExtension)
-
-- (float)heightForDrawingWithFont:(NSFont *)font andWidth:(float)width;
-
-@end
+#import <Foundation/Foundation.h>
 
 
 
 /*
-** NSAttributedString - TCStringExtension
+** Defines
 */
 #pragma mark -
-#pragma mark NSAttributedString - TCStringExtension
+#pragma mark Defines
 
-@interface NSAttributedString (TCStringExtension)
+#define TCBuddyCellAliasKey			@"alias"
+#define TCBuddyCellAddressKey		@"address"
+#define TCBuddyCellProfileNameKey	@"pname"
 
-- (float)heightForDrawingWithWidth:(float)width;
+
+/*
+** TCBuddyCell
+*/
+#pragma mark -
+#pragma mark TCBuddyCell
+
+@interface TCBuddyCell : NSCell
+{
+@private
+    
+}
 
 @end

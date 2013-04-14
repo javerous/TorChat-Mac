@@ -1,7 +1,7 @@
 /*
  *  TCController.h
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -43,6 +43,8 @@ class TCBuddy;
 class TCConfig;
 class TCControlClient;
 class TCController;
+class TCImage;
+class TCString;
 
 
 
@@ -66,6 +68,11 @@ typedef enum
 	// -- Notify --
 	tcctrl_notify_started,
 	tcctrl_notify_stoped,
+	tcctrl_notify_status,
+	
+	tcctrl_notify_profile_avatar,
+	tcctrl_notify_profile_name,
+	tcctrl_notify_profile_text,
 	
 	tcctrl_notify_buddy_new,
 	
@@ -89,6 +96,10 @@ typedef enum
 	tcctrl_error_client_cmd_pong,
 	tcctrl_error_client_cmd_status,
 	tcctrl_error_client_cmd_version,
+	tcctrl_error_client_cmd_profile_text,
+	tcctrl_error_client_cmd_profile_name,
+	tcctrl_error_client_cmd_profile_avatar,
+	tcctrl_error_client_cmd_profile_avatar_alpha,
 	tcctrl_error_client_cmd_message,
 	tcctrl_error_client_cmd_addme,
 	tcctrl_error_client_cmd_removeme,
@@ -128,6 +139,17 @@ public:
 	// -- Status --
 	void					setStatus(tccontroller_status status);
 	tccontroller_status		status();
+	
+	// -- Profile --
+	void					setProfileAvatar(TCImage *avatar);
+	TCImage *				profileAvatar();
+	
+	void					setProfileName(TCString *name);
+	TCString *				profileName();
+	
+	void					setProfileText(TCString *text);
+	TCString *				profileText();
+	
 	
 	// -- Buddies --
 	void					addBuddy(const std::string &name, const std::string &address);
@@ -185,9 +207,11 @@ private:
 	// > Delegate
 	dispatch_queue_t		nQueue;
 	tcctrl_event			nBlock;
-	
-	// -- Friends --
-	//friend class			TCControlClient;
+
+	// > Profile
+	TCImage					*pavatar;
+	TCString				*pname;
+	TCString				*ptext;
 };
 
 #endif

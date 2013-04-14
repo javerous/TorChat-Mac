@@ -1,7 +1,7 @@
 /*
  *  TCContoller.h
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -39,6 +39,10 @@
 #include "TCConfig.h"
 #include "TCBuddy.h"
 #include "TCTools.h"
+#include "TCImage.h"
+#include "TCNumber.h"
+#include "TCString.h"
+
 #include "TCControlClient.h"
 
 
@@ -67,6 +71,16 @@ TCController::TCController(TCConfig *_config) :
 	buddiesLoaded = false;
 	
 	timer = 0;
+	
+	// Get profile avatar
+	pavatar = config->get_profile_avatar();
+	
+	if (!pavatar)
+		pavatar = new TCImage(64, 64);
+	
+	// Get profile name & text
+	pname = new TCString(config->get_profile_name());
+	ptext = new TCString(config->get_profile_text());
 	
 	// Alloc queue
 	mainQueue = dispatch_queue_create("com.torchat.core.controller.main", NULL);
@@ -110,6 +124,9 @@ TCController::~TCController()
 	
 	// Release config
 	config->release();
+	
+	// Release avatar
+	pavatar->release();
 
 	// Release
 	dispatch_release(mainQueue);
@@ -142,7 +159,7 @@ void TCController::start()
 			for (i = 0; i < cnt; i++)
 			{
 				tc_dictionary	item = sbuddies[i];
-				TCBuddy			*buddy = new TCBuddy(config, item[TCConfigBuddyName], item[TCConfigBuddyAddress], item[TCConfigBuddyComment]);
+				TCBuddy			*buddy = new TCBuddy(config, item[TCConfigBuddyAlias], item[TCConfigBuddyAddress], item[TCConfigBuddyNotes]);
 				
 				buddies.push_back(buddy);
 				
@@ -160,7 +177,7 @@ void TCController::start()
 			{
 				TCBuddy	*buddy = buddies[i];
 				
-				if (buddy->address().compare(self) == 0)
+				if (buddy->address().content().compare(self) == 0)
 				{
 					found = true;
 					break;
@@ -258,11 +275,11 @@ void TCController::start()
 		dispatch_resume(socketAccept);
 		
 		
-		// -- Build a timer to keep alive buddies --
+		// -- Build a timer to keep alive buddies (start or sendStatus) --
 		timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, mainQueue);
 		
-		// Each 10s
-		dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 10000000000L, 0);
+		// Each 120s
+		dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 120000000000L, 0);
 		dispatch_source_set_event_handler_cpp(this, timer, ^{
 			
 			// Do nothing if not running
@@ -273,7 +290,7 @@ void TCController::start()
 			size_t i, cnt = cnt = buddies.size();
 			
 			for (i = 0; i < cnt; i++)
-				buddies[i]->start();
+				buddies[i]->keepAlive();
 			
 		});
 		dispatch_resume(timer);
@@ -391,6 +408,16 @@ void TCController::setStatus(tccontroller_status status)
 	// Give the status
 	dispatch_async_cpp(this, mainQueue, ^{
 		
+		// Notify
+		if (status != mstatus)
+		{
+			TCNumber *nstatus = new TCNumber((uint8_t)status);
+			
+			_notify(tcctrl_notify_status, "", nstatus);
+			
+			nstatus->release();
+		}
+		
 		// Hold internal status
 		mstatus = status;
 		
@@ -418,6 +445,147 @@ tccontroller_status	TCController::status()
 	
 	dispatch_sync_cpp(this, mainQueue, ^{
 		result = mstatus;
+	});
+	
+	return result;
+}
+
+void TCController::setProfileAvatar(TCImage *image)
+{
+	if (!image)
+		return;
+	
+	image->retain();
+	
+	// Set the avatar
+	dispatch_async_cpp(this, mainQueue, ^{
+		
+		if (pavatar)
+			pavatar->release();
+		
+		pavatar = image;
+		
+		// Store avatar
+		config->set_profile_avatar(*pavatar);
+		
+		// Give this avatar to buddy list
+		size_t i, cnt = cnt = buddies.size();
+		
+		for (i = 0; i < cnt; i++)
+		{
+			TCBuddy	*buddy = buddies[i];
+			
+			buddy->sendAvatar(pavatar);
+		}
+		
+		// Notify
+		_notify(tcctrl_notify_profile_avatar, "core_ctrl_note_profile_avatar", pavatar);
+	});
+}
+
+TCImage * TCController::profileAvatar()
+{
+	__block TCImage *result = NULL;
+	
+	dispatch_sync_cpp(this, mainQueue, ^{
+
+		if (pavatar)
+		{
+			pavatar->retain();
+			result = pavatar;
+		}
+	});
+	
+	return result;
+}
+
+void TCController::setProfileName(TCString *name)
+{
+	if (!name)
+		return;
+	
+	name->retain();
+	
+	// Set the avatar
+	dispatch_async_cpp(this, mainQueue, ^{
+		
+		// Hold the name
+		pname->release();
+		pname = name;
+		
+		// Store the name
+		config->set_profile_name(name->content());
+		
+		// Give this name to buddy list
+		size_t i, cnt = cnt = buddies.size();
+		
+		for (i = 0; i < cnt; i++)
+		{
+			TCBuddy	*buddy = buddies[i];
+			
+			buddy->sendProfileName(pname);
+		}
+		
+		// Notify
+		_notify(tcctrl_notify_profile_name, "core_ctrl_note_profile_name", pname);
+	});
+}
+
+TCString * TCController::profileName()
+{
+	__block TCString *result = NULL;
+	
+	dispatch_sync_cpp(this, mainQueue, ^{
+
+		pname->retain();
+		
+		result = pname;
+	});
+
+	return result;
+}
+
+void TCController::setProfileText(TCString *text)
+{
+	if (!text)
+		return;
+	
+	text->retain();
+	
+	// Set the avatar
+	dispatch_async_cpp(this, mainQueue, ^{
+		
+		// Hold the text
+		ptext->release();
+		ptext = text;
+		
+		// Store the text
+		config->set_profile_text(text->content());
+		
+		// Give this text to buddy list
+		size_t i, cnt = cnt = buddies.size();
+		
+		for (i = 0; i < cnt; i++)
+		{
+			TCBuddy	*buddy = buddies[i];
+			
+			buddy->sendProfileText(ptext);
+		}
+		
+		// Notify
+		_notify(tcctrl_notify_profile_text, "core_ctrl_note_profile_name", ptext);
+	});
+}
+
+TCString * TCController::profileText()
+{
+	__block TCString *result = NULL;
+	
+	dispatch_sync_cpp(this, mainQueue, ^{
+		
+		ptext->retain();
+		
+		result = ptext;
 	});
 	
 	return result;
@@ -475,7 +643,7 @@ void TCController::removeBuddy(const std::string &address)
 		// Search the buddy
 		for (i = 0; i < cnt; i++)
 		{
-			if (buddies[i]->address().compare(*cpy) == 0)
+			if (buddies[i]->address().content().compare(*cpy) == 0)
 			{
 				// Stop and release
 				TCBuddy	*buddy = buddies[i];
@@ -509,7 +677,7 @@ TCBuddy * TCController::getBuddyAddress(const std::string &address)
 		{
 			TCBuddy	*buddy = buddies[i];
             
-            if (buddy->address().compare(*addr) == 0)
+            if (buddy->address().content().compare(*addr) == 0)
             {
                 result = buddy;
 				result->retain();
@@ -537,7 +705,7 @@ TCBuddy * TCController::getBuddyRandom(const std::string &random)
 		{
 			TCBuddy	*buddy = buddies[i];
             
-            if (buddy->brandom().compare(*ran) == 0)
+            if (buddy->brandom().content().compare(*ran) == 0)
             {
                 result = buddy;
 				result->retain();

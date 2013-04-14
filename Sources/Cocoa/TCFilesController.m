@@ -1,7 +1,7 @@
 /*
  *  TCFilesController.m
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -151,9 +151,9 @@
 #pragma mark -
 #pragma mark TCFilesController - Action
 
-- (void)startFileTransfert:(NSString *)uuid withFilePath:(NSString *)filePath buddyAddress:(NSString *)address buddyName:(NSString *)name transfertWay:(tcfile_way)way fileSize:(uint64_t)size
+- (void)startFileTransfert:(NSString *)uuid withFilePath:(NSString *)filePath buddyAddress:(NSString *)address buddyAlias:(NSString *)alias transfertWay:(tcfile_way)way fileSize:(uint64_t)size
 {
-	if (!uuid || !filePath || !name || !address)
+	if (!uuid || !filePath || !alias || !address)
 		return;
 	
 	// Build file description
@@ -178,7 +178,7 @@
 	[item setObject:uuid forKey:TCFileUUIDKey];
 	[item setObject:filePath forKey:TCFileFilePathKey];
 	[item setObject:address forKey:TCFileBuddyAddressKey];
-	[item setObject:name forKey:TCFileBuddyNameKey];
+	[item setObject:alias forKey:TCFileBuddyAliasKey];
 	[item setObject:[NSNumber numberWithInt:way] forKey:TCFileWayKey];
 	[item setObject:[NSNumber numberWithInt:tcfile_status_running] forKey:TCFileStatusKey];
 	[item setObject:[NSNumber numberWithFloat:0.0] forKey:TCFilePercentKey];
@@ -412,17 +412,16 @@
 	// Build up string
 	NSString *txt_up = nil;
 	if (count_up > 1)
-		txt_up = [NSString stringWithFormat:@"%u uploads", count_up];
+		txt_up = [NSString stringWithFormat:NSLocalizedString(@"file_uploads", @""), count_up];
 	else if (count_up > 0)
-		txt_up = @"1 upload";
+		txt_up = NSLocalizedString(@"one_upload", @"");
 	
 	// Build down string
 	NSString *txt_down = nil;
 	if (count_down > 1)
-		txt_down = [NSString stringWithFormat:@"%u downloads", count_up];
+		txt_down = [NSString stringWithFormat:NSLocalizedString(@"file_downloads", @""), count_up];
 	else if (count_down > 0)
-		txt_down = @"1 download";
-//FIXME localization here
+		txt_down = NSLocalizedString(@"one_download", @"");
 
 	// Show the final string
 	if (txt_up && txt_down)

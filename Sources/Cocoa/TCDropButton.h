@@ -1,5 +1,5 @@
 /*
- *  TCStringExtension.h
+ *  TCDropButton.h
  *
  *  Copyright 2011 Avérous Julien-Pierre
  *
@@ -22,31 +22,23 @@
 
 
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 
 /*
-** NSString - TCStringExtension
+** TCDropButton
 */
 #pragma mark -
-#pragma mark NSString - TCStringExtension
+#pragma mark TCDropButton
 
-@interface NSString (TCStringExtension)
+@interface TCDropButton : NSButton
+{
+	
+@private
+    SEL	dropSelector;
+	id	dropTarget;
+}
 
-- (float)heightForDrawingWithFont:(NSFont *)font andWidth:(float)width;
-
-@end
-
-
-
-/*
-** NSAttributedString - TCStringExtension
-*/
-#pragma mark -
-#pragma mark NSAttributedString - TCStringExtension
-
-@interface NSAttributedString (TCStringExtension)
-
-- (float)heightForDrawingWithWidth:(float)width;
+- (void)setDropTarget:(id)target withSelector:(SEL)selector;
 
 @end

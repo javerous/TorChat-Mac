@@ -1,7 +1,7 @@
 /*
  *  TCBuddiesController.mm
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -27,17 +27,23 @@
 #import "TCConfig.h"
 #import "TCCocoaBuddy.h"
 #import "TCBuddyInfoController.h"
+#import "TCBuddyCell.h"
+#import "TCButton.h"
 
 #import "TCFilesCommon.h"
 #import "TCFilesController.h"
 
-#import "TCTorManager.h"
-
 #import "TCLogsController.h"
+
+#import "TCTorManager.h"
+#import "TCImageExtension.h"
+#import "TCDropButton.h"
 
 #include "TCController.h"
 #include "TCBuddy.h"
-
+#include "TCString.h"
+#include "TCImage.h"
+#include "TCNumber.h"
 
 
 
@@ -49,10 +55,16 @@
 
 @interface TCBuddiesController ()
 
-- (void)_reloadBuddyList;
+- (void)doAvatarDrop:(NSImage *)avatar;
+
+- (void)reloadBuddyList;
+
+- (void)updateStatusUI:(int)status;
+- (void)updateTitleUI;
+
+- (void)initDelegate;
 
 @end
-
 
 
 
@@ -96,6 +108,10 @@
 		// Observe file events
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(fileCancel:) name:TCFileCellCancelNotify object:nil];
 		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddyStatusChanged:) name:TCCocoaBuddyChangedStatusNotification object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddyAvatarChanged:) name:TCCocoaBuddyChangedAvatarNotification object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddyNameChanged:) name:TCCocoaBuddyChangedNameNotification object:nil];
+
 		// Load interface bundle
 		[NSBundle loadNibNamed:@"Buddies" owner:self];
 	}
@@ -139,6 +155,9 @@
 
 - (void)startWithConfig:(TCConfig *)aConfig
 {
+	TCImage		*tavatar;
+	NSImage		*avatar;
+	
 	if (!aConfig)
 	{
 		NSBeep();
@@ -148,6 +167,7 @@
 	
 	if (running)
 		return;
+	
 	running = YES;
 	
 	// Hold the config
@@ -161,68 +181,43 @@
 	// Build controller
 	control = new TCController(config);
 	
-	// Configure the window
-	[imAddress setStringValue:[NSString stringWithUTF8String:config->get_self_address().c_str()]];
+	
+	// -- Init window content --
+	
+	// > Show load indicator
 	[indicator startAnimation:self];
+
+	// > Init title
+	[self updateTitleUI];
+	
+	// > Init status
+	[self updateStatusUI:control->status()];
+	
+	// > Init avatar
+	tavatar = control->profileAvatar();
+	avatar = [[NSImage alloc] initWithTCImage:tavatar];
+	
+	if ([[avatar representations] count] > 0)
+		[imAvatar setImage:avatar];
+	else
+		[imAvatar setImage:[NSImage imageNamed:@"NSUser"]];
+	
+	[avatar release];
+	tavatar->release();
+	
+	// > Init table file drag
+	[tableView registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
+	[tableView setDraggingSourceOperationMask:NSDragOperationAll forLocal:NO];
+	
+	// > Redirect avatar drop
+	[imAvatar setDropTarget:self withSelector:@selector(doAvatarDrop:)];
+
 	
 	// Show the window
 	[mainWindow makeKeyAndOrderFront:self];
 	
-	// Configure table for file drag
-	[tableView registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
-	[tableView setDraggingSourceOperationMask:NSDragOperationAll forLocal:NO];
-	
-	// Set delegate
-	control->setDelegate(mainQueue, ^(TCController *controller, const TCInfo *info) {
-		
-		// Log the item
-		[[TCLogsController sharedController] addGlobalLogEntry:[NSString stringWithUTF8String:info->render().c_str()]];
-		
-		// Action information
-		switch (info->infoCode())
-		{
-			case tcctrl_notify_started:
-				dispatch_async(dispatch_get_main_queue(), ^{					
-					[indicator stopAnimation:self];
-					
-					[imStatus selectItemWithTag:controller->status()];
-				});
-				break;
-				
-			case tcctrl_notify_stoped:
-				dispatch_async(dispatch_get_main_queue(), ^{
-					[imStatus selectItemWithTag:-2];
-				});
-				break;
-				
-			case tcctrl_notify_buddy_new:
-			{
-				TCBuddy			*buddy = dynamic_cast<TCBuddy *>(info->context());
-				TCCocoaBuddy	*obuddy = [[TCCocoaBuddy alloc] initWithBuddy:buddy];
-				
-				dispatch_async(dispatch_get_main_queue(), ^{
-					[buddies addObject:obuddy];
-					
-					[obuddy setDelegate:self];
-					
-					[self _reloadBuddyList];
-					
-					[obuddy release];
-				});
-				
-				break;
-			}
-				
-			case tcctrl_notify_client_new:
-				break;
-				
-			case tcctrl_notify_client_started:
-				break;
-				
-			case tcctrl_notify_client_stoped:
-				break;
-		}
-	});
+	// Init delegate
+	[self initDelegate];
 	
 	// Start the controller
 	control->start();
@@ -267,9 +262,7 @@
 	
 	// Set status to offline
 	[imStatus selectItemWithTag:-2];
-	
-	// Set address to nothing
-	[imAddress setStringValue:@"-"];
+	[self updateTitleUI];
 	
 	// Update status
 	running = NO;
@@ -329,11 +322,17 @@
 		}
 		else if ([identifier isEqualToString:@"name"])
 		{
-			result = [NSString stringWithFormat:@"%@ (%@)", [buddy name], [buddy address]];
+			NSDictionary *content = [NSDictionary dictionaryWithObjectsAndKeys:	[buddy alias],			TCBuddyCellAliasKey,
+																				[buddy address],		TCBuddyCellAddressKey,
+																				[buddy profileName],	TCBuddyCellProfileNameKey,
+																				nil];
+			
+			
+			result = content;
 		}
-		else if ([identifier isEqualToString:@"control"])
+		else if ([identifier isEqualToString:@"avatar"])
 		{
-			result = @"";
+			result = [buddy profileAvatar];
 		}
 	});
 
@@ -417,10 +416,11 @@
 #pragma mark -
 #pragma mark TCBuddiesController - Buddy
 
-- (void)buddyHasChanged:(TCCocoaBuddy *)buddy
-{
+- (void)buddyStatusChanged:(NSNotification *)notice
+{	
 	// Sort buddies by status
 	dispatch_async(mainQueue, ^{
+		
 		NSUInteger		i, cnt = [buddies count];
 		NSMutableArray	*temp_off = [[NSMutableArray alloc] initWithCapacity:cnt];
 		NSMutableArray	*temp_av = [[NSMutableArray alloc] initWithCapacity:cnt];
@@ -466,9 +466,20 @@
 	});
 	
 	// Reload list
-	[self _reloadBuddyList];
+	[self reloadBuddyList];
 }
 
+- (void)buddyAvatarChanged:(NSNotification *)notice
+{
+	// Reload list
+	[self reloadBuddyList];
+}
+
+- (void)buddyNameChanged:(NSNotification *)notice
+{
+	// Reload list
+	[self reloadBuddyList];
+}
 
 
 /*
@@ -512,11 +523,13 @@
 #pragma mark TCBuddiesController - IBAction
 
 - (IBAction)doStatus:(id)sender
-{	
+{
+	// Change status
 	switch ([imStatus selectedTag])
 	{
 		case -2:
 			control->stop();
+			[self updateStatusUI:-2];
 			break;
 			
 		case 0:
@@ -531,6 +544,67 @@
 			control->setStatus(tccontroller_xa);
 			break;
 	}
+}
+
+- (IBAction)doAvatar:(id)sender
+{
+	// Show dialog to select files to send
+	NSOpenPanel	*openDlg = [NSOpenPanel openPanel];
+	
+	// Ask for a file
+	[openDlg setCanChooseFiles:YES];
+	[openDlg setCanChooseDirectories:NO];
+	[openDlg setCanCreateDirectories:NO];
+	[openDlg setAllowsMultipleSelection:NO];
+	[openDlg setAllowedFileTypes:[NSImage imageFileTypes]];
+	
+	if ([openDlg runModal] == NSOKButton)
+	{
+		NSArray	*urls = [openDlg URLs];
+		NSImage *avatar = [[NSImage alloc] initWithContentsOfURL:[urls objectAtIndex:0]];
+
+		[self doAvatarDrop:avatar];
+		
+		[avatar release];
+	}
+}
+
+- (void)doAvatarDrop:(NSImage *)avatar
+{
+	TCImage *image = [avatar createTCImage];
+	
+	control->setProfileAvatar(image);
+	
+	image->release();
+}
+
+- (IBAction)doTitle:(id)sender
+{
+	NSMenuItem	*selected = [imTitle selectedItem];
+	int			tag = [selected tag];
+	
+	if (!selected)
+	{
+		NSBeep();
+		return;
+	}
+	
+	switch (tag)
+	{
+		case 0:
+			config->set_mode_title(tc_config_title_name);
+			break;
+			
+		case 1:
+			config->set_mode_title(tc_config_title_address);
+			break;
+			
+		case 3:
+			[self doEditProfile:sender];			
+			break;
+	}
+	
+	[self updateTitleUI];
 }
 
 - (IBAction)doRemove:(id)sender
@@ -607,16 +681,30 @@
 	}
 }
 
+- (IBAction)doEditProfile:(id)sender
+{
+	TCString *tname = control->profileName();
+	TCString *ttext = control->profileText();
+	
+	[profileName setStringValue:[NSString stringWithUTF8String:tname->content().c_str()]];
+	[[[profileText textStorage] mutableString] setString:[NSString stringWithUTF8String:ttext->content().c_str()]];
+	
+	tname->release();
+	ttext->release();
+	
+	[NSApp beginSheet:profileWindow modalForWindow:mainWindow modalDelegate:nil didEndSelector:NULL contextInfo:NULL];
+}
+
 - (IBAction)doAddOk:(id)sender
 {
-	NSString *comment = [[addCommentField textStorage] mutableString];
+	NSString *notes = [[addNotesField textStorage] mutableString];
 	
 	std::string nameTxt([[addNameField stringValue] UTF8String]);
 	std::string addressTxt([[addAddressField stringValue] UTF8String]);
-	std::string commentTxt([comment UTF8String]);	
+	std::string notesTxt([notes UTF8String]);	
 	
 	// Add the buddy to the controller. Notification will add it on our interface.
-	control->addBuddy(nameTxt, addressTxt, commentTxt);
+	control->addBuddy(nameTxt, addressTxt, notesTxt);
 	
 	[addWindow orderOut:self];
 }
@@ -624,6 +712,50 @@
 - (IBAction)doAddCancel:(id)sender
 {
 	[addWindow orderOut:self];
+}
+
+- (IBAction)doProfileOk:(id)sender
+{
+	[NSApp endSheet:profileWindow];
+	[profileWindow orderOut:self];
+	
+	// -- Hold name --
+	NSString	*name = [profileName stringValue];
+	const char	*cname = [name UTF8String];
+	
+	if (cname)
+	{
+		NSDictionary	*info = [NSDictionary dictionaryWithObject:name forKey:@"name"];
+		TCString		*tname = new TCString(cname);
+		
+		control->setProfileName(tname);
+		
+		tname->release();
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesControllerNameChanged object:self userInfo:info];
+	}
+	
+	// -- Hold text --
+	NSString	*text = [[profileText textStorage] mutableString];
+	const char	*ctext = [text UTF8String];
+
+	if (ctext)
+	{
+		NSDictionary	*info = [NSDictionary dictionaryWithObject:text forKey:@"text"];
+		TCString		*ttext = new TCString(ctext);
+		
+		control->setProfileText(ttext);
+
+		ttext->release();
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesControllerTextChanged object:self userInfo:info];
+	}
+}
+
+- (IBAction)doProfileCancel:(id)sender
+{
+	[NSApp endSheet:profileWindow];
+	[profileWindow orderOut:self];
 }
 
 - (IBAction)showWindow:(id)sender
@@ -649,10 +781,218 @@
 	return [buddies objectAtIndex:row];
 }
 
-- (void)_reloadBuddyList
+
+
+/*
+** TCBuddiesController - Private
+*/
+#pragma mark -
+#pragma mark TCBuddiesController - Private
+
+- (void)reloadBuddyList
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[tableView reloadData];
+	});
+}
+
+- (void)updateStatusUI:(int)status
+{
+	// Unselect old item
+	for (NSMenuItem *item in [imStatus itemArray])
+		[item setState:NSOffState];
+	
+	// Select the new item
+	NSInteger index = [imStatus indexOfItemWithTag:status];
+	
+	if (index > -1)
+	{
+		NSMenuItem *select = [imStatus itemAtIndex:index];
+		NSMenuItem *title = [imStatus itemAtIndex:0];
+		
+		[title setTitle:[select title]];
+		[select setState:NSOnState];
+		
+		[imStatusImage setImage:[select image]];
+
+		// Update popup-size
+		NSSize	sz = [[select title] sizeWithAttributes:[NSDictionary dictionaryWithObject:[imStatus font] forKey:NSFontAttributeName]];
+		NSRect	rect = [imStatus frame];
+		
+		rect.size.width = sz.width + 25;
+		
+		[imStatus setFrame:rect];
+	}
+}
+
+- (void)updateTitleUI
+{	
+	NSString *content = @"-";
+	
+	if (config)
+	{
+		// Check the title to show
+		switch (config->get_mode_title())
+		{
+			case tc_config_title_address:
+			{
+				content = [NSString stringWithUTF8String:config->get_self_address().c_str()];
+				
+				[[imTitle itemAtIndex:[imTitle indexOfItemWithTag:0]] setState:NSOffState];
+				[[imTitle itemAtIndex:[imTitle indexOfItemWithTag:1]] setState:NSOnState];
+				break;
+			}
+				
+			case tc_config_title_name:
+			{
+				TCString *tname = control->profileName();
+				
+				content = [NSString stringWithUTF8String:tname->content().c_str()];
+				
+				tname->release();
+				
+				[[imTitle itemAtIndex:[imTitle indexOfItemWithTag:0]] setState:NSOnState];
+				[[imTitle itemAtIndex:[imTitle indexOfItemWithTag:1]] setState:NSOffState];
+				break;
+			}
+		}
+	}
+	else
+	{
+		[[imTitle itemAtIndex:[imTitle indexOfItemWithTag:0]] setState:NSOffState];
+		[[imTitle itemAtIndex:[imTitle indexOfItemWithTag:1]] setState:NSOffState];
+	}
+	
+	// Update popup-title
+	[[imTitle itemAtIndex:0] setTitle:content];
+	
+	// Update popup-size
+	NSSize	sz = [content sizeWithAttributes:[NSDictionary dictionaryWithObject:[imTitle font] forKey:NSFontAttributeName]];
+	NSRect	rect = [imTitle frame];
+	
+	rect.size.width = sz.width + 14;
+	
+	
+	[imTitle setFrame:rect];
+}
+
+- (void)initDelegate
+{
+	control->setDelegate(mainQueue, ^(TCController *controller, const TCInfo *info) {
+		
+		// Log the item
+		[[TCLogsController sharedController] addGlobalLogEntry:[NSString stringWithUTF8String:info->render().c_str()]];
+		
+		// Action information
+		switch (info->infoCode())
+		{
+			case tcctrl_notify_started:
+			{
+				dispatch_async(dispatch_get_main_queue(), ^{					
+					[indicator stopAnimation:self];
+				});
+				
+				break;
+			}
+				
+			case tcctrl_notify_stoped:
+			{
+				dispatch_async(dispatch_get_main_queue(), ^{
+					[self updateStatusUI:-2];
+				});
+				
+				break;
+			}
+				
+			case tcctrl_notify_status:
+			{
+				TCNumber			*nbr = dynamic_cast<TCNumber *>(info->context());
+				tccontroller_status	status = (tccontroller_status)nbr->uint8Value();
+				
+				NSLog(@"New status:%i", status);
+				
+				dispatch_async(dispatch_get_main_queue(), ^{
+					[self updateStatusUI:status];
+				});
+				
+				break;
+			}
+				
+			case tcctrl_notify_profile_avatar:
+			{
+				TCImage *image = dynamic_cast<TCImage *>(info->context());
+				NSImage *final = [[NSImage alloc] initWithTCImage:image];
+				
+				if ([[final representations] count] == 0)
+					final = [[NSImage imageNamed:@"NSUser"] retain];
+					
+				dispatch_async(dispatch_get_main_queue(), ^{
+						
+					NSDictionary *info = [NSDictionary dictionaryWithObject:final forKey:@"avatar"];
+					
+					[imAvatar setImage:final];
+	
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesControllerAvatarChanged object:self userInfo:info];
+					
+					// Release
+					[final release];
+				});
+				
+				break;
+			}
+				
+			case tcctrl_notify_profile_name:
+			{
+				TCString *name = dynamic_cast<TCString *>(info->context());
+				
+				[self reloadBuddyList];
+				
+				dispatch_async(dispatch_get_main_queue(), ^{					
+					[self updateTitleUI];
+				});
+				
+				(void)name;
+				
+				break;
+			}
+				
+			case tcctrl_notify_profile_text:
+			{
+				TCString *text = dynamic_cast<TCString *>(info->context());
+				
+				(void)text;
+				
+				break;
+			}
+				
+			case tcctrl_notify_buddy_new:
+			{
+				TCBuddy			*buddy = dynamic_cast<TCBuddy *>(info->context());
+				TCCocoaBuddy	*obuddy = [[TCCocoaBuddy alloc] initWithBuddy:buddy];
+				
+				dispatch_async(dispatch_get_main_queue(), ^{
+					
+					[buddies addObject:obuddy];
+					
+					[obuddy setControllerAvatar:[imAvatar image]];
+					
+					[self reloadBuddyList];
+					
+					[obuddy release];
+				});
+				
+				break;
+			}
+				
+			case tcctrl_notify_client_new:
+				break;
+				
+			case tcctrl_notify_client_started:
+				break;
+				
+			case tcctrl_notify_client_stoped:
+				break;
+		}
 	});
 }
 

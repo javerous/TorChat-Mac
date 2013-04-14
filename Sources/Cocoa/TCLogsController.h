@@ -1,7 +1,7 @@
 /*
  *  TCLogsController.h
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -43,7 +43,7 @@
 @private
     NSMutableDictionary		*logs;
 	NSMutableArray			*klogs;
-	NSMutableDictionary		*knames;
+	NSMutableDictionary		*kalias;
 
 	NSMutableArray			*allLogs;			
 	NSString				*allLastKey;
@@ -61,7 +61,7 @@
 - (IBAction)showWindow:(id)sender;
 
 // -- Tools --
-- (void)addBuddyLogEntryFromAddress:(NSString *)address name:(NSString *)name andText:(NSString *)log, ...;
+- (void)addBuddyLogEntryFromAddress:(NSString *)address alias:(NSString *)alias andText:(NSString *)log, ...;
 - (void)addGlobalLogEntry:(NSString *)log, ...;
 - (void)addGlobalAlertLog:(NSString *)log, ...;
 

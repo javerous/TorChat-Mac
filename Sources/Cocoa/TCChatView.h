@@ -1,7 +1,7 @@
 /*
  *  TCChatView.h
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -60,9 +60,15 @@ typedef enum
 @interface TCChatView : NSScrollView
 {
 @private
-	NSDate	*last_stamp;
-	NSFont	*event_font;
-    NSView	*contentView;
+	NSDate			*last_stamp;
+	NSFont			*event_font;
+    NSView			*contentView;
+	
+	NSImage			*localAvatar;
+	NSImage			*remoteAvatar;
+	
+	NSMutableArray	*localAvatars;
+	NSMutableArray	*remoteAvatars;
 }
 
 // -- Actions --
@@ -70,5 +76,8 @@ typedef enum
 - (void)addErrorMessage:(NSString *)msg;
 - (void)appendToConversation:(NSString *)text fromUser:(tcchat_user)user;
 - (void)addTimeStamp;
+
+- (void)setLocalAvatar:(NSImage *)image;
+- (void)setRemoteAvatar:(NSImage *)image;
 
 @end

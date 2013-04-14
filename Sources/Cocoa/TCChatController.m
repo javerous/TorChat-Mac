@@ -1,7 +1,7 @@
 /*
  *  TCChatController.m
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -160,6 +160,16 @@
 - (void)receiveStatus:(NSString *)status
 {
 	[chatView addStatusMessage:status fromUserName:self.name];
+}
+
+- (void)setLocalAvatar:(NSImage *)image
+{
+	[chatView setLocalAvatar:image];
+}
+
+- (void)setRemoteAvatar:(NSImage *)image
+{
+	[chatView setRemoteAvatar:image];
 }
 
 

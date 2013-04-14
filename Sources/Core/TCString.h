@@ -1,5 +1,5 @@
 /*
- *  TCStringExtension.h
+ *  TCString.h
  *
  *  Copyright 2011 Avérous Julien-Pierre
  *
@@ -22,31 +22,31 @@
 
 
 
-#import <Cocoa/Cocoa.h>
+#ifndef _TCSTRING_H_
+# define _TCSTRING_H_
 
-
-/*
-** NSString - TCStringExtension
-*/
-#pragma mark -
-#pragma mark NSString - TCStringExtension
-
-@interface NSString (TCStringExtension)
-
-- (float)heightForDrawingWithFont:(NSFont *)font andWidth:(float)width;
-
-@end
+# include "TCObject.h"
 
 
 
 /*
-** NSAttributedString - TCStringExtension
+** TCString
 */
 #pragma mark -
-#pragma mark NSAttributedString - TCStringExtension
+#pragma mark TCString
 
-@interface NSAttributedString (TCStringExtension)
+class TCString : public TCObject
+{
+public:
+	TCString(const std::string &str) :
+		_content(str)
+	{ }
+	
+	
+	const std::string & content() const { return _content; }
+	
+private:
+	std::string _content;
+};
 
-- (float)heightForDrawingWithWidth:(float)width;
-
-@end
+#endif

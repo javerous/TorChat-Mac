@@ -1,7 +1,7 @@
 /*
  *  TCBuddy.cpp
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -39,6 +39,10 @@
 
 #include "TCConfig.h"
 #include "TCTools.h"
+
+#include "TCString.h"
+#include "TCImage.h"
+#include "TCNumber.h"
 
 #include "TCFileSend.h"
 #include "TCFileReceive.h"
@@ -102,17 +106,19 @@ typedef enum
 #pragma mark -
 #pragma mark TCBuddy - Constructor & Destructor
 
-TCBuddy::TCBuddy(TCConfig *_config, const std::string &_name, const std::string &_address, const std::string &_comment) :
-	config(_config),
-	mname(_name),
-	maddress(_address),
-	mcomment(_comment)
-{
-    TCDebugLog("Buddy (%s) - New", maddress.c_str());
-	
+TCBuddy::TCBuddy(TCConfig *_config, const std::string &_alias, const std::string &_address, const std::string &_notes)
+{	
 	// Retain config
 	_config->retain();
+	config = _config;
 	
+	// Retain property
+	malias = new TCString(_alias);
+	maddress = new TCString(_address);
+	mnotes = new TCString(_notes);
+	
+	TCDebugLog("Buddy (%s) - New", maddress->content().c_str());
+
 	// Build queue
 	mainQueue = dispatch_queue_create("com.torchat.core.buddy.main", NULL);
 
@@ -121,11 +127,9 @@ TCBuddy::TCBuddy(TCConfig *_config, const std::string &_name, const std::string 
 	nBlock = 0;
 	
 	// Init status
-	//writeActive = false;
 	running = false;
 	ponged = false;
 	pongSent = false;
-	useExtend = false;
 	
 	outSocket = NULL;
 	inSocket = NULL;
@@ -133,6 +137,11 @@ TCBuddy::TCBuddy(TCConfig *_config, const std::string &_name, const std::string 
 	socksstate = socks_nostate;
 	mstatus = tcbuddy_status_offline;
 	
+	// Init profiles
+	profileName = new TCString("");
+	profileText = new TCString("");
+	profileAvatar = new TCImage(64, 64);
+		
 	// Generate random
 	char	rnd[101];
 	char	charset [] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -149,7 +158,7 @@ TCBuddy::TCBuddy(TCConfig *_config, const std::string &_name, const std::string 
 	
 	rnd[100] = '\0';
 	
-	mrandom = rnd;
+	mrandom = new TCString(rnd);
 }
 
 TCBuddy::~TCBuddy()
@@ -172,8 +181,19 @@ TCBuddy::~TCBuddy()
 		inSocket = NULL;
 	}
 	
-	// Clean config
+	// Release config
 	config->release();
+	
+	// Release property
+	malias->release();
+	maddress->release();
+	mnotes->release();
+	mrandom->release();
+	
+	// Release profile
+	profileName->release();
+	profileText->release();
+	profileAvatar->release();
 	
 	// Clean main queue
 	dispatch_release(mainQueue);
@@ -194,7 +214,7 @@ void TCBuddy::start()
 		if (running)
 			return;
 		
-		TCDebugLog( "Buddy (%s) - Start", maddress.c_str());
+		TCDebugLog( "Buddy (%s) - Start", maddress->content().c_str());
 		
 		// -- Make a connection to Tor proxy --
 		struct addrinfo	hints, *res, *res0;
@@ -310,12 +330,17 @@ void TCBuddy::stop()
 			socksstate = socks_nostate;
 			ponged = false;
 			pongSent = false;
-			useExtend = false;
 			running = false;
 			
 			// Notify
 			if (lstatus != tcbuddy_status_offline)
-				_notify(tcbuddy_notify_status, "core_bd_note_status_changed"); // Offline
+			{
+				TCNumber *tstatus = _status();
+				
+				_notify(tcbuddy_notify_status, "core_bd_note_status_changed", tstatus);
+				
+				tstatus->release();
+			}
 			
 			_notify(tcbuddy_notify_disconnected, "core_bd_note_stoped");
 		}
@@ -345,6 +370,20 @@ bool TCBuddy::isPonged()
 }
 
 
+void TCBuddy::keepAlive()
+{
+	dispatch_async_cpp(this, mainQueue, ^{
+		
+		if (!running)
+			start();
+		else
+		{
+			if (pongSent && ponged)
+				_sendStatus(cstatus);
+		}
+	});
+}
+
 
 /*
 ** TCBuddy - Delegate
@@ -371,7 +410,6 @@ void TCBuddy::setDelegate(dispatch_queue_t queue, tcbuddy_event event)
 		
 		nQueue = queue;
 		
-		
 		// Block
 		if (nBlock)
 			Block_release(nBlock);
@@ -387,65 +425,73 @@ void TCBuddy::setDelegate(dispatch_queue_t queue, tcbuddy_event event)
 #pragma mark -
 #pragma mark TCBuddy - Accessor
 
-const std::string TCBuddy::name()
+TCString * TCBuddy::alias()
 {
-	__block std::string result;
+	__block TCString *result = NULL;
 	
 	dispatch_sync_cpp(this, mainQueue, ^{
-		result = mname;
+		
+		malias->retain();
+		
+		result = malias;
 	});
 	
 	return result;
 }
 
-void TCBuddy::setName(const std::string &name)
+void TCBuddy::setAlias(TCString *alias)
 {
-	std::string *cpy = new std::string(name);
+	if (!alias)
+		return;
+	
+	alias->retain();
 	
 	dispatch_async_cpp(this, mainQueue, ^{
 		
 		// Set the new name in config
-		config->set_buddy_name(maddress, *cpy);
+		config->set_buddy_alias(maddress->content(), alias->content());
 		
 		// Change the name internaly
-		mname = *cpy;
+		malias->release();
+		malias = alias;
 		
 		// Notidy of the change
-		_notify(tcbuddy_notify_info, "core_bd_note_name_changed");
-		
-		// Clean
-		delete cpy;
+		_notify(tcbuddy_notify_alias, "core_bd_note_alias_changed", alias);
 	});
 }
 
-const std::string TCBuddy::comment()
+TCString * TCBuddy::notes()
 {
-	__block std::string result;
+	__block TCString *result = NULL;
 	
 	dispatch_sync_cpp(this, mainQueue, ^{
-		result = mcomment;
+		
+		mnotes->retain();
+		
+		result = mnotes;
 	});
 	
 	return result;
 }
 
-void TCBuddy::setComment(const std::string &comment)
+void TCBuddy::setNotes(TCString *notes)
 {
-	std::string *cpy = new std::string(comment);
+	if (!notes)
+		return;
+	
+	notes->retain();
 	
 	dispatch_async_cpp(this, mainQueue, ^{
 		
 		// Set the new name in config
-		config->set_buddy_comment(maddress, *cpy);
+		config->set_buddy_notes(maddress->content(), notes->content());
 		
 		// Change the name internaly
-		mcomment = *cpy;
+		mnotes->release();
+		mnotes = notes;
 		
 		// Notify of the change
-		_notify(tcbuddy_notify_info, "core_bd_note_comment_changed");
-		
-		// Clean
-		delete cpy;
+		_notify(tcbuddy_notify_notes, "core_bd_note_notes_changed");
 	});
 }
 
@@ -463,7 +509,6 @@ tcbuddy_status TCBuddy::status()
 					  
 	return res;
 }
-
 
 
 
@@ -662,27 +707,79 @@ void TCBuddy::sendStatus(tccontroller_status status)
 	});
 }
 
-void TCBuddy::sendMessage(const std::string &message)
+void TCBuddy::sendAvatar(TCImage *avatar)
 {
-	std::string *amsg = new std::string(message);
+	if (!avatar)
+		return;
+
+	avatar->retain();
+	
+	dispatch_async_cpp(this, mainQueue, ^{
+		
+		if (pongSent && ponged)		
+			_sendAvatar(avatar);
+		
+		avatar->release();
+	});
+}
+
+void TCBuddy::sendProfileName(TCString *name)
+{
+	if (!name)
+		return;
+	
+	name->retain();
+	
+	dispatch_async_cpp(this, mainQueue, ^{
+
+		if (pongSent && ponged)
+			_sendProfileName(name);
+		
+		name->release();
+	});
+}
+
+void TCBuddy::sendProfileText(TCString *text)
+{
+	if (!text)
+		return;
+	
+	text->retain();
+	
+	dispatch_async_cpp(this, mainQueue, ^{
+		
+		if (pongSent && ponged)
+			_sendProfileText(text);
+		
+		text->release();
+	});
+}
+
+void TCBuddy::sendMessage(TCString *message)
+{
+	if (!message)
+		return;
+	
+	message->retain();
 	
 	dispatch_async_cpp(this, mainQueue, ^{
 		
 		// Send Message only if we sent pong and we are ponged
 		if (pongSent && ponged)
-			_sendCommand("message", *amsg);
+			_sendCommand("message", message);
 		else
-		{
-			_error(tcbuddy_error_message_offline, *amsg, false);
-		}
+			_error(tcbuddy_error_message_offline, "core_bd_err_message_offline", message, false);
 		
-		delete amsg;
+		message->release();
 	});
 }
 
-void TCBuddy::sendFile(const std::string &filepath)
+void TCBuddy::sendFile(TCString *filepath)
 {
-	std::string *cpy = new std::string(filepath);
+	if (!filepath)
+		return;
+	
+	filepath->retain();
 		
 	dispatch_async_cpp(this, mainQueue, ^{
 
@@ -694,15 +791,16 @@ void TCBuddy::sendFile(const std::string &filepath)
 			// Try to open the file for send
 			try
 			{
-				file = new TCFileSend(*cpy);
+				file = new TCFileSend(filepath->content());
 			}
 			catch (std::string error)
 			{
 				if (file)
 					file->release();
-				delete cpy;
 				
-				_error(tcbuddy_error_send_file, error, false);
+				_error(tcbuddy_error_send_file, error, filepath, false);
+				
+				filepath->release();
 				return;
 			}
 
@@ -720,28 +818,15 @@ void TCBuddy::sendFile(const std::string &filepath)
 			_sendFileName(file);
 						
 			// Send the first block to start the send
-			if (useExtend)
-			{
-				_sendFileDataB64(file);
-			}
-			else
-			{
-				// Because TorChat python have a race condition on a GUI callback, we wait 5 seconds before sending first block
-				file->retain();
-				
-				dispatch_after_cpp(this, dispatch_time(DISPATCH_TIME_NOW, 5000000000L), mainQueue, ^{
-					_sendFileData(file);
-					
-					file->release();
-				});
-			}
+			_sendFileData(file);
 		}
 		else
 		{
-			_error(tcbuddy_error_file_offline, "core_bd_err_file_offline", false);
+			_error(tcbuddy_error_file_offline, "core_bd_err_file_offline", filepath, false);
 		}
 		
-		delete cpy;
+		// Release
+		filepath->release();
 	});
 }
 
@@ -753,19 +838,32 @@ void TCBuddy::sendFile(const std::string &filepath)
 #pragma mark -
 #pragma mark TCBuddy - Action
 
-void TCBuddy::startHandshake(const std::string &rrandom, tccontroller_status status)
+void TCBuddy::startHandshake(TCString *rrandom, tccontroller_status status, TCImage *avatar, TCString *name, TCString *text)
 {
-	std::string *cpy = new std::string(rrandom);
+	if (!rrandom || !avatar || !name || !text)
+		return;
+	
+	rrandom->retain();
+	avatar->retain();
+	name->retain();
+	text->retain();
 	
 	dispatch_async_cpp(this, mainQueue, ^{
-		_sendPong(*cpy);
-		_sendStatus(status);
-		_sendAddMe(); // This seem really useless
+		
+		_sendPong(rrandom);
 		_sendVersion();
+		_sendProfileName(name);
+		_sendProfileText(text);
+		_sendAvatar(avatar);
+		_sendAddMe();
+		_sendStatus(status);
 		
 		pongSent = true;
 		
-		delete cpy;
+		rrandom->release();
+		avatar->release();
+		name->release();
+		text->release();
 	});
 }
 
@@ -923,61 +1021,119 @@ void TCBuddy::doStatus(const std::string &status)
 			mstatus = nstatus;
 			
 			// Notify that status changed
-			_notify(tcbuddy_notify_status, "core_bd_note_status_changed");
+			TCNumber *tstatus = _status();
+			
+			_notify(tcbuddy_notify_status, "core_bd_note_status_changed", tstatus);
+			
+			tstatus->release();
 		}
 	});
 }
 
 void TCBuddy::doMessage(const std::string &message)
 {
-	std::string *amsg = new std::string(message);
+	TCString *amsg = new TCString(message);
 	
 	dispatch_async_cpp(this, mainQueue, ^{
+				
+		// Notify it
+		_notify(tcbuddy_notify_message, "core_bd_note_new_message", amsg);
 		
-		if (messages.size() < 500)
-		{
-			messages.push_back(amsg);
-			
-			// Notify it
-			_notify(tcbuddy_notify_message, "core_bd_note_new_message");
-		}
-		else
-			_error(tcbuddy_error_too_messages, "core_bd_err_too_messages", false);
+		// Release
+		amsg->release();
 	});
 }
 
 void TCBuddy::doVersion(const std::string &version)
 {
-	// The Python version send raw data on a text based protocol (bad choice, but, it does not matter...).
-	// So python fail, depending of the data, when doeing some text based operation on this data
-	// (like splitting, etc.), because of conversion in UTF8 or things like this.
-	// So, this version add the possibility to send data base64 encoded to prevent this. To distinct TorChat
-	// clients with this ability (currently, only this version...), a _ext" is added on the version string.
-	// This can give an information to the remote side about ourself, but I think that this is not critical.
-	
-	std::vector<std::string> *exp = createExplode(version, "_");
+	// Do nothing.
+}
 
-	if (exp->size() >= 2)
-	{
-		if (exp->at(1).compare("ext") == 0)
-		{
-			dispatch_async_cpp(this, mainQueue, ^{
-				useExtend = true;
-			});
-		}
-	}
+void TCBuddy::doProfileText(const std::string &text)
+{
+	TCString *atext = new TCString(text);
 	
-	delete exp;
+	dispatch_async_cpp(this, mainQueue, ^{
+		
+		profileText->release();
+		profileText = atext;
+				
+		// Notify it
+		_notify(tcbuddy_notify_profile_text, "core_bd_note_new_profile_text", profileText);
+	});
+}
+
+void TCBuddy::doProfileName(const std::string &name)
+{
+	TCString *aname = new TCString(name);
+
+	dispatch_async_cpp(this, mainQueue, ^{
+		
+		profileName->release();
+		profileName = aname;
+		
+		// Notify it
+		_notify(tcbuddy_notify_profile_name, "core_bd_note_new_profile_name", profileName);
+	});
+}
+
+void TCBuddy::doProfileAvatar(const std::string &bitmap)
+{
+	if (bitmap.size() != 12288)
+		return;
+		
+	std::string *abitmap = new std::string(bitmap);
+
+	dispatch_async_cpp(this, mainQueue, ^{
+		
+		profileAvatar->setBitmap(abitmap->data(), abitmap->size());
+		
+		delete abitmap;
+		
+		// Notify it
+		_notify(tcbuddy_notify_profile_avatar, "core_bd_note_new_profile_avatar", profileAvatar);
+	});
+}
+
+void TCBuddy::doProfileAvatarAlpha(const std::string &bitmap)
+{
+	if (bitmap.size() != 4096)
+		return;
+
+	std::string *abitmap = new std::string(bitmap);
+
+	dispatch_async_cpp(this, mainQueue, ^{
+		
+		profileAvatar->setAlphaBitmap(abitmap->data(), abitmap->size());
+		
+		delete abitmap;
+	});
 }
 
 void TCBuddy::doAddMe()
 {
-	// Really, this is useless no ? :D
+	/*
+	 This must be sent after connection if you are (or want to be) 
+	 on the other's buddy list. Since a client can also connect for 
+	 the purpose of joining a chat room without automatically appearing 
+	 on the buddy list this message is needed.
+	*/
+	
+	// -> I will not for this fork. In futur, perhaps.
 }
 
 void TCBuddy::doRemoveMe()
 {
-	// Dude ! Don't touch my buddy list, okay ?
+	/*
+	 when receiving this message the buddy MUST be removed from
+	 the buddy list (or somehow marked as removed) so that it will not
+	 automatically add itself again and cause annoyance. When removing
+	 a buddy first send this message before disconnecting or the other
+	 client will never know about it and add itself again next time"""
+	*/
+	
+	
+	// -> I will not for this fork. In futur, perhaps.
 }
 
 void TCBuddy::doFileName(const std::string &uuid, const std::string &fsize, const std::string &bsize, const std::string &filename)
@@ -993,8 +1149,8 @@ void TCBuddy::doFileName(const std::string &uuid, const std::string &fsize, cons
 	mkdir(down.c_str(), S_IRWXU | (S_IRGRP | S_IXGRP) | (S_IRWXO | S_IXOTH));
 	
 	
-	// Build the filnal download path
-	down = down + "/" + address() + "/";
+	// Build the final download path
+	down = down + "/" + maddress->content() + "/";
 	
 	mkdir(down.c_str(), S_IRWXU | (S_IRGRP | S_IXGRP) | (S_IRWXO | S_IXOTH));
 	
@@ -1037,7 +1193,19 @@ void TCBuddy::doFileName(const std::string &uuid, const std::string &fsize, cons
 }
 
 void TCBuddy::doFileData(const std::string &uuid, const std::string &start, const std::string &hash, const std::string &data)
-{	
+{
+	/*
+	 TorChat protocol is based on text token protocol ("filedata", "filedata_ok", space separator, etc.).
+	 TorChat Python use text function for this text protocol ("join", "split", "replace", etc.)
+	 
+	 If TorChat is well designed, the protocol _underlayer_ is not. Indeed, raw file data are sent
+	 without encoding in this text protocol.
+	 
+	 When TorChat (Python) ask Python to do some text work on this data (like "replace"), Python try to
+	 interpret them as UTF8 string before doing the job. On some rare case, when data contain a sequence
+	 looking like UTF8 sequence but invalid, this interpretation fail and raise an un-handled exception.
+	*/
+	
 	std::string *c_uuid = new std::string(uuid);
 	std::string *c_start = new std::string(start);
 	std::string *c_hash = new std::string(hash);
@@ -1093,77 +1261,6 @@ void TCBuddy::doFileData(const std::string &uuid, const std::string &start, cons
 	});
 }
 
-void TCBuddy::doFileDataB64(const std::string &uuid, const std::string &start, const std::string &hash, const std::string &data)
-{	
-	std::string *c_uuid = new std::string(uuid);
-	std::string *c_start = new std::string(start);
-	std::string *c_hash = new std::string(hash);
-	std::string *c_data = new std::string(data);
-	
-	// Manage file chunk
-	dispatch_async_cpp(this, mainQueue, ^{
-		
-		frec_iterator	it = freceive.find(*c_uuid);
-		
-		if (it != freceive.end())
-		{
-			TCFileReceive	*file = it->second;
-			uint64_t		offset = strtoull(c_start->c_str(), NULL, 10);
-			
-			void			*odata = NULL;
-			size_t			osize = 0;
-			
-			if (createDecodeBase64(*c_data, &osize, &odata))
-			{
-				if (file->writeChunk(odata, osize, *c_hash, &offset))
-				{
-					// Send that this chunk is okay
-					_sendFileDataOk(*c_uuid, offset);
-
-					// Notify of the new chunk
-					TCFileInfo *info = new TCFileInfo(file);
-					
-					_notify(tcbuddy_notify_file_receive_running, "core_bd_note_file_chunk_receive", info);
-					
-					// Do nothing if we are no more to send
-					if (file->isFinished())
-					{
-						// Notify that we have finished
-	
-						_notify(tcbuddy_notify_file_receive_finish, "core_bd_note_file_receive_finish", info);
-						
-						// Release the file
-						file->release();
-						freceive.erase(it);
-					}
-					
-					// Release info
-					info->release();
-				}
-				else
-				{
-					_sendFileDataError(*c_uuid, offset);
-				}
-				
-				free(odata);
-			}
-			else
-			{
-				_sendFileDataError(*c_uuid, offset);
-			}
-		}
-		else
-		{
-			_sendFileStopSending(*c_uuid);
-		}
-		
-		// Clean
-		delete c_uuid;
-		delete c_start;
-		delete c_hash;
-		delete c_data;
-	});
-}
 
 void TCBuddy::doFileDataOk(const std::string &uuid, const std::string &start)
 {	
@@ -1327,17 +1424,43 @@ void TCBuddy::parserError(TCInfo *err)
 #pragma mark -
 #pragma mark TCBuddy - Content
 
-std::vector<std::string *>	TCBuddy::getMessages()
+TCString * TCBuddy::getProfileText()
 {
-	__block std::vector<std::string *> cpy;
+	__block TCString * result = NULL;
 	
 	dispatch_sync_cpp(this, mainQueue, ^{
-		cpy = messages;
 		
-		messages.clear();
+		profileText->retain();
+		result = profileText;
 	});
 	
-	return cpy;
+	return result;
+}
+
+TCString * TCBuddy::getProfileName()
+{
+	__block TCString * result = NULL;
+
+	dispatch_sync_cpp(this, mainQueue, ^{
+		
+		profileName->retain();
+		result = profileName;
+	});
+	
+	return result;
+}
+
+TCImage * TCBuddy::getProfileAvatar()
+{
+	__block TCImage * result = NULL;
+	
+	dispatch_sync_cpp(this, mainQueue, ^{
+		
+		profileAvatar->retain();
+		result = profileAvatar;
+	});
+
+	return result;
 }
 
 
@@ -1355,14 +1478,17 @@ void TCBuddy::_sendPing()
 	std::vector <std::string> items;
 	
 	items.push_back(config->get_self_address());
-	items.push_back(mrandom);
+	items.push_back(mrandom->content());
 	
 	_sendCommand("ping", items);
 }
 
-void TCBuddy::_sendPong(const std::string &random)
+void TCBuddy::_sendPong(TCString *random)
 {
 	// > mainQueue <
+	
+	if (!random)
+		return;
 	
     _sendCommand("pong", random);
 }
@@ -1370,6 +1496,7 @@ void TCBuddy::_sendPong(const std::string &random)
 void TCBuddy::_sendStatus(tccontroller_status status)
 {
 	// > mainQueue <
+	cstatus = status;
 	
 	switch (status)
 	{
@@ -1399,6 +1526,46 @@ void TCBuddy::_sendVersion()
 	// > mainQueue <
 	
 	_sendCommand("version", "0.9.9.287");
+}
+
+void TCBuddy::_sendProfileName(TCString *name)
+{
+	if (!name)
+		return;
+	
+	_sendCommand("profile_name", name);
+}
+
+void TCBuddy::_sendProfileText(TCString *text)
+{
+	if (!text)
+		return;
+	
+	_sendCommand("profile_text", text);
+}
+
+void TCBuddy::_sendAvatar(TCImage *avatar)
+{
+	std::vector <std::string> items;
+	
+	if (!avatar)
+		return;
+	
+	if (avatar->getBitmapAlpha())
+	{
+		std::string data((char *)avatar->getBitmapAlpha(), avatar->getBitmapAlphaSize());
+		
+		_sendCommand("profile_avatar_alpha", data);
+	}
+
+	if (avatar->getBitmapAlpha())
+	{
+		std::string data((char *)avatar->getBitmap(), avatar->getBitmapSize());
+		
+		_sendCommand("profile_avatar", data);
+	}
+	else
+		_sendCommand("profile_avatar");
 }
 
 void TCBuddy::_sendAddMe()
@@ -1473,46 +1640,6 @@ void TCBuddy::_sendFileData(TCFileSend *file)
 		
 		// Send the chunk
 		_sendCommand("filedata", items, tcbuddy_channel_in);
-	}
-}
-
-void TCBuddy::_sendFileDataB64(TCFileSend *file)
-{	
-	// > mainQueue <
-	
-	if (!file)
-		return;
-	
-	uint8_t		chunk[file->blockSize()];
-	uint64_t	chunksz = 0;
-	uint64_t	offset = 0;
-	std::string	*md5 = NULL;
-	
-	md5 = file->readChunk(chunk, &chunksz, &offset);
-		
-	if (md5)
-	{		
-		std::vector <std::string>	items;
-		char						buffer[50];
-		
-		// Add UUID
-		items.push_back(file->uuid());
-		
-		// Add the offset
-		snprintf(buffer, sizeof(buffer), "%llu", offset);
-		items.push_back(buffer);
-		
-		// Add the MD5
-		items.push_back(*md5);
-		delete md5;
-		
-		// Add the data
-		std::string *b64 = createEncodeBase64(chunk, chunksz);
-		items.push_back(*b64);
-		delete b64;
-		
-		// Send the chunk
-		_sendCommand("filedata_b64", items, tcbuddy_channel_in);
 	}
 }
 
@@ -1600,6 +1727,15 @@ bool TCBuddy::_sendCommand(const std::string &command, const std::vector<std::st
 	return bresult;
 }
 
+bool TCBuddy::_sendCommand(const std::string &command, TCString *data, tcbuddy_channel channel)
+{
+	if (!data)
+		return false;
+	
+	return _sendCommand(command, data->content(), channel);
+}
+
+
 bool TCBuddy::_sendCommand(const std::string &command, const std::string &data, tcbuddy_channel channel)
 {
 	// > mainQueue <
@@ -1681,7 +1817,7 @@ void TCBuddy::_startSocks()
 	unsigned int		datalen;
 	
 	// Get the target connexion informations
-	std::string host = maddress + ".onion";
+	std::string host = maddress->content() + ".onion";
 
 	// Check data size
 	datalen = sizeof(struct sockreq) + strlen(user) + 1;
@@ -1760,10 +1896,7 @@ void TCBuddy::_runPendingFileWrite()
 		if ((file->readSize() - file->validatedSize()) >= 16 * file->blockSize())
 			continue;
 		
-		if (useExtend)
-			_sendFileDataB64(file);
-		else
-			_sendFileData(file);
+		_sendFileData(file);
 	}
 }
 
@@ -1873,6 +2006,19 @@ void TCBuddy::_send_event(TCInfo *info)
 	}
 }
 
+TCNumber * TCBuddy::_status()
+{
+	// > mainQueue <
+	
+	tcbuddy_status res;
+	
+	if (pongSent && ponged)
+		res = mstatus;
+	else
+		res = tcbuddy_status_offline;
+	
+	return new TCNumber((uint8_t) res);
+}
 
 
 

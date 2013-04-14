@@ -1,5 +1,5 @@
 /*
- *  TCBuffer.h
+ *  TCImage.h
  *
  *  Copyright 2011 Avérous Julien-Pierre
  *
@@ -22,59 +22,51 @@
 
 
 
-#ifndef _TCBUFFER_H_
-# define _TCBUFFER_H_
+#ifndef _TCIMAGE_H_
+# define _TCIMAGE_H_
 
 # include <sys/types.h>
-# include <string>
 
 # include "TCObject.h"
 
 
 
 /*
-** Types
+** TCImage
 */
 #pragma mark -
-#pragma mark Types
+#pragma mark TCImage
 
-typedef struct _tc_items tc_items;
-
-
-
-/*
-** TCBuffer
-*/
-#pragma mark -
-#pragma mark TCBuffer
-
-// == Class ==
-class TCBuffer : public TCObject
+class TCImage : public TCObject
 {
 public:
+	TCImage(const TCImage &image);
+	TCImage(size_t width, size_t height);
+	~TCImage();
 	
-	// -- Constructor & Destructor --
-	TCBuffer();
-	~TCBuffer();
+	bool		setBitmap(const void *data, size_t size);
+	bool		setAlphaBitmap(const void *data, size_t size);
 	
-	// -- Data --
-	void	pushData(const void *data, size_t size, bool copy);		// Insert at the beggin
-	void	appendData(const void *data, size_t size, bool copy);	// Insert at the end
+	const void	*getBitmap() const { return bitmap; };
+	size_t		getBitmapSize() const { return width * height * 3; };
 	
-	size_t	readData(void *buffer, size_t size);					// Read data from beggin
+	const void	*getBitmapAlpha() const { return bitmapAlpha; };
+	size_t		getBitmapAlphaSize() const { return width * height * 1; };
 	
-	// -- Tools --
-	std::string *createStringSearch(const std::string &search, bool returnSearch); // Read data up to the string "search"
+	const void	*getMixedBitmap();
 	
-	void		clean();
-	void		print();
+	size_t		getWidth() const { return width; };
+	size_t		getHeight() const { return height; };
 	
-	// -- Property --
-	size_t	size();
-
 private:
-	tc_items	*items;
+	size_t		width;
+	size_t		height;
 	
+	void		*bitmap;
+	void		*bitmapAlpha;
+	
+	void		*mixedBitmap;
+	bool		mixedRendered;
 };
 
 #endif

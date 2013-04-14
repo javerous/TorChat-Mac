@@ -1,7 +1,7 @@
 /*
  *  TCCocoaBuddy.h
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -41,18 +41,15 @@
 
 
 /*
-** TCCocoaBuddy - Delegate
+** Notifications
 */
 #pragma mark -
-#pragma mark TCCocoaBuddy - Delegate
+#pragma mark Notifications
 
-
-@protocol TCCocoaBuddyDelegate <NSObject>
-
-- (void)buddyHasChanged:(TCCocoaBuddy *)buddy;
-
-@end
-    
+#define TCCocoaBuddyChangedStatusNotification	@"TCCocoaBuddyChangedStatus"
+#define TCCocoaBuddyChangedAvatarNotification	@"TCCocoaBuddyChangedAvatar"
+#define TCCocoaBuddyChangedNameNotification		@"TCCocoaBuddyChangedName"
+#define TCCocoaBuddyChangedTextNotification		@"TCCocoaBuddyChangedText"
 
 
 
@@ -70,26 +67,34 @@
 	TCChatController			*chat;
 	
 	dispatch_queue_t			mainQueue;
-	
-	id <TCCocoaBuddyDelegate>	delegate;
-	
+	dispatch_queue_t			noticeQueue;
+		
 	tcbuddy_status				_status;
+	NSImage						*_pavatar;
+	NSString					*_pname;
+	NSString					*_ptext;
+	
+	NSImage						*_cpavatar;
 }
-
-// -- Property --
-@property (assign, nonatomic) id <TCCocoaBuddyDelegate>	delegate;
 
 // -- Constructor --
 - (id)initWithBuddy:(TCBuddy *)buddy;
 
 // -- Status --
 - (tcbuddy_status)status;
-- (NSString *)name;
+- (NSString *)alias;
 - (NSString *)address;
-- (NSString *)comment;
+- (NSString *)notes;
 
-- (void)setName:(NSString *)name;
-- (void)setComment:(NSString *)comment;
+- (void)setAlias:(NSString *)alias;
+- (void)setNotes:(NSString *)notes;
+
+- (void)setControllerAvatar:(NSImage *)avatar;
+
+// -- Profile --
+- (NSImage *)profileAvatar;
+- (NSString *)profileName;
+- (NSString *)profileText;
 
 // -- Actions --
 - (void)openChatWindow;
