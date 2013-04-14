@@ -42,7 +42,6 @@ public:
 		_content(str)
 	{ }
 	
-	
 	const std::string & content() const { return _content; }
 	
 private:

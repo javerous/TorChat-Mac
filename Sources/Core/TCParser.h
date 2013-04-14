@@ -54,6 +54,7 @@ typedef enum
 	tcrec_cmd_pong,
 	tcrec_cmd_status,
 	tcrec_cmd_version,
+	tcrec_cmd_client,
 	tcrec_cmd_profile_text,
 	tcrec_cmd_profile_name,
 	tcrec_cmd_profile_avatar,
@@ -82,6 +83,7 @@ public:
 	virtual void	doStatus(const std::string &status);
 	virtual void	doMessage(const std::string &message);
 	virtual void	doVersion(const std::string &version);
+	virtual void	doClient(const std::string &client);
 	virtual void	doProfileText(const std::string &text);
 	virtual void	doProfileName(const std::string &name);
 	virtual void	doProfileAvatar(const std::string &bitmap);
@@ -107,6 +109,7 @@ private:
     void _parsePong(const std::vector<std::string> &args);
     void _parseStatus(const std::vector<std::string> &args);
     void _parseVersion(const std::vector<std::string> &args);
+	void _parseClient(const std::vector<std::string> &args);
 	void _parseProfileText(const std::vector<std::string> &args);
 	void _parseProfileName(const std::vector<std::string> &args);
 	void _parseProfileAvatar(const std::vector<std::string> &args);

@@ -71,7 +71,7 @@ bool doAsyncSocket(int sock)
 std::vector<std::string> * createExplode(const std::string &_s, const std::string &e)
 {
     std::string                 s = _s;
-	std::vector<std::string>    * ret = new std::vector<std::string>;
+	std::vector<std::string>    *ret = new std::vector<std::string>;
 	
 	int	iPos = s.find(e, 0);
 	int	iPit = e.length();
@@ -96,6 +96,9 @@ std::string * createJoin(const std::vector<std::string> &items, const std::strin
 	std::string	*result = new std::string;
 	size_t		i, cnt = items.size();
 	
+	if (cnt == 0)
+		return result;
+	
 	for (i = 0; i < cnt - 1; i++)
 	{
 		result->append(items[i]);
@@ -112,6 +115,9 @@ std::string * createJoin(const std::vector<std::string> &items, size_t start, co
 {
 	std::string	*result = new std::string;
 	size_t		i, cnt = items.size();
+	
+	if (cnt == 0)
+		return result;
 	
 	for (i = start; i < cnt - 1; i++)
 	{

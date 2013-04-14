@@ -26,6 +26,8 @@
 
 #import "TCBuddiesController.h"
 #import "TCLogsController.h"
+#import "TCDragImageView.h"
+#import "TCKeyedText.h"
 
 
 
@@ -40,6 +42,19 @@ static NSMutableArray *_windows = nil;
 
 
 /*
+** Defines
+*/
+#pragma mark -
+#pragma mark Defines
+
+#define BICInfoPeerClient	@"PeerClient"
+#define BICInfoPeerVersion	@"PeerVersion"
+#define BICInfoProfileName	@"ProfileName"
+#define BICInfoProfileText	@"ProfileText"
+
+
+
+/*
 ** TCBuddyInfoController - Private
 */
 #pragma mark -
@@ -48,6 +63,11 @@ static NSMutableArray *_windows = nil;
 @interface TCBuddyInfoController ()
 
 + (TCBuddyInfoController *)buildController;
+
+- (void)setInfo:(NSString *)indo withKey:(NSString *)key;
+- (void)updateInfoView;
+
+- (void)updateStatus:(tcbuddy_status)status;
 
 @property (retain, nonatomic) TCCocoaBuddy	*_buddy;
 @property (retain, nonatomic) NSString		*_address;
@@ -87,6 +107,7 @@ static NSMutableArray *_windows = nil;
     if ((self = [super initWithWindow:window]))
 	{
 		_logs = [[NSMutableArray alloc] init];
+		_infos = [[NSMutableDictionary alloc] init];
 		
 		[window center];
 		
@@ -102,6 +123,7 @@ static NSMutableArray *_windows = nil;
 	
 	[_buddy release];
 	[_logs release];
+	[_infos release];
 	[_address release];
 	
 	[self.window setDelegate:nil];
@@ -123,6 +145,11 @@ static NSMutableArray *_windows = nil;
 	[self.window center];
 	[self setWindowFrameAutosaveName:@"InfoWindow"];
 	[self windowDidResize:nil];
+}
+
+- (void)awakeFromNib
+{
+	[avatarView setFilename:_address];
 }
 
 
@@ -205,15 +232,26 @@ static NSMutableArray *_windows = nil;
 	// Retain buddy
 	ctrl._buddy = buddy;
 	
-	// Show value
+	// Hold address
 	ctrl._address = address;
 	
+	// Set direct info
 	[ctrl->avatarView setImage:[buddy profileAvatar]];
 	[ctrl->addressField setStringValue:ctrl._address];
-	[ctrl->profileNameField setStringValue:[buddy profileName]];
-	[ctrl->profileTextField setStringValue:[buddy profileText]];
 	[ctrl->aliasField setStringValue:[buddy alias]];
+	[[ctrl->aliasField cell] setPlaceholderString:[buddy profileName]];
 	[[[ctrl->notesField textStorage] mutableString] setString:[buddy notes]];
+	
+	[ctrl updateStatus:[buddy status]];
+	
+	// Set info
+	[ctrl setInfo:[buddy profileName] withKey:BICInfoProfileName];
+	[ctrl setInfo:[buddy profileText] withKey:BICInfoProfileText];
+	
+	[ctrl setInfo:[buddy peerClient] withKey:BICInfoPeerClient];
+	[ctrl setInfo:[buddy peerVersion] withKey:BICInfoPeerVersion];
+	
+	[ctrl updateInfoView];
 	
 	// Register for logs	
 	[[TCLogsController sharedController] setObserver:ctrl withSelector:@selector(logsChanged:) forKey:ctrl._address];
@@ -222,10 +260,16 @@ static NSMutableArray *_windows = nil;
 	[[NSNotificationCenter defaultCenter] addObserver:ctrl selector:@selector(buddyAvatarChanged:) name:TCCocoaBuddyChangedAvatarNotification object:buddy];
 	[[NSNotificationCenter defaultCenter] addObserver:ctrl selector:@selector(buddyNameChanged:) name:TCCocoaBuddyChangedNameNotification object:buddy];
 	[[NSNotificationCenter defaultCenter] addObserver:ctrl selector:@selector(buddyTextChanged:) name:TCCocoaBuddyChangedTextNotification object:buddy];
-
+	[[NSNotificationCenter defaultCenter] addObserver:ctrl selector:@selector(buddyStatusChanged:) name:TCCocoaBuddyChangedStatusNotification object:buddy];
 	
+	[[NSNotificationCenter defaultCenter] addObserver:ctrl selector:@selector(buddyClientChanged:) name:TCCocoaBuddyChangedPeerClientNotification object:buddy];
+	[[NSNotificationCenter defaultCenter] addObserver:ctrl selector:@selector(buddyVersionChanged:) name:TCCocoaBuddyChangedPeerVersionNotification object:buddy];
+
 	// Show the window
 	[ctrl showWindow:nil];
+	
+	// Set the avatar drag name
+	[ctrl->avatarView setFilename:address];
 }
 
 + (void)removingBuddy:(TCCocoaBuddy *)buddy
@@ -321,6 +365,74 @@ static NSMutableArray *_windows = nil;
 	}
 }
 
+- (void)setInfo:(NSString *)info withKey:(NSString *)key
+{
+	if ([key length] == 0)
+		return;
+
+	if ([info length] == 0)
+	{
+		[_infos removeObjectForKey:key];
+		return;
+	}
+	
+	[_infos setValue:info forKey:key];
+}
+
+- (void)updateInfoView
+{
+	TCKeyedText	*keyed = [[TCKeyedText alloc] initWithKeySize:100.0];
+	NSString	*value;
+
+	// Add profile name
+	value = [_infos objectForKey:BICInfoProfileName];
+	if (value)
+		[keyed addLineWithKey:NSLocalizedString(@"bdi_profile_name", @"") andContent:value];
+	
+	// Add peer client
+	value = [_infos objectForKey:BICInfoPeerClient];
+	if (value)
+		[keyed addLineWithKey:NSLocalizedString(@"bdi_peer_client", @"") andContent:value];
+	
+	// Add peer version
+	value = [_infos objectForKey:BICInfoPeerVersion];
+	if (value)
+		[keyed addLineWithKey:NSLocalizedString(@"bdi_peer_version", @"") andContent:value];
+	
+	// Add profile text
+	value = [_infos objectForKey:BICInfoProfileText];
+	if (value)
+		[keyed addLineWithKey:NSLocalizedString(@"bdi_profile_text", @"") andContent:value];
+
+	// Show table
+	[[infoView textStorage] setAttributedString:[keyed renderedText]];
+	
+	// Release
+	[keyed release];
+}
+	 
+- (void)updateStatus:(tcbuddy_status)status
+{
+	switch (status)
+	{
+		case tcbuddy_status_available:
+			[statusView setImage:[NSImage imageNamed:@"stat_online"]];
+			break;
+			
+		case tcbuddy_status_away:
+			[statusView setImage:[NSImage imageNamed:@"stat_away"]];
+			break;
+			
+		case tcbuddy_status_offline:
+			[statusView setImage:[NSImage imageNamed:@"stat_offline"]];
+			break;
+			
+		case tcbuddy_status_xa:
+			[statusView setImage:[NSImage imageNamed:@"stat_xa"]];
+			break;
+	}
+}
+
 
 
 /*
@@ -365,7 +477,10 @@ static NSMutableArray *_windows = nil;
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		[profileNameField setStringValue:name];
+		[self setInfo:name withKey:BICInfoProfileName];
+		[self updateInfoView];
+		
+		[[aliasField cell] setPlaceholderString:name];
 	});
 }
 
@@ -375,7 +490,42 @@ static NSMutableArray *_windows = nil;
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		[profileTextField setStringValue:text];
+		[self setInfo:text withKey:BICInfoProfileText];
+		[self updateInfoView];
+	});
+}
+
+- (void)buddyStatusChanged:(NSNotification *)notice
+{
+	NSNumber		*status = [[notice userInfo] objectForKey:@"status"];
+	tcbuddy_status	istatus = (tcbuddy_status)[status intValue];
+	
+	// Build notification info
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		[self updateStatus:istatus];
+	});
+}
+
+- (void)buddyClientChanged:(NSNotification *)notice
+{
+	NSString *client = [[notice userInfo] objectForKey:@"client"];
+	
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		[self setInfo:client withKey:BICInfoPeerClient];
+		[self updateInfoView];
+	});
+}
+
+- (void)buddyVersionChanged:(NSNotification *)notice
+{
+	NSString *version = [[notice userInfo] objectForKey:@"version"];
+	
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		[self setInfo:version withKey:BICInfoPeerVersion];
+		[self updateInfoView];
 	});
 }
 

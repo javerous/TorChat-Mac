@@ -104,21 +104,41 @@
 	NSString	*pname = [content objectForKey:TCBuddyCellProfileNameKey];
 	NSString	*address = [content objectForKey:TCBuddyCellAddressKey];
 	NSColor		*txtColor = nil;
+	NSString	*sel;
+	float		dy = 3.0;
 		
 	// -- Draw name --
-	if ([self isHighlighted])
-		txtColor = [NSColor whiteColor];
+	if ([alias length] > 0)
+		sel = alias;
 	else
-		txtColor = [NSColor blackColor];
+		sel = pname;
 	
-	
-	
-	NSDictionary	*nmAttribute = [NSDictionary dictionaryWithObjectsAndKeys:	[NSFont systemFontOfSize:12],	NSFontAttributeName,
-																				txtColor,						NSForegroundColorAttributeName,
-																				nil];
-	
-	[alias drawAtPoint:NSMakePoint(cellFrame.origin.x + 2, cellFrame.origin.y + 3) withAttributes:nmAttribute];
+	if ([sel length] > 0)
+	{
+		if ([self isHighlighted])
+			txtColor = [NSColor whiteColor];
+		else
+			txtColor = [NSColor blackColor];
+		
+		NSRect					r;
+		NSMutableParagraphStyle	*paragraphStyle = [[NSMutableParagraphStyle alloc] init];		
+		NSDictionary			*nmAttribute = [NSDictionary dictionaryWithObjectsAndKeys:	[NSFont systemFontOfSize:12],	NSFontAttributeName,
+																							txtColor,						NSForegroundColorAttributeName,
+																							paragraphStyle,					NSParagraphStyleAttributeName,
+																							nil];
 
+		[paragraphStyle setLineBreakMode:NSLineBreakByTruncatingTail];
+		
+		r = NSMakeRect(cellFrame.origin.x + 2, cellFrame.origin.y + dy, cellFrame.size.width - 4, cellFrame.size.height);
+
+		[sel drawInRect:r withAttributes:nmAttribute];
+		
+		[paragraphStyle release];
+		
+		dy += 19.0;
+	}
+	else
+		dy += 9.0;
 	
 	// -- Draw address --
 	if ([self isHighlighted])
@@ -126,17 +146,11 @@
 	else
 		txtColor = [NSColor grayColor];
 	
-	NSString		*sub;
 	NSDictionary	*stAttribute = [NSDictionary dictionaryWithObjectsAndKeys:	[NSFont fontWithName:@"Arial" size:11],	NSFontAttributeName,
 																				txtColor,								NSForegroundColorAttributeName,
 																				nil];
 	
-	if ([pname length] > 0)
-		sub = [NSString stringWithFormat:@"%@ (\"%@\")", address, pname];
-	else
-		sub = address;
-	
-	[sub drawAtPoint:NSMakePoint(cellFrame.origin.x + 2, cellFrame.origin.y + 19) withAttributes:stAttribute];
+	[address drawAtPoint:NSMakePoint(cellFrame.origin.x + 2, cellFrame.origin.y + dy) withAttributes:stAttribute];
 }
 
 @end

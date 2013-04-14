@@ -1,5 +1,5 @@
 /*
- *  TCChatPage.h
+ *  TCDragImageView.h
  *
  *  Copyright 2011 Avérous Julien-Pierre
  *
@@ -22,21 +22,15 @@
 
 
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 
-
-/*
-** TCChatPage
-*/
-#pragma mark -
-#pragma mark TCChatPage
-
-// == Class ==
-@interface TCChatPage : NSView
+@interface TCDragImageView : NSImageView
 {
 @private
-    
+    NSString *_filename;
 }
+
+- (void)setFilename:(NSString *)filename;
 
 @end

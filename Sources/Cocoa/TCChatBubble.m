@@ -149,64 +149,71 @@
 	
 
 	// Alloc bubble image part
-	if (style == tcbubble_blue)
+	switch (style)
 	{
-		if (!initBlue)
+		case tcbubble_blue:
 		{
-			b_tl = [[NSImage imageNamed: @"chat_bluebubble_topleft.png"] retain];
-			b_tr = [[NSImage imageNamed: @"chat_bluebubble_topright.png"] retain];
-			b_bl = [[NSImage imageNamed: @"chat_bluebubble_bottomleft.png"] retain];
-			b_br = [[NSImage imageNamed: @"chat_bluebubble_bottomright.png"] retain];
-			b_mi = [[NSImage imageNamed: @"chat_bluebubble_middle.png"] retain];
-			b_tm = [[NSImage imageNamed: @"chat_bluebubble_topmiddle.png"] retain];
-			b_bm = [[NSImage imageNamed: @"chat_bluebubble_bottommiddle.png"] retain];
-			b_le = [[NSImage imageNamed: @"chat_bluebubble_left.png"] retain];
-			b_ri = [[NSImage imageNamed: @"chat_bluebubble_right.png"] retain];
+			if (!initBlue)
+			{
+				b_tl = [[NSImage imageNamed: @"chat_bluebubble_topleft.png"] retain];
+				b_tr = [[NSImage imageNamed: @"chat_bluebubble_topright.png"] retain];
+				b_bl = [[NSImage imageNamed: @"chat_bluebubble_bottomleft.png"] retain];
+				b_br = [[NSImage imageNamed: @"chat_bluebubble_bottomright.png"] retain];
+				b_mi = [[NSImage imageNamed: @"chat_bluebubble_middle.png"] retain];
+				b_tm = [[NSImage imageNamed: @"chat_bluebubble_topmiddle.png"] retain];
+				b_bm = [[NSImage imageNamed: @"chat_bluebubble_bottommiddle.png"] retain];
+				b_le = [[NSImage imageNamed: @"chat_bluebubble_left.png"] retain];
+				b_ri = [[NSImage imageNamed: @"chat_bluebubble_right.png"] retain];
+				
+				initBlue = YES;
+			}
 			
-			initBlue = YES;
+			bl = b_bl;
+			bm = b_bm;
+			br = b_br;
+			
+			le = b_le;
+			mi = b_mi;
+			ri = b_ri;
+			
+			tl = b_tl;
+			tm = b_tm;
+			tr = b_tr;
+			
+			break;
 		}
-		
-		bl = b_bl;
-		bm = b_bm;
-		br = b_br;
-		
-		le = b_le;
-		mi = b_mi;
-		ri = b_ri;
-		
-		tl = b_tl;
-		tm = b_tm;
-		tr = b_tr;
-		
-	}
-	else if (style == tcbubble_gray)
-	{
-		if (!initGray)
+			
+		case tcbubble_gray:
 		{
-			g_tl = [[NSImage imageNamed: @"chat_graybubble_topleft.png"] retain];
-			g_tr = [[NSImage imageNamed: @"chat_graybubble_topright.png"] retain];
-			g_bl = [[NSImage imageNamed: @"chat_graybubble_bottomleft.png"] retain];
-			g_br = [[NSImage imageNamed: @"chat_graybubble_bottomright.png"] retain];
-			g_mi = [[NSImage imageNamed: @"chat_graybubble_middle.png"] retain];
-			g_tm = [[NSImage imageNamed: @"chat_graybubble_topmiddle.png"] retain];
-			g_bm = [[NSImage imageNamed: @"chat_graybubble_bottommiddle.png"] retain];
-			g_le = [[NSImage imageNamed: @"chat_graybubble_left.png"] retain];
-			g_ri = [[NSImage imageNamed: @"chat_graybubble_right.png"] retain];
+			if (!initGray)
+			{
+				g_tl = [[NSImage imageNamed: @"chat_graybubble_topleft.png"] retain];
+				g_tr = [[NSImage imageNamed: @"chat_graybubble_topright.png"] retain];
+				g_bl = [[NSImage imageNamed: @"chat_graybubble_bottomleft.png"] retain];
+				g_br = [[NSImage imageNamed: @"chat_graybubble_bottomright.png"] retain];
+				g_mi = [[NSImage imageNamed: @"chat_graybubble_middle.png"] retain];
+				g_tm = [[NSImage imageNamed: @"chat_graybubble_topmiddle.png"] retain];
+				g_bm = [[NSImage imageNamed: @"chat_graybubble_bottommiddle.png"] retain];
+				g_le = [[NSImage imageNamed: @"chat_graybubble_left.png"] retain];
+				g_ri = [[NSImage imageNamed: @"chat_graybubble_right.png"] retain];
+				
+				initGray = YES;
+			}
 			
-			initGray = YES;
+			bl = g_bl;
+			bm = g_bm;
+			br = g_br;
+			
+			le = g_le;
+			mi = g_mi;
+			ri = g_ri;
+			
+			tl = g_tl;
+			tm = g_tm;
+			tr = g_tr;
+			
+			break;
 		}
-		
-		bl = g_bl;
-		bm = g_bm;
-		br = g_br;
-		
-		le = g_le;
-		mi = g_mi;
-		ri = g_ri;
-		
-		tl = g_tl;
-		tm = g_tm;
-		tr = g_tr;
 	}
 	
 	// Obtain size

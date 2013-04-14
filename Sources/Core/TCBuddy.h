@@ -86,6 +86,8 @@ typedef enum
 	tcbuddy_notify_message,
 	tcbuddy_notify_alias,
 	tcbuddy_notify_notes,
+	tcbuddy_notify_version,
+	tcbuddy_notify_client,
 		
 	tcbuddy_notify_file_send_start,
 	tcbuddy_notify_file_send_running,
@@ -220,6 +222,7 @@ private:
 	virtual void	doStatus(const std::string &status);
 	virtual void	doMessage(const std::string &message);
 	virtual void	doVersion(const std::string &version);
+	virtual void	doClient(const std::string &client);
 	virtual void	doProfileText(const std::string &text);
 	virtual void	doProfileName(const std::string &name);
 	virtual void	doProfileAvatar(const std::string &bitmap);
@@ -239,6 +242,7 @@ private:
 	void			_sendPing();
 	void            _sendPong(TCString *random);
 	void			_sendVersion();
+	void			_sendClient();
 	void			_sendProfileName(TCString *name);
 	void			_sendProfileText(TCString *text);
 	void			_sendAvatar(TCImage *avatar);
@@ -295,7 +299,7 @@ private:
 	TCString *					maddress;
 	TCString *					mnotes;
 	TCString *					mrandom;
-	
+		
 	tcbuddy_status				mstatus;
 	tccontroller_status			cstatus;
 
@@ -317,6 +321,11 @@ private:
 	TCString					*profileName;
 	TCString					*profileText;
 	TCImage						*profileAvatar;
+	
+	// > Peer
+	TCString *					peerClient;
+	TCString *					peerVersion;
+
 	
 	// > File session
 	std::map<std::string, TCFileReceive *>	freceive;

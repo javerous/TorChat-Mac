@@ -27,6 +27,7 @@
 #include "TCImage.h"
 
 
+
 @implementation NSImage (TCImageExtension)
 
 - (id)initWithTCImage:(TCImage *)image
@@ -94,7 +95,7 @@
 	
 	if (!full)
 		return NULL;
-	
+		
 	// Build an empty bitmap image
 	imageRep = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:planes
 													   pixelsWide:64
@@ -107,6 +108,7 @@
 													 bitmapFormat:0
 													  bytesPerRow:(64 * 4)
 													 bitsPerPixel:32];
+	
 	
 	if (!imageRep)
 		return NULL;

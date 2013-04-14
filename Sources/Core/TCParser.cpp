@@ -88,6 +88,11 @@ void TCParser::doVersion(const std::string &version)
 	_parserError(tcrec_cmd_version, "Version: Not handled");
 }
 
+void TCParser::doClient(const std::string &client)
+{
+	_parserError(tcrec_cmd_client, "Client: Not handled");
+}
+
 void TCParser::doProfileText(const std::string &text)
 {
 	_parserError(tcrec_cmd_profile_text, "Profile Text: Not handled");
@@ -187,6 +192,8 @@ void TCParser::_parseCommand(std::vector<std::string> &items)
         _parseStatus(items);
     else if (command.compare("version") == 0)
         _parseVersion(items);
+	else if (command.compare("client") == 0)
+        _parseClient(items);
 	else if (command.compare("profile_name") == 0)
         _parseProfileName(items);
 	else if (command.compare("profile_text") == 0)
@@ -214,7 +221,13 @@ void TCParser::_parseCommand(std::vector<std::string> &items)
 	else if (command.compare("file_stop_receiving") == 0)
         _parseFileStopReceiving(items);
     else
-		_parserError(tcrec_unknown_command, "Unknown command");
+	{
+		char buffer[1024];
+		
+		snprintf(buffer, sizeof(buffer), "Unknown command '%s'", command.c_str());
+		
+		_parserError(tcrec_unknown_command, buffer);
+	}
 }
 
 void TCParser::_parsePing(const std::vector<std::string> &args)
@@ -261,16 +274,25 @@ void TCParser::_parseVersion(const std::vector<std::string> &args)
 	doVersion(args[0]);
 }
 
-void TCParser::_parseProfileText(const std::vector<std::string> &args)
+void TCParser::_parseClient(const std::vector<std::string> &args)
 {
 	if (args.size() == 0)
     {
-		_parserError(tcrec_cmd_profile_text, "Empty profile text");
+		_parserError(tcrec_cmd_version, "Empty client argument");
         return;
 	}
 	
 	std::string *text = createJoin(args, " ");
 	
+	doClient(*text);
+	
+	delete text;
+}
+
+void TCParser::_parseProfileText(const std::vector<std::string> &args)
+{
+	std::string *text = createJoin(args, " ");
+
 	doProfileText(*text);
 	
 	delete text;
@@ -278,12 +300,6 @@ void TCParser::_parseProfileText(const std::vector<std::string> &args)
 
 void TCParser::_parseProfileName(const std::vector<std::string> &args)
 {
-	if (args.size() == 0)
-    {
-		_parserError(tcrec_cmd_profile_name, "Empty profile name");
-        return;
-	}
-	
 	std::string *name = createJoin(args, " ");
 	
 	doProfileName(*name);
@@ -293,12 +309,6 @@ void TCParser::_parseProfileName(const std::vector<std::string> &args)
 
 void TCParser::_parseProfileAvatar(const std::vector<std::string> &args)
 {
-	if (args.size() == 0)
-    {
-		_parserError(tcrec_cmd_profile_avatar, "Empty avatar content");
-        return;
-	}
-	
 	std::string *bitmap = createJoin(args, " ");
 	
 	doProfileAvatar(*bitmap);
@@ -308,12 +318,6 @@ void TCParser::_parseProfileAvatar(const std::vector<std::string> &args)
 
 void TCParser::_parseProfileAvatarAlpha(const std::vector<std::string> &args)
 {
-	if (args.size() == 0)
-    {
-		_parserError(tcrec_cmd_profile_avatar_alpha, "Empty avatar alpha content");
-        return;
-	}
-	
 	std::string *bitmap = createJoin(args, " ");
 	
 	doProfileAvatarAlpha(*bitmap);
