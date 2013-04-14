@@ -1,7 +1,7 @@
 /*
  *  TCCocoaConfig.mm
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -44,7 +44,13 @@
 
 #define TCCONF_KEY_MODE				@"mode"
 
+#define TCCONF_KEY_PROFILE_NAME		@"profile_name"
+#define TCCONF_KEY_PROFILE_TEXT		@"profile_text"
+#define TCCONF_KEY_PROFILE_AVATAR	@"profile_avatar"
+
 #define TCCONF_KEY_BUDDIES			@"buddies"
+
+#define TCCONF_KEY_UI_TITLE			@"title"
 
 
 
@@ -99,9 +105,9 @@ TCCocoaConfig::TCCocoaConfig(NSString *filepath)
 	for (NSDictionary *buddy in buddies)
 	{
 		NSMutableDictionary *nbuddy = [[NSMutableDictionary alloc] initWithDictionary:buddy];
-		NSString			*name = [nbuddy objectForKey:@TCConfigBuddyName];
+		NSString			*alias = [nbuddy objectForKey:@TCConfigBuddyAlias];
 		NSString			*address = [nbuddy objectForKey:@TCConfigBuddyAddress];
-		NSString			*comment = [nbuddy objectForKey:@TCConfigBuddyComment];
+		NSString			*notes = [nbuddy objectForKey:@TCConfigBuddyNotes];
 		
 		// Add it to NSMutableArray cache
 		[nbuddies addObject:nbuddy];
@@ -109,9 +115,9 @@ TCCocoaConfig::TCCocoaConfig(NSString *filepath)
 		// Add it to tc_array cache
 		tc_dictionary entry;
 		
-		entry[TCConfigBuddyName] = (name ? [name UTF8String] : "-");
+		entry[TCConfigBuddyAlias] = (alias ? [alias UTF8String] : "-");
 		entry[TCConfigBuddyAddress] = (address ? [address UTF8String] : "-");
-		entry[TCConfigBuddyComment] = (comment ? [comment UTF8String] : "-");
+		entry[TCConfigBuddyNotes] = (notes ? [notes UTF8String] : "-");
 		
 		_bcache.push_back(entry);
 		
@@ -340,6 +346,125 @@ void TCCocoaConfig::set_mode(tc_config_mode mode)
 
 
 /*
+** TCCocoaConfig - Profile
+*/
+#pragma mark -
+#pragma mark TCCocoaConfig - Profile
+
+std::string TCCocoaConfig::get_profile_name()
+{
+	NSString	*value = [fcontent objectForKey:TCCONF_KEY_PROFILE_NAME];
+	const char	*c_value = [value UTF8String];
+	
+	if (c_value)
+		return c_value;
+	else
+		return "-";
+}
+
+void TCCocoaConfig::set_profile_name(const std::string & name)
+{
+	NSString *value = [NSString stringWithUTF8String:name.c_str()];
+	
+	if (value)
+	{
+		[fcontent setObject:value forKey:TCCONF_KEY_PROFILE_NAME];
+		
+		_writeToFile();
+	}
+}
+
+std::string TCCocoaConfig::get_profile_text()
+{
+	NSString	*value = [fcontent objectForKey:TCCONF_KEY_PROFILE_TEXT];
+	const char	*c_value = [value UTF8String];
+	
+	if (c_value)
+		return c_value;
+	else
+		return "";
+}
+
+void TCCocoaConfig::set_profile_text(const std::string & text)
+{
+	NSString *value = [NSString stringWithUTF8String:text.c_str()];
+	
+	if (value)
+	{
+		[fcontent setObject:value forKey:TCCONF_KEY_PROFILE_TEXT];
+		
+		_writeToFile();
+	}
+}
+
+TCImage * TCCocoaConfig::get_profile_avatar()
+{
+	NSDictionary	*avatar = [fcontent objectForKey:TCCONF_KEY_PROFILE_AVATAR];
+	NSNumber		*width = [avatar objectForKey:@"width"];
+	NSNumber		*height = [avatar objectForKey:@"width"];
+	NSData			*bitmap = [avatar objectForKey:@"bitmap"];
+	NSData			*bitmapAlpha = [avatar objectForKey:@"bitmap_alpha"];
+	TCImage			*image;
+	
+	if ([width unsignedIntValue] == 0 || [height unsignedIntValue] == 0)
+		return NULL;
+	
+	// Build TorChat core image
+	image = new TCImage([width unsignedIntValue], [height unsignedIntValue]);
+	
+	image->setBitmap([bitmap bytes], [bitmap length]);
+	image->setAlphaBitmap([bitmapAlpha bytes], [bitmapAlpha length]);
+	
+	return image;
+}
+
+void TCCocoaConfig::set_profile_avatar(const TCImage & picture)
+{
+	if (picture.getWidth() == 0 || picture.getHeight() == 0 || picture.getBitmap() == NULL)
+	{
+		[fcontent removeObjectForKey:TCCONF_KEY_PROFILE_AVATAR];
+		_writeToFile();
+		
+		return;
+	}
+	
+	NSMutableDictionary *avatar = [[NSMutableDictionary alloc] initWithCapacity:4];
+	NSNumber			*width = [[NSNumber alloc] initWithUnsignedInt:picture.getWidth()];
+	NSNumber			*height = [[NSNumber alloc] initWithUnsignedInt:picture.getHeight()];
+	NSData				*bitmap = nil;
+	NSData				*bitmapAlpha = nil;
+	
+	[avatar setObject:width forKey:@"width"];
+	[avatar setObject:height forKey:@"height"];
+	
+	if (picture.getBitmap())
+	{
+		bitmap = [[NSData alloc] initWithBytesNoCopy:(void *)picture.getBitmap() length:picture.getBitmapSize() freeWhenDone:NO];
+				
+		[avatar setObject:bitmap forKey:@"bitmap"];
+	}
+	
+	if (picture.getBitmapAlpha())
+	{
+		bitmapAlpha = [[NSData alloc] initWithBytesNoCopy:(void *)picture.getBitmapAlpha() length:picture.getBitmapAlphaSize() freeWhenDone:NO];
+		
+		[avatar setObject:bitmapAlpha forKey:@"bitmap_alpha"];
+	}
+	
+	[fcontent setObject:avatar forKey:TCCONF_KEY_PROFILE_AVATAR];
+	
+	[avatar release];
+	[width release];
+	[height release];
+	[bitmap release];
+	[bitmapAlpha release];
+
+	_writeToFile();
+}
+
+
+
+/*
 ** TCCocoaConfig - Buddies
 */
 #pragma mark -
@@ -350,17 +475,17 @@ const tc_array & TCCocoaConfig::buddies()
 	return _bcache;
 }
 
-void TCCocoaConfig::add_buddy(const std::string &address, const std::string &name, const std::string &comment)
+void TCCocoaConfig::add_buddy(const std::string &address, const std::string &alias, const std::string &notes)
 {
 	// Build cocoa version
 	NSString			*oaddress = [NSString stringWithUTF8String:address.c_str()];
-	NSString			*oname = [NSString stringWithUTF8String:name.c_str()];
-	NSString			*ocomment = [NSString stringWithUTF8String:comment.c_str()];
+	NSString			*oalias = [NSString stringWithUTF8String:alias.c_str()];
+	NSString			*onotes = [NSString stringWithUTF8String:notes.c_str()];
 	NSMutableDictionary	*obuddy = [[NSMutableDictionary alloc] init];
 	
-	[obuddy setObject:oname forKey:@TCConfigBuddyName];
+	[obuddy setObject:oalias forKey:@TCConfigBuddyAlias];
 	[obuddy setObject:oaddress forKey:@TCConfigBuddyAddress];
-	[obuddy setObject:ocomment forKey:@TCConfigBuddyComment];
+	[obuddy setObject:onotes forKey:@TCConfigBuddyNotes];
 	
 	[[fcontent objectForKey:TCCONF_KEY_BUDDIES] addObject:obuddy];
 	
@@ -368,9 +493,9 @@ void TCCocoaConfig::add_buddy(const std::string &address, const std::string &nam
 	// Buil C++ version
 	tc_dictionary entry;
 	
-	entry[TCConfigBuddyName] = name;
+	entry[TCConfigBuddyAlias] = alias;
 	entry[TCConfigBuddyAddress] = address;
-	entry[TCConfigBuddyComment] = comment;
+	entry[TCConfigBuddyNotes] = notes;
 	
 	_bcache.push_back(entry);
 	
@@ -425,7 +550,7 @@ bool TCCocoaConfig::remove_buddy(const std::string &address)
 	return oc_found && cpp_found;
 }
 
-void TCCocoaConfig::set_buddy_name(const std::string &address, const std::string &name)
+void TCCocoaConfig::set_buddy_alias(const std::string &address, const std::string &alias)
 {
 	// Change from Cocoa version
 	NSMutableArray	*array = [fcontent objectForKey:TCCONF_KEY_BUDDIES];
@@ -438,7 +563,7 @@ void TCCocoaConfig::set_buddy_name(const std::string &address, const std::string
 		
 		if ([[buddy objectForKey:@TCConfigBuddyAddress] isEqualToString:oaddress])
 		{
-			[buddy setObject:[NSString stringWithUTF8String:name.c_str()] forKey:@TCConfigBuddyName];
+			[buddy setObject:[NSString stringWithUTF8String:alias.c_str()] forKey:@TCConfigBuddyAlias];
 			break;
 		}
 	}
@@ -453,17 +578,16 @@ void TCCocoaConfig::set_buddy_name(const std::string &address, const std::string
 		
 		if (buddy[TCConfigBuddyAddress].compare(address) == 0)
 		{
-			buddy[TCConfigBuddyName] = name;
+			buddy[TCConfigBuddyAlias] = alias;
 			break;
 		}
 	}
-	
 	
 	// Write
 	_writeToFile();
 }
 
-void TCCocoaConfig::set_buddy_comment(const std::string &address, const std::string &comment)
+void TCCocoaConfig::set_buddy_notes(const std::string &address, const std::string &notes)
 {
 	// Change from Cocoa version
 	NSMutableArray	*array = [fcontent objectForKey:TCCONF_KEY_BUDDIES];
@@ -476,7 +600,7 @@ void TCCocoaConfig::set_buddy_comment(const std::string &address, const std::str
 		
 		if ([[buddy objectForKey:@TCConfigBuddyAddress] isEqualToString:oaddress])
 		{
-			[buddy setObject:[NSString stringWithUTF8String:comment.c_str()] forKey:@TCConfigBuddyComment];
+			[buddy setObject:[NSString stringWithUTF8String:notes.c_str()] forKey:@TCConfigBuddyNotes];
 			break;
 		}
 	}
@@ -491,17 +615,16 @@ void TCCocoaConfig::set_buddy_comment(const std::string &address, const std::str
 		
 		if (buddy[TCConfigBuddyAddress].compare(address) == 0)
 		{
-			buddy[TCConfigBuddyComment] = comment;
+			buddy[TCConfigBuddyNotes] = notes;
 			break;
 		}
 	}
-	
 	
 	// Write
 	_writeToFile();
 }
 
-std::string TCCocoaConfig::get_buddy_name(const std::string &address) const
+std::string TCCocoaConfig::get_buddy_alias(const std::string &address) const
 {
 	size_t i, cnt = _bcache.size();
 
@@ -510,13 +633,13 @@ std::string TCCocoaConfig::get_buddy_name(const std::string &address) const
 		const tc_dictionary &buddy = _bcache.at(i);
 		
 		if (buddy.at(TCConfigBuddyAddress).compare(address) == 0)
-			return buddy.at(TCConfigBuddyName);
+			return buddy.at(TCConfigBuddyAlias);
 	}
 
 	return "";
 }
 
-std::string TCCocoaConfig::get_buddy_comment(const std::string &address) const
+std::string TCCocoaConfig::get_buddy_notes(const std::string &address) const
 {
 	size_t i, cnt = _bcache.size();
 	
@@ -525,7 +648,7 @@ std::string TCCocoaConfig::get_buddy_comment(const std::string &address) const
 		const tc_dictionary &buddy = _bcache.at(i);
 		
 		if (buddy.at(TCConfigBuddyAddress).compare(address) == 0)
-			return buddy.at(TCConfigBuddyComment);
+			return buddy.at(TCConfigBuddyNotes);
 	}
 	
 	return "";
@@ -605,6 +728,33 @@ bail:
 
 
 /*
+** TCCocoaConfig - UI
+*/
+#pragma mark -
+#pragma mark TCCocoaConfig - UI
+
+tc_config_title TCCocoaConfig::get_mode_title() const
+{
+	NSNumber *value = [fcontent objectForKey:TCCONF_KEY_UI_TITLE];
+	
+	if (!value)
+		return tc_config_title_address;
+	
+	return (tc_config_title)[value unsignedShortValue];
+}
+
+void TCCocoaConfig::set_mode_title(tc_config_title mode)
+{
+	NSNumber *value = [NSNumber numberWithUnsignedShort:mode];
+	
+	[fcontent setObject:value forKey:TCCONF_KEY_UI_TITLE];
+	
+	_writeToFile();
+}
+
+
+
+/*
 ** TCCocoaConfig - Private
 */
 #pragma mark -
@@ -617,3 +767,4 @@ void TCCocoaConfig::_writeToFile()
 	if (data)
 		[data writeToFile:fpath atomically:YES];
 }
+

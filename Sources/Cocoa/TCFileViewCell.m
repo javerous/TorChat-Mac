@@ -1,7 +1,7 @@
 /*
  *  TCFileViewCell.m
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -276,7 +276,7 @@ NSString *NSStringFromFileSize(uint64_t size);
 	NSString		*uuid = [file objectForKey:TCFileUUIDKey];
 	NSImage			*icon = [file objectForKey:TCFileIconKey];
 	NSString		*path = [file objectForKey:TCFileFilePathKey];
-	NSString		*bname = [file objectForKey:TCFileBuddyNameKey];
+	NSString		*balias = [file objectForKey:TCFileBuddyAliasKey];
 	NSString		*baddress = [file objectForKey:TCFileBuddyAddressKey];
 	NSString		*txtStatus = [file objectForKey:TCFileStatusTextKey];
 	tcfile_status	status = (tcfile_status)[[file objectForKey:TCFileStatusKey] intValue];
@@ -365,7 +365,7 @@ NSString *NSStringFromFileSize(uint64_t size);
 	else
 		deltay = 29;
 	
-	[[NSString stringWithFormat:@"%@ %@ (%@) - %@ %@ %@", wayTxt, bname, baddress, NSStringFromFileSize(fsize_comp), NSLocalizedString(@"file_progress_of", @""), NSStringFromFileSize(fsize)] drawAtPoint:NSMakePoint(cellFrame.origin.x + 60, cellFrame.origin.y + deltay) withAttributes:tnAttribute];
+	[[NSString stringWithFormat:@"%@ %@ (%@) - %@ %@ %@", wayTxt, balias, baddress, NSStringFromFileSize(fsize_comp), NSLocalizedString(@"file_progress_of", @""), NSStringFromFileSize(fsize)] drawAtPoint:NSMakePoint(cellFrame.origin.x + 60, cellFrame.origin.y + deltay) withAttributes:tnAttribute];
 	
 	
 	// -- Manage Status --	

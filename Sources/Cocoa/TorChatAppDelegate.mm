@@ -1,7 +1,7 @@
 /*
  *  TorChatAppDelegate.mm
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -136,6 +136,11 @@
 - (IBAction)doBuddySendFile:(id)sender
 {
 	[[TCBuddiesController sharedController] doSendFile:sender];
+}
+
+- (IBAction)doEditProfile:(id)sender
+{
+	[[TCBuddiesController sharedController] doEditProfile:sender];
 }
 
 - (void)buddySelectChanged:(NSNotification *)notice

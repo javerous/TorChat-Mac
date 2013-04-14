@@ -1,5 +1,5 @@
 /*
- *  TCStringExtension.h
+ *  TCImageExtension.h
  *
  *  Copyright 2011 Avérous Julien-Pierre
  *
@@ -22,31 +22,29 @@
 
 
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 
 /*
-** NSString - TCStringExtension
+** Forward
 */
 #pragma mark -
-#pragma mark NSString - TCStringExtension
+#pragma mark Forward
 
-@interface NSString (TCStringExtension)
-
-- (float)heightForDrawingWithFont:(NSFont *)font andWidth:(float)width;
-
-@end
+class TCImage;
 
 
 
 /*
-** NSAttributedString - TCStringExtension
+** NSImage - TCImageExtension
 */
 #pragma mark -
-#pragma mark NSAttributedString - TCStringExtension
+#pragma mark TCImageExtension
 
-@interface NSAttributedString (TCStringExtension)
+@interface NSImage (TCImageExtension)
 
-- (float)heightForDrawingWithWidth:(float)width;
+- (id)initWithTCImage:(TCImage *)image;
+
+- (TCImage *)createTCImage;
 
 @end

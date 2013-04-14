@@ -1,7 +1,7 @@
 /*
  *  TCBuddyInfoController.h
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -24,6 +24,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+
+
 @class TCCocoaBuddy;
 
 @interface TCBuddyInfoController : NSWindowController <NSWindowDelegate>
@@ -31,9 +33,13 @@
 	IBOutlet NSSegmentedControl	*toolBar;
 	IBOutlet NSTabView			*views;
 	
+	IBOutlet NSImageView		*avatarView;
 	IBOutlet NSTextField		*addressField;
-	IBOutlet NSTextField		*nameField;
-	IBOutlet NSTextView			*commentField;
+	IBOutlet NSTextField		*aliasField;
+	IBOutlet NSTextField		*profileNameField;
+	IBOutlet NSTextField		*profileTextField;
+	
+	IBOutlet NSTextView			*notesField;
 	
 	IBOutlet NSTableView		*logTable;
 	

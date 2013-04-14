@@ -1,7 +1,7 @@
 /*
  *  TCBuddyInfoController.mm
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -110,8 +110,8 @@ static NSMutableArray *_windows = nil;
 	[views setDelegate:nil];
 	
 	[addressField setDelegate:nil];
-	[nameField setDelegate:nil];
-	[commentField setDelegate:nil];
+	[aliasField setDelegate:nil];
+	[notesField setDelegate:nil];
 	
     [super dealloc];
 }
@@ -208,12 +208,21 @@ static NSMutableArray *_windows = nil;
 	// Show value
 	ctrl._address = address;
 	
+	[ctrl->avatarView setImage:[buddy profileAvatar]];
 	[ctrl->addressField setStringValue:ctrl._address];
-	[ctrl->nameField setStringValue:[buddy name]];
-	[[[ctrl->commentField textStorage] mutableString] setString:[buddy comment]];
+	[ctrl->profileNameField setStringValue:[buddy profileName]];
+	[ctrl->profileTextField setStringValue:[buddy profileText]];
+	[ctrl->aliasField setStringValue:[buddy alias]];
+	[[[ctrl->notesField textStorage] mutableString] setString:[buddy notes]];
 	
 	// Register for logs	
 	[[TCLogsController sharedController] setObserver:ctrl withSelector:@selector(logsChanged:) forKey:ctrl._address];
+	
+	// Register for buddy changes
+	[[NSNotificationCenter defaultCenter] addObserver:ctrl selector:@selector(buddyAvatarChanged:) name:TCCocoaBuddyChangedAvatarNotification object:buddy];
+	[[NSNotificationCenter defaultCenter] addObserver:ctrl selector:@selector(buddyNameChanged:) name:TCCocoaBuddyChangedNameNotification object:buddy];
+	[[NSNotificationCenter defaultCenter] addObserver:ctrl selector:@selector(buddyTextChanged:) name:TCCocoaBuddyChangedTextNotification object:buddy];
+
 	
 	// Show the window
 	[ctrl showWindow:nil];
@@ -230,6 +239,8 @@ static NSMutableArray *_windows = nil;
 		if (ctrl._buddy == buddy)
 		{			
 			[[TCLogsController sharedController] removeObserverForKey:ctrl._address];
+			
+			[[NSNotificationCenter defaultCenter] removeObserver:ctrl];
 			
 			[ctrl.window orderOut:nil];
 			[_windows removeObjectAtIndex:i];
@@ -294,9 +305,9 @@ static NSMutableArray *_windows = nil;
 {
 	id object = [aNotification object];
 	
-	if (object == nameField)
+	if (object == aliasField)
 	{
-		[_buddy setName:[nameField stringValue]];
+		[_buddy setAlias:[aliasField stringValue]];
 	}
 }
 
@@ -304,9 +315,9 @@ static NSMutableArray *_windows = nil;
 {
 	id object = [aNotification object];
 	
-	if (object == commentField)
+	if (object == notesField)
 	{
-		[_buddy setComment:[[commentField textStorage] mutableString]];
+		[_buddy setNotes:[[notesField textStorage] mutableString]];
 	}
 }
 
@@ -324,6 +335,9 @@ static NSMutableArray *_windows = nil;
 		
 		if ([content isKindOfClass:[NSString class]])
 		{
+			if ([_logs count] > 500)
+				[_logs removeObjectAtIndex:0];
+			
 			[_logs addObject:content];
 		}
 		else if ([content isKindOfClass:[NSArray class]])
@@ -332,6 +346,36 @@ static NSMutableArray *_windows = nil;
 		}
 		
 		[logTable reloadData];
+	});
+}
+
+- (void)buddyAvatarChanged:(NSNotification *)notice
+{
+	NSImage *avatar = [[notice userInfo] objectForKey:@"avatar"];
+	
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		[avatarView setImage:avatar];
+	});
+}
+
+- (void)buddyNameChanged:(NSNotification *)notice
+{
+	NSString *name = [[notice userInfo] objectForKey:@"name"];
+	
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		[profileNameField setStringValue:name];
+	});
+}
+
+- (void)buddyTextChanged:(NSNotification *)notice
+{
+	NSString *text = [[notice userInfo] objectForKey:@"text"];
+	
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		[profileTextField setStringValue:text];
 	});
 }
 

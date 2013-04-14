@@ -1,7 +1,7 @@
 /*
  *  TCBuddiesController.h
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -27,7 +27,6 @@
 #import "TCCocoaBuddy.h"
 
 
-
 /*
 ** Forward
 */
@@ -36,6 +35,8 @@
 
 class TCConfig;
 class TCController;
+
+@class TCDropButton;
 
 
 
@@ -48,6 +49,11 @@ class TCController;
 #define TCBuddiesControllerSelectChanged	@"TCBuddiesControllerSelectChanged"
 #define TCBuddiesControllerBuddyKey			@"buddy"
 
+#define TCBuddiesControllerAvatarChanged	@"TCBuddiesControllerAvatarChanged"
+#define TCBuddiesControllerNameChanged		@"TCBuddiesControllerNameChanged"
+#define TCBuddiesControllerTextChanged		@"TCBuddiesControllerTextChanged"
+
+
 
 /*
 ** TCBuddiesController
@@ -55,20 +61,25 @@ class TCController;
 #pragma mark -
 #pragma mark TCBuddiesController
 
-@interface TCBuddiesController : NSObject <TCCocoaBuddyDelegate>
+@interface TCBuddiesController : NSObject
 {
 	IBOutlet NSWindow				*mainWindow;
 	IBOutlet NSProgressIndicator	*indicator;
 	IBOutlet NSTableView			*tableView;
-	IBOutlet NSTextField			*imAddress;
-	IBOutlet NSPopUpButton			*imStatus;
+	IBOutlet NSPopUpButton			*imTitle;
 	IBOutlet NSButton				*imRemove;
-	
+	IBOutlet NSPopUpButton			*imStatus;
+	IBOutlet NSImageView			*imStatusImage;
+	IBOutlet TCDropButton			*imAvatar;
 	
 	IBOutlet NSWindow				*addWindow;
 	IBOutlet NSTextField			*addNameField;
 	IBOutlet NSTextField			*addAddressField;
-	IBOutlet NSTextView				*addCommentField;
+	IBOutlet NSTextView				*addNotesField;
+	
+	IBOutlet NSWindow				*profileWindow;
+	IBOutlet NSTextField			*profileName;
+	IBOutlet NSTextView				*profileText;
 	
 @private
     TCConfig						*config;
@@ -86,13 +97,19 @@ class TCController;
 
 // -- IBAction --
 - (IBAction)doStatus:(id)sender;
+- (IBAction)doAvatar:(id)sender;
+- (IBAction)doTitle:(id)sender;
 - (IBAction)doRemove:(id)sender;
 - (IBAction)doAdd:(id)sender;
 - (IBAction)doChat:(id)sender;
 - (IBAction)doSendFile:(id)sender;
+- (IBAction)doEditProfile:(id)sender;
 
 - (IBAction)doAddOk:(id)sender;
 - (IBAction)doAddCancel:(id)sender;
+
+- (IBAction)doProfileOk:(id)sender;
+- (IBAction)doProfileCancel:(id)sender;
 
 - (IBAction)showWindow:(id)sender;
 

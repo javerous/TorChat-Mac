@@ -1,7 +1,7 @@
 /*
  *  TCCocoaConfig.h
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -28,6 +28,7 @@
 # import <Cocoa/Cocoa.h>
 
 # include "TCConfig.h"
+
 
 
 /*
@@ -70,15 +71,28 @@ public:
 	tc_config_mode	get_mode() const;
 	void			set_mode(tc_config_mode mode);
 
+	// -- Profile --
+	std::string		get_profile_name();
+	void			set_profile_name(const std::string & name);
+	
+	std::string		get_profile_text();
+	void			set_profile_text(const std::string & text);
+	
+	TCImage *		get_profile_avatar();
+	void			set_profile_avatar(const TCImage & picture);
 	
 	// -- Buddies --
-	const tc_array &buddies();
-	void			add_buddy(const std::string &address, const std::string &name, const std::string &comment);
+	const tc_array	&buddies();
+	void			add_buddy(const std::string &address, const std::string &alias, const std::string &notes);
 	bool			remove_buddy(const std::string &address);
-	void			set_buddy_name(const std::string &address, const std::string &name);
-	void			set_buddy_comment(const std::string &address, const std::string &comment);
-	std::string		get_buddy_name(const std::string &address) const;
-	std::string		get_buddy_comment(const std::string &address) const;
+	void			set_buddy_alias(const std::string &address, const std::string &alias);
+	void			set_buddy_notes(const std::string &address, const std::string &notes);
+	std::string		get_buddy_alias(const std::string &address) const;
+	std::string		get_buddy_notes(const std::string &address) const;
+	
+	// -- UI --
+	tc_config_title	get_mode_title() const;
+	void			set_mode_title(tc_config_title mode);
 	
 	// -- Tools --
 	std::string		real_path(const std::string &path) const;

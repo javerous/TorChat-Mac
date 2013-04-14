@@ -1,7 +1,7 @@
 /*
  *  TCChatBubble.h
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
