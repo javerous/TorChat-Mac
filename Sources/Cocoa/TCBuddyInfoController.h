@@ -27,26 +27,30 @@
 
 
 @class TCCocoaBuddy;
+@class TCDragImageView;
 
 @interface TCBuddyInfoController : NSWindowController <NSWindowDelegate>
 {
 	IBOutlet NSSegmentedControl	*toolBar;
 	IBOutlet NSTabView			*views;
 	
-	IBOutlet NSImageView		*avatarView;
+	IBOutlet TCDragImageView	*avatarView;
+	IBOutlet NSImageView		*statusView;
 	IBOutlet NSTextField		*addressField;
 	IBOutlet NSTextField		*aliasField;
-	IBOutlet NSTextField		*profileNameField;
-	IBOutlet NSTextField		*profileTextField;
 	
 	IBOutlet NSTextView			*notesField;
 	
 	IBOutlet NSTableView		*logTable;
 	
+	IBOutlet NSTextView			*infoView;
+	
 @private
     TCCocoaBuddy				*_buddy;
 	NSMutableArray				*_logs;
 	NSString					*_address;
+	
+	NSMutableDictionary			*_infos;
 }
 
 // -- IBAction --

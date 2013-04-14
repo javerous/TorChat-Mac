@@ -55,6 +55,27 @@
 	return [layoutManager usedRectForTextContainer:textContainer].size.height;
 }
 
+- (NSString *)realPath
+{
+	const char	*path = [self UTF8String];
+	char		*rpath;
+	NSString	*result;
+		
+	if (!path)
+		return nil;
+
+	rpath = realpath(path, NULL);
+
+	if (!rpath)
+		return nil;
+
+	result = [NSString stringWithUTF8String:rpath];
+	
+	free(rpath);
+	
+	return result;
+}
+
 @end
 
 

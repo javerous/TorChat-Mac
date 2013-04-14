@@ -141,7 +141,11 @@ TCBuddy::TCBuddy(TCConfig *_config, const std::string &_alias, const std::string
 	profileName = new TCString("");
 	profileText = new TCString("");
 	profileAvatar = new TCImage(64, 64);
-		
+	
+	// Init remotes
+	peerClient = new TCString("");
+	peerVersion = new TCString("");
+	
 	// Generate random
 	char	rnd[101];
 	char	charset [] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -194,6 +198,10 @@ TCBuddy::~TCBuddy()
 	profileName->release();
 	profileText->release();
 	profileAvatar->release();
+	
+	// Release
+	peerClient->release();
+	peerVersion->release();
 	
 	// Clean main queue
 	dispatch_release(mainQueue);
@@ -456,7 +464,7 @@ void TCBuddy::setAlias(TCString *alias)
 		malias = alias;
 		
 		// Notidy of the change
-		_notify(tcbuddy_notify_alias, "core_bd_note_alias_changed", alias);
+		_notify(tcbuddy_notify_alias, "core_bd_note_alias_changed", malias);
 	});
 }
 
@@ -491,7 +499,7 @@ void TCBuddy::setNotes(TCString *notes)
 		mnotes = notes;
 		
 		// Notify of the change
-		_notify(tcbuddy_notify_notes, "core_bd_note_notes_changed");
+		_notify(tcbuddy_notify_notes, "core_bd_note_notes_changed", mnotes);
 	});
 }
 
@@ -851,6 +859,7 @@ void TCBuddy::startHandshake(TCString *rrandom, tccontroller_status status, TCIm
 	dispatch_async_cpp(this, mainQueue, ^{
 		
 		_sendPong(rrandom);
+		_sendClient();
 		_sendVersion();
 		_sendProfileName(name);
 		_sendProfileText(text);
@@ -1046,8 +1055,32 @@ void TCBuddy::doMessage(const std::string &message)
 
 void TCBuddy::doVersion(const std::string &version)
 {
-	// Do nothing.
+	TCString *aversion = new TCString(version);
+	
+	dispatch_async_cpp(this, mainQueue, ^{
+		
+		peerVersion->release();
+		peerVersion = aversion;
+		
+		// Notify it
+		_notify(tcbuddy_notify_version, "core_bd_note_new_version", peerVersion);
+	});
 }
+
+void TCBuddy::doClient(const std::string &client)
+{
+	TCString *aclient = new TCString(client);
+
+	dispatch_async_cpp(this, mainQueue, ^{
+		
+		peerClient->release();
+		peerClient = aclient;
+		
+		// Notify it
+		_notify(tcbuddy_notify_client, "core_bd_note_new_client", peerClient);
+	});
+}
+
 
 void TCBuddy::doProfileText(const std::string &text)
 {
@@ -1079,9 +1112,6 @@ void TCBuddy::doProfileName(const std::string &name)
 
 void TCBuddy::doProfileAvatar(const std::string &bitmap)
 {
-	if (bitmap.size() != 12288)
-		return;
-		
 	std::string *abitmap = new std::string(bitmap);
 
 	dispatch_async_cpp(this, mainQueue, ^{
@@ -1097,9 +1127,6 @@ void TCBuddy::doProfileAvatar(const std::string &bitmap)
 
 void TCBuddy::doProfileAvatarAlpha(const std::string &bitmap)
 {
-	if (bitmap.size() != 4096)
-		return;
-
 	std::string *abitmap = new std::string(bitmap);
 
 	dispatch_async_cpp(this, mainQueue, ^{
@@ -1525,11 +1552,20 @@ void TCBuddy::_sendVersion()
 {
 	// > mainQueue <
 	
-	_sendCommand("version", "0.9.9.287");
+	_sendCommand("version", config->get_client_version());
+}
+
+void TCBuddy::_sendClient()
+{
+	// > mainQueue <
+	
+	_sendCommand("client", config->get_client_name());
 }
 
 void TCBuddy::_sendProfileName(TCString *name)
 {
+	// > mainQueue <
+
 	if (!name)
 		return;
 	
@@ -1538,6 +1574,8 @@ void TCBuddy::_sendProfileName(TCString *name)
 
 void TCBuddy::_sendProfileText(TCString *text)
 {
+	// > mainQueue <
+
 	if (!text)
 		return;
 	
@@ -1546,6 +1584,8 @@ void TCBuddy::_sendProfileText(TCString *text)
 
 void TCBuddy::_sendAvatar(TCImage *avatar)
 {
+	// > mainQueue <
+
 	std::vector <std::string> items;
 	
 	if (!avatar)

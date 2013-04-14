@@ -27,6 +27,7 @@
 #import "TCCocoaBuddy.h"
 
 
+
 /*
 ** Forward
 */
@@ -88,8 +89,11 @@ class TCController;
 	dispatch_queue_t				mainQueue;
 	
 	NSMutableArray					*buddies;
+	id								lastSelected;
 	
 	BOOL							running;
+	
+	NSDictionary					*infos;
 }
 
 // -- Singleton --

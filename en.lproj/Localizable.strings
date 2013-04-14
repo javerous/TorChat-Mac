@@ -20,6 +20,8 @@
 *
 */
 
+
+
 /* Assistant Pannel */
 "ac_title_welcome" = "Configure TorChat for Mac";
 "ac_title_mode" = "Select a mode";
@@ -54,6 +56,13 @@
 "bd_error_offline" = "Message can't be sent because the user is offline: \"%@\"";
 
 
+/* Buddy Info */
+"bdi_profile_name" = "Profile Name";
+"bdi_profile_text" = "Profile Text";
+"bdi_peer_client" = "Client Name";
+"bdi_peer_version" = "Client Version";
+
+
 /* File */
 "file_canceling" = "Canceling...";
 "file_upload_done" = "Upload done.";
@@ -77,6 +86,7 @@
 
 /* Chat */
 "chat_title" = "Chat with %@";
+
 
 /* Config */
 "conf_err_no_name" = "Can't open configuration file because no name was given.";
@@ -117,7 +127,7 @@
 
 "core_bd_note_file_send_stoped" = "File send was stoped by the remote peer.";
 "core_bd_note_file_receive_stoped" = "File receive was stoped by the remote peer.";
-
+"core_bd_note_new_message" = "Received a new message";
 "core_bd_err_file_offline" = "Can't send a file to an offline buddy.";
 "core_bd_err_message_offline" = "Can't send a message to an offline buddy.";
 
@@ -133,11 +143,13 @@
 "core_bd_err_socks_unknown" = "SOCKS request failed for an unknown reason.";
 "core_bd_err_socket" = "Buddy socket error.";
 
-"core_bd_note_new_message" = "Received a new message";
+"core_bd_note_new_client" = "Peer name received";
+"core_bd_note_new_version" = "Peer version received";
 
-"core_bd_note_new_profile_text" = "New profile text";
-"core_bd_note_new_profile_name" = "New profile name";
-"core_bd_note_new_profile_avatar" = "New profile avatar";
+"core_bd_note_new_profile_text" = "Buddy profile text received";
+"core_bd_note_new_profile_name" = "Buddy profile name received";
+"core_bd_note_new_profile_avatar" = "Buddy profile avatar received";
+
 
 /* Core - Controller */
 "core_ctrl_note_new_buddy" = "A new buddy was added on your buddy list.";
@@ -155,7 +167,6 @@
 "core_ctrl_note_profile_avatar" = "Profile avatar changed.";
 "core_ctrl_note_profile_text" = "Profile text changed.";
 "core_ctrl_note_profile_name" = "Profile name changed.";
-
 
 
 /* Core - Client Controller */
@@ -179,8 +190,10 @@
 "core_fsend_err_cant_seek" = "Can't seek in the file to send.";
 "core_fsend_err_cant_tell" = "Can't tell the file to send.";
 
+
 /* Core - File Receive */
 "core_frec_err_cant_open" = "Can't open file to receive incoming file.";
+
 
 /* Core - Socket */
 "core_socket_read_error" = "Socket read error.";

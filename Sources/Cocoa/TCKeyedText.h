@@ -1,5 +1,5 @@
 /*
- *  TCChatPage.h
+ *  TCKeyedText.h
  *
  *  Copyright 2011 Avérous Julien-Pierre
  *
@@ -22,21 +22,31 @@
 
 
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 
 
 /*
-** TCChatPage
+** TCKeyedText
 */
 #pragma mark -
-#pragma mark TCChatPage
+#pragma mark TCKeyedText
 
-// == Class ==
-@interface TCChatPage : NSView
+@interface TCKeyedText : NSObject
 {
 @private
-    
+    NSAttributedString			*nline;
+	NSTextTable					*table;
+	NSMutableAttributedString	*result;
+	NSUInteger					rowIndex;
+	NSUInteger					keySize;
 }
+
+- (id)initWithKeySize:(NSUInteger)ksize;
+
+- (void)addLineWithKey:(NSString *)key andContent:(NSString *)content;
+- (void)addAttributedLineWithKey:(NSAttributedString *)key andContent:(NSAttributedString *)content;
+
+- (NSAttributedString *)renderedText;
 
 @end

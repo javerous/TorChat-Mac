@@ -296,6 +296,10 @@ void TCControlClient::parserError(tcrec_error err, const std::string &info)
 			nerr = tcctrl_error_client_cmd_version;
 			break;
 			
+		case tcrec_cmd_client:
+			nerr = tcctrl_error_client_cmd_client;
+			break;
+			
 		case tcrec_cmd_profile_text:
 			nerr = tcctrl_error_client_cmd_profile_text;
 			break;

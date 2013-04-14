@@ -502,25 +502,6 @@ void catch_signal(int sig);
 
 
 /*
-** TCTorManager - FileHandle
-*/
-#pragma mark -
-#pragma mark TCTorManager - FileHandle
-
-- (void)torOutput:(NSNotification *)notice
-{
-	NSData		*data = [[notice userInfo] objectForKey:NSFileHandleNotificationDataItem];
-	NSString	*str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-	
-	NSLog(@"Str = [%@]", str);
-	
-	//readInBackgroundAndNotify
-	
-}
-
-
-
-/*
 ** TCTorManager - Property
 */
 #pragma mark -
