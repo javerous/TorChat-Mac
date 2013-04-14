@@ -1,7 +1,7 @@
 /*
  *  TorChatAppDelegate.h
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -51,6 +51,7 @@
 - (IBAction)doBuddyRemove:(id)sender;
 - (IBAction)doBuddyChat:(id)sender;
 - (IBAction)doBuddySendFile:(id)sender;
+- (IBAction)doEditProfile:(id)sender;
 
 @end
 

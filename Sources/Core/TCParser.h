@@ -1,7 +1,7 @@
 /*
  *  TCParser.h
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -54,12 +54,15 @@ typedef enum
 	tcrec_cmd_pong,
 	tcrec_cmd_status,
 	tcrec_cmd_version,
+	tcrec_cmd_profile_text,
+	tcrec_cmd_profile_name,
+	tcrec_cmd_profile_avatar,
+	tcrec_cmd_profile_avatar_alpha,
 	tcrec_cmd_message,
 	tcrec_cmd_addme,
 	tcrec_cmd_removeme,
 	tcrec_cmd_filename,
 	tcrec_cmd_filedata,
-	tcrec_cmd_filedata_b64,
 	tcrec_cmd_filedataok,
 	tcrec_cmd_filedataerror,
 	tcrec_cmd_filestopsending,
@@ -79,11 +82,14 @@ public:
 	virtual void	doStatus(const std::string &status);
 	virtual void	doMessage(const std::string &message);
 	virtual void	doVersion(const std::string &version);
+	virtual void	doProfileText(const std::string &text);
+	virtual void	doProfileName(const std::string &name);
+	virtual void	doProfileAvatar(const std::string &bitmap);
+	virtual void	doProfileAvatarAlpha(const std::string &bitmap);
 	virtual void	doAddMe();
 	virtual void	doRemoveMe();
 	virtual void	doFileName(const std::string &uuid, const std::string &fsize, const std::string &bsize, const std::string &filename);
 	virtual void	doFileData(const std::string &uuid, const std::string &start, const std::string &hash, const std::string &data);
-	virtual void	doFileDataB64(const std::string &uuid, const std::string &start, const std::string &hash, const std::string &data);
 	virtual void	doFileDataOk(const std::string &uuid, const std::string &start);
 	virtual void	doFileDataError(const std::string &uuid, const std::string &start);
 	virtual void	doFileStopSending(const std::string &uuid);
@@ -101,12 +107,15 @@ private:
     void _parsePong(const std::vector<std::string> &args);
     void _parseStatus(const std::vector<std::string> &args);
     void _parseVersion(const std::vector<std::string> &args);
+	void _parseProfileText(const std::vector<std::string> &args);
+	void _parseProfileName(const std::vector<std::string> &args);
+	void _parseProfileAvatar(const std::vector<std::string> &args);
+	void _parseProfileAvatarAlpha(const std::vector<std::string> &args);
 	void _parseMessage(const std::vector<std::string> &args);
 	void _parseAddMe(const std::vector<std::string> &args);
 	void _parseRemoveMe(const std::vector<std::string> &args);
 	void _parseFileName(const std::vector<std::string> &args);
 	void _parseFileData(const std::vector<std::string> &args);
-	void _parseFileDataB64(const std::vector<std::string> &args);
 	void _parseFileDataOk(const std::vector<std::string> &args);
 	void _parseFileDataError(const std::vector<std::string> &args);
 	void _parseFileStopSending(const std::vector<std::string> &args);

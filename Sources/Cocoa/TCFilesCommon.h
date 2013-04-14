@@ -1,7 +1,7 @@
 /*
  *  TCFilesCommon.h
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -59,7 +59,7 @@ typedef enum
 #define TCFileUUIDKey			@"uuid"
 #define TCFileFilePathKey		@"filepath"
 #define TCFileBuddyAddressKey	@"buddy_address"
-#define TCFileBuddyNameKey		@"buddy_name"
+#define TCFileBuddyAliasKey		@"buddy_alias"
 #define TCFileWayKey			@"way"
 #define TCFileStatusKey			@"status"
 #define TCFileStatusTextKey		@"status_txt"

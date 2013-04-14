@@ -1,7 +1,7 @@
 /*
  *  TCParser.cpp
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -41,7 +41,7 @@ void TCParser::parseLine(const std::string &line)
 	// Unscape protocol special chars
 	std::string *l1 = createReplaceAll(line, "\\n", "\n");
 	std::string *l2 = createReplaceAll(*l1, "\\/", "\\");
-	
+		
 	// Eplode the line with spaces
 	std::vector<std::string> *exp = createExplode(*l2, " ");
 	
@@ -88,6 +88,26 @@ void TCParser::doVersion(const std::string &version)
 	_parserError(tcrec_cmd_version, "Version: Not handled");
 }
 
+void TCParser::doProfileText(const std::string &text)
+{
+	_parserError(tcrec_cmd_profile_text, "Profile Text: Not handled");
+}
+
+void TCParser::doProfileName(const std::string &name)
+{
+	_parserError(tcrec_cmd_profile_name, "Profile Name: Not handled");
+}
+
+void TCParser::doProfileAvatar(const std::string &bitmap)
+{
+	_parserError(tcrec_cmd_profile_avatar, "Profile Avatar: Not handled");
+}
+
+void TCParser::doProfileAvatarAlpha(const std::string &bitmap)
+{
+	_parserError(tcrec_cmd_profile_avatar_alpha, "Profile Avatar Alpha: Not handled");
+}
+
 void TCParser::doAddMe()
 {
 	_parserError(tcrec_cmd_addme, "AddMe:  Not handled");
@@ -106,11 +126,6 @@ void TCParser::doFileName(const std::string &uuid, const std::string &fsize, con
 void TCParser::doFileData(const std::string &uuid, const std::string &start, const std::string &hash, const std::string &data)
 {
 	_parserError(tcrec_cmd_filedata, "FileData: Not handled");
-}
-
-void TCParser::doFileDataB64(const std::string &uuid, const std::string &start, const std::string &hash, const std::string &data)
-{
-	_parserError(tcrec_cmd_filedata_b64, "FileDataB64:  Not handled");
 }
 
 void TCParser::doFileDataOk(const std::string &uuid, const std::string &start)
@@ -162,7 +177,7 @@ void TCParser::_parseCommand(std::vector<std::string> &items)
     std::string command = items[0];
 	
 	items.erase(items.begin());
-    
+	
     // Dispatch command
     if (command.compare("ping") == 0)
         _parsePing(items);
@@ -172,6 +187,14 @@ void TCParser::_parseCommand(std::vector<std::string> &items)
         _parseStatus(items);
     else if (command.compare("version") == 0)
         _parseVersion(items);
+	else if (command.compare("profile_name") == 0)
+        _parseProfileName(items);
+	else if (command.compare("profile_text") == 0)
+        _parseProfileText(items);
+	else if (command.compare("profile_avatar_alpha") == 0)
+        _parseProfileAvatarAlpha(items);
+	else if (command.compare("profile_avatar") == 0)
+        _parseProfileAvatar(items);
 	else if (command.compare("message") == 0)
         _parseMessage(items);
 	else if (command.compare("add_me") == 0)
@@ -182,8 +205,6 @@ void TCParser::_parseCommand(std::vector<std::string> &items)
         _parseFileName(items);
 	else if (command.compare("filedata") == 0)
         _parseFileData(items);
-	else if (command.compare("filedata_b64") == 0)
-        _parseFileDataB64(items);
 	else if (command.compare("filedata_ok") == 0)
         _parseFileDataOk(items);
 	else if (command.compare("filedata_error") == 0)
@@ -238,6 +259,66 @@ void TCParser::_parseVersion(const std::vector<std::string> &args)
 	}
 	
 	doVersion(args[0]);
+}
+
+void TCParser::_parseProfileText(const std::vector<std::string> &args)
+{
+	if (args.size() == 0)
+    {
+		_parserError(tcrec_cmd_profile_text, "Empty profile text");
+        return;
+	}
+	
+	std::string *text = createJoin(args, " ");
+	
+	doProfileText(*text);
+	
+	delete text;
+}
+
+void TCParser::_parseProfileName(const std::vector<std::string> &args)
+{
+	if (args.size() == 0)
+    {
+		_parserError(tcrec_cmd_profile_name, "Empty profile name");
+        return;
+	}
+	
+	std::string *name = createJoin(args, " ");
+	
+	doProfileName(*name);
+	
+	delete name;
+}
+
+void TCParser::_parseProfileAvatar(const std::vector<std::string> &args)
+{
+	if (args.size() == 0)
+    {
+		_parserError(tcrec_cmd_profile_avatar, "Empty avatar content");
+        return;
+	}
+	
+	std::string *bitmap = createJoin(args, " ");
+	
+	doProfileAvatar(*bitmap);
+	
+	delete bitmap;
+}
+
+void TCParser::_parseProfileAvatarAlpha(const std::vector<std::string> &args)
+{
+	if (args.size() == 0)
+    {
+		_parserError(tcrec_cmd_profile_avatar_alpha, "Empty avatar alpha content");
+        return;
+	}
+	
+	std::string *bitmap = createJoin(args, " ");
+	
+	doProfileAvatarAlpha(*bitmap);
+	
+	delete bitmap;
 }
 
 void TCParser::_parseMessage(const std::vector<std::string> &args)
@@ -295,17 +376,6 @@ void TCParser::_parseFileData(const std::vector<std::string> &args)
 	}
 	else
 		doFileData(args[0], args[1], args[2], "");
-}
-
-void TCParser::_parseFileDataB64(const std::vector<std::string> &args)
-{
-	if (args.size() != 4)
-    {
-		_parserError(tcrec_cmd_filedata, "Bad filedata_b64 argument");
-        return;
-	}
-	
-	doFileDataB64(args[0], args[1], args[2], args[3]);
 }
 
 void TCParser::_parseFileDataOk(const std::vector<std::string> &args)

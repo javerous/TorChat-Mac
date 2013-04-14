@@ -1,7 +1,7 @@
 /*
 *  Localizable.strings
 *
-*  Copyright 2010 Avérous Julien-Pierre
+*  Copyright 2011 Avérous Julien-Pierre
 *
 *  This file is part of TorChat.
 *
@@ -62,6 +62,10 @@
 "file_download_stoped" = "Download stoped.";
 "file_uploading" = "Uploading...";
 "file_downloading" = "Downloading...";
+"file_uploads" = "%u uploads";
+"one_upload" = "1 upload";
+"file_downloads" = "%u downloads";
+"one_download" = "1 download";
 "file_progress_of" = "of";
 "file_progress_from" = "From:";
 "file_progress_to" = "To:";
@@ -96,8 +100,8 @@
 "core_bd_note_status_changed" = "Buddy status has changed.";
 "core_bd_note_stoped" = "Buddy is stoped.";
 
-"core_bd_note_name_changed" = "The name of the buddy changed.";
-"core_bd_note_comment_changed" = "The comment of the buddy changed.";
+"core_bd_note_alias_changed" = "The alias of the buddy changed.";
+"core_bd_note_notes_changed" = "The notes of the buddy changed.";
 
 "core_bd_note_file_send_canceled" = "File sending was canceled.";
 "core_bd_note_file_receive_canceled" = "File receiving was canceled.";
@@ -115,6 +119,7 @@
 "core_bd_note_file_receive_stoped" = "File receive was stoped by the remote peer.";
 
 "core_bd_err_file_offline" = "Can't send a file to an offline buddy.";
+"core_bd_err_message_offline" = "Can't send a message to an offline buddy.";
 
 "core_bd_err_parse" = "Parse Error";
 
@@ -129,8 +134,10 @@
 "core_bd_err_socket" = "Buddy socket error.";
 
 "core_bd_note_new_message" = "Received a new message";
-"core_bd_err_too_messages" = "Received too much messages (> 500). Skiping to preserve memory.";
 
+"core_bd_note_new_profile_text" = "New profile text";
+"core_bd_note_new_profile_name" = "New profile name";
+"core_bd_note_new_profile_avatar" = "New profile avatar";
 
 /* Core - Controller */
 "core_ctrl_note_new_buddy" = "A new buddy was added on your buddy list.";
@@ -144,6 +151,11 @@
 "core_ctrl_err_async" = "Can't use async I/O on system socket.";
 "core_ctrl_note_started" = "TorChat controller is started.";
 "core_ctrl_note_stoped" = "TorChat controller is stoped.";
+
+"core_ctrl_note_profile_avatar" = "Profile avatar changed.";
+"core_ctrl_note_profile_text" = "Profile text changed.";
+"core_ctrl_note_profile_name" = "Profile name changed.";
+
 
 
 /* Core - Client Controller */
