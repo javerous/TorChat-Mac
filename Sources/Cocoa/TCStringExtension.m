@@ -35,7 +35,7 @@
 @implementation NSString (TCStringExtension)
 
 // == Compute string height ==
-- (float)heightForDrawingWithFont:(NSFont *)font andWidth:(float)width
+- (CGFloat)heightForDrawingWithFont:(NSFont *)font andWidth:(CGFloat)width
 {
 	// http://developer.apple.com/mac/library/documentation/Cocoa/Conceptual/TextLayout/Tasks/StringHeight.html
 	
@@ -49,9 +49,9 @@
 	[textStorage addAttribute:NSFontAttributeName value:font range:NSMakeRange(0, [textStorage length])];
 	[textContainer setLineFragmentPadding:0];
 	[layoutManager setTypesetterBehavior:NSTypesetterBehavior_10_2_WithCompatibility] ;
-
-		
+	
 	(void) [layoutManager glyphRangeForTextContainer:textContainer];
+	
 	return [layoutManager usedRectForTextContainer:textContainer].size.height;
 }
 
@@ -89,7 +89,7 @@
 @implementation NSAttributedString (TCStringExtension)
 
 // == Compute string height ==
-- (float)heightForDrawingWithWidth:(float)width
+- (CGFloat)heightForDrawingWithWidth:(float)width
 {
 	// http://developer.apple.com/mac/library/documentation/Cocoa/Conceptual/TextLayout/Tasks/StringHeight.html
 	
@@ -104,6 +104,7 @@
 	//[layoutManager setTypesetterBehavior:NSTypesetterBehavior_10_2_WithCompatibility] ;
 	
 	(void) [layoutManager glyphRangeForTextContainer:textContainer];
+	
 	return [layoutManager usedRectForTextContainer:textContainer].size.height;
 }
 

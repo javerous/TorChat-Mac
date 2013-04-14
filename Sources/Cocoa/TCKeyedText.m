@@ -128,9 +128,9 @@
 
 - (void)addValue:(NSAttributedString *)value color:(NSColor *)color row:(NSUInteger)row column:(NSUInteger)column alignment:(NSTextAlignment)alignment
 {
-	NSTextTableBlock		*block = [[NSTextTableBlock alloc] initWithTable:table startingRow:row rowSpan:1 startingColumn:column columnSpan:1];
+	NSTextTableBlock		*block = [[NSTextTableBlock alloc] initWithTable:table startingRow:(NSInteger)row rowSpan:1 startingColumn:(NSInteger)column columnSpan:1];
 	NSMutableParagraphStyle	*style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-	NSInteger				textLength = [result length];
+	NSUInteger				textLength = [result length];
 	
 	// Configure the text block
 	[block setVerticalAlignment:NSTextBlockTopAlignment];

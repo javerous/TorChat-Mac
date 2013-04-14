@@ -62,10 +62,10 @@
 
 
 /*
-** TCChatController - Constructor & Destructor
+** TCChatController - Instance
 */
 #pragma mark -
-#pragma mark TCChatController - Constructor & Destructor
+#pragma mark TCChatController - Instance
 
 + (TCChatController *)chatWithName:(NSString *)name onDelegate:(id <TCChatControllerDelegate>)delegate;
 {
@@ -189,8 +189,8 @@
 	
 	NSRect		r = [userField frame];
 	NSFont		*font = [userField font];
-	float		height = [text heightForDrawingWithFont:font andWidth:(r.size.width - 8)];
-	float		lheight = [@" " heightForDrawingWithFont:font andWidth:100];
+	CGFloat		height = [text heightForDrawingWithFont:font andWidth:(r.size.width - 8)];
+	CGFloat		lheight = [@" " heightForDrawingWithFont:font andWidth:100];
 
 	height += (baseRect.size.height - lheight);
 

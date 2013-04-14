@@ -43,8 +43,8 @@
 		{
 			unsigned char		*planes[] = { (unsigned char *)plane };
 			NSBitmapImageRep	*rep = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:planes
-																			pixelsWide:image->getWidth()
-																			pixelsHigh:image->getHeight()
+																			pixelsWide:(NSInteger)image->getWidth()
+																			pixelsHigh:(NSInteger)image->getHeight()
 																		 bitsPerSample:8
 																	   samplesPerPixel:4
 																			  hasAlpha:YES
@@ -118,15 +118,15 @@
 	
 	if (selfSize.width > selfSize.height)
 	{
-		float outHeight = (64.0 * selfSize.height) / selfSize.width;
+		CGFloat outHeight = (64.0f * selfSize.height) / selfSize.width;
 		
-		outRect = NSMakeRect(0, (64.0 - outHeight) / 2.0, 64, outHeight);
+		outRect = NSMakeRect(0, (64.0f - outHeight) / 2.0f, 64, outHeight);
 	}
 	else
 	{
-		float outWidth = (64.0 * selfSize.width) / selfSize.height;
+		CGFloat outWidth = (64.0f * selfSize.width) / selfSize.height;
 		
-		outRect = NSMakeRect((64.0 - outWidth) / 2.0, 0, outWidth, 64);
+		outRect = NSMakeRect((64.0f - outWidth) / 2.0f, 0, outWidth, 64);
 	}
 	
 	

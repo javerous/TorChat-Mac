@@ -95,10 +95,10 @@
 
 
 /*
-** TCChatView - Constructor & Destructor
+** TCChatView - Instance
 */
 #pragma mark -
-#pragma mark TCChatView - Constructor & Destructor
+#pragma mark TCChatView - Instance
 
 - (void)awakeFromNib
 {
@@ -150,7 +150,7 @@
 	if ([last_stamp timeIntervalSinceNow] < -(60.0 * 5.0))
 	{
 		NSRect	new_area = NSMakeRect(0, r.size.height, r.size.width, stamp_height);
-		NSColor	*color = [NSColor colorWithDeviceRed:0.47 green:0.47 blue:0.47 alpha:1.0];
+		NSColor	*color = [NSColor colorWithDeviceRed:0.47f green:0.47f blue:0.47f alpha:1.0f];
 		
 		// Current date
 		[last_stamp release];
@@ -230,7 +230,7 @@
 	NSRect	r = [contentView frame];
 
 	NSRect	new_area = NSMakeRect(0, r.size.height, r.size.width, stamp_height);
-	NSColor	*color = [NSColor colorWithDeviceRed:0.47 green:0.47 blue:0.47 alpha:1.0];
+	NSColor	*color = [NSColor colorWithDeviceRed:0.47f green:0.47f blue:0.47f alpha:1.0f];
 		
 	// Build the stamp
 	NSTextField		*stamp = [[NSTextField alloc] initWithFrame:new_area];

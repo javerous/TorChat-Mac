@@ -29,6 +29,10 @@
 
 # include "TCConfig.h"
 
+# if defined(PROXY_ENABLED) && PROXY_ENABLED
+#  import "TCConfigProxy.h"
+# endif
+
 
 
 /*
@@ -40,8 +44,13 @@
 class TCCocoaConfig : public TCConfig
 {
 public:
-	// -- Constructor & Destructor
+	// -- Instance
 	TCCocoaConfig(NSString *filepath);
+	
+#if defined(PROXY_ENABLED) && PROXY_ENABLED
+	TCCocoaConfig(id <TCConfigProxy> proxy);
+#endif
+	
 	~TCCocoaConfig();
 	
 	// -- Tor --
@@ -85,10 +94,14 @@ public:
 	const tc_array	&buddies();
 	void			add_buddy(const std::string &address, const std::string &alias, const std::string &notes);
 	bool			remove_buddy(const std::string &address);
+	
 	void			set_buddy_alias(const std::string &address, const std::string &alias);
 	void			set_buddy_notes(const std::string &address, const std::string &notes);
+	void			set_buddy_last_profile_name(const std::string &address, const std::string &lname);
+
 	std::string		get_buddy_alias(const std::string &address) const;
 	std::string		get_buddy_notes(const std::string &address) const;
+	std::string		get_buddy_last_profile_name(const std::string &address) const;
 	
 	// -- UI --
 	tc_config_title	get_mode_title() const;
@@ -105,12 +118,18 @@ public:
 	std::string		localized(const std::string &key) const;
 
 private:
-	void				_writeToFile();
+	void			_loadConfig(NSData *data);
+	void			_saveConfig();
 	
+	// Vars
 	tc_array			_bcache;
 	
 	NSString			*fpath;
 	NSMutableDictionary	*fcontent;
+	
+#if defined(PROXY_ENABLED) && PROXY_ENABLED
+	id <TCConfigProxy>	proxy;
+#endif
 };
 
 #endif

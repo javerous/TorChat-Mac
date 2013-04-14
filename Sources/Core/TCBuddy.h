@@ -159,7 +159,7 @@ class TCBuddy : public TCParser, public TCSocketDelegate // Inherit from TCObjec
 {
 public:
 	
-	// -- Constructor & Destructor --
+	// -- Instance --
 	TCBuddy(TCConfig *config, const std::string &alias, const std::string &address, const std::string &notes);
 	~TCBuddy();
 	
@@ -181,7 +181,7 @@ public:
 	
 	TCString *			notes();
 	void				setNotes(TCString *notes);
-	
+		
 	tcbuddy_status		status();
 
 	TCString & address() const	{ return *maddress; }
@@ -208,8 +208,11 @@ public:
 	// -- Content --
 	TCArray *		getMessages();
 	TCString *		getProfileText();
-	TCString *		getProfileName();
 	TCImage *		getProfileAvatar();
+	
+	TCString *		getProfileName();		// Current profile name
+	TCString *		getLastProfileName();	// Last know profile name
+	TCString *		getFinalName();			// Best name representation (alias / profile name / last know profile name)
 
 
 private:
@@ -321,7 +324,7 @@ private:
 	TCString					*profileName;
 	TCString					*profileText;
 	TCImage						*profileAvatar;
-	
+		
 	// > Peer
 	TCString *					peerClient;
 	TCString *					peerVersion;

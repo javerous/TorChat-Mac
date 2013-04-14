@@ -29,6 +29,10 @@
 #import "TCLogsController.h"
 #import "TCBuddiesController.h"
 
+#if defined(PROXY_ENABLED) && PROXY_ENABLED
+# import "TCConfigProxy.h"
+#endif
+
 
 
 /*
@@ -85,54 +89,103 @@
 
 - (void)start
 {
-	static BOOL running = NO;
-	
+	static BOOL		running = NO;
+
+	TCCocoaConfig	*conf = NULL;
+
+	// Can't have more than one instance of this controller
 	if (running)
 		return;
+	
 	running = YES;
 	
-	// -- Load config file --
-	NSFileManager	*mng = [NSFileManager defaultManager];
-	NSBundle		*bundle = [NSBundle mainBundle];
-	NSString		*path = nil;
-	BOOL			assist = NO;
+	// -- Try loading config from proxy --
+#if defined(PROXY_ENABLED) && PROXY_ENABLED
 	
-	// > Try to find config on the same folder as the application
-	path = [[[bundle bundlePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"];
-	
-	// > Try to find on home
-	if ([mng fileExistsAtPath:path] == NO)
+	if (!conf)
 	{
-		path = [@"~/torchat.conf" stringByExpandingTildeInPath];
-		
-		if ([mng fileExistsAtPath:path] == NO)
-			assist = YES;
+		NSDistantObject *proxy = [NSConnection rootProxyForConnectionWithRegisteredName:TCProxyName host:nil];
+				
+		if (proxy)
+		{
+			// Set protocol methods
+			[proxy setProtocolForProxy:@protocol(TCConfigProxy)];
+			
+			// Load
+			try
+			{
+				conf = new TCCocoaConfig((id <TCConfigProxy>)proxy);
+			}
+			catch (const char *err)
+			{
+				NSString *oerr = [NSString stringWithUTF8String:err];
+				
+				[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_read_proxy", NSLocalizedString(oerr, @"")];
+				
+				if (conf)
+					delete conf;
+				
+				conf = NULL;
+			}
+		}
 	}
+
+#endif
 	
-	// > Check if we should assist
-	if (assist)
+	// -- Try loading config from file --
+	if (!conf)
+	{
+		NSFileManager	*mng;
+		NSBundle		*bundle;
+		NSString		*path = nil;
+
+		mng = [NSFileManager defaultManager];
+		bundle = [NSBundle mainBundle];
+		
+		// > Try to find config on the same folder as the application
+		if (!path)
+		{
+			path = [[[bundle bundlePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"];
+		
+			if ([mng fileExistsAtPath:path] == NO)
+				path = nil;
+		}
+		
+		// > Try to find on config home folder
+		if (!path)
+		{
+			path = [@"~/torchat.conf" stringByExpandingTildeInPath];
+			
+			if ([mng fileExistsAtPath:path] == NO)
+				path = nil;
+		}
+		
+		// > Try to open the file
+		if (path)
+		{
+			try
+			{
+				conf = new TCCocoaConfig(path);
+			}
+			catch (const char *err)
+			{
+				NSString *oerr = [NSString stringWithUTF8String:err];
+				
+				[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_read_file", NSLocalizedString(oerr, @"")];
+				
+				if (conf)
+					delete conf;
+				
+				conf = NULL;
+			}
+		}
+	}
+
+	// > Check if we should launch assistant
+	if (!conf)
 		[[TCAssistantController sharedController] startWithCallback:@selector(assistantCallback:) onObject:self];
 	else
 	{
-		TCCocoaConfig *conf = NULL;
-		
-		// > Try to open the file
-		try
-		{
-			conf = new TCCocoaConfig(path);
-		}
-		catch (const char *err)
-		{
-			NSString *oerr = [NSString stringWithUTF8String:err];
-			
-			[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_read_file", NSLocalizedString(oerr, @"")];
-			
-			if (conf)
-				delete conf;
-			
-			conf = NULL;
-		}
-		
 		// > Hold the config
 		_config = conf;
 		

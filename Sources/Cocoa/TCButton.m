@@ -53,10 +53,10 @@
 
 
 /*
-** TCButton - Constructor & Destructor
+** TCButton - Instance
 */
 #pragma mark -
-#pragma mark TCButton - Constructor & Destructor
+#pragma mark TCButton - Instance
 
 - (id)init
 {
