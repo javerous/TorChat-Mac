@@ -94,6 +94,10 @@ public:
 	tc_config_title	get_mode_title() const;
 	void			set_mode_title(tc_config_title mode);
 	
+	// -- Client --
+	std::string		get_client_version() const;
+	std::string		get_client_name() const;
+	
 	// -- Tools --
 	std::string		real_path(const std::string &path) const;
 	

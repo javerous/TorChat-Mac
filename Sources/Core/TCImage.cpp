@@ -121,9 +121,6 @@ TCImage::~TCImage()
 
 bool TCImage::setBitmap(const void *data, size_t size)
 {
-	if (size != width * height * BytesPerPixel)
-		return false;
-	
 	// Clean mixed cache
 	if (mixedRendered)
 	{
@@ -136,21 +133,26 @@ bool TCImage::setBitmap(const void *data, size_t size)
 	if (bitmap)
 		free(bitmap);
 	
-	bitmap = malloc(size);
+	bitmap = NULL;
 	
-	if (!bitmap)
-		return false;
-	
-	memcpy(bitmap, data, size);
+	// Copy data
+	if (data && size == width * height * BytesPerPixel)
+	{
+		bitmap = malloc(size);
 		
-	return true;
+		if (!bitmap)
+			return false;
+		
+		memcpy(bitmap, data, size);
+		
+		return true;
+	}
+		
+	return false;
 }
 
 bool TCImage::setAlphaBitmap(const void *data, size_t size)
 {
-	if (size != width * height * BytesPerPixelAlpha)
-		return false;
-	
 	// Clean mixed cache
 	if (mixedRendered)
 	{
@@ -163,14 +165,20 @@ bool TCImage::setAlphaBitmap(const void *data, size_t size)
 	if (bitmapAlpha)
 		free(bitmapAlpha);
 	
-	bitmapAlpha = malloc(size);
-
-	if (!bitmapAlpha)
-		return false;
+	// Copy data
+	if (data && size == width * height * BytesPerPixelAlpha)
+	{
+		bitmapAlpha = malloc(size);
+		
+		if (!bitmapAlpha)
+			return false;
+		
+		memcpy(bitmapAlpha, data, size);
+		
+		return true;
+	}
 	
-	memcpy(bitmapAlpha, data, size);
-	
-	return true;
+	return false;
 }
 
 const void * TCImage::getMixedBitmap()

@@ -22,6 +22,8 @@
 
 
 
+#import "TCStringExtension.h"
+
 #include "TCCocoaConfig.h"
 
 
@@ -48,6 +50,10 @@
 #define TCCONF_KEY_PROFILE_TEXT		@"profile_text"
 #define TCCONF_KEY_PROFILE_AVATAR	@"profile_avatar"
 
+#define TCCONF_KEY_CLIENT_VERSION	@"client_version"
+#define TCCONF_KEY_CLIENT_NAME		@"client_name"
+
+
 #define TCCONF_KEY_BUDDIES			@"buddies"
 
 #define TCCONF_KEY_UI_TITLE			@"title"
@@ -65,7 +71,20 @@ TCCocoaConfig::TCCocoaConfig(NSString *filepath)
 	if (!filepath)
 		throw "conf_err_no_name";
 	
-	NSFileManager *mng = [NSFileManager defaultManager];
+	NSFileManager	*mng = [NSFileManager defaultManager];
+	NSString		*npath;
+	
+	// Resolve path
+	npath = [filepath realPath];
+	
+	if (npath)
+		filepath = npath;
+		
+	if (!filepath)
+	{
+		throw "conf_err_cant_open";
+		return;
+	}
 	
 	// Open or read file
 	if ([mng fileExistsAtPath:filepath])
@@ -752,6 +771,41 @@ void TCCocoaConfig::set_mode_title(tc_config_title mode)
 	_writeToFile();
 }
 
+
+std::string TCCocoaConfig::get_client_version() const
+{
+	// Give the ability to the user to customize the version for anonymity
+	
+	NSString	*value = [fcontent objectForKey:TCCONF_KEY_CLIENT_VERSION];
+	const char	*c_value = [value UTF8String];
+	
+	if (c_value)
+		return c_value;
+	else
+	{
+		NSBundle	*bundle = [NSBundle mainBundle];
+		NSString	*version = [bundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+		const char	*cversion = [version UTF8String];
+		
+		if (cversion)
+			return cversion;
+		
+		return "";
+	}
+}
+
+std::string TCCocoaConfig::get_client_name() const
+{
+	// Give the ability to the user to customize the name for anonymity
+	
+	NSString	*value = [fcontent objectForKey:TCCONF_KEY_CLIENT_NAME];
+	const char	*c_value = [value UTF8String];
+	
+	if (c_value)
+		return c_value;
+	else
+		return "TorChat for Mac";
+}
 
 
 /*
