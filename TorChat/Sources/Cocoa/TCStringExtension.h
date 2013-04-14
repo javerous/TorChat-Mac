@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCStringExtension.h
  *
  *  Copyright 2012 Avérous Julien-Pierre
  *
@@ -20,27 +20,33 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+
+
+#import <Cocoa/Cocoa.h>
+
+
+/*
+** NSString - TCStringExtension
+*/
+#pragma mark - NSString - TCStringExtension
+
+@interface NSString (TCStringExtension)
+
+- (CGFloat)heightForDrawingWithFont:(NSFont *)font andWidth:(CGFloat)width;
+
+- (NSString *)realPath;
+
+@end
 
 
 
 /*
-** Defines
+** NSAttributedString - TCStringExtension
 */
-#pragma mark - Defines
+#pragma mark - NSAttributedString - TCStringExtension
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@interface NSAttributedString (TCStringExtension)
 
-
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+- (CGFloat)heightForDrawingWithWidth:(float)width;
 
 @end

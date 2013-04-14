@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCChatPage.h
  *
  *  Copyright 2012 Avérous Julien-Pierre
  *
@@ -20,27 +20,18 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+
+
+#import <Cocoa/Cocoa.h>
 
 
 
 /*
-** Defines
+** TCChatPage
 */
-#pragma mark - Defines
+#pragma mark - TCChatPage
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
-
-
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+// == Class ==
+@interface TCChatPage : NSView
 
 @end

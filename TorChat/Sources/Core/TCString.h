@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCString.h
  *
  *  Copyright 2012 Avérous Julien-Pierre
  *
@@ -20,27 +20,31 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+
+
+#ifndef _TCSTRING_H_
+# define _TCSTRING_H_
+
+# include "TCObject.h"
 
 
 
 /*
-** Defines
+** TCString
 */
-#pragma mark - Defines
+#pragma mark - TCString
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+class TCString : public TCObject
+{
+public:
+	TCString(const std::string &str) :
+		_content(str)
+	{ }
+	
+	const std::string & content() const { return _content; }
+	
+private:
+	std::string _content;
+};
 
-
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
-
-@end
+#endif

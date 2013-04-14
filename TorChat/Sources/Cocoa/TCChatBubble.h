@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCChatBubble.h
  *
  *  Copyright 2012 Avérous Julien-Pierre
  *
@@ -20,27 +20,35 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+
+
+#import <Cocoa/Cocoa.h>
 
 
 
 /*
-** Defines
+** Types
 */
-#pragma mark - Defines
+#pragma mark - Types
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+// == Bubble skin ==
+typedef enum
+{
+	tcbubble_blue,
+	tcbubble_gray
+} tcbubble_style;
 
 
 
 /*
-** TCConfigProxy
+** TCChatBubble
 */
-#pragma mark - TCConfigProxy
+#pragma mark - TCChatBubble
 
-@protocol TCConfigProxy <NSObject>
+// == Class ==
+@interface TCChatBubble : NSView
 
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+// -- Constructor --
++ (TCChatBubble *)bubbleWithText:(NSString *)text andStyle:(tcbubble_style)style;
 
 @end

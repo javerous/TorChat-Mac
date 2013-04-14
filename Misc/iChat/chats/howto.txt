@@ -1,0 +1,100 @@
+gdb /Applications/iChat.app/Contents/MacOS/iChat
+
+== Get the chat WebView ==
+
+// Get windows list
+(gdb) po [[NSApplication sharedApplication] windows]
+<__NSArrayM 0x7f83071104b0>(
+<PeopleListControllerWindow: 0x7f8305e2a050>,
+<NSWindow: 0x7f8305e02870>,
+<FezCompletionWindow: 0x7f83073456b0>
+)
+
+// Get window subview list
+(gdb) po [[0x7f8305e02870 contentView] subviews]
+<__NSArrayM 0x7f8305919c50>(
+<ChatWindowSplitView: 0x7f8305d6fd30>,
+<AccessibilityIgnoredButton: 0x7f8305913fd0>,
+<AccessibilityIgnoredButton: 0x7f8305912960>,
+<AccessibilityIgnoredButton: 0x7f8305917cf0>,
+<AccessibilityIgnoredButton: 0x7f83059192a0>,
+<AccessibilityIgnoredButton: 0x7f8301d1eb20>
+)
+
+// Get split view views
+(gdb) po [0x7f8305d6fd30 subviews]
+<__NSArrayM 0x7f8301daf3d0>(
+<NSView: 0x7f830710a500>,
+<NSView: 0x7f8305b052c0>
+)
+
+// Go on hierarchie
+(gdb) po [0x7f8305b052c0 subviews]
+<__NSArrayM 0x7f8305b11e70>(
+<NSBox: 0x7f8301d5bbf0>,
+<NSTabView: 0x7f8305d62940>,
+<NSButton: 0x7f8301ddfdd0>,
+<GradientView: 0x7f8305905650>
+)
+
+(gdb) po [0x7f8305d62940 subviews]
+<__NSArrayM 0x7f8305d67de0>(
+<NSView: 0x7f8305ef1700>
+)
+
+(gdb) po [0x7f8305ef1700 subviews]
+<__NSArrayM 0x7f8307207870>(
+<ChatView: 0x7f8305ef1b70>
+)
+
+(gdb) po [0x7f8305ef1b70 subviews]
+<__NSArrayM 0x7f8307206be0>(
+<ArrangingView: 0x7f8307205ec0>,
+<FezWebView: 0x7f8305ef21a0>,
+<ArrangingView: 0x7f8305ef9d50>
+)
+// -> <FezWebView: 0x7f8305ef21a0>
+
+
+
+============================
+== Get WebArchive content ==
+============================
+
+// Get the main frame
+(gdb) po [0x7f8305ef21a0 mainFrame]
+<WebFrame: 0x7f8305ede8e0>
+
+// Get the WebArchive of the main frame
+(gdb) po [[0x7f8305ede8e0 DOMDocument] webArchive]
+<WebArchive: 0x7f8307413640>
+
+// Get NSData representation of the archive
+(gdb) p (void *)[0x7f8307413640 data]
+$1 = (void *) 0x7f830360a5e0
+
+// Write to a file
+(gdb) p (int)[0x7f830360a5e0 writeToFile:@"/path/to/out.webarchive" atomically:NO]
+$1 = 0
+
+
+
+============================
+===== Get HTML content =====
+============================
+
+// Get the main frame
+(gdb) po [0x7f8305ef21a0 mainFrame]
+<WebFrame: 0x7f8305ede8e0>
+
+// Get the document element
+(gdb) p (void *)[[0x7f8305ede8e0 DOMDocument] documentElement]
+$1 = (void *) 0x7f8301d5e990
+
+// Get the HTML raw content
+(gdb) p (void *)[0x7f8301d5e990 outerHTML]
+$1 = (void *) 0x11581b5f8
+
+// Write the string to a file
+(gdb) p (int)[0x11581b5f8 writeToFile:@"/path/to/out.html" atomically:NO encoding:4 error:NULL]
+$1 = 1

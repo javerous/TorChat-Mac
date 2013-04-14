@@ -1,7 +1,7 @@
 /*
- *  TCConfigProxy.h
+ *  main.m
  *
- *  Copyright 2012 Avérous Julien-Pierre
+ *  Copyright 2012 Avrous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -20,27 +20,19 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+
+
+#import "TCChatController.h"
+
+#import <Cocoa/Cocoa.h>
 
 
 
-/*
-** Defines
-*/
-#pragma mark - Defines
+int main(int argc, char *argv[])
+{
+	// Ignore sigpipe
+	signal(SIGPIPE, SIG_IGN);
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
-
-
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
-
-@end
+	// Run
+	return NSApplicationMain(argc,  (const char **) argv);
+}
