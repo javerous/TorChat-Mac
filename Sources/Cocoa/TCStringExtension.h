@@ -33,7 +33,7 @@
 
 @interface NSString (TCStringExtension)
 
-- (float)heightForDrawingWithFont:(NSFont *)font andWidth:(float)width;
+- (CGFloat)heightForDrawingWithFont:(NSFont *)font andWidth:(CGFloat)width;
 
 - (NSString *)realPath;
 
@@ -49,6 +49,6 @@
 
 @interface NSAttributedString (TCStringExtension)
 
-- (float)heightForDrawingWithWidth:(float)width;
+- (CGFloat)heightForDrawingWithWidth:(float)width;
 
 @end

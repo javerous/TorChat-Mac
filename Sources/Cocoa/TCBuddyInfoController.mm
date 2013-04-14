@@ -47,10 +47,10 @@ static NSMutableArray *_windows = nil;
 #pragma mark -
 #pragma mark Defines
 
-#define BICInfoPeerClient	@"PeerClient"
-#define BICInfoPeerVersion	@"PeerVersion"
-#define BICInfoProfileName	@"ProfileName"
-#define BICInfoProfileText	@"ProfileText"
+#define BICInfoPeerClient		@"PeerClient"
+#define BICInfoPeerVersion		@"PeerVersion"
+#define BICInfoProfileName		@"ProfileName"
+#define BICInfoProfileText		@"ProfileText"
 
 
 
@@ -97,10 +97,10 @@ static NSMutableArray *_windows = nil;
 
 
 /*
-** TCBuddyInfoController - Constructor & Destructor
+** TCBuddyInfoController - Instance
 */
 #pragma mark -
-#pragma mark TCBuddyInfoController - Constructor & Destructor
+#pragma mark TCBuddyInfoController - Instance
 
 - (id)initWithWindow:(NSWindow *)window
 {	
@@ -236,10 +236,15 @@ static NSMutableArray *_windows = nil;
 	ctrl._address = address;
 	
 	// Set direct info
+	NSString *name = [buddy profileName];
+	
+	if ([name length] == 0)
+		name = [buddy lastProfileName];
+	
 	[ctrl->avatarView setImage:[buddy profileAvatar]];
 	[ctrl->addressField setStringValue:ctrl._address];
 	[ctrl->aliasField setStringValue:[buddy alias]];
-	[[ctrl->aliasField cell] setPlaceholderString:[buddy profileName]];
+	[[ctrl->aliasField cell] setPlaceholderString:name];
 	[[[ctrl->notesField textStorage] mutableString] setString:[buddy notes]];
 	
 	[ctrl updateStatus:[buddy status]];
@@ -313,7 +318,7 @@ static NSMutableArray *_windows = nil;
 {
 	NSSize sz = self.window.frame.size;
 	NSInteger	i, count = [toolBar segmentCount];
-	float		swidth = sz.width / count;
+	CGFloat		swidth = sz.width / count;
 	
 	for (i = 0; i < count; i++)
 		[toolBar setWidth:swidth forSegment:i];
@@ -329,12 +334,15 @@ static NSMutableArray *_windows = nil;
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {	
-	return [_logs count];
+	return (NSInteger)[_logs count];
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {	
-	return [_logs objectAtIndex:rowIndex];
+	if (rowIndex < 0 || rowIndex >= [_logs count])
+		return nil;
+	
+	return [_logs objectAtIndex:(NSUInteger)rowIndex];
 }
 
 
@@ -381,7 +389,7 @@ static NSMutableArray *_windows = nil;
 
 - (void)updateInfoView
 {
-	TCKeyedText	*keyed = [[TCKeyedText alloc] initWithKeySize:100.0];
+	TCKeyedText	*keyed = [[TCKeyedText alloc] initWithKeySize:100];
 	NSString	*value;
 
 	// Add profile name

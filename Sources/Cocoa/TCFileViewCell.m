@@ -222,10 +222,10 @@ NSString *NSStringFromFileSize(uint64_t size);
 
 
 /*
-** TCFileViewCell - Constructor & Destructor
+** TCFileViewCell - Instance
 */
 #pragma mark -
-#pragma mark TCFileViewCell - Constructor & Destructor
+#pragma mark TCFileViewCell - Instance
 
 - (id)initWithCoder:(NSCoder *)decoder
 {
@@ -277,7 +277,7 @@ NSString *NSStringFromFileSize(uint64_t size);
 	NSString		*uuid = [file objectForKey:TCFileUUIDKey];
 	NSImage			*icon = [file objectForKey:TCFileIconKey];
 	NSString		*path = [file objectForKey:TCFileFilePathKey];
-	NSString		*balias = [file objectForKey:TCFileBuddyAliasKey];
+	NSString		*bname = [file objectForKey:TCFileBuddyNameKey];
 	NSString		*baddress = [file objectForKey:TCFileBuddyAddressKey];
 	NSString		*txtStatus = [file objectForKey:TCFileStatusTextKey];
 	tcfile_status	status = (tcfile_status)[[file objectForKey:TCFileStatusKey] intValue];
@@ -366,7 +366,7 @@ NSString *NSStringFromFileSize(uint64_t size);
 	else
 		deltay = 29;
 	
-	[[NSString stringWithFormat:@"%@ %@ (%@) - %@ %@ %@", wayTxt, balias, baddress, NSStringFromFileSize(fsize_comp), NSLocalizedString(@"file_progress_of", @""), NSStringFromFileSize(fsize)] drawAtPoint:NSMakePoint(cellFrame.origin.x + 60, cellFrame.origin.y + deltay) withAttributes:tnAttribute];
+	[[NSString stringWithFormat:@"%@ %@ (%@) - %@ %@ %@", wayTxt, bname, baddress, NSStringFromFileSize(fsize_comp), NSLocalizedString(@"file_progress_of", @""), NSStringFromFileSize(fsize)] drawAtPoint:NSMakePoint(cellFrame.origin.x + 60, cellFrame.origin.y + deltay) withAttributes:tnAttribute];
 	
 	
 	// -- Manage Status --	
@@ -511,7 +511,7 @@ NSString *NSStringFromFileSize(uint64_t size)
 			return [NSString stringWithFormat:@"%llu %@", kb, NSLocalizedString(@"file_kb", @"")];
 	}
 	else if (b)
-		return [NSString stringWithFormat:@"llu %@", b, NSLocalizedString(@"file_b", @"")];
+		return [NSString stringWithFormat:@"%llu %@", b, NSLocalizedString(@"file_b", @"")];
 	
 	return [NSString stringWithFormat:@"0 %@", NSLocalizedString(@"file_b", @"")];
 }

@@ -63,6 +63,7 @@ public:
 			
 			for (i = 0; i < cnt; i++)
 				delete lines->at(i);
+			
 			delete lines;
 		}
 	}
@@ -112,8 +113,8 @@ TCSocket::TCSocket(int sock)
 	socketQueue = dispatch_queue_create("com.torchat.core.socket.main", NULL);
 
 	// -- Build Read / Write Source --
-	tcpReader = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, _sock, 0, socketQueue);
-	tcpWriter = dispatch_source_create(DISPATCH_SOURCE_TYPE_WRITE, _sock, 0, socketQueue);
+	tcpReader = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, (uintptr_t)_sock, 0, socketQueue);
+	tcpWriter = dispatch_source_create(DISPATCH_SOURCE_TYPE_WRITE, (uintptr_t)_sock, 0, socketQueue);
 	
 	// Set the read handler
 	dispatch_source_set_event_handler_cpp(this, tcpReader, ^{
@@ -139,14 +140,14 @@ TCSocket::TCSocket(int sock)
 		}
 		else if (sz > 0)
 		{			
-			if (readBuffer->size() + sz > 50 * 1024 * 1024)
+			if (readBuffer->size() + (size_t)sz > 50 * 1024 * 1024)
 			{
 				_callError(tcsocket_read_full, "core_socker_read_full", true);
 			}
 			else
 			{
 				// Append data to the buffer
-				readBuffer->appendData(buffer, sz, false);
+				readBuffer->appendData(buffer, (size_t)sz, false);
 				
 				// Manage datas
 				_dataAvailable();
@@ -188,7 +189,7 @@ TCSocket::TCSocket(int sock)
 			{
 				// Reinject remaining data in the buffer
 				if (sz < size)
-					writeBuffer->pushData(buffer + sz, size - sz, true);
+					writeBuffer->pushData(buffer + sz, size - (size_t)sz, true);
 				
 				// If we have space, signal it to fill if necessary
 				if (writeBuffer->size() < 1024 && delQueue && delObject)
@@ -360,7 +361,7 @@ bool TCSocket::sendData(const TCBuffer &buffer)
 #pragma mark -
 #pragma mark TCSocket - Operations
 
-void TCSocket::setGlobalOperation(tcsocket_operation op, ssize_t psize, int tag)
+void TCSocket::setGlobalOperation(tcsocket_operation op, size_t psize, int tag)
 {
 	dispatch_async_cpp(this, socketQueue, ^{
 		
@@ -386,7 +387,7 @@ void TCSocket::removeGlobalOperation()
 	});
 }
 
-void TCSocket::scheduleOperation(tcsocket_operation op, ssize_t psize, int tag)
+void TCSocket::scheduleOperation(tcsocket_operation op, size_t psize, int tag)
 {
 	dispatch_async_cpp(this, socketQueue, ^{
 		

@@ -41,7 +41,7 @@ std::string *				createJoin(const std::vector<std::string> &items, size_t start,
 std::string *				createReplaceAll(const std::string &s, const std::string &o, const std::string &r);
 
 // == Data ==
-ssize_t						memsearch(const uint8_t *token, size_t token_sz, const uint8_t *data, size_t data_sz);
+size_t						memsearch(const uint8_t *token, size_t token_sz, const uint8_t *data, size_t data_sz);
 
 // == Hash ==
 std::string *				createMD5(const void *data, size_t size);

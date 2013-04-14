@@ -48,7 +48,7 @@
 
 - (void)setFrame:(NSRect)rect
 {
-	float delta = rect.size.width - self.frame.size.width;
+	CGFloat delta = rect.size.width - self.frame.size.width;
 	
 	// Update items
 	float	current_y = 0;

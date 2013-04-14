@@ -40,7 +40,7 @@
 class TCFileReceive : public TCObject
 {
 public:
-	// -- Constructor & Destructor ---
+	// -- Instance ---
 	TCFileReceive(const std::string & uuid, const std::string & folder, const std::string & fileName, uint64_t fileSize, uint64_t blockSize);
 	~TCFileReceive();
 	
@@ -53,7 +53,7 @@ public:
 	// -- Accessors --
 	const std::string &	uuid() const { return _uuid; };
 	uint64_t 			fileSize() const { return _fsize; };
-	uint16_t 			blockSize() const { return _bsize; };
+	uint64_t 			blockSize() const { return _bsize; };
 	const std::string & fileName() const { return _fname; };
 	const std::string & filePath() const { return _fpath; };
 	
@@ -62,7 +62,7 @@ private:
 	
 	std::string _uuid;
 	uint64_t	_fsize;
-	uint16_t	_bsize;
+	uint64_t	_bsize;
 	std::string	_fname;
 	std::string	_fpath;
 	

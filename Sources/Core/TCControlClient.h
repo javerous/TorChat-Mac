@@ -58,7 +58,7 @@ class TCConfig;
 class TCControlClient : public TCParser, public TCSocketDelegate // Inherit from TCObject
 {
 public:
-	// -- Constructor & Destructor --
+	// -- Instance --
 	TCControlClient(TCConfig *_conf, int sock);
 	~TCControlClient();
 	

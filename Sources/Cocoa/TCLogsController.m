@@ -67,7 +67,7 @@
 - (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
 {
 	float			height = 1;
-	NSRect			rpath = NSMakeRect(cellFrame.origin.x + 3, cellFrame.origin.y + (cellFrame.size.height - height) / 2.0, cellFrame.size.width - 6, height);
+	NSRect			rpath = NSMakeRect(cellFrame.origin.x + 3, cellFrame.origin.y + (cellFrame.size.height - height) / 2.0f, cellFrame.size.width - 6, height);
 	NSBezierPath	*path = [NSBezierPath bezierPathWithRect:rpath];
 	
 	[[NSColor grayColor] set];
@@ -197,7 +197,7 @@
 			cnt = [klogs count];
 		});
 		
-		return cnt;
+		return (NSInteger)cnt;
 	}
 	else if (aTableView == logsView)
 	{
@@ -209,7 +209,7 @@
 			if (kindex < 0 || kindex >= [klogs count])
 				return;
 			
-			NSString *key = [klogs objectAtIndex:kindex];
+			NSString *key = [klogs objectAtIndex:(NSUInteger)kindex];
 			
 			if ([key isEqualToString:TCLogsAllKey])
 			{
@@ -229,7 +229,7 @@
 			}
 		});
 		
-		return cnt;
+		return (NSInteger)cnt;
 	}
 	
 	return 0;
@@ -246,7 +246,7 @@
 			if (rowIndex < 0 || rowIndex > [klogs count])
 				return ;
 			
-			NSString *key = [klogs objectAtIndex:rowIndex];
+			NSString *key = [klogs objectAtIndex:(NSUInteger)rowIndex];
 			
 			if ([key isEqualToString:TCLogsAllKey])
 				str = NSLocalizedString(@"logs_all_logs", @"");
@@ -270,14 +270,14 @@
 			if (kindex < 0 || kindex >= [klogs count])
 				return;
 			
-			NSString *key = [klogs objectAtIndex:kindex];
+			NSString *key = [klogs objectAtIndex:(NSUInteger)kindex];
 			
 			if ([key isEqualToString:TCLogsAllKey])
 			{
 				if (rowIndex < 0 || rowIndex >= [allLogs count])
 					return;
 				
-				NSDictionary *item = [allLogs objectAtIndex:rowIndex];
+				NSDictionary *item = [allLogs objectAtIndex:(NSUInteger)rowIndex];
 				
 				str = [item objectForKey:TCLogsContentKey];
 				
@@ -298,7 +298,7 @@
 				if (rowIndex < 0 || rowIndex >= [array count])
 					return;
 				
-				str = [[array objectAtIndex:rowIndex] retain];
+				str = [[array objectAtIndex:(NSUInteger)rowIndex] retain];
 			}
 			else if ([key isEqualToString:TCLogsSeparatorKey])
 			{
@@ -310,7 +310,7 @@
 				if (rowIndex < 0 || rowIndex >= [array count])
 					return;
 				
-				str = [[array objectAtIndex:rowIndex] retain];
+				str = [[array objectAtIndex:(NSUInteger)rowIndex] retain];
 			}
 		});
 		
@@ -340,12 +340,12 @@
 			if (kindex < 0 || kindex >= [klogs count])
 				return;
 			
-			key = [klogs objectAtIndex:kindex];
+			key = [klogs objectAtIndex:(NSUInteger)kindex];
 						
 			if ([key isEqualToString:TCLogsAllKey] == NO)
 				return;
 			
-			NSDictionary *item = [allLogs objectAtIndex:rowIndex];
+			NSDictionary *item = [allLogs objectAtIndex:(NSUInteger)rowIndex];
 			
 			result = [[item objectForKey:TCLogsTitleKey] boolValue];
 		});
@@ -369,7 +369,7 @@
 			if (rowIndex < 0 || rowIndex >= [klogs count])
 				return;
 			
-			key = [klogs objectAtIndex:rowIndex];
+			key = [klogs objectAtIndex:(NSUInteger)rowIndex];
 			
 			if ([key isEqualToString:TCLogsSeparatorKey])
 				result = 2;
@@ -394,7 +394,7 @@
 			if (rowIndex < 0 || rowIndex >= [klogs count])
 				return;
 			
-			key = [klogs objectAtIndex:rowIndex];
+			key = [klogs objectAtIndex:(NSUInteger)rowIndex];
 		
 			if ([key isEqualToString:TCLogsSeparatorKey])
 				result = separatorCell;
@@ -426,7 +426,7 @@
 			if (rowIndex < 0 || rowIndex >= [klogs count])
 				return;
 			
-			key = [klogs objectAtIndex:rowIndex];
+			key = [klogs objectAtIndex:(NSUInteger)rowIndex];
 		
 			if ([key isEqualToString:TCLogsSeparatorKey])
 				result = NO;
@@ -446,14 +446,14 @@
 			if (kindex < 0 || kindex > [klogs count])
 				return;
 			
-			key = [klogs objectAtIndex:kindex];
+			key = [klogs objectAtIndex:(NSUInteger)kindex];
 			
 			if ([key isEqualToString:TCLogsAllKey])
 			{
 				if (rowIndex < 0 || rowIndex >= [allLogs count])
 					return;
 				
-				NSDictionary *item = [allLogs objectAtIndex:rowIndex];
+				NSDictionary *item = [allLogs objectAtIndex:(NSUInteger)rowIndex];
 				
 				result = ![[item objectForKey:TCLogsTitleKey] boolValue];
 			}
