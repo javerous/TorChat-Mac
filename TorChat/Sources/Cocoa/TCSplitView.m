@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCSplitView.m
  *
  *  Copyright 2012 Avérous Julien-Pierre
  *
@@ -20,27 +20,28 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+
+
+#import "TCSplitView.h"
 
 
 
 /*
-** Defines
+** TCSplitView
 */
-#pragma mark - Defines
+#pragma mark - TCSplitView
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@implementation TCSplitView
 
+- (CGFloat)dividerThickness
+{
+	return 1.0;
+}
 
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+- (void)drawDividerInRect:(NSRect)aRect
+{
+	[[NSColor grayColor] set];
+	NSRectFill (aRect);
+}
 
 @end

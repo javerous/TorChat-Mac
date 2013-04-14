@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCDragImageView.h
  *
  *  Copyright 2012 Avérous Julien-Pierre
  *
@@ -20,27 +20,23 @@
  *
  */
 
+
+
 #import <Foundation/Foundation.h>
 
 
 
 /*
-** Defines
+** TCDragImageView
 */
-#pragma mark - Defines
+#pragma mark - TCDragImageView
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@interface TCDragImageView : NSImageView
+{
+@private
+    NSString *_filename;
+}
 
-
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+- (void)setFilename:(NSString *)filename;
 
 @end

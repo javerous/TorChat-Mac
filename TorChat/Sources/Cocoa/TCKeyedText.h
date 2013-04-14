@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCKeyedText.h
  *
  *  Copyright 2012 Avérous Julien-Pierre
  *
@@ -20,27 +20,24 @@
  *
  */
 
+
+
 #import <Foundation/Foundation.h>
 
 
 
 /*
-** Defines
+** TCKeyedText
 */
-#pragma mark - Defines
+#pragma mark - TCKeyedText
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@interface TCKeyedText : NSObject
 
+- (id)initWithKeySize:(NSUInteger)ksize;
 
+- (void)addLineWithKey:(NSString *)key andContent:(NSString *)content;
+- (void)addAttributedLineWithKey:(NSAttributedString *)key andContent:(NSAttributedString *)content;
 
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+- (NSAttributedString *)renderedText;
 
 @end
