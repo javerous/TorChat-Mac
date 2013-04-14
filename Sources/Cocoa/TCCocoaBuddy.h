@@ -46,10 +46,14 @@
 #pragma mark -
 #pragma mark Notifications
 
-#define TCCocoaBuddyChangedStatusNotification	@"TCCocoaBuddyChangedStatus"
-#define TCCocoaBuddyChangedAvatarNotification	@"TCCocoaBuddyChangedAvatar"
-#define TCCocoaBuddyChangedNameNotification		@"TCCocoaBuddyChangedName"
-#define TCCocoaBuddyChangedTextNotification		@"TCCocoaBuddyChangedText"
+#define TCCocoaBuddyChangedStatusNotification		@"TCCocoaBuddyChangedStatus"
+#define TCCocoaBuddyChangedAvatarNotification		@"TCCocoaBuddyChangedAvatar"
+#define TCCocoaBuddyChangedNameNotification			@"TCCocoaBuddyChangedName"
+#define TCCocoaBuddyChangedTextNotification			@"TCCocoaBuddyChangedText"
+#define TCCocoaBuddyChangedAliasNotification		@"TCCocoaBuddyChangedAlias"
+
+#define TCCocoaBuddyChangedPeerVersionNotification	@"TCCocoaBuddyChangedPeerVersion"
+#define TCCocoaBuddyChangedPeerClientNotification	@"TCCocoaBuddyChangedPeerClient"
 
 
 
@@ -70,9 +74,12 @@
 	dispatch_queue_t			noticeQueue;
 		
 	tcbuddy_status				_status;
-	NSImage						*_pavatar;
-	NSString					*_pname;
-	NSString					*_ptext;
+	NSImage						*_profileAvatar;
+	NSString					*_profileName;
+	NSString					*_profileText;
+	
+	NSString					*_peerVersion;
+	NSString					*_peerClient;
 	
 	NSImage						*_cpavatar;
 }
@@ -95,6 +102,11 @@
 - (NSImage *)profileAvatar;
 - (NSString *)profileName;
 - (NSString *)profileText;
+
+// -- Peer --
+- (NSString *)peerVersion;
+- (NSString *)peerClient;
+
 
 // -- Actions --
 - (void)openChatWindow;

@@ -126,7 +126,11 @@ public:
 	// -- UI --
 	virtual tc_config_title	get_mode_title() const = 0;
 	virtual void			set_mode_title(tc_config_title mode) = 0;
-		
+	
+	// -- Client --
+	virtual  std::string	get_client_version() const = 0;
+	virtual  std::string	get_client_name() const = 0;
+
 	// -- Tools --
 	virtual std::string		real_path(const std::string &path) const = 0;
 	

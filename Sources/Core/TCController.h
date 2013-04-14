@@ -96,6 +96,7 @@ typedef enum
 	tcctrl_error_client_cmd_pong,
 	tcctrl_error_client_cmd_status,
 	tcctrl_error_client_cmd_version,
+	tcctrl_error_client_cmd_client,
 	tcctrl_error_client_cmd_profile_text,
 	tcctrl_error_client_cmd_profile_name,
 	tcctrl_error_client_cmd_profile_avatar,

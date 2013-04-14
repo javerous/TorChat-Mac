@@ -35,6 +35,8 @@
 
 - (float)heightForDrawingWithFont:(NSFont *)font andWidth:(float)width;
 
+- (NSString *)realPath;
+
 @end
 
 

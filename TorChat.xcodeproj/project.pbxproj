@@ -66,6 +66,7 @@
 		E87CB85312508F7A00A75686 /* BuddyInfo.xib in Resources */ = {isa = PBXBuildFile; fileRef = E87CB85112508F7A00A75686 /* BuddyInfo.xib */; };
 		E881CD7D11F5891B008D6F55 /* add.tiff in Resources */ = {isa = PBXBuildFile; fileRef = E881CD7811F5891B008D6F55 /* add.tiff */; };
 		E881CD7F11F5891B008D6F55 /* remove.tiff in Resources */ = {isa = PBXBuildFile; fileRef = E881CD7A11F5891B008D6F55 /* remove.tiff */; };
+		E88879FF1303EA9F00C7D60E /* TCDragImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = E88879FE1303EA9900C7D60E /* TCDragImageView.m */; };
 		E889F09712531CFB000C36B2 /* TCStringExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F09612531CFB000C36B2 /* TCStringExtension.m */; };
 		E889F09A12531D07000C36B2 /* TCButton.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F09912531D07000C36B2 /* TCButton.m */; };
 		E889F09D12531D12000C36B2 /* TCTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F09C12531D12000C36B2 /* TCTableView.m */; };
@@ -92,6 +93,7 @@
 		E8CCCD7511FEE72500C8EEFF /* TCFileReceive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CCCD7311FEE72500C8EEFF /* TCFileReceive.cpp */; };
 		E8D249C812F82C4700B476E3 /* bar.png in Resources */ = {isa = PBXBuildFile; fileRef = E8D249C712F82C4700B476E3 /* bar.png */; };
 		E8EBCA7011FF2C6500E3E878 /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E8EBCA6F11FF2C6500E3E878 /* libcrypto.dylib */; };
+		E8F15A7A130425A4000593E1 /* TCKeyedText.m in Sources */ = {isa = PBXBuildFile; fileRef = E8F15A79130425A4000593E1 /* TCKeyedText.m */; };
 		E8F16D3411FF7E9700DFA05F /* TCParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F16D3211FF7E9700DFA05F /* TCParser.cpp */; };
 /* End PBXBuildFile section */
 
@@ -103,7 +105,7 @@
 		E81FD9F711E7259B000614D5 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		E81FD9F911E7259B000614D5 /* TorChat-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TorChat-Info.plist"; sourceTree = "<group>"; };
 		E81FD9FA11E7259B000614D5 /* TorChat_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TorChat_Prefix.pch; sourceTree = "<group>"; };
-		E81FD9FC11E7259B000614D5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		E81FD9FC11E7259B000614D5 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		E81FD9FE11E7259B000614D5 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		E81FDA0111E7259C000614D5 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		E826C109120D94F000AF9A5E /* file_down.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = file_down.png; sourceTree = "<group>"; };
@@ -172,6 +174,8 @@
 		E87CB85212508F7A00A75686 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/BuddyInfo.xib; sourceTree = "<group>"; };
 		E881CD7811F5891B008D6F55 /* add.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = add.tiff; sourceTree = "<group>"; };
 		E881CD7A11F5891B008D6F55 /* remove.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = remove.tiff; sourceTree = "<group>"; };
+		E88879FD1303EA9600C7D60E /* TCDragImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCDragImageView.h; path = Cocoa/TCDragImageView.h; sourceTree = "<group>"; };
+		E88879FE1303EA9900C7D60E /* TCDragImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCDragImageView.m; path = Cocoa/TCDragImageView.m; sourceTree = "<group>"; };
 		E889F09512531CFB000C36B2 /* TCStringExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCStringExtension.h; path = Cocoa/TCStringExtension.h; sourceTree = "<group>"; };
 		E889F09612531CFB000C36B2 /* TCStringExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCStringExtension.m; path = Cocoa/TCStringExtension.m; sourceTree = "<group>"; };
 		E889F09812531D07000C36B2 /* TCButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCButton.h; path = Cocoa/TCButton.h; sourceTree = "<group>"; };
@@ -222,6 +226,8 @@
 		E8CCCD7411FEE72500C8EEFF /* TCFileReceive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCFileReceive.h; sourceTree = "<group>"; };
 		E8D249C712F82C4700B476E3 /* bar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bar.png; sourceTree = "<group>"; };
 		E8EBCA6F11FF2C6500E3E878 /* libcrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.dylib; path = /usr/lib/libcrypto.dylib; sourceTree = "<absolute>"; };
+		E8F15A78130425A4000593E1 /* TCKeyedText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCKeyedText.h; path = Cocoa/TCKeyedText.h; sourceTree = "<group>"; };
+		E8F15A79130425A4000593E1 /* TCKeyedText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCKeyedText.m; path = Cocoa/TCKeyedText.m; sourceTree = "<group>"; };
 		E8F16D3211FF7E9700DFA05F /* TCParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TCParser.cpp; sourceTree = "<group>"; };
 		E8F16D3311FF7E9700DFA05F /* TCParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCParser.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -347,6 +353,8 @@
 				E889F09F12531D1E000C36B2 /* TCTorManager.mm */,
 				E889F0A112531D33000C36B2 /* TCCocoaConfig.h */,
 				E889F0A212531D33000C36B2 /* TCCocoaConfig.mm */,
+				E8F15A78130425A4000593E1 /* TCKeyedText.h */,
+				E8F15A79130425A4000593E1 /* TCKeyedText.m */,
 			);
 			name = Tools;
 			sourceTree = "<group>";
@@ -373,6 +381,8 @@
 				E854FDFB12F8082C009C2E5E /* TCBuddyCell.m */,
 				E874146912FAE0C200BD4862 /* TCDropButton.h */,
 				E874146A12FAE0C200BD4862 /* TCDropButton.m */,
+				E88879FD1303EA9600C7D60E /* TCDragImageView.h */,
+				E88879FE1303EA9900C7D60E /* TCDragImageView.m */,
 			);
 			name = Buddies;
 			sourceTree = "<group>";
@@ -701,6 +711,8 @@
 				E854FDF912F7FD88009C2E5E /* TCImageExtension.mm in Sources */,
 				E854FDFC12F8082C009C2E5E /* TCBuddyCell.m in Sources */,
 				E874146B12FAE0C200BD4862 /* TCDropButton.m in Sources */,
+				E88879FF1303EA9F00C7D60E /* TCDragImageView.m in Sources */,
+				E8F15A7A130425A4000593E1 /* TCKeyedText.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

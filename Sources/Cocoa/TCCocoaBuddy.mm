@@ -110,9 +110,9 @@
 	[chat release];
 	
 	// Release cache
-	[_pavatar release];
-	[_pname release];
-	[_ptext release];
+	[_profileAvatar release];
+	[_profileName release];
+	[_profileText release];
 	
 	[_cpavatar release];
 	
@@ -243,13 +243,19 @@
 	
 	dispatch_sync(mainQueue, ^{
 		
-		result = [_pavatar retain];
+		result = [_profileAvatar retain];
 	});
 	
 	if (result)
 		return [result autorelease];
 	else
-		return [NSImage imageNamed:NSImageNameUser];
+	{
+		NSImage *img = [NSImage imageNamed:NSImageNameUser];
+		
+		[img setSize:NSMakeSize(64, 64)];
+		 
+		return img;
+	}
 }
 
 - (NSString *)profileName
@@ -258,7 +264,7 @@
 	
 	dispatch_sync(mainQueue, ^{
 		
-		result = [_pname retain];
+		result = [_profileName retain];
 	});
 	
 	if (result)
@@ -273,7 +279,45 @@
 	
 	dispatch_sync(mainQueue, ^{
 		
-		result = [_ptext retain];
+		result = [_profileText retain];
+	});
+	
+	if (result)
+		return [result autorelease];
+	else
+		return @"";
+}
+
+
+
+/*
+** TCCocoaBuddy - Peer
+*/
+#pragma mark -
+#pragma mark TCCocoaBuddy - Peer
+
+- (NSString *)peerVersion
+{
+	__block NSString *result = nil;
+	
+	dispatch_sync(mainQueue, ^{
+		
+		result = [_peerVersion retain];
+	});
+	
+	if (result)
+		return [result autorelease];
+	else
+		return @"";
+}
+
+- (NSString *)peerClient
+{
+	__block NSString *result = nil;
+	
+	dispatch_sync(mainQueue, ^{
+		
+		result = [_peerClient retain];
 	});
 	
 	if (result)
@@ -515,23 +559,23 @@
 				
 			case tcbuddy_notify_profile_avatar:
 			{
-				TCImage	*img = dynamic_cast<TCImage *>(info->context());
-				NSImage *avatar = [[NSImage alloc] initWithTCImage:img];
-				
-				[_pavatar release];
-				_pavatar = avatar;
+				TCImage			*img = dynamic_cast<TCImage *>(info->context());
+				NSImage			*avatar = [[NSImage alloc] initWithTCImage:img];
+				NSDictionary	*info = [NSDictionary dictionaryWithObject:avatar forKey:@"avatar"];
+
+				[_profileAvatar release];
+				_profileAvatar = avatar;
 				
 				// Notify of the new avatar
 				dispatch_async(noticeQueue, ^{
-					
-					NSDictionary *info = [NSDictionary dictionaryWithObject:avatar forKey:@"avatar"];
 
 					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedAvatarNotification object:self userInfo:info];					
 				});
 				
 				// Set the new avatar to the chat window
 				dispatch_async(dispatch_get_main_queue(), ^{
-					[chat setRemoteAvatar:_pavatar];
+					
+					[chat setRemoteAvatar:_profileAvatar];
 				});
 										  
 				break;
@@ -539,14 +583,14 @@
 				
 			case tcbuddy_notify_profile_text:
 			{
-				TCString *text = dynamic_cast<TCString *>(info->context());
-				
-				[_ptext release];
-				_ptext = [[NSString alloc] initWithUTF8String:text->content().c_str()];
+				TCString		*text = dynamic_cast<TCString *>(info->context());
+				NSString		*otext = [[NSString alloc] initWithUTF8String:text->content().c_str()];
+				NSDictionary	*info = [NSDictionary dictionaryWithObject:otext forKey:@"text"];
+
+				[_profileText release];
+				_profileText = otext;
 				
 				dispatch_async(noticeQueue, ^{
-					
-					NSDictionary *info = [NSDictionary dictionaryWithObject:_ptext forKey:@"text"];
 					
 					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedTextNotification object:self userInfo:info];					
 				});
@@ -556,15 +600,15 @@
 				
 			case tcbuddy_notify_profile_name:
 			{
-				TCString *name = dynamic_cast<TCString *>(info->context());
+				TCString		*name = dynamic_cast<TCString *>(info->context());
+				NSString		*oname = [[NSString alloc] initWithUTF8String:name->content().c_str()];
+				NSDictionary	*info = [NSDictionary dictionaryWithObject:oname forKey:@"name"];
 
-				[_pname release];
-				_pname = [[NSString alloc] initWithUTF8String:name->content().c_str()];
+				[_profileName release];
+				_profileName = oname;
 				
 				dispatch_async(noticeQueue, ^{
 					
-					NSDictionary *info = [NSDictionary dictionaryWithObject:_pname forKey:@"name"];
-
 					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedNameNotification object:self userInfo:info];					
 				});
 				
@@ -575,7 +619,6 @@
 			{
 				TCString	*message = dynamic_cast<TCString *>(info->context());
 				NSString	*omessage = [[NSString alloc] initWithUTF8String:message->content().c_str()];
-				
 				
 				// Show the messages in main-thread (graphical operation)
 				dispatch_async(dispatch_get_main_queue(), ^{
@@ -595,17 +638,56 @@
 				
 			case tcbuddy_notify_alias:
 			{
-				TCString *alias = dynamic_cast<TCString *>(info->context());
+				TCString        *alias = dynamic_cast<TCString *>(info->context());
+                NSString        *oalias = [NSString stringWithUTF8String:alias->content().c_str()];
+                NSDictionary    *info = [NSDictionary dictionaryWithObject:oalias forKey:@"alias"];
+
+				dispatch_async(noticeQueue, ^{
+					
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedAliasNotification object:self userInfo:info];
+				});
 				
-				(void)alias;
 				break;
 			}
 				
 			case tcbuddy_notify_notes:
 			{
-				TCString *notes = dynamic_cast<TCString *>(info->context());
+				// TCString *notes = dynamic_cast<TCString *>(info->context());
 
-				(void)notes;
+				break;
+			}
+				
+			case tcbuddy_notify_version:
+			{
+				TCString        *version = dynamic_cast<TCString *>(info->context());
+				NSString        *oversion = [[NSString alloc] initWithUTF8String:version->content().c_str()];
+                NSDictionary    *info = [NSDictionary dictionaryWithObject:oversion forKey:@"version"];
+
+				[_peerVersion release];
+                _peerVersion = oversion;
+				
+				dispatch_async(noticeQueue, ^{
+					
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedPeerVersionNotification object:self userInfo:info];
+				});
+				
+				break;
+			}
+			
+			case tcbuddy_notify_client:
+			{
+				TCString        *client = dynamic_cast<TCString *>(info->context());
+				NSString        *oclient = [[NSString alloc] initWithUTF8String:client->content().c_str()];
+                NSDictionary    *info = [NSDictionary dictionaryWithObject:oclient forKey:@"client"];
+
+				[_peerClient release];
+				_peerClient = oclient;
+				
+				dispatch_async(noticeQueue, ^{
+					
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedPeerClientNotification object:self userInfo:info];					
+				});
+				
 				break;
 			}
 				

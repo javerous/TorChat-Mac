@@ -57,7 +57,7 @@
 
 - (void)doAvatarDrop:(NSImage *)avatar;
 
-- (void)reloadBuddyList;
+//- (void)reloadBuddyList:(BOOL)reselect;
 
 - (void)updateStatusUI:(int)status;
 - (void)updateTitleUI;
@@ -111,6 +111,8 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddyStatusChanged:) name:TCCocoaBuddyChangedStatusNotification object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddyAvatarChanged:) name:TCCocoaBuddyChangedAvatarNotification object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddyNameChanged:) name:TCCocoaBuddyChangedNameNotification object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddyAliasChanged:) name:TCCocoaBuddyChangedAliasNotification object:nil];
+
 
 		// Load interface bundle
 		[NSBundle loadNibNamed:@"Buddies" owner:self];
@@ -200,7 +202,13 @@
 	if ([[avatar representations] count] > 0)
 		[imAvatar setImage:avatar];
 	else
-		[imAvatar setImage:[NSImage imageNamed:@"NSUser"]];
+	{
+		NSImage *img = [NSImage imageNamed:NSImageNameUser];
+		
+		[img setSize:NSMakeSize(64, 64)];
+		 
+		[imAvatar setImage:img];
+	}
 	
 	[avatar release];
 	tavatar->release();
@@ -278,65 +286,49 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
-	__block NSUInteger cnt = 0;
-	
-	dispatch_sync(mainQueue, ^{
-		cnt = [buddies count];
-	});
-	
-	return cnt;
+	return [buddies count];
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
-	__block id		result = nil;
+	if (rowIndex >= [buddies count])
+		return nil;
 	
-	dispatch_sync(mainQueue, ^{
-		
-		if (rowIndex >= [buddies count])
-			return;
-		
-		NSString		*identifier = [aTableColumn identifier];
-		TCCocoaBuddy	*buddy = [buddies objectAtIndex:rowIndex];
-		
-		if ([identifier isEqualToString:@"state"])
+	NSString		*identifier = [aTableColumn identifier];
+	TCCocoaBuddy	*buddy = [buddies objectAtIndex:rowIndex];
+	
+	if ([identifier isEqualToString:@"state"])
+	{
+		switch ([buddy status])
 		{
-			switch ([buddy status])
-			{
-				case tcbuddy_status_offline:
-					result = [NSImage imageNamed:@"stat_offline"];
-					break;
-					
-				case tcbuddy_status_available:
-					result = [NSImage imageNamed:@"stat_online"];
-					break;
-					
-				case tcbuddy_status_away:
-					result = [NSImage imageNamed:@"stat_away"];
-					break;
-					
-				case tcbuddy_status_xa:
-					result = [NSImage imageNamed:@"stat_xa"];
-					break;
-			}
+			case tcbuddy_status_offline:
+				return [NSImage imageNamed:@"stat_offline"];
+				
+			case tcbuddy_status_available:
+				return [NSImage imageNamed:@"stat_online"];
+				
+			case tcbuddy_status_away:
+				return [NSImage imageNamed:@"stat_away"];
+				
+			case tcbuddy_status_xa:
+				return [NSImage imageNamed:@"stat_xa"];
 		}
-		else if ([identifier isEqualToString:@"name"])
-		{
-			NSDictionary *content = [NSDictionary dictionaryWithObjectsAndKeys:	[buddy alias],			TCBuddyCellAliasKey,
-																				[buddy address],		TCBuddyCellAddressKey,
-																				[buddy profileName],	TCBuddyCellProfileNameKey,
-																				nil];
-			
-			
-			result = content;
-		}
-		else if ([identifier isEqualToString:@"avatar"])
-		{
-			result = [buddy profileAvatar];
-		}
-	});
+	}
+	else if ([identifier isEqualToString:@"name"])
+	{
+		return [NSDictionary dictionaryWithObjectsAndKeys:	[buddy alias],			TCBuddyCellAliasKey,
+															[buddy address],		TCBuddyCellAddressKey,
+															[buddy profileName],	TCBuddyCellProfileNameKey,
+															nil];
+		
+		
+	}
+	else if ([identifier isEqualToString:@"avatar"])
+	{
+		return [buddy profileAvatar];
+	}
 
-	return result;
+	return nil;
 }
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
@@ -344,19 +336,25 @@
 	NSInteger	row = [tableView selectedRow];
 	
 	[imRemove setEnabled:(row >= 0)];
+
+	// Hold current selection (not perfect)
+	if (row >= 0 && row < [buddies count])
+		lastSelected = [buddies objectAtIndex:row];
+	else
+		lastSelected = nil;
 	
 	// Notify
 	id				obj = (row >= 0 ? [buddies objectAtIndex:row] : [NSNull null]);
 	NSDictionary	*content = [NSDictionary dictionaryWithObject:obj forKey:TCBuddiesControllerBuddyKey];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesControllerSelectChanged object:self userInfo:content];
+	[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesControllerSelectChanged object:self userInfo:content];	
 }
 
 - (void)tableViewDoubleClick:(id)sender
 {
 	NSInteger		row = [tableView clickedRow];
 	TCCocoaBuddy	*buddy;
-	
+
 	if (row < 0 || row >= [buddies count])
 		return;
 	
@@ -384,7 +382,7 @@
 		return NO;
 	
 	TCCocoaBuddy	*buddy = [buddies objectAtIndex:row];
-
+	
 	if ([types containsObject:NSFilenamesPboardType])
 	{
 		NSFileManager *mng = [NSFileManager defaultManager];
@@ -417,20 +415,20 @@
 #pragma mark TCBuddiesController - Buddy
 
 - (void)buddyStatusChanged:(NSNotification *)notice
-{	
-	// Sort buddies by status
-	dispatch_async(mainQueue, ^{
+{
+	dispatch_async(dispatch_get_main_queue(), ^{
 		
+		// Sort buddies by status
 		NSUInteger		i, cnt = [buddies count];
 		NSMutableArray	*temp_off = [[NSMutableArray alloc] initWithCapacity:cnt];
 		NSMutableArray	*temp_av = [[NSMutableArray alloc] initWithCapacity:cnt];
 		NSMutableArray	*temp_aw = [[NSMutableArray alloc] initWithCapacity:cnt];
 		NSMutableArray	*temp_xa = [[NSMutableArray alloc] initWithCapacity:cnt];
-
+		
 		for (i = 0; i < cnt; i++)
 		{
 			TCCocoaBuddy *buddy = [buddies objectAtIndex:i];
-		
+			
 			switch ([buddy status])
 			{
 				case tcbuddy_status_offline:
@@ -463,23 +461,39 @@
 		[temp_aw release];
 		[temp_xa release];
 		[temp_off release];
+		
+		// Reload table
+		[tableView reloadData];
 	});
-	
-	// Reload list
-	[self reloadBuddyList];
 }
 
 - (void)buddyAvatarChanged:(NSNotification *)notice
 {
-	// Reload list
-	[self reloadBuddyList];
+	dispatch_async(dispatch_get_main_queue(), ^{
+
+		// Reload table
+		[tableView reloadData];
+	});
 }
 
 - (void)buddyNameChanged:(NSNotification *)notice
 {
-	// Reload list
-	[self reloadBuddyList];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		// Reload table
+		[tableView reloadData];
+	});
 }
+
+- (void)buddyAliasChanged:(NSNotification *)notice
+{
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		// Reload table
+		[tableView reloadData];
+	});
+}
+
 
 
 /*
@@ -573,6 +587,9 @@
 {
 	TCImage *image = [avatar createTCImage];
 	
+	if (!image)
+		return;
+	
 	control->setProfileAvatar(image);
 	
 	image->release();
@@ -636,6 +653,12 @@
 
 - (IBAction)doAdd:(id)sender
 {
+	[addNameField setStringValue:@""];
+	[addAddressField setStringValue:@""];
+	[[[addNotesField textStorage] mutableString] setString:@""];
+	
+	[addNameField becomeFirstResponder];
+	
 	[addWindow center];
 	[addWindow makeKeyAndOrderFront:sender];
 }
@@ -781,21 +804,6 @@
 	return [buddies objectAtIndex:row];
 }
 
-
-
-/*
-** TCBuddiesController - Private
-*/
-#pragma mark -
-#pragma mark TCBuddiesController - Private
-
-- (void)reloadBuddyList
-{
-	dispatch_async(dispatch_get_main_queue(), ^{
-		[tableView reloadData];
-	});
-}
-
 - (void)updateStatusUI:(int)status
 {
 	// Unselect old item
@@ -848,6 +856,9 @@
 				TCString *tname = control->profileName();
 				
 				content = [NSString stringWithUTF8String:tname->content().c_str()];
+				
+				if ([content length] == 0)
+					content = @"-";
 				
 				tname->release();
 				
@@ -908,9 +919,7 @@
 			{
 				TCNumber			*nbr = dynamic_cast<TCNumber *>(info->context());
 				tccontroller_status	status = (tccontroller_status)nbr->uint8Value();
-				
-				NSLog(@"New status:%i", status);
-				
+								
 				dispatch_async(dispatch_get_main_queue(), ^{
 					[self updateStatusUI:status];
 				});
@@ -921,10 +930,16 @@
 			case tcctrl_notify_profile_avatar:
 			{
 				TCImage *image = dynamic_cast<TCImage *>(info->context());
-				NSImage *final = [[NSImage alloc] initWithTCImage:image];
+				NSImage	*final = [[NSImage alloc] initWithTCImage:image];
 				
 				if ([[final representations] count] == 0)
-					final = [[NSImage imageNamed:@"NSUser"] retain];
+				{
+					[final release];
+					
+					final = [[NSImage imageNamed:NSImageNameUser] retain];
+					
+					[final setSize:NSMakeSize(64, 64)];
+				}
 					
 				dispatch_async(dispatch_get_main_queue(), ^{
 						
@@ -943,25 +958,24 @@
 				
 			case tcctrl_notify_profile_name:
 			{
-				TCString *name = dynamic_cast<TCString *>(info->context());
-				
-				[self reloadBuddyList];
-				
-				dispatch_async(dispatch_get_main_queue(), ^{					
+				// TCString *name = dynamic_cast<TCString *>(info->context());
+								
+				dispatch_async(dispatch_get_main_queue(), ^{
+					
+					// Reload table
+					[tableView reloadData];
+					
+					// Update Title
 					[self updateTitleUI];
 				});
-				
-				(void)name;
-				
+								
 				break;
 			}
 				
 			case tcctrl_notify_profile_text:
 			{
-				TCString *text = dynamic_cast<TCString *>(info->context());
-				
-				(void)text;
-				
+				// TCString *text = dynamic_cast<TCString *>(info->context());
+								
 				break;
 			}
 				
@@ -975,10 +989,9 @@
 					[buddies addObject:obuddy];
 					
 					[obuddy setControllerAvatar:[imAvatar image]];
-					
-					[self reloadBuddyList];
-					
 					[obuddy release];
+
+					[tableView reloadData];
 				});
 				
 				break;
