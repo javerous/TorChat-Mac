@@ -1,0 +1,222 @@
+/*
+*  Localizable.strings
+*
+*  Copyright 2012 Avérous Julien-Pierre
+*
+*  This file is part of TorChat.
+*
+*  TorChat is free software: you can redistribute it and/or modify
+*  it under the terms of the GNU General Public License as published by
+*  the Free Software Foundation, either version 3 of the License, or
+*  (at your option) any later version.
+*
+*  TorChat is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU General Public License for more details.
+*
+*  You should have received a copy of the GNU General Public License
+*  along with TorChat.  If not, see <http://www.gnu.org/licenses/>.
+*
+*/
+
+
+
+/* Assistant Pannel */
+"ac_title_welcome" = "Configure TorChat for Mac";
+"ac_title_mode" = "Select a mode";
+"ac_title_advanced" = "Setup the advanced mode";
+"ac_title_basic" = "Setup the basic mode";
+
+"ac_next_continue" = "Continue";
+"ac_next_finish" = "Finish";
+
+"ac_err_build_path" = "Can't build the configuration path because of a system error";
+"ac_err_write_file" = "Can't build a configuration file (%@). Please check write access on your TorChat folder.";
+"ac_err_read_file" = "Can't open the configuration file (%@). Please check read access on your file.";
+"ac_err_read_proxy" = "Can't get the configuration data (%@). Please check the proxy.";
+"ac_err_launch" = "Can't launch tor. Please check the TorChat logs and system logs for more informations.";
+"ac_err_config" = "Error";
+
+
+/* Tor Manager */
+"tor_err_build_path" = "Can't generate standard tor path. Please check your configuration file.";
+"tor_err_launch" = "Can't launch tor. Please check your system logs, and check the integrity of TorChat.";
+"tor_is_running" = "Tor is running.";
+"tor_is_not_running" = "Tor is not running.";
+"tor_out_log" = "Tor: %s";
+"tor_err_log" = "Tor-Error: %s";
+
+
+/* Menu */
+"menu_block_buddy" = "Block Buddy";
+"menu_unblock_buddy" = "Unblock Buddy";
+
+
+/* Buddy */
+"bd_status_offline" = "Offline";
+"bd_status_available" = "Available";
+"bd_status_away" = "Away";
+"bd_status_xa" = "Extended Away";
+
+"bd_error_offline" = "Message can't be sent because the user is offline: \"%@\"";
+"bd_error_blocked" = "Message can't be sent because the user is blocked: \"%@\"";
+
+
+/* Buddy Info */
+"bdi_profile_name" = "Profile Name";
+"bdi_profile_text" = "Profile Text";
+"bdi_peer_client" = "Client Name";
+"bdi_peer_version" = "Client Version";
+"bdi_isblocked" = "Blocked";
+
+"bdi_yes" = "Yes";
+"bdi_no" = "No";
+
+
+/* File */
+"file_canceling" = "Canceling...";
+"file_upload_done" = "Upload done.";
+"file_upload_stoped" = "Upload stoped.";
+"file_download_done" = "Download done.";
+"file_download_stoped" = "Download stoped.";
+"file_uploading" = "Uploading...";
+"file_downloading" = "Downloading...";
+"file_uploads" = "%u uploads";
+"one_upload" = "1 upload";
+"file_downloads" = "%u downloads";
+"one_download" = "1 download";
+"file_progress_of" = "of";
+"file_progress_from" = "From:";
+"file_progress_to" = "To:";
+"file_gb" = "GB";
+"file_mb" = "MB";
+"file_kb" = "KB";
+"file_b" = "B";
+
+
+/* Chat */
+"chats_count" = "chats";
+"chat_want_close" = "Are you sure you want to close this window?";
+"chat_want_close_info" = "There are %ld chats in this window. Do you want to close the window anyway?";
+"chat_cancel" = "Cancel";
+"chat_close" = "Close";
+
+
+/* Config */
+"conf_err_no_name" = "Can't open configuration file because no name was given.";
+"conf_err_cant_open" = "Can't open the configuration file.";
+"conf_err_parse" = "Can't parse the configuration file.";
+"conf_err_content" = "The configuration file contain bad data.";
+"conf_download" = "Downloads";
+
+
+/* Logs */
+"logs_all_logs" = "All logs";
+"logs_global_logs" = "Globals";
+"logs_error_title" = "TorChat Error";
+
+
+/* Core - Buddy */
+"core_bd_err_tor_resolve" = "The tor SOCKS address can't be resolved.";
+"core_bd_err_tor_connect" = "Unable to make a connection to the tor SOCKS.";
+"core_bd_note_tor_connected" = "Buddy connected on tor SOCKS.";
+
+"core_bd_note_status_changed" = "Buddy status has changed.";
+"core_bd_note_stoped" = "Buddy is stoped.";
+
+"core_bd_note_alias_changed" = "The alias of the buddy changed.";
+"core_bd_note_notes_changed" = "The notes of the buddy changed.";
+"core_bd_note_blocked_changed" = "The block status of the buddy changed.";
+
+"core_bd_note_file_send_canceled" = "File sending was canceled.";
+"core_bd_note_file_receive_canceled" = "File receiving was canceled.";
+
+"core_bd_note_file_send_start" = "New file sending session.";
+"core_bd_note_file_send_finish" = "File send finished.";
+
+"core_bd_note_file_receive_start" = "New file receiving session.";
+"core_bd_note_file_receive_finish" = "File receive finished.";
+
+"core_bd_note_file_chunk_send" = "New file chunk sent";
+"core_bd_note_file_chunk_receive" = "New file chunk received";
+
+"core_bd_note_file_send_stoped" = "File send was stoped by the remote peer.";
+"core_bd_note_file_receive_stoped" = "File receive was stoped by the remote peer.";
+"core_bd_note_new_message" = "Received a new message";
+"core_bd_err_file_offline" = "Can't send a file to an offline buddy.";
+"core_bd_err_file_blocked" = "Can't send a file to an blocked buddy.";
+"core_bd_err_message_offline" = "Can't send a message to an offline buddy.";
+"core_bd_err_message_blocked" = "Can't send a message to an blocked buddy";
+
+"core_bd_err_parse" = "Parse Error";
+
+"core_bd_note_identified" = "Buddy is fully identified. All action are activated.";
+"core_bd_note_connected" = "Buddy is connected on the remote buddy through tor SOCKS.";
+
+"core_bd_err_socks_request" = "Can't send the SOCKS request.";
+"core_bd_err_socks_91" = "SOCKS request rejected or failed.";
+"core_bd_err_socks_92" = "SOCKS request rejected becasue SOCKS server cannot connect to identd on the client.";
+"core_bd_err_socks_93" = "SOCKS request rejected because the client program and identd report different user-ids.";
+"core_bd_err_socks_unknown" = "SOCKS request failed for an unknown reason.";
+"core_bd_err_socket" = "Buddy socket error.";
+
+"core_bd_note_new_client" = "Peer name received";
+"core_bd_note_new_version" = "Peer version received";
+
+"core_bd_note_new_profile_text" = "Buddy profile text received";
+"core_bd_note_new_profile_name" = "Buddy profile name received";
+"core_bd_note_new_profile_avatar" = "Buddy profile avatar received";
+
+
+/* Core - Controller */
+"core_ctrl_note_new_buddy" = "A new buddy was added on your buddy list.";
+"core_ctrl_myself" = "myself";
+
+"core_ctrl_err_socket" = "Can't build a system socket object.";
+"core_ctrl_err_setsockopt" = "Can't change system socket option.";
+"core_ctrl_err_bind" = "Can't set system socket address.";
+"core_ctrl_err_listen" = "Can't listen on the system socket.";
+"core_ctrl_err_accept" = "Can't accept new client because of a system error.";
+"core_ctrl_err_async" = "Can't use async I/O on system socket.";
+"core_ctrl_note_started" = "TorChat controller is started.";
+"core_ctrl_note_stoped" = "TorChat controller is stoped.";
+
+"core_ctrl_note_profile_avatar" = "Profile avatar changed.";
+"core_ctrl_note_profile_text" = "Profile text changed.";
+"core_ctrl_note_profile_name" = "Profile name changed.";
+
+
+/* Core - Client Controller */
+"core_cctrl_note_started" = "Client controller was started.";
+"core_cctrl_note_stoped" = "Client controller was stoped.";
+
+"core_cctrl_err_fake_ping" = "A remote peer sent a faked ping hostname. It was killed.";
+"core_cctrl_err_already_pinged" = "A remote peer try to ping a buddy already pinged. It was killed.";
+"core_cctrl_err_masquerade" = "A remote peer try a masquerade with our address. It was killed.";
+"core_cctrl_err_pong" = "A remote peer try to do a pong, but the buddy can't be found. It was killed.";
+
+"core_cctrl_err_socket" = "Client controller socket error.";
+
+"core_cctrl_err_add_buddy" = "Can't add a new buddy on TorChat controller.";
+
+"core_cctrl_new_buddy" = "unknown";
+
+
+/* Core - File Send */
+"core_fsend_err_cant_open" = "Can't open the file to send.";
+"core_fsend_err_cant_seek" = "Can't seek in the file to send.";
+"core_fsend_err_cant_tell" = "Can't tell the file to send.";
+
+
+/* Core - File Receive */
+"core_frec_err_cant_open" = "Can't open file to receive incoming file.";
+
+
+/* Core - Socket */
+"core_socket_read_error" = "Socket read error.";
+"core_socket_read_closed" = "Socket was closed by remote peer on read.";
+"core_socker_read_full" = "Socket buffer is full. Unable to buffer more data.";
+
+"core_socket_write_error" = "Socket write error.";
+"core_socket_write_closed" = "Socket was closed by remote peer on write.";

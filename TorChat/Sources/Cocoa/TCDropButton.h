@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCDropButton.h
  *
  *  Copyright 2012 Avérous Julien-Pierre
  *
@@ -20,27 +20,25 @@
  *
  */
 
+
+
 #import <Foundation/Foundation.h>
 
 
 
 /*
-** Defines
+** TCDropButton
 */
-#pragma mark - Defines
+#pragma mark - TCDropButton
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@interface TCDropButton : NSButton
+{
+	
+@private
+    SEL	dropSelector;
+	id	dropTarget;
+}
 
-
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+- (void)setDropTarget:(id)target withSelector:(SEL)selector;
 
 @end

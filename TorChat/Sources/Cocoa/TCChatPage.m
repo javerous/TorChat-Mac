@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCChatPage.m
  *
  *  Copyright 2012 Avérous Julien-Pierre
  *
@@ -20,27 +20,56 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+
+
+#import "TCChatPage.h"
 
 
 
 /*
-** Defines
+** TCChatPage
 */
-#pragma mark - Defines
+#pragma mark - TCChatPage
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
-
+@implementation TCChatPage
 
 
 /*
-** TCConfigProxy
+** TCChatPage - Overwrite
 */
-#pragma mark - TCConfigProxy
+#pragma mark - TCChatPage - Overwrite
 
-@protocol TCConfigProxy <NSObject>
+- (BOOL)isFlipped
+{
+	return YES;
+}
 
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+- (void)setFrame:(NSRect)rect
+{
+	CGFloat delta = rect.size.width - self.frame.size.width;
+	
+	// Update items
+	float	current_y = 0;
+	NSArray	*views = self.subviews;
+	
+	for (NSView *view in views)
+	{
+		// Update size & origin
+		NSRect r = [view frame];
+		
+		r.size.width += delta;
+		r.origin.y = current_y;
+		
+		[view setFrame:r];
+		
+		// Update current y
+		r = [view frame];		
+		current_y += r.size.height;
+	}
+	
+	// Update my size
+	rect.size.height = current_y;
+	[super setFrame:rect];
+}
 
 @end
