@@ -1,7 +1,7 @@
 /*
  *  TCBuddy.h
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -50,6 +50,10 @@ class TCBuddy;
 class TCConfig;
 class TCFileReceive;
 class TCFileSend;
+class TCString;
+class TCImage;
+class TCArray;
+class TCNumber;
 
 
 
@@ -80,8 +84,9 @@ typedef enum
 	
 	tcbuddy_notify_status,
 	tcbuddy_notify_message,
-	tcbuddy_notify_info,
-	
+	tcbuddy_notify_alias,
+	tcbuddy_notify_notes,
+		
 	tcbuddy_notify_file_send_start,
 	tcbuddy_notify_file_send_running,
 	tcbuddy_notify_file_send_finish,
@@ -91,6 +96,10 @@ typedef enum
 	tcbuddy_notify_file_receive_running,
 	tcbuddy_notify_file_receive_finish,
 	tcbuddy_notify_file_receive_stoped,
+	
+	tcbuddy_notify_profile_text,
+	tcbuddy_notify_profile_name,
+	tcbuddy_notify_profile_avatar,
 	
 	
 	// -- Error --
@@ -149,7 +158,7 @@ class TCBuddy : public TCParser, public TCSocketDelegate // Inherit from TCObjec
 public:
 	
 	// -- Constructor & Destructor --
-	TCBuddy(TCConfig *config, const std::string &name, const std::string &address, const std::string &comment);
+	TCBuddy(TCConfig *config, const std::string &alias, const std::string &address, const std::string &notes);
 	~TCBuddy();
 	
 	// -- Run --
@@ -158,21 +167,23 @@ public:
 	
 	bool isRunning();
 	bool isPonged();
+	void keepAlive();
+	
 	
 	// -- Delegate --
 	void setDelegate(dispatch_queue_t queue, tcbuddy_event event);
 	
 	// -- Accessors --
-	const std::string	name();
-	void				setName(const std::string &name);
+	TCString *			alias();
+	void				setAlias(TCString *name);
 	
-	const std::string	comment();
-	void				setComment(const std::string &comment);
+	TCString *			notes();
+	void				setNotes(TCString *notes);
 	
 	tcbuddy_status		status();
 
-	const std::string & address()	const	{ return maddress; }
-	const std::string & brandom()	const	{ return mrandom; }
+	TCString & address() const	{ return *maddress; }
+	TCString & brandom() const	{ return *mrandom; }
 	
 	// -- Files Info --
 	std::string		fileFileName(const std::string &uuid, tcbuddy_file_way way);
@@ -182,15 +193,22 @@ public:
     
 	// -- Send Command --
     void            sendStatus(tccontroller_status status);
-	void			sendMessage(const std::string &message);
-	void			sendFile(const std::string &filepath);
+	void			sendAvatar(TCImage *avatar);
+	void			sendProfileName(TCString *name);
+	void			sendProfileText(TCString *text);
+	void			sendMessage(TCString *message);
+	void			sendFile(TCString *filepath);
 	
 	// -- Action --
-	void			startHandshake(const std::string &rrandom, tccontroller_status status);
+	void			startHandshake(TCString *rrandom, tccontroller_status status, TCImage *avatar, TCString *name, TCString *text);
 	void			setInputConnection(TCSocket *sock);
 
 	// -- Content --
-	std::vector<std::string *>	getMessages();
+	TCArray *		getMessages();
+	TCString *		getProfileText();
+	TCString *		getProfileName();
+	TCImage *		getProfileAvatar();
+
 
 private:
 	// -- TcSocket Delegate --
@@ -202,11 +220,14 @@ private:
 	virtual void	doStatus(const std::string &status);
 	virtual void	doMessage(const std::string &message);
 	virtual void	doVersion(const std::string &version);
+	virtual void	doProfileText(const std::string &text);
+	virtual void	doProfileName(const std::string &name);
+	virtual void	doProfileAvatar(const std::string &bitmap);
+	virtual void	doProfileAvatarAlpha(const std::string &bitmap);
 	virtual void	doAddMe();
 	virtual void	doRemoveMe();
 	virtual void	doFileName(const std::string &uuid, const std::string &fsize, const std::string &bsize, const std::string &filename);
 	virtual void	doFileData(const std::string &uuid, const std::string &start, const std::string &hash, const std::string &data);
-	virtual void	doFileDataB64(const std::string &uuid, const std::string &start, const std::string &hash, const std::string &data);
 	virtual void	doFileDataOk(const std::string &uuid, const std::string &start);
 	virtual void	doFileDataError(const std::string &uuid, const std::string &start);
 	virtual void	doFileStopSending(const std::string &uuid);
@@ -216,15 +237,17 @@ private:
 
 	// -- Send Low Command --
 	void			_sendPing();
-	void            _sendPong(const std::string &random);
+	void            _sendPong(TCString *random);
 	void			_sendVersion();
+	void			_sendProfileName(TCString *name);
+	void			_sendProfileText(TCString *text);
+	void			_sendAvatar(TCImage *avatar);
 	void			_sendAddMe();
 	void			_sendRemoveMe();
 	void            _sendStatus(tccontroller_status status);
 	void			_sendMessage(const std::string &message);
 	void			_sendFileName(TCFileSend *file);
 	void			_sendFileData(TCFileSend *file);
-	void			_sendFileDataB64(TCFileSend *file);
 	void			_sendFileDataOk(const std::string &uuid, uint64_t start);
 	void			_sendFileDataError(const std::string &uuid, uint64_t start);
 	void			_sendFileStopSending(const std::string &uuid);
@@ -234,6 +257,7 @@ private:
 	bool			_sendCommand(const std::string &command, tcbuddy_channel channel = tcbuddy_channel_out);
 	bool			_sendCommand(const std::string &command, const std::vector<std::string> &data, tcbuddy_channel channel = tcbuddy_channel_out);
 	bool			_sendCommand(const std::string &command, const std::string &data, tcbuddy_channel channel = tcbuddy_channel_out);
+	bool			_sendCommand(const std::string &command, TCString *data, tcbuddy_channel channel = tcbuddy_channel_out);
 	bool			_sendData(const void *data, size_t size, tcbuddy_channel channel = tcbuddy_channel_out);
 	
 	// -- Network Helper --
@@ -254,6 +278,8 @@ private:
 	
 	void			_send_event(TCInfo *info);
 	
+	TCNumber *		_status();
+	
 	// -- Vars --
 	// > Config
 	TCConfig					*config;
@@ -263,16 +289,15 @@ private:
 	bool						running;
 	bool						ponged;
 	bool						pongSent;
-	bool						useExtend;
 	
 	// > Property
-	std::string					mname;
-	std::string					maddress;
-	std::string					mcomment;
+	TCString *					malias;
+	TCString *					maddress;
+	TCString *					mnotes;
+	TCString *					mrandom;
 	
 	tcbuddy_status				mstatus;
-	
-	std::string					mrandom;
+	tccontroller_status			cstatus;
 
 	// > Dispatch
 	dispatch_queue_t			mainQueue;
@@ -287,9 +312,11 @@ private:
 	// Delegate
 	dispatch_queue_t			nQueue;
 	tcbuddy_event				nBlock;
-		
-	// > Chat messages
-	std::vector<std::string *>	messages;
+			
+	// > Profile
+	TCString					*profileName;
+	TCString					*profileText;
+	TCImage						*profileAvatar;
 	
 	// > File session
 	std::map<std::string, TCFileReceive *>	freceive;

@@ -1,7 +1,7 @@
 /*
  *  TCChatController.h
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -87,5 +87,8 @@
 - (void)receiveMessage:(NSString *)message;
 - (void)receiveError:(NSString *)error;
 - (void)receiveStatus:(NSString *)status;
+
+- (void)setLocalAvatar:(NSImage *)image;
+- (void)setRemoteAvatar:(NSImage *)image;
 
 @end

@@ -1,7 +1,7 @@
 /*
  *  TCChatPage.m
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -64,7 +64,7 @@
 		
 		[view setFrame:r];
 		
-		// Update current y (frame height can be changed by the bubble)
+		// Update current y
 		r = [view frame];		
 		current_y += r.size.height;
 	}

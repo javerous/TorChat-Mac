@@ -1,7 +1,7 @@
 /*
  *  TCControlClient.cpp
  *
- *  Copyright 2010 Avérous Julien-Pierre
+ *  Copyright 2011 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -29,6 +29,7 @@
 #include "TCTools.h"
 #include "TCBuddy.h"
 #include "TCConfig.h"
+#include "TCString.h"
 
 
 
@@ -200,7 +201,7 @@ void TCControlClient::doPing(const std::string &caddress, const std::string &cra
 	// random value is not from us, then someone is definitely 
 	// trying to fake and we can close.
 	
-	if (caddress.compare(config->get_self_address()) == 0 && abuddy && abuddy->brandom().compare(crandom) != 0)
+	if (caddress.compare(config->get_self_address()) == 0 && abuddy && abuddy->brandom().content().compare(crandom) != 0)
 	{
 		_error(tcctrl_error_client_cmd_ping, "core_cctrl_err_masquerade", true);
 		abuddy->release();
@@ -227,10 +228,19 @@ void TCControlClient::doPing(const std::string &caddress, const std::string &cra
 	
 	// ping messages must be answered with pong messages
 	// the pong must contain the same random string as the ping.
-	abuddy->startHandshake(crandom, ctrl->status());
+	TCImage		*avatar = ctrl->profileAvatar();
+	TCString	*trandom = new TCString(crandom);
+	TCString	*pname = ctrl->profileName();
+	TCString	*ptext = ctrl->profileText();
+	
+	abuddy->startHandshake(trandom, ctrl->status(), avatar, pname, ptext);
 	
 	// Release
 	abuddy->release();
+	avatar->release();
+	trandom->release();
+	pname->release();
+	ptext->release();
 }
 
 // == Handle Pong ==
@@ -286,6 +296,22 @@ void TCControlClient::parserError(tcrec_error err, const std::string &info)
 			nerr = tcctrl_error_client_cmd_version;
 			break;
 			
+		case tcrec_cmd_profile_text:
+			nerr = tcctrl_error_client_cmd_profile_text;
+			break;
+			
+		case tcrec_cmd_profile_name:
+			nerr = tcctrl_error_client_cmd_profile_name;
+			break;
+			
+		case tcrec_cmd_profile_avatar:
+			nerr = tcctrl_error_client_cmd_profile_avatar;
+			break;
+			
+		case tcrec_cmd_profile_avatar_alpha:
+			nerr = tcctrl_error_client_cmd_profile_avatar_alpha;
+			break;
+			
 		case tcrec_cmd_message:
 			nerr = tcctrl_error_client_cmd_message;
 			break;
@@ -305,11 +331,7 @@ void TCControlClient::parserError(tcrec_error err, const std::string &info)
 		case tcrec_cmd_filedata:
 			nerr = tcctrl_error_client_cmd_filedata;
 			break;
-			
-		case tcrec_cmd_filedata_b64:
-			nerr = tcctrl_error_client_cmd_filedata;
-			break;
-			
+
 		case tcrec_cmd_filedataok:
 			nerr = tcctrl_error_client_cmd_filedataok;
 			break;
