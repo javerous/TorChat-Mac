@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCImageExtension.h
  *
  *  Copyright 2012 Avérous Julien-Pierre
  *
@@ -20,27 +20,30 @@
  *
  */
 
+
+
 #import <Foundation/Foundation.h>
 
 
 
 /*
-** Defines
+** Forward
 */
-#pragma mark - Defines
+#pragma mark - Forward
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+class TCImage;
 
 
 
 /*
-** TCConfigProxy
+** NSImage - TCImageExtension
 */
-#pragma mark - TCConfigProxy
+#pragma mark - NSImage - TCImageExtension
 
-@protocol TCConfigProxy <NSObject>
+@interface NSImage (TCImageExtension)
 
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+- (id)initWithTCImage:(TCImage *)image;
+
+- (TCImage *)createTCImage;
 
 @end

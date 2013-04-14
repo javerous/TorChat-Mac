@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCTorManager.h
  *
  *  Copyright 2012 Avérous Julien-Pierre
  *
@@ -20,27 +20,49 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+
+
+#import <Cocoa/Cocoa.h>
 
 
 
 /*
-** Defines
+** Forward
 */
-#pragma mark - Defines
+#pragma mark - Forward
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+class TCConfig;
 
 
 
 /*
-** TCConfigProxy
+** Notify
 */
-#pragma mark - TCConfigProxy
+#pragma mark - Nority
 
-@protocol TCConfigProxy <NSObject>
+#define TCTorManagerStatusChanged	@"TCTorManagerStatusChanged"
+#define TCTorManagerInfoHostNameKey	@"hostname"
+#define TCTorManagerInfoRunningKey	@"running"
 
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+
+
+/*
+** TCTorManager
+*/
+#pragma mark - TCTorManager
+
+@interface TCTorManager : NSObject
+
+// -- Singleton --
++ (TCTorManager *)sharedManager;
+
+// -- Running --
+- (void)startWithConfig:(TCConfig *)config;
+- (void)stop;
+
+- (BOOL)isRunning;
+
+// -- Property --
+- (NSString *)hiddenHostname;
 
 @end

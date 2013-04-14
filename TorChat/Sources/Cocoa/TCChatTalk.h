@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCChatTalk.h
  *
  *  Copyright 2012 Avérous Julien-Pierre
  *
@@ -20,27 +20,50 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+
+
+#import <Cocoa/Cocoa.h>
 
 
 
 /*
-** Defines
+** Forward
 */
-#pragma mark - Defines
+#pragma mark - Forward
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@class TCChatPage;
 
 
 
 /*
-** TCConfigProxy
+** Types
 */
-#pragma mark - TCConfigProxy
+#pragma mark - Types
 
-@protocol TCConfigProxy <NSObject>
+// == Local or remote buddy ==
+typedef enum
+{
+	tcchat_local,
+	tcchat_remote
+} tcchat_user;
 
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+
+
+/*
+** TCChatTalk
+*/
+#pragma mark - TCChatTalk
+
+// == Class ==
+@interface TCChatTalk : NSScrollView
+
+// -- Actions --
+- (void)addStatusMessage:(NSString *)msg fromUserName:(NSString *)userName;
+- (void)addErrorMessage:(NSString *)msg;
+- (void)appendToConversation:(NSString *)text fromUser:(tcchat_user)user;
+- (void)addTimeStamp;
+
+- (void)setLocalAvatar:(NSImage *)image;
+- (void)setRemoteAvatar:(NSImage *)image;
 
 @end

@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCChatCell.h
  *
  *  Copyright 2012 Avérous Julien-Pierre
  *
@@ -20,7 +20,9 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+
+
+#import <Cocoa/Cocoa.h>
 
 
 
@@ -29,18 +31,19 @@
 */
 #pragma mark - Defines
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+#define TCChatCellAvatarKey		@"avatar"
+#define TCChatCellNameKey		@"name"
+#define TCChatCellChatTextKey	@"chat_text"
+#define TCChatCellMouseOverKey	@"mouse_over"
+#define TCChatCellAccessoryKey	@"accessory"
 
 
 
 /*
-** TCConfigProxy
+** TCChatCell
 */
-#pragma mark - TCConfigProxy
+#pragma mark - TCChatCell
 
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+@interface TCChatCell : NSCell
 
 @end

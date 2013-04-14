@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCObject.cpp
  *
  *  Copyright 2012 Avérous Julien-Pierre
  *
@@ -20,27 +20,16 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+
+
+#include "TCObject.h"
 
 
 
 /*
-** Defines
+** Globals
 */
-#pragma mark - Defines
+#pragma mark - Globals
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
-
-
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
-
-@end
+dispatch_once_t		_pred = 0;
+dispatch_queue_t	_obj_ref_queue = 0;

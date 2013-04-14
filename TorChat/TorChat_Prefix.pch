@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TorChat_Prefix.pch
  *
  *  Copyright 2012 Avérous Julien-Pierre
  *
@@ -20,27 +20,22 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+//
+// Prefix header for all source files of the 'TorChat' target in the 'TorChat' project
+//
+
+#ifdef __OBJC__
+	#import <Cocoa/Cocoa.h>
+#endif
 
 
-
-/*
-** Defines
-*/
-#pragma mark - Defines
-
-#define TCProxyName @"com.sourcemac.torchat.proxy"
-
+// Debug mode
+#ifdef DEBUG
+#	define TCDebugLog(Str, Arg...) fprintf(stderr, Str"\n", ## Arg)
+#else
+#	define TCDebugLog(Str, ...) ((void)0)
+#endif
 
 
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
-
-@end
+// Proxy (private)
+#define PROXY_ENABLED 0

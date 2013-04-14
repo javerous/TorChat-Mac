@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCChatsTableView.h
  *
  *  Copyright 2012 Avérous Julien-Pierre
  *
@@ -20,27 +20,42 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+
+
+#import <Cocoa/Cocoa.h>
 
 
 
 /*
-** Defines
+** Forward
 */
-#pragma mark - Defines
+#pragma mark - Forward
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@class TCChatsTableView;
 
 
 
 /*
-** TCConfigProxy
+** TCChatsTableView - Delegate
 */
-#pragma mark - TCConfigProxy
+#pragma mark - TCChatsTableView - Delegate
 
-@protocol TCConfigProxy <NSObject>
+@protocol TCChatsTableViewDropDelegate <NSObject>
 
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+- (NSImage *)tableView:(TCChatsTableView *)tableView dropImageForRow:(NSUInteger)row;
+- (void)tableView:(TCChatsTableView *)tableView droppedRow:(NSUInteger)row toFrame:(NSRect)frame;
+
+@end
+
+
+
+/*
+** TCChatsTableView
+*/
+#pragma mark - TCChatsTableView
+
+@interface TCChatsTableView : NSTableView
+
+@property (assign, nonatomic) id <TCChatsTableViewDropDelegate> dropDelegate;
 
 @end
