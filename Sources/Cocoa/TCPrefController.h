@@ -43,6 +43,8 @@
 	IBOutlet NSTextField	*torPortField;
 	
 @private
+	
+	BOOL					restart;
 }
 
 // -- Singleton --

@@ -52,10 +52,10 @@
 
 
 /*
-** TCChatBubble - Constructor & Destructor
+** TCChatBubble - Instance
 */
 #pragma mark -
-#pragma mark TCChatBubble - Constructor & Destructor
+#pragma mark TCChatBubble - Instance
 
 + (TCChatBubble *)bubbleWithText:(NSString *)_text andStyle:(tcbubble_style)_style
 {
@@ -270,7 +270,7 @@
 
 - (NSRect)computeTextWithFrame:(NSRect)frame
 {
-	float	height = [field.stringValue heightForDrawingWithFont:font andWidth:(frame.size.width - 30 - 4)];
+	CGFloat	height = [field.stringValue heightForDrawingWithFont:font andWidth:(frame.size.width - 30.0f - 4.0f)];
 	
 	return NSMakeRect(15, 10, frame.size.width - 30, height);
 }

@@ -31,10 +31,10 @@
 
 
 /*
-** TCFileSend - Constructor & Destructor
+** TCFileSend - Instance
 */
 #pragma mark -
-#pragma mark TCFileSend - Constructor & Destructor
+#pragma mark TCFileSend - Instance
 
 TCFileSend::TCFileSend(const std::string & _filePath)
 {
@@ -61,7 +61,7 @@ TCFileSend::TCFileSend(const std::string & _filePath)
 	if (fseek(_file, 0, SEEK_SET) < 0)
 		throw std::string("core_fsend_err_cant_seek");
 	
-	_fsize = tl;
+	_fsize = (uint64_t)tl;
 	
 	
 	// -- Set the block size --
@@ -81,22 +81,32 @@ TCFileSend::TCFileSend(const std::string & _filePath)
 	// -- Compute filename --
 	char	*path = strdup(_filePath.c_str());
 	char	*name = NULL;
-	int		i, sz = strlen(path);
+	size_t	i, sz;
 	
-	for (i = sz - 1; i >= 0; i--)
+	if (path && path[0] != '\0')
 	{
-		if (path[i] == '/')
+		sz = strlen(path);
+		i = sz - 1;
+	
+		while (1)
 		{
-			name = path + i + 1;
-			break;
+			if (path[i] == '/')
+			{
+				name = path + i + 1;
+				break;
+			}
+			
+			if (i == 0)
+				break;
+			
+			i--;
 		}
 	}
-	
-	if (!name)
+	else
 		name = path;
 	
 	_fname = name;
-	
+		
 	free(path);
 }
 
@@ -125,6 +135,9 @@ std::string * TCFileSend::readChunk(void *chunk, uint64_t *chunksz, uint64_t *of
 	// Get the current file position
 	long	tl = ftell(_file);
 	
+	if (tl < 0)
+		return NULL;
+	
 	// Read a chunk of data
 	size_t	sz = fread(chunk, 1, _bsize, _file);
 
@@ -135,7 +148,7 @@ std::string * TCFileSend::readChunk(void *chunk, uint64_t *chunksz, uint64_t *of
 		*chunksz = sz;
 	
 	if (offset)
-		*offset = tl;
+		*offset = (uint64_t)tl;
 
 	// Return the chunk MD5
 	return createMD5(chunk, sz);
@@ -147,7 +160,7 @@ void TCFileSend::setNextChunkOffset(uint64_t offset)
 		return;
 	
 	// Set the file cursor
-	fseek(_file, offset, SEEK_SET);
+	fseek(_file, (long)offset, SEEK_SET);
 }
 
 
@@ -171,7 +184,7 @@ uint64_t TCFileSend::readSize()
 	long	tl = ftell(_file);
 
 	if (tl >= 0)
-		return tl;
+		return (uint64_t)tl;
 	else
 		return 0;
 }

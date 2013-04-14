@@ -1,7 +1,7 @@
 /*
  *  main.m
  *
- *  Copyright 2011 AvŽrous Julien-Pierre
+ *  Copyright 2011 AvÂŽrous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -29,6 +29,10 @@
 
 
 int main(int argc, char *argv[])
-{	
+{
+	// Ignore sigpipe
+	signal(SIGPIPE, SIG_IGN);
+
+	// Run
 	return NSApplicationMain(argc,  (const char **) argv);
 }

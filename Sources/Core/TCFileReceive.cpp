@@ -31,10 +31,10 @@
 
 
 /*
-** TCFileReceive - Constructor & Destructor
+** TCFileReceive - Instance
 */
 #pragma mark -
-#pragma mark TCFileReceive - Constructor & Destructor
+#pragma mark TCFileReceive - Instance
 
 TCFileReceive::TCFileReceive(const std::string & uuid, const std::string & folder, const std::string & fileName, uint64_t fileSize, uint64_t blockSize)
 {
@@ -71,7 +71,7 @@ TCFileReceive::TCFileReceive(const std::string & uuid, const std::string & folde
 			ext = new std::string(".");
 			ext->append(its->at(its->size() - 1));
 			
-			its->erase(its->begin() + (its->size() - 1));
+			its->erase(its->begin() + (long)(its->size() - 1));
 		}
 		else
 			ext = new std::string("");
@@ -140,13 +140,13 @@ bool TCFileReceive::writeChunk(const void *chunk, uint64_t chunksz, const std::s
 	}
 	
 	// Check the MD5
-	std::string *md5 = createMD5(chunk, chunksz);
+	std::string *md5 = createMD5(chunk, static_cast <size_t>(chunksz));
 	
 	if (md5->compare(hash) == 0)
 	{		
 		// Write content
-		fseek(_file, start, SEEK_SET);
-		fwrite(chunk, chunksz, 1, _file);
+		fseek(_file, (long)start, SEEK_SET);
+		fwrite(chunk, static_cast <size_t>(chunksz), 1, _file);
 		fflush(_file);
 		
 		// Update status

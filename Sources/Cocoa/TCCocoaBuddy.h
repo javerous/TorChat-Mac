@@ -100,8 +100,11 @@
 
 // -- Profile --
 - (NSImage *)profileAvatar;
-- (NSString *)profileName;
 - (NSString *)profileText;
+
+- (NSString *)profileName;
+- (NSString *)lastProfileName;
+- (NSString *)finalName;
 
 // -- Peer --
 - (NSString *)peerVersion;

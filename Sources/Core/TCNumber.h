@@ -32,7 +32,8 @@
 /*
 ** Macros
 */
-#pragma Macros
+#pragma mark -
+#pragma mark Macros
 
 #define ReturnCasted(TargetType)				\
 do	{											\

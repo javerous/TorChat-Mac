@@ -34,10 +34,10 @@
 
 
 /*
-** TCControlClient - Constructor & Destructor
+** TCControlClient - Instance
 */
 #pragma mark -
-#pragma mark TCControlClient - Constructor & Destructor
+#pragma mark TCControlClient - Instance
 
 TCControlClient::TCControlClient(TCConfig *_conf, int _sock)
 {

@@ -263,8 +263,8 @@ void catch_signal(int sig);
 		int			outFD = [[_outPipe fileHandleForReading] fileDescriptor];
 		
 		// Create source for pipe handle
-		errSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, errFD, 0, mainQueue);
-		outSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, outFD, 0, mainQueue);
+		errSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, (uintptr_t)errFD, 0, mainQueue);
+		outSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, (uintptr_t)outFD, 0, mainQueue);
 		
 		// Realease pipe when source canceled
 		dispatch_source_set_cancel_handler(errSource, ^{ [_errPipe release]; _errBuffer->release(); });
@@ -280,7 +280,7 @@ void catch_signal(int sig);
 			{
 				std::string *line;
 				
-				_errBuffer->appendData(data, res, false);
+				_errBuffer->appendData(data, (size_t)res, false);
 				line = _errBuffer->createStringSearch("\n", false);
 				
 				while ((line = _outBuffer->createStringSearch("\n", false)))
@@ -311,7 +311,8 @@ void catch_signal(int sig);
 			{
 				std::string *line;
 				
-				_outBuffer->appendData(data, res, false);
+				_outBuffer->appendData(data, (size_t)res, false);
+				
 				while ((line = _outBuffer->createStringSearch("\n", false)))
 				{
 					[[TCLogsController sharedController] addGlobalLogEntry:@"tor_out_log", line->c_str()];
@@ -361,7 +362,7 @@ void catch_signal(int sig);
 		
 		torPid = [_task processIdentifier];
 		
-		// Check the existence of the hotname file
+		// Check the existence of the hostname file
 		std::string htname = config->real_path(config->get_tor_data_path()) + "/hidden/hostname";
 		char		*cstname = strdup(htname.c_str());
 		

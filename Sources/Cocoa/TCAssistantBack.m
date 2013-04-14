@@ -47,11 +47,12 @@
 	NSBezierPath	*frm = [NSBezierPath bezierPathWithRect:r];
 	
 	// Set the back color
-	[[NSColor colorWithCalibratedWhite:1.0 alpha:0.555555555555555] set];
+	[[NSColor colorWithCalibratedWhite:1.0 alpha:0.555555555555555f] set];
 	[frm fill];
 	
 	// Set the rect color
-	float gray = 0.13;
+	CGFloat gray = 0.13f;
+	
 	[[NSColor colorWithCalibratedRed:gray green:gray blue:gray alpha:1.0] set];
 	[frm stroke];
 }

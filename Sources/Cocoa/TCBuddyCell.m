@@ -100,20 +100,13 @@
 	if ([content isKindOfClass:[NSDictionary class]] == NO)
 		return;
 	
-	NSString	*alias = [content objectForKey:TCBuddyCellAliasKey];
-	NSString	*pname = [content objectForKey:TCBuddyCellProfileNameKey];
+	NSString	*pname = [content objectForKey:TCBuddyCellNameKey];
 	NSString	*address = [content objectForKey:TCBuddyCellAddressKey];
 	NSColor		*txtColor = nil;
-	NSString	*sel;
 	float		dy = 3.0;
 		
 	// -- Draw name --
-	if ([alias length] > 0)
-		sel = alias;
-	else
-		sel = pname;
-	
-	if ([sel length] > 0)
+	if ([pname length] > 0)
 	{
 		if ([self isHighlighted])
 			txtColor = [NSColor whiteColor];
@@ -131,7 +124,7 @@
 		
 		r = NSMakeRect(cellFrame.origin.x + 2, cellFrame.origin.y + dy, cellFrame.size.width - 4, cellFrame.size.height);
 
-		[sel drawInRect:r withAttributes:nmAttribute];
+		[pname drawInRect:r withAttributes:nmAttribute];
 		
 		[paragraphStyle release];
 		
