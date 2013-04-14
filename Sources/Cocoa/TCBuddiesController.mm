@@ -1,0 +1,659 @@
+/*
+ *  TCBuddiesController.mm
+ *
+ *  Copyright 2010 Avérous Julien-Pierre
+ *
+ *  This file is part of TorChat.
+ *
+ *  TorChat is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  TorChat is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with TorChat.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+
+#import "TCBuddiesController.h"
+
+#import "TCConfig.h"
+#import "TCCocoaBuddy.h"
+#import "TCBuddyInfoController.h"
+
+#import "TCFilesCommon.h"
+#import "TCFilesController.h"
+
+#import "TCTorManager.h"
+
+#import "TCLogsController.h"
+
+#include "TCController.h"
+#include "TCBuddy.h"
+
+
+
+
+/*
+** TCBuddiesController - Private
+*/
+#pragma mark -
+#pragma mark TCBuddiesController - Private
+
+@interface TCBuddiesController ()
+
+- (void)_reloadBuddyList;
+
+@end
+
+
+
+
+/*
+** TCBuddiesController
+*/
+#pragma mark -
+#pragma mark TCBuddiesController
+
+@implementation TCBuddiesController
+
+
+/*
+** TCBuddiesController - Constructor & Destuctor
+*/
+#pragma mark -
+#pragma mark TCBuddiesController - Constructor & Destuctor
+
++ (TCBuddiesController *)sharedController
+{
+	static dispatch_once_t		pred;
+	static TCBuddiesController	*instance = nil;
+		
+	dispatch_once(&pred, ^{
+		instance = [[TCBuddiesController alloc] init];
+	});
+	
+	return instance;
+}
+
+- (id)init
+{
+	if ((self = [super init]))
+	{
+		// Build an event dispatch queue
+		mainQueue = dispatch_queue_create("com.torchat.cocoa.buddies.main", NULL);
+		
+		// Build array of cocoa buddy
+		buddies = [[NSMutableArray alloc] init];
+		
+		// Observe file events
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(fileCancel:) name:TCFileCellCancelNotify object:nil];
+		
+		// Load interface bundle
+		[NSBundle loadNibNamed:@"Buddies" owner:self];
+	}
+	return self;
+}
+
+- (void)dealloc
+{
+	TCDebugLog("TCBuddieController dealloc");
+	
+	[buddies release];
+	
+	control->release();
+	config->release();
+	
+	dispatch_release(mainQueue);
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [super dealloc];
+}
+
+- (void)awakeFromNib
+{	
+	// Place Window
+	[mainWindow center];
+	[mainWindow setFrameAutosaveName:@"BuddiesWindow"];
+	
+	// Configure table view
+	[tableView setTarget:self];
+	[tableView setDoubleAction:@selector(tableViewDoubleClick:)];
+}
+
+
+
+/*
+** TCBuddiesController - Running
+*/
+#pragma mark -
+#pragma mark TCBuddiesController - Running
+
+- (void)startWithConfig:(TCConfig *)aConfig
+{
+	if (!aConfig)
+	{
+		NSBeep();
+		[NSApp terminate:self];
+		return;
+	}
+	
+	if (running)
+		return;
+	running = YES;
+	
+	// Hold the config
+	aConfig->retain();
+	config = aConfig;
+	
+	// Load tor
+	if (config->get_mode() == tc_config_basic && [[TCTorManager sharedManager] isRunning] == NO)
+		[[TCTorManager sharedManager] startWithConfig:config];
+	
+	// Build controller
+	control = new TCController(config);
+	
+	// Configure the window
+	[imAddress setStringValue:[NSString stringWithUTF8String:config->get_self_address().c_str()]];
+	[indicator startAnimation:self];
+	
+	// Show the window
+	[mainWindow makeKeyAndOrderFront:self];
+	
+	// Configure table for file drag
+	[tableView registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
+	[tableView setDraggingSourceOperationMask:NSDragOperationAll forLocal:NO];
+	
+	// Set delegate
+	control->setDelegate(mainQueue, ^(TCController *controller, const TCInfo *info) {
+		
+		// Log the item
+		[[TCLogsController sharedController] addGlobalLogEntry:[NSString stringWithUTF8String:info->render().c_str()]];
+		
+		// Action information
+		switch (info->infoCode())
+		{
+			case tcctrl_notify_started:
+				dispatch_async(dispatch_get_main_queue(), ^{					
+					[indicator stopAnimation:self];
+					
+					[imStatus selectItemWithTag:controller->status()];
+				});
+				break;
+				
+			case tcctrl_notify_stoped:
+				dispatch_async(dispatch_get_main_queue(), ^{
+					[imStatus selectItemWithTag:-2];
+				});
+				break;
+				
+			case tcctrl_notify_buddy_new:
+			{
+				TCBuddy			*buddy = dynamic_cast<TCBuddy *>(info->context());
+				TCCocoaBuddy	*obuddy = [[TCCocoaBuddy alloc] initWithBuddy:buddy];
+				
+				dispatch_async(dispatch_get_main_queue(), ^{
+					[buddies addObject:obuddy];
+					
+					[obuddy setDelegate:self];
+					
+					[self _reloadBuddyList];
+					
+					[obuddy release];
+				});
+				
+				break;
+			}
+				
+			case tcctrl_notify_client_new:
+				break;
+				
+			case tcctrl_notify_client_started:
+				break;
+				
+			case tcctrl_notify_client_stoped:
+				break;
+		}
+	});
+	
+	// Start the controller
+	control->start();
+}
+
+- (void)stop
+{
+	if (!running)
+		return;
+	
+	// Clean buddies
+	for (TCCocoaBuddy *buddy in buddies)
+	{
+		// Yield the handled core item
+		[buddy yieldCore];
+		
+		// Inform the info controller that we un-hold this buddy
+		[TCBuddyInfoController removingBuddy:buddy];
+	}
+	
+	[buddies removeAllObjects];
+	[tableView reloadData];
+	
+	// Clean controller
+	if (control)
+	{
+		control->setDelegate(NULL, NULL);
+		
+		control->stop();
+		
+		control->release();
+		
+		control = NULL;
+	}
+	
+	// Clean config
+	if (config)
+	{
+		config->release();
+		config = NULL;
+	}
+	
+	// Set status to offline
+	[imStatus selectItemWithTag:-2];
+	
+	// Set address to nothing
+	[imAddress setStringValue:@"-"];
+	
+	// Update status
+	running = NO;
+}
+
+
+
+/*
+** TCBuddiesController - TableView
+*/
+#pragma mark -
+#pragma mark TCBuddiesController - TableView
+
+- (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
+{
+	__block NSUInteger cnt = 0;
+	
+	dispatch_sync(mainQueue, ^{
+		cnt = [buddies count];
+	});
+	
+	return cnt;
+}
+
+- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
+{
+	__block id		result = nil;
+	
+	dispatch_sync(mainQueue, ^{
+		
+		if (rowIndex >= [buddies count])
+			return;
+		
+		NSString		*identifier = [aTableColumn identifier];
+		TCCocoaBuddy	*buddy = [buddies objectAtIndex:rowIndex];
+		
+		if ([identifier isEqualToString:@"state"])
+		{
+			switch ([buddy status])
+			{
+				case tcbuddy_status_offline:
+					result = [NSImage imageNamed:@"stat_offline"];
+					break;
+					
+				case tcbuddy_status_available:
+					result = [NSImage imageNamed:@"stat_online"];
+					break;
+					
+				case tcbuddy_status_away:
+					result = [NSImage imageNamed:@"stat_away"];
+					break;
+					
+				case tcbuddy_status_xa:
+					result = [NSImage imageNamed:@"stat_xa"];
+					break;
+			}
+		}
+		else if ([identifier isEqualToString:@"name"])
+		{
+			result = [NSString stringWithFormat:@"%@ (%@)", [buddy name], [buddy address]];
+		}
+		else if ([identifier isEqualToString:@"control"])
+		{
+			result = @"";
+		}
+	});
+
+	return result;
+}
+
+- (void)tableViewSelectionDidChange:(NSNotification *)aNotification
+{
+	NSInteger	row = [tableView selectedRow];
+	
+	[imRemove setEnabled:(row >= 0)];
+	
+	// Notify
+	id				obj = (row >= 0 ? [buddies objectAtIndex:row] : [NSNull null]);
+	NSDictionary	*content = [NSDictionary dictionaryWithObject:obj forKey:TCBuddiesControllerBuddyKey];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesControllerSelectChanged object:self userInfo:content];
+}
+
+- (void)tableViewDoubleClick:(id)sender
+{
+	NSInteger		row = [tableView clickedRow];
+	TCCocoaBuddy	*buddy;
+	
+	if (row < 0 || row >= [buddies count])
+		return;
+	
+	buddy = [buddies objectAtIndex:row];
+	
+	[buddy openChatWindow];
+}
+
+
+- (NSDragOperation)tableView:(NSTableView *)aTableView validateDrop:(id < NSDraggingInfo >)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)operation
+{	
+	if (operation == NSTableViewDropOn)
+		return NSDragOperationMove;
+	else
+		return NSDragOperationNone;
+}
+
+- (BOOL)tableView:(NSTableView *)aTableView acceptDrop:(id < NSDraggingInfo >)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation
+{
+	NSPasteboard	*pboard = [info draggingPasteboard];
+	NSArray			*types = [pboard types];
+	NSArray			*fileList = [pboard propertyListForType:NSFilenamesPboardType];
+	
+	if (row < 0 || row >= [buddies count])
+		return NO;
+	
+	TCCocoaBuddy	*buddy = [buddies objectAtIndex:row];
+
+	if ([types containsObject:NSFilenamesPboardType])
+	{
+		NSFileManager *mng = [NSFileManager defaultManager];
+		
+		for (NSString *fileName in fileList)
+		{
+			BOOL isDirectory = NO;
+			
+			if ([mng fileExistsAtPath:fileName isDirectory:&isDirectory])
+			{
+				if (isDirectory)
+					continue;
+				
+				[buddy sendFile:fileName];
+			}
+		}
+		
+		return YES;
+	}
+	
+	return NO;
+}
+
+
+
+/*
+** TCBuddiesController - Buddy
+*/
+#pragma mark -
+#pragma mark TCBuddiesController - Buddy
+
+- (void)buddyHasChanged:(TCCocoaBuddy *)buddy
+{
+	// Sort buddies by status
+	dispatch_async(mainQueue, ^{
+		NSUInteger		i, cnt = [buddies count];
+		NSMutableArray	*temp_off = [[NSMutableArray alloc] initWithCapacity:cnt];
+		NSMutableArray	*temp_av = [[NSMutableArray alloc] initWithCapacity:cnt];
+		NSMutableArray	*temp_aw = [[NSMutableArray alloc] initWithCapacity:cnt];
+		NSMutableArray	*temp_xa = [[NSMutableArray alloc] initWithCapacity:cnt];
+
+		for (i = 0; i < cnt; i++)
+		{
+			TCCocoaBuddy *buddy = [buddies objectAtIndex:i];
+		
+			switch ([buddy status])
+			{
+				case tcbuddy_status_offline:
+					[temp_off addObject:buddy];
+					break;
+					
+				case tcbuddy_status_available:
+					[temp_av addObject:buddy];
+					break;
+					
+				case tcbuddy_status_away:
+					[temp_aw addObject:buddy];
+					break;
+					
+				case tcbuddy_status_xa:
+					[temp_xa addObject:buddy];
+					break;
+			}
+		}
+		
+		[buddies removeAllObjects];
+		
+		[buddies addObjectsFromArray:temp_av];
+		[buddies addObjectsFromArray:temp_aw];
+		[buddies addObjectsFromArray:temp_xa];
+		[buddies addObjectsFromArray:temp_off];
+		
+		// Release
+		[temp_av release];
+		[temp_aw release];
+		[temp_xa release];
+		[temp_off release];
+	});
+	
+	// Reload list
+	[self _reloadBuddyList];
+}
+
+
+
+/*
+** TCBuddiesController - Files Notification
+*/
+#pragma mark -
+#pragma mark TCBuddiesController - Files Notification
+
+- (void)fileCancel:(NSNotification *)notice
+{
+	NSDictionary	*info = [notice userInfo];
+	NSString		*uuid = [info objectForKey:@"uuid"];
+	NSString		*address = [info objectForKey:@"address"];
+	tcfile_way		way = (tcfile_way)[[info objectForKey:@"way"] intValue];
+	
+	// Search the buddy associated with this transfert
+	for (TCCocoaBuddy *buddy in buddies)
+	{
+		if ([[buddy address] isEqualToString:address])
+		{
+			// Change the file status
+			[[TCFilesController sharedController] setStatus:tcfile_status_cancel andTextStatus:NSLocalizedString(@"file_canceling", @"") forFileTransfert:uuid withWay:way];
+			
+			// Canceling the transfert
+			if (way == tcfile_upload)
+				[buddy cancelFileUpload:uuid];
+			else if (way == tcfile_download)
+				[buddy cancelFileDownload:uuid];
+			
+			return;
+		}
+	}
+}
+
+
+
+/*
+** TCBuddiesController - IBAction
+*/
+#pragma mark -
+#pragma mark TCBuddiesController - IBAction
+
+- (IBAction)doStatus:(id)sender
+{	
+	switch ([imStatus selectedTag])
+	{
+		case -2:
+			control->stop();
+			break;
+			
+		case 0:
+			control->setStatus(tccontroller_available);
+			break;
+			
+		case 1:
+			control->setStatus(tccontroller_away);
+			break;
+			
+		case 2:
+			control->setStatus(tccontroller_xa);
+			break;
+	}
+}
+
+- (IBAction)doRemove:(id)sender
+{
+	NSInteger		row = [tableView selectedRow];
+	TCCocoaBuddy	*buddy;
+	NSString		*address;
+	
+	if (row < 0 || row >= [buddies count])
+		return;
+	
+	// Get the buddy address
+	buddy = [buddies objectAtIndex:row];
+	address = [buddy address];
+	
+	// Inform the info controller that we are removing this buddy
+	[TCBuddyInfoController removingBuddy:buddy];
+	
+	// Remove the buddy from interface side
+	[buddy yieldCore];
+	[buddies removeObjectAtIndex:row];
+	[tableView reloadData];
+	
+	// Remove the buddy from the controller
+	std::string addr([address UTF8String]);
+					 
+	control->removeBuddy(addr);
+}
+
+- (IBAction)doAdd:(id)sender
+{
+	[addWindow center];
+	[addWindow makeKeyAndOrderFront:sender];
+}
+
+- (IBAction)doChat:(id)sender
+{
+	NSInteger		row = [tableView selectedRow];
+	TCCocoaBuddy	*buddy;
+	
+	if (row < 0 || row >= [buddies count])
+		return;
+
+	buddy = [buddies objectAtIndex:row];
+	
+	[buddy openChatWindow];
+}
+
+- (IBAction)doSendFile:(id)sender
+{
+	NSInteger		row = [tableView selectedRow];
+	TCCocoaBuddy	*buddy;
+	
+	if (row < 0 || row >= [buddies count])
+		return;
+	
+	buddy = [buddies objectAtIndex:row];
+	
+	// Show dialog to select files to send
+	NSOpenPanel	*openDlg = [NSOpenPanel openPanel];
+	
+	// Ask for a file
+	[openDlg setCanChooseFiles:YES];
+	[openDlg setCanChooseDirectories:NO];
+	[openDlg setCanCreateDirectories:NO];
+	[openDlg setAllowsMultipleSelection:YES];
+	
+	if ([openDlg runModalForDirectory:nil file:nil] == NSOKButton)
+	{
+		NSArray *files = [openDlg filenames];
+
+		for (NSString *path in files)
+			[buddy sendFile:path];
+	}
+}
+
+- (IBAction)doAddOk:(id)sender
+{
+	NSString *comment = [[addCommentField textStorage] mutableString];
+	
+	std::string nameTxt([[addNameField stringValue] UTF8String]);
+	std::string addressTxt([[addAddressField stringValue] UTF8String]);
+	std::string commentTxt([comment UTF8String]);	
+	
+	// Add the buddy to the controller. Notification will add it on our interface.
+	control->addBuddy(nameTxt, addressTxt, commentTxt);
+	
+	[addWindow orderOut:self];
+}
+
+- (IBAction)doAddCancel:(id)sender
+{
+	[addWindow orderOut:self];
+}
+
+- (IBAction)showWindow:(id)sender
+{
+	[mainWindow makeKeyAndOrderFront:sender];
+}
+
+
+
+/*
+** TCBuddiesController - Tools
+*/
+#pragma mark -
+#pragma mark TCBuddiesController - Tools
+
+- (TCCocoaBuddy *)selectedBuddy
+{
+	NSInteger row = [tableView selectedRow];
+	
+	if (row < 0)
+		return nil;
+	
+	return [buddies objectAtIndex:row];
+}
+
+- (void)_reloadBuddyList
+{
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[tableView reloadData];
+	});
+}
+
+@end
