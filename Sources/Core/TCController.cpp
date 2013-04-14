@@ -48,10 +48,10 @@
 
 
 /*
-** TCController - Constructor & Destructor
+** TCController - Instance
 */
 #pragma mark -
-#pragma mark TCController - Constructor & Destructor
+#pragma mark TCController - Instance
 
 TCController::TCController(TCConfig *_config) :
 	config(_config),
@@ -230,7 +230,7 @@ void TCController::start()
 		}
 		
 		// > Build a source
-		socketAccept = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, sock, 0, socketQueue);
+		socketAccept = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, (uintptr_t)sock, 0, socketQueue);
 		
 		// > Set the read handler
 		dispatch_source_set_event_handler_cpp(this, socketAccept, ^{
@@ -296,7 +296,7 @@ void TCController::start()
 		dispatch_resume(timer);
 		
 		// -- Start buddies --
-		int i, cnt = buddies.size();
+		size_t i, cnt = buddies.size();
 		
 		for (i = 0; i < cnt; i++)
 		{
@@ -651,7 +651,7 @@ void TCController::removeBuddy(const std::string &address)
 				buddy->stop();
 				buddy->release();
 				
-				buddies.erase(buddies.begin() + i);
+				buddies.erase(buddies.begin() + (ptrdiff_t)i);
 				
 				// Save to config
 				config->remove_buddy(*cpy);
@@ -793,11 +793,11 @@ void TCController::cc_notify(TCControlClient *client, TCInfo *info)
 #pragma mark -
 #pragma mark TCController - Tools
 
-void TCController::_addClient(int sock)
+void TCController::_addClient(int csock)
 {
 	// > socketQueue <
 	
-	TCControlClient *client = new TCControlClient(config, sock);
+	TCControlClient *client = new TCControlClient(config, csock);
 	
 	clients.push_back(client);
 	

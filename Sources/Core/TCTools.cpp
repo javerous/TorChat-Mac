@@ -73,10 +73,10 @@ std::vector<std::string> * createExplode(const std::string &_s, const std::strin
     std::string                 s = _s;
 	std::vector<std::string>    *ret = new std::vector<std::string>;
 	
-	int	iPos = s.find(e, 0);
-	int	iPit = e.length();
+	size_t	iPos = s.find(e, 0);
+	size_t	iPit = e.length();
 	
-	while (iPos > -1)
+	while (iPos != s.npos)
 	{
 		ret->push_back(s.substr(0, iPos));
 		
@@ -153,7 +153,7 @@ std::string * createReplaceAll(const std::string &s, const std::string &o, const
 #pragma mark Data
 
 // == Search a chunk of data in another chunk of data ==
-ssize_t memsearch(const uint8_t *token, size_t token_sz, const uint8_t *data, size_t data_sz)
+size_t memsearch(const uint8_t *token, size_t token_sz, const uint8_t *data, size_t data_sz)
 {
 	size_t	pos = 0;
 	size_t	i = 0;
@@ -174,7 +174,7 @@ ssize_t memsearch(const uint8_t *token, size_t token_sz, const uint8_t *data, si
 		data_sz--;
 	}
 	
-	return -1;
+	return static_cast<size_t> (-1);
 }
 
 
@@ -192,7 +192,7 @@ std::string * createMD5(const void *data, size_t size)
 	unsigned char	digest[MD5_DIGEST_LENGTH];
 	int				di = 0;
 	int				rc;
-	char			hex[16] = "0123456789abcdef";
+	char			hex[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 	
 	static char		temp[100];
 
@@ -234,12 +234,12 @@ std::string * createEncodeBase64(const void *data, size_t size)
 	b64 = BIO_push(b64, bmem);
 	
 	// Write the data to encode
-	BIO_write(b64, data, size);
+	BIO_write(b64, data, (int)size);
 	(void)BIO_flush(b64);
 	BIO_get_mem_ptr(b64, &bptr);
 
 	// Build result
-	std::string *res = new std::string(bptr->data, bptr->length); // Skip new line
+	std::string *res = new std::string(bptr->data, (size_t)bptr->length); // Skip new line
 	
 	// Clean
 	BIO_free_all(b64);
@@ -277,7 +277,7 @@ bool createDecodeBase64(const std::string &data, size_t *osize, void **odata)
 	
 	if (buffer)
 	{
-		readlen = BIO_read(b64, buffer, data.size());
+		readlen = BIO_read(b64, buffer, (int)data.size());
 		
 		if (readlen <= 0)
 			return false;
@@ -289,7 +289,11 @@ bool createDecodeBase64(const std::string &data, size_t *osize, void **odata)
 	BIO_free_all(b64);
 	
 	// Give result
-	*osize = readlen;
+	if (readlen < 0)
+		*osize = static_cast<size_t>(-1);
+	else
+		*osize = static_cast<size_t>(readlen);
+	
 	*odata = buffer;
 	
 	return true;

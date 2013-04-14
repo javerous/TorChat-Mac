@@ -53,7 +53,7 @@ class TCBuffer : public TCObject
 {
 public:
 	
-	// -- Constructor & Destructor --
+	// -- Instance --
 	TCBuffer();
 	~TCBuffer();
 	

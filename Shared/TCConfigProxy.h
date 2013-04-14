@@ -1,5 +1,5 @@
 /*
- *  TCBuddyCell.h
+ *  TCConfigProxy.h
  *
  *  Copyright 2011 Avérous Julien-Pierre
  *
@@ -20,8 +20,6 @@
  *
  */
 
-
-
 #import <Foundation/Foundation.h>
 
 
@@ -29,24 +27,20 @@
 /*
 ** Defines
 */
-#pragma mark -
-#pragma mark Defines
+#pragma mark - Defines
 
-#define TCBuddyCellAddressKey	@"address"
-#define TCBuddyCellNameKey		@"pname"
+#define TCProxyName @"com.sourcemac.torchat.proxy"
 
 
 
 /*
-** TCBuddyCell
+** TCConfigProxy
 */
-#pragma mark -
-#pragma mark TCBuddyCell
+#pragma mark - TCConfigProxy
 
-@interface TCBuddyCell : NSCell
-{
-@private
-    
-}
+@protocol TCConfigProxy <NSObject>
+
+- (NSData *)configContent;
+- (void)setConfigContent:(NSData *)content;
 
 @end

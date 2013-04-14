@@ -111,6 +111,9 @@
 
 - (void)showWindow
 {
+	// Clean flag
+	restart = NO;
+	
 	// Load fields
 	[self loadFields];
 	
@@ -199,20 +202,34 @@
 	[openDlg setCanCreateDirectories:YES];
 	[openDlg setAllowsMultipleSelection:NO];
 	
-	if ([openDlg runModalForDirectory:nil file:nil] == NSOKButton)
+	if ([openDlg runModal] == NSOKButton)
 	{
 		TCConfig	*config = [[TCMainController sharedController] config];
-		NSArray		*files = [openDlg filenames];
-		NSString	*path = [files objectAtIndex:0];
+		NSArray		*urls = [openDlg URLs];
+		NSURL		*url = [urls objectAtIndex:0];
 		
 		if (config)
 		{
-			[downloadField setStringValue:[path lastPathComponent]];		
-			config->set_download_folder([path UTF8String]);
+			[downloadField setStringValue:[[url path] lastPathComponent]];	
+			
+			config->set_download_folder([[url path] UTF8String]);
 		}
 		else
 			NSBeep();
 	}
+}
+
+
+
+/*
+** TCPrefController - Delegate
+*/
+#pragma mark -
+#pragma mark TCPrefController - Delegate
+
+- (void)controlTextDidChange:(NSNotification *)aNotification
+{
+	restart = YES;
 }
 
 
@@ -232,16 +249,21 @@
 	
 	if (config->get_mode() == tc_config_basic)
 		return;
-	
+		
 	// Set config value
 	config->set_self_address([self cppStringWithString:[imAddressField stringValue]]);
-	config->set_client_port([[imPortField stringValue] intValue]);
+	config->set_client_port((uint16_t)[[imPortField stringValue] intValue]);
 	config->set_tor_address([self cppStringWithString:[torAddressField stringValue]]);
-	config->set_tor_port([[torPortField stringValue] intValue]);
+	config->set_tor_port((uint16_t)[[torPortField stringValue] intValue]);
 	
 	// Reload config
-	[[TCBuddiesController sharedController] stop];
-	[[TCBuddiesController sharedController] startWithConfig:config];
+	if (restart)
+	{
+		NSLog(@"Restart");
+		
+		[[TCBuddiesController sharedController] stop];
+		[[TCBuddiesController sharedController] startWithConfig:config];
+	}
 }
 
 @end

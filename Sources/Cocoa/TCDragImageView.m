@@ -163,8 +163,18 @@
 - (NSData *)pngImage
 {
 	CGImageRef			ref = [[self image] CGImageForProposedRect:NULL context:nil hints:nil];
-	NSBitmapImageRep	*imp = [[NSBitmapImageRep alloc] initWithCGImage:ref];
-	NSData				*png = [imp representationUsingType:NSPNGFileType properties:nil];
+	NSBitmapImageRep	*imp;
+	NSData				*png;
+	
+	if (!ref)
+		return nil;
+	
+	imp = [[NSBitmapImageRep alloc] initWithCGImage:ref];
+	
+	if (!imp)
+		return nil;
+	
+	png = [imp representationUsingType:NSPNGFileType properties:nil];
 	
 	[imp release];
 	

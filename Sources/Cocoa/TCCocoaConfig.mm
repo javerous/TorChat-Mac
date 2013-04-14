@@ -61,10 +61,10 @@
 
 
 /*
-** TCCocoaConfig - Constructor & Destructor
+** TCCocoaConfig - Instance
 */
 #pragma mark -
-#pragma mark TCCocoaConfig - Constructor & Destructor
+#pragma mark TCCocoaConfig - Instance
 
 TCCocoaConfig::TCCocoaConfig(NSString *filepath)
 {
@@ -73,6 +73,7 @@ TCCocoaConfig::TCCocoaConfig(NSString *filepath)
 	
 	NSFileManager	*mng = [NSFileManager defaultManager];
 	NSString		*npath;
+	NSData			*data = nil;
 	
 	// Resolve path
 	npath = [filepath realPath];
@@ -86,72 +87,56 @@ TCCocoaConfig::TCCocoaConfig(NSString *filepath)
 		return;
 	}
 	
-	// Open or read file
-	if ([mng fileExistsAtPath:filepath])
+#if defined(PROXY_ENABLED) && PROXY_ENABLED
+	proxy = NULL;
+#endif
+	
+	// Hold path
+	fpath = [filepath retain];
+	
+	// Load file
+	if ([mng fileExistsAtPath:fpath])
 	{
-		// Load data
-		NSData *data = [NSData dataWithContentsOfFile:filepath];
+		// Load config data
+		data = [NSData dataWithContentsOfFile:fpath];
 		
 		if (!data)
 			throw "conf_err_cant_open";
-		
-		// Parse as plist
-		NSMutableDictionary	*content = [NSPropertyListSerialization propertyListFromData:data mutabilityOption:NSPropertyListMutableContainersAndLeaves format:nil errorDescription:nil];
-		
-		if (!content)
-			throw "conf_err_parse";
-		
-		if ([content isKindOfClass:[NSDictionary class]] == NO)
-			throw "conf_err_content";
-		
-		// Hold content & path
-		fcontent = [content retain];
-		fpath = [filepath retain];
-	}
-	else
-	{
-		// Simply hold content & path
-		fcontent = [[NSMutableDictionary dictionary] retain];
-		fpath = [filepath retain];
-		
-		_writeToFile();
 	}
 	
-	// Build buddies cache
-	NSArray			*buddies = [fcontent objectForKey:TCCONF_KEY_BUDDIES];
-	NSMutableArray	*nbuddies = [[NSMutableArray alloc] init];
-	
-	for (NSDictionary *buddy in buddies)
-	{
-		NSMutableDictionary *nbuddy = [[NSMutableDictionary alloc] initWithDictionary:buddy];
-		NSString			*alias = [nbuddy objectForKey:@TCConfigBuddyAlias];
-		NSString			*address = [nbuddy objectForKey:@TCConfigBuddyAddress];
-		NSString			*notes = [nbuddy objectForKey:@TCConfigBuddyNotes];
-		
-		// Add it to NSMutableArray cache
-		[nbuddies addObject:nbuddy];
-		
-		// Add it to tc_array cache
-		tc_dictionary entry;
-		
-		entry[TCConfigBuddyAlias] = (alias ? [alias UTF8String] : "-");
-		entry[TCConfigBuddyAddress] = (address ? [address UTF8String] : "-");
-		entry[TCConfigBuddyNotes] = (notes ? [notes UTF8String] : "-");
-		
-		_bcache.push_back(entry);
-		
-		// Release
-		[nbuddy release];
-	}
-	
-	[fcontent setObject:nbuddies forKey:TCCONF_KEY_BUDDIES];
-	[nbuddies release];
+	// Load config
+	_loadConfig(data);
 }
+
+#if defined(PROXY_ENABLED) && PROXY_ENABLED
+
+TCCocoaConfig::TCCocoaConfig(id <TCConfigProxy> _proxy)
+{
+	NSData *data = nil;
+
+	// Set path
+	fpath = NULL;
+	
+	// Hold proxy
+	proxy = [_proxy retain];
+	
+	// Load data
+	data = [proxy configContent];
+	
+	// Load config
+	_loadConfig(data);
+}
+
+#endif
 
 TCCocoaConfig::~TCCocoaConfig()
 {
 	[fcontent release];
 	[fpath release];
+	
+#if defined(PROXY_ENABLED) && PROXY_ENABLED
+	[proxy release];
+#endif
 }
 
 
@@ -181,7 +166,8 @@ void TCCocoaConfig::set_tor_address(const std::string &address)
 	{
 		[fcontent setObject:value forKey:TCCONF_KEY_TOR_ADDRESS];
 		
-		_writeToFile();
+		// Save
+		_saveConfig();
 	}
 }
 
@@ -201,7 +187,8 @@ void TCCocoaConfig::set_tor_port(uint16_t port)
 	
 	[fcontent setObject:value forKey:TCCONF_KEY_TOR_PORT];
 	
-	_writeToFile();
+	// Save
+	_saveConfig();
 }
 
 std::string TCCocoaConfig::get_tor_path() const
@@ -223,7 +210,8 @@ void TCCocoaConfig::set_tor_path(const std::string &path)
 	{
 		[fcontent setObject:value forKey:TCCONF_KEY_TOR_PATH];
 		
-		_writeToFile();
+		// Save
+		_saveConfig();
 	}
 }
 
@@ -248,7 +236,8 @@ void TCCocoaConfig::set_tor_data_path(const std::string &path)
 	{
 		[fcontent setObject:value forKey:TCCONF_KEY_TOR_DATA_PATH];
 		
-		_writeToFile();
+		// Save
+		_saveConfig();
 	}
 }
 
@@ -279,7 +268,8 @@ void TCCocoaConfig::set_self_address(const std::string &address)
 	{
 		[fcontent setObject:value forKey:TCCONF_KEY_IM_ADDRESS];
 		
-		_writeToFile();
+		// Save
+		_saveConfig();
 	}
 }
 
@@ -299,7 +289,8 @@ void TCCocoaConfig::set_client_port(uint16_t port)
 	
 	[fcontent setObject:value forKey:TCCONF_KEY_IM_PORT];
 	
-	_writeToFile();
+	// Save
+	_saveConfig();
 }
 
 
@@ -322,7 +313,8 @@ void TCCocoaConfig::set_download_folder(const std::string & folder)
 	{
 		[fcontent setObject:value forKey:TCCONF_KEY_DOWN_FOLDER];
 		
-		_writeToFile();
+		// Save
+		_saveConfig();
 	}
 }
 
@@ -359,7 +351,8 @@ void TCCocoaConfig::set_mode(tc_config_mode mode)
 	
 	[fcontent setObject:value forKey:TCCONF_KEY_MODE];
 	
-	_writeToFile();
+	// Save
+	_saveConfig();
 }
 
 
@@ -389,7 +382,8 @@ void TCCocoaConfig::set_profile_name(const std::string & name)
 	{
 		[fcontent setObject:value forKey:TCCONF_KEY_PROFILE_NAME];
 		
-		_writeToFile();
+		// Save
+		_saveConfig();
 	}
 }
 
@@ -412,7 +406,8 @@ void TCCocoaConfig::set_profile_text(const std::string & text)
 	{
 		[fcontent setObject:value forKey:TCCONF_KEY_PROFILE_TEXT];
 		
-		_writeToFile();
+		// Save
+		_saveConfig();
 	}
 }
 
@@ -442,14 +437,16 @@ void TCCocoaConfig::set_profile_avatar(const TCImage & picture)
 	if (picture.getWidth() == 0 || picture.getHeight() == 0 || picture.getBitmap() == NULL)
 	{
 		[fcontent removeObjectForKey:TCCONF_KEY_PROFILE_AVATAR];
-		_writeToFile();
+		
+		// Save
+		_saveConfig();
 		
 		return;
 	}
 	
 	NSMutableDictionary *avatar = [[NSMutableDictionary alloc] initWithCapacity:4];
-	NSNumber			*width = [[NSNumber alloc] initWithUnsignedInt:picture.getWidth()];
-	NSNumber			*height = [[NSNumber alloc] initWithUnsignedInt:picture.getHeight()];
+	NSNumber			*width = [[NSNumber alloc] initWithUnsignedLong:picture.getWidth()];
+	NSNumber			*height = [[NSNumber alloc] initWithUnsignedLong:picture.getHeight()];
 	NSData				*bitmap = nil;
 	NSData				*bitmapAlpha = nil;
 	
@@ -478,7 +475,8 @@ void TCCocoaConfig::set_profile_avatar(const TCImage & picture)
 	[bitmap release];
 	[bitmapAlpha release];
 
-	_writeToFile();
+	// Save
+	_saveConfig();
 }
 
 
@@ -505,6 +503,7 @@ void TCCocoaConfig::add_buddy(const std::string &address, const std::string &ali
 	[obuddy setObject:oalias forKey:@TCConfigBuddyAlias];
 	[obuddy setObject:oaddress forKey:@TCConfigBuddyAddress];
 	[obuddy setObject:onotes forKey:@TCConfigBuddyNotes];
+	[obuddy setObject:@"" forKey:@TCConfigBuddyLastName];
 	
 	[[fcontent objectForKey:TCCONF_KEY_BUDDIES] addObject:obuddy];
 	
@@ -515,12 +514,13 @@ void TCCocoaConfig::add_buddy(const std::string &address, const std::string &ali
 	entry[TCConfigBuddyAlias] = alias;
 	entry[TCConfigBuddyAddress] = address;
 	entry[TCConfigBuddyNotes] = notes;
+	entry[TCConfigBuddyLastName] = "";
 	
 	_bcache.push_back(entry);
 	
 	
-	// Write & Release
-	_writeToFile();
+	// Save & Release
+	_saveConfig();
 	[obuddy release];
 }
 
@@ -556,15 +556,15 @@ bool TCCocoaConfig::remove_buddy(const std::string &address)
 		
 		if (buddy[TCConfigBuddyAddress].compare(address) == 0)
 		{
-			_bcache.erase(_bcache.begin() + i);
+			_bcache.erase(_bcache.begin() + (ptrdiff_t)i);
 			cpp_found = YES;
 			break;
 		}
 	}
 	
 	
-	// Write
-	_writeToFile();
+	// Save
+	_saveConfig();
 
 	return oc_found && cpp_found;
 }
@@ -602,8 +602,8 @@ void TCCocoaConfig::set_buddy_alias(const std::string &address, const std::strin
 		}
 	}
 	
-	// Write
-	_writeToFile();
+	// Save
+	_saveConfig();
 }
 
 void TCCocoaConfig::set_buddy_notes(const std::string &address, const std::string &notes)
@@ -639,8 +639,45 @@ void TCCocoaConfig::set_buddy_notes(const std::string &address, const std::strin
 		}
 	}
 	
-	// Write
-	_writeToFile();
+	// Save
+	_saveConfig();
+}
+
+void TCCocoaConfig::set_buddy_last_profile_name(const std::string &address, const std::string &lname)
+{
+	// Change from Cocoa version
+	NSMutableArray	*array = [fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	NSUInteger		i, cnt = [array count];
+	NSString		*oaddress = [NSString stringWithUTF8String:address.c_str()];
+	
+	for (i = 0; i < cnt; i++)
+	{
+		NSMutableDictionary *buddy = [array objectAtIndex:i];
+		
+		if ([[buddy objectForKey:@TCConfigBuddyAddress] isEqualToString:oaddress])
+		{
+			[buddy setObject:[NSString stringWithUTF8String:lname.c_str()] forKey:@TCConfigBuddyLastName];
+			break;
+		}
+	}
+	
+	
+	// Change from C++ version
+	cnt = _bcache.size();
+	
+	for (i = 0; i < cnt; i++)
+	{
+		tc_dictionary &buddy = _bcache[i];
+		
+		if (buddy[TCConfigBuddyAddress].compare(address) == 0)
+		{
+			buddy[TCConfigBuddyLastName] = lname;
+			break;
+		}
+	}
+	
+	// Save
+	_saveConfig();
 }
 
 std::string TCCocoaConfig::get_buddy_alias(const std::string &address) const
@@ -673,6 +710,21 @@ std::string TCCocoaConfig::get_buddy_notes(const std::string &address) const
 	return "";
 }
 
+std::string TCCocoaConfig::get_buddy_last_profile_name(const std::string &address) const
+{
+	size_t i, cnt = _bcache.size();
+	
+	for (i = 0; i < cnt; i++)
+	{
+		const tc_dictionary &buddy = _bcache.at(i);
+		
+		if (buddy.at(TCConfigBuddyAddress).compare(address) == 0)
+			return buddy.at(TCConfigBuddyLastName);
+	}
+	
+	return "";
+}
+
 
 
 /*
@@ -689,23 +741,46 @@ std::string TCCocoaConfig::real_path(const std::string &path) const
 	if (path.compare("<tor>") == 0)
 	{
 		NSBundle	*bundle = [NSBundle mainBundle];
-		NSString	*path = [bundle pathForResource:@"tor" ofType:@""];
-		const char	*cpath = [path UTF8String];
+		NSString	*opath = [bundle pathForResource:@"tor" ofType:@""];
+		const char	*cpath = [opath UTF8String];
 		
 		if (cpath)
 			return cpath;
 		else
 			return "cant_find_tor";
 	}
-	else if (path[0] != '/')
+	else if (path[0] == '~')
 	{
-		NSString	*component = [NSString stringWithUTF8String:path.c_str()];
-		NSString	*path = [[fpath stringByDeletingLastPathComponent] stringByAppendingPathComponent:component];
-
-		return [path UTF8String];
+		NSString *pth = [[NSString stringWithUTF8String:path.c_str()] stringByExpandingTildeInPath];
+		
+		return [pth UTF8String];
+	}
+	else if (path[0] == '/')
+	{
+		return path;
 	}
 	else
-		return path;
+	{
+		NSString	*component = [NSString stringWithUTF8String:path.c_str()];
+		NSString	*opath = nil;
+		
+#if defined(PROXY_ENABLED) && PROXY_ENABLED
+
+		// Build path relative to desktop directory
+		if (!opath)
+			opath = [[@"~/Desktop" stringByExpandingTildeInPath] stringByAppendingPathComponent:component];
+#endif
+		
+		// Build path relative to configuration directory
+		if (!opath)
+			opath = [[fpath stringByDeletingLastPathComponent] stringByAppendingPathComponent:component];
+		
+		// Build path relative to temporary directory
+		if (!opath)
+			opath = [@"/tmp" stringByAppendingPathComponent:component];
+
+		return [opath UTF8String];
+	}
 }
 
 
@@ -768,7 +843,8 @@ void TCCocoaConfig::set_mode_title(tc_config_title mode)
 	
 	[fcontent setObject:value forKey:TCCONF_KEY_UI_TITLE];
 	
-	_writeToFile();
+	// Save
+	_saveConfig();
 }
 
 
@@ -814,11 +890,87 @@ std::string TCCocoaConfig::get_client_name() const
 #pragma mark -
 #pragma mark TCCocoaConfig - Private
 
-void TCCocoaConfig::_writeToFile()
+void TCCocoaConfig::_loadConfig(NSData *data)
+{
+	NSMutableDictionary	*content;
+	
+	// Parse plist
+	if (data)
+		content = [NSPropertyListSerialization propertyListFromData:data mutabilityOption:NSPropertyListMutableContainersAndLeaves format:nil errorDescription:nil];
+	else
+		content = [NSMutableDictionary dictionary];
+	
+	// Check content
+	if (!content)
+		throw "conf_err_parse";
+	
+	if ([content isKindOfClass:[NSDictionary class]] == NO)
+		throw "conf_err_content";
+	
+	// Hold content
+	fcontent = [content retain];
+	
+	// Build buddies cache
+	NSArray			*buddies = [fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	NSMutableArray	*nbuddies = [[NSMutableArray alloc] init];
+	
+	for (NSDictionary *buddy in buddies)
+	{
+		NSMutableDictionary *nbuddy = [[NSMutableDictionary alloc] initWithDictionary:buddy];
+		NSString			*alias = [nbuddy objectForKey:@TCConfigBuddyAlias];
+		NSString			*address = [nbuddy objectForKey:@TCConfigBuddyAddress];
+		NSString			*notes = [nbuddy objectForKey:@TCConfigBuddyNotes];
+		NSString			*lname = [nbuddy objectForKey:@TCConfigBuddyLastName];
+		
+		// Add it to NSMutableArray cache
+		[nbuddies addObject:nbuddy];
+		
+		// Add it to tc_array cache
+		tc_dictionary entry;
+		
+		entry[TCConfigBuddyAlias] = (alias ? [alias UTF8String] : "-");
+		entry[TCConfigBuddyAddress] = (address ? [address UTF8String] : "-");
+		entry[TCConfigBuddyNotes] = (notes ? [notes UTF8String] : "-");
+		entry[TCConfigBuddyLastName] = (lname ? [lname UTF8String] : "");
+
+		_bcache.push_back(entry);
+		
+		// Release
+		[nbuddy release];
+	}
+	
+	[fcontent setObject:nbuddies forKey:TCCONF_KEY_BUDDIES];
+	[nbuddies release];
+}
+
+void TCCocoaConfig::_saveConfig()
 {
 	NSData *data = [NSPropertyListSerialization dataWithPropertyList:fcontent format:NSPropertyListXMLFormat_v1_0 options:0 error:nil];
 	
-	if (data)
+	if (!data)
+		return;
+	
+#if defined(PROXY_ENABLED) && PROXY_ENABLED
+	
+	// Save by using proxy
+	if (proxy)
+	{
+		@try
+		{
+			[proxy setConfigContent:data];
+		}
+		@catch (NSException *exception)
+		{
+			[proxy release];
+			proxy = nil;
+			
+			NSLog(@"Configuration proxy unavailable");
+		}
+	}
+	
+#endif
+	
+	// Save by using file
+	if (fpath)
 		[data writeToFile:fpath atomically:YES];
 }
-

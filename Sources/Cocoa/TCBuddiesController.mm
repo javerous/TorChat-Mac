@@ -286,16 +286,16 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
-	return [buddies count];
+	return (NSInteger)[buddies count];
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
-	if (rowIndex >= [buddies count])
+	if (rowIndex < 0 || rowIndex >= [buddies count])
 		return nil;
 	
 	NSString		*identifier = [aTableColumn identifier];
-	TCCocoaBuddy	*buddy = [buddies objectAtIndex:rowIndex];
+	TCCocoaBuddy	*buddy = [buddies objectAtIndex:(NSUInteger)rowIndex];
 	
 	if ([identifier isEqualToString:@"state"])
 	{
@@ -316,9 +316,8 @@
 	}
 	else if ([identifier isEqualToString:@"name"])
 	{
-		return [NSDictionary dictionaryWithObjectsAndKeys:	[buddy alias],			TCBuddyCellAliasKey,
-															[buddy address],		TCBuddyCellAddressKey,
-															[buddy profileName],	TCBuddyCellProfileNameKey,
+		return [NSDictionary dictionaryWithObjectsAndKeys:	[buddy address],	TCBuddyCellAddressKey,
+															[buddy finalName],	TCBuddyCellNameKey,
 															nil];
 		
 		
@@ -339,12 +338,12 @@
 
 	// Hold current selection (not perfect)
 	if (row >= 0 && row < [buddies count])
-		lastSelected = [buddies objectAtIndex:row];
+		lastSelected = [buddies objectAtIndex:(NSUInteger)row];
 	else
 		lastSelected = nil;
 	
 	// Notify
-	id				obj = (row >= 0 ? [buddies objectAtIndex:row] : [NSNull null]);
+	id				obj = (row >= 0 ? [buddies objectAtIndex:(NSUInteger)row] : [NSNull null]);
 	NSDictionary	*content = [NSDictionary dictionaryWithObject:obj forKey:TCBuddiesControllerBuddyKey];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesControllerSelectChanged object:self userInfo:content];	
@@ -358,7 +357,7 @@
 	if (row < 0 || row >= [buddies count])
 		return;
 	
-	buddy = [buddies objectAtIndex:row];
+	buddy = [buddies objectAtIndex:(NSUInteger)row];
 	
 	[buddy openChatWindow];
 }
@@ -381,7 +380,7 @@
 	if (row < 0 || row >= [buddies count])
 		return NO;
 	
-	TCCocoaBuddy	*buddy = [buddies objectAtIndex:row];
+	TCCocoaBuddy	*buddy = [buddies objectAtIndex:(NSUInteger)row];
 	
 	if ([types containsObject:NSFilenamesPboardType])
 	{
@@ -598,7 +597,7 @@
 - (IBAction)doTitle:(id)sender
 {
 	NSMenuItem	*selected = [imTitle selectedItem];
-	int			tag = [selected tag];
+	NSInteger	tag = [selected tag];
 	
 	if (!selected)
 	{
@@ -634,7 +633,7 @@
 		return;
 	
 	// Get the buddy address
-	buddy = [buddies objectAtIndex:row];
+	buddy = [buddies objectAtIndex:(NSUInteger)row];
 	address = [buddy address];
 	
 	// Inform the info controller that we are removing this buddy
@@ -642,7 +641,7 @@
 	
 	// Remove the buddy from interface side
 	[buddy yieldCore];
-	[buddies removeObjectAtIndex:row];
+	[buddies removeObjectAtIndex:(NSUInteger)row];
 	[tableView reloadData];
 	
 	// Remove the buddy from the controller
@@ -671,7 +670,7 @@
 	if (row < 0 || row >= [buddies count])
 		return;
 
-	buddy = [buddies objectAtIndex:row];
+	buddy = [buddies objectAtIndex:(NSUInteger)row];
 	
 	[buddy openChatWindow];
 }
@@ -684,7 +683,7 @@
 	if (row < 0 || row >= [buddies count])
 		return;
 	
-	buddy = [buddies objectAtIndex:row];
+	buddy = [buddies objectAtIndex:(NSUInteger)row];
 	
 	// Show dialog to select files to send
 	NSOpenPanel	*openDlg = [NSOpenPanel openPanel];
@@ -695,12 +694,12 @@
 	[openDlg setCanCreateDirectories:NO];
 	[openDlg setAllowsMultipleSelection:YES];
 	
-	if ([openDlg runModalForDirectory:nil file:nil] == NSOKButton)
+	if ([openDlg runModal] == NSOKButton)
 	{
-		NSArray *files = [openDlg filenames];
+		NSArray *urls = [openDlg URLs];
 
-		for (NSString *path in files)
-			[buddy sendFile:path];
+		for (NSURL *url in urls)
+			[buddy sendFile:[url path]];
 	}
 }
 
@@ -798,10 +797,10 @@
 {
 	NSInteger row = [tableView selectedRow];
 	
-	if (row < 0)
+	if (row < 0 || row >= [buddies count])
 		return nil;
 	
-	return [buddies objectAtIndex:row];
+	return [buddies objectAtIndex:(NSUInteger)row];
 }
 
 - (void)updateStatusUI:(int)status
@@ -943,11 +942,11 @@
 					
 				dispatch_async(dispatch_get_main_queue(), ^{
 						
-					NSDictionary *info = [NSDictionary dictionaryWithObject:final forKey:@"avatar"];
+					NSDictionary *uinfo = [NSDictionary dictionaryWithObject:final forKey:@"avatar"];
 					
 					[imAvatar setImage:final];
 	
-					[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesControllerAvatarChanged object:self userInfo:info];
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesControllerAvatarChanged object:self userInfo:uinfo];
 					
 					// Release
 					[final release];

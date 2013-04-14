@@ -101,10 +101,10 @@ typedef enum
 
 
 /*
-** TCBuddy - Constructor & Destructor
+** TCBuddy - Instance
 */
 #pragma mark -
-#pragma mark TCBuddy - Constructor & Destructor
+#pragma mark TCBuddy - Instance
 
 TCBuddy::TCBuddy(TCConfig *_config, const std::string &_alias, const std::string &_address, const std::string &_notes)
 {	
@@ -150,13 +150,13 @@ TCBuddy::TCBuddy(TCConfig *_config, const std::string &_alias, const std::string
 	char	rnd[101];
 	char	charset [] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	size_t	i;
-	int		index;
+	size_t	index;
 	
 	srandomdev();
 	
 	for (i = 0; i < sizeof(rnd) - 1; i++)
 	{
-		index = random() % (sizeof(charset) - 1);
+		index = (unsigned long)random() % (sizeof(charset) - 1);
 		rnd[i] = charset[index];
 	}
 	
@@ -1102,8 +1102,12 @@ void TCBuddy::doProfileName(const std::string &name)
 
 	dispatch_async_cpp(this, mainQueue, ^{
 		
+		// Hold profile name
 		profileName->release();
 		profileName = aname;
+		
+		// Store profile name
+		config->set_buddy_last_profile_name(maddress->content(), aname->content());
 		
 		// Notify it
 		_notify(tcbuddy_notify_profile_name, "core_bd_note_new_profile_name", profileName);
@@ -1164,7 +1168,7 @@ void TCBuddy::doRemoveMe()
 }
 
 void TCBuddy::doFileName(const std::string &uuid, const std::string &fsize, const std::string &bsize, const std::string &filename)
-{	
+{
 	// Quick check
 	std::string *sfilename_1 = createReplaceAll(filename, "..", "_");
 	std::string *sfilename_2 = createReplaceAll(*sfilename_1, "/", "_");
@@ -1205,6 +1209,7 @@ void TCBuddy::doFileName(const std::string &uuid, const std::string &fsize, cons
 	
 	// Add it to the list
 	dispatch_async_cpp(this, mainQueue, ^{
+		
 		freceive[file->uuid()] = file;
 		
 		TCFileInfo *info = new TCFileInfo(file);
@@ -1464,19 +1469,6 @@ TCString * TCBuddy::getProfileText()
 	return result;
 }
 
-TCString * TCBuddy::getProfileName()
-{
-	__block TCString * result = NULL;
-
-	dispatch_sync_cpp(this, mainQueue, ^{
-		
-		profileName->retain();
-		result = profileName;
-	});
-	
-	return result;
-}
-
 TCImage * TCBuddy::getProfileAvatar()
 {
 	__block TCImage * result = NULL;
@@ -1487,6 +1479,63 @@ TCImage * TCBuddy::getProfileAvatar()
 		result = profileAvatar;
 	});
 
+	return result;
+}
+
+
+TCString * TCBuddy::getProfileName()
+{
+	__block TCString * result = NULL;
+	
+	dispatch_sync_cpp(this, mainQueue, ^{
+		
+		profileName->retain();
+		result = profileName;
+	});
+	
+	return result;
+}
+
+TCString * TCBuddy::getLastProfileName()
+{
+	__block TCString *result = NULL;
+	
+	dispatch_sync_cpp(this, mainQueue, ^{
+
+		std::string value = config->get_buddy_last_profile_name(maddress->content());
+		
+		result = new TCString(value);
+	});
+	
+	return result;
+}
+
+TCString * TCBuddy::getFinalName()
+{
+	__block TCString *result = NULL;
+	
+	dispatch_sync_cpp(this, mainQueue, ^{
+		
+		if (malias->content().length() > 0)
+		{
+			malias->retain();
+		
+			result = malias;
+		}
+		else if (profileName->content().length() > 0)
+		{
+			profileName->retain();
+			
+			result = profileName;
+		}
+		else
+		{
+			std::string value = config->get_buddy_last_profile_name(maddress->content());
+		
+			result = new TCString(value);
+		}
+	});
+	
 	return result;
 }
 
@@ -1598,7 +1647,7 @@ void TCBuddy::_sendAvatar(TCImage *avatar)
 		_sendCommand("profile_avatar_alpha", data);
 	}
 
-	if (avatar->getBitmapAlpha())
+	if (avatar->getBitmap())
 	{
 		std::string data((char *)avatar->getBitmap(), avatar->getBitmapSize());
 		
@@ -1639,7 +1688,7 @@ void TCBuddy::_sendFileName(TCFileSend *file)
 	
 	// Add the filename
 	items.push_back(std::string(file->fileName()));
-	
+		
 	// Send the command
 	_sendCommand("filename", items, tcbuddy_channel_in);
 }
@@ -1674,8 +1723,8 @@ void TCBuddy::_sendFileData(TCFileSend *file)
 		items.push_back(*md5);
 		delete md5;
 		
-		// add the data
-		std::string chk((char *)chunk, chunksz);
+		// Add the data
+		std::string chk((char *)chunk, static_cast <size_t>(chunksz));
 		items.push_back(chk);
 		
 		// Send the chunk
@@ -1854,7 +1903,7 @@ void TCBuddy::_startSocks()
 	const char			*user = "torchat";
 	struct sockreq		*thisreq;
 	char				*buffer;
-	unsigned int		datalen;
+	size_t				datalen;
 	
 	// Get the target connexion informations
 	std::string host = maddress->content() + ".onion";
@@ -2105,18 +2154,22 @@ TCFileInfo::~TCFileInfo()
 // -- Property --
 const std::string & TCFileInfo::uuid()
 {
+	static std::string null;
+	
 	if (receiver)
 		return receiver->uuid();
+	
 	if (sender)
 		return sender->uuid();
 	
-	return "";
+	return null;
 }
 
 uint64_t TCFileInfo::fileSizeCompleted()
 {
 	if (receiver)
 		return receiver->receivedSize();
+	
 	if (sender)
 		return sender->validatedSize();
 	
@@ -2127,6 +2180,7 @@ uint64_t TCFileInfo::fileSizeTotal()
 {
 	if (receiver)
 		return receiver->fileSize();
+	
 	if (sender)
 		return sender->fileSize();
 	
@@ -2135,20 +2189,26 @@ uint64_t TCFileInfo::fileSizeTotal()
 
 const std::string & TCFileInfo::fileName()
 {
+	static std::string null;
+	
 	if (receiver)
 		return receiver->fileName();
+	
 	if (sender)
 		return sender->fileName();
 	
-	return "";
+	return null;
 }
 
 const std::string & TCFileInfo::filePath()
 {
+	static std::string null;
+
 	if (receiver)
 		return receiver->filePath();
+	
 	if (sender)
 		return sender->filePath();
 	
-	return "";
+	return null;
 }

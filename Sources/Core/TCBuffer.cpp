@@ -60,10 +60,10 @@ struct _tc_items
 
 
 /*
-** TCBuffer - Constructor & Destructor
+** TCBuffer - Instance
 */
 #pragma mark -
-#pragma mark TCBuffer - Constructor & Destructor
+#pragma mark TCBuffer - Instance
 
 TCBuffer::TCBuffer()
 {
@@ -250,16 +250,17 @@ std::string * TCBuffer::createStringSearch(const std::string &search, bool retur
 	const char *c_search = search.c_str();
 	size_t		c_size = search.size();
 	
-	ssize_t		pos = 0;
+	size_t		pos = 0;
 	
 	while (item)
 	{
 		pos = memsearch((uint8_t *)c_search, c_size, (uint8_t *)item->data, item->size);
 
-		if (pos >= 0)
+		if (pos != static_cast<size_t>(-1))
 		{
 			sz += pos + c_size;
 			found = true;
+			
 			break;
 		}
 		

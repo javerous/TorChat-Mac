@@ -63,10 +63,10 @@
 
 
 /*
-** TCCocoaBuddy - Constructor & Destructor
+** TCCocoaBuddy - Instance
 */
 #pragma mark -
-#pragma mark TCCocoaBuddy - Constructor & Destructor
+#pragma mark TCCocoaBuddy - Instance
 
 
 - (id)initWithBuddy:(TCBuddy *)_buddy
@@ -263,7 +263,7 @@
 	__block NSString *result = nil;
 	
 	dispatch_sync(mainQueue, ^{
-		
+	
 		result = [_profileName retain];
 	});
 	
@@ -271,6 +271,16 @@
 		return [result autorelease];
 	else
 		return @"";
+}
+
+- (NSString *)lastProfileName
+{
+	TCString	*str = buddy->getLastProfileName();
+	NSString	*result = [NSString stringWithUTF8String:str->content().c_str()];
+	
+	str->release();
+	
+	return result;
 }
 
 - (NSString *)profileText
@@ -286,6 +296,16 @@
 		return [result autorelease];
 	else
 		return @"";
+}
+
+- (NSString *)finalName
+{
+	TCString	*str = buddy->getFinalName();
+	NSString	*result = [NSString stringWithUTF8String:str->content().c_str()];
+	
+	str->release();
+	
+	return result;
 }
 
 
@@ -488,15 +508,15 @@
 				
 			case tcbuddy_notify_disconnected:
 			{
-				NSDictionary *info;
+				NSDictionary *uinfo;
 				
 				_status = tcbuddy_status_offline;
 				
 				// Build notification info
-				info = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:_status] forKey:@"status"];
+				uinfo = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:_status] forKey:@"status"];
 				
 				dispatch_async(noticeQueue, ^{
-					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedStatusNotification object:self userInfo:info];					
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedStatusNotification object:self userInfo:uinfo];					
 				});
 				
 				break;
@@ -508,18 +528,18 @@
 			case tcbuddy_notify_status:
 			{
 				TCNumber		*status = dynamic_cast<TCNumber *>(info->context());
-				NSDictionary	*info;
+				NSDictionary	*uinfo;
 
 				// Update status
 				_status = (tcbuddy_status)status->uint8Value();
 				
 				// Build notification info
-				info = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:_status] forKey:@"status"];
+				uinfo = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:_status] forKey:@"status"];
 
 				// Send notification
 				dispatch_async(noticeQueue, ^{
 					
-					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedStatusNotification object:self userInfo:info];					
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedStatusNotification object:self userInfo:uinfo];					
 				});
 				
 				// Send status to chat window
@@ -561,15 +581,27 @@
 			{
 				TCImage			*img = dynamic_cast<TCImage *>(info->context());
 				NSImage			*avatar = [[NSImage alloc] initWithTCImage:img];
-				NSDictionary	*info = [NSDictionary dictionaryWithObject:avatar forKey:@"avatar"];
-
+				NSDictionary	*uinfo;
+				
+				// If no avatar, use standard user
+				if ([[avatar representations] count] == 0)
+				{
+					avatar = [[NSImage imageNamed:NSImageNameUser] retain];
+					
+					[avatar setSize:NSMakeSize(64, 64)];
+				}
+				
+				// Build notification info
+				uinfo = [NSDictionary dictionaryWithObject:avatar forKey:@"avatar"];
+				
+				// Hold avatar
 				[_profileAvatar release];
 				_profileAvatar = avatar;
-				
+								
 				// Notify of the new avatar
 				dispatch_async(noticeQueue, ^{
 
-					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedAvatarNotification object:self userInfo:info];					
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedAvatarNotification object:self userInfo:uinfo];					
 				});
 				
 				// Set the new avatar to the chat window
@@ -585,14 +617,14 @@
 			{
 				TCString		*text = dynamic_cast<TCString *>(info->context());
 				NSString		*otext = [[NSString alloc] initWithUTF8String:text->content().c_str()];
-				NSDictionary	*info = [NSDictionary dictionaryWithObject:otext forKey:@"text"];
+				NSDictionary	*uinfo = [NSDictionary dictionaryWithObject:otext forKey:@"text"];
 
 				[_profileText release];
 				_profileText = otext;
 				
 				dispatch_async(noticeQueue, ^{
 					
-					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedTextNotification object:self userInfo:info];					
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedTextNotification object:self userInfo:uinfo];					
 				});
 				
 				break;
@@ -602,14 +634,14 @@
 			{
 				TCString		*name = dynamic_cast<TCString *>(info->context());
 				NSString		*oname = [[NSString alloc] initWithUTF8String:name->content().c_str()];
-				NSDictionary	*info = [NSDictionary dictionaryWithObject:oname forKey:@"name"];
+				NSDictionary	*uinfo = [NSDictionary dictionaryWithObject:oname forKey:@"name"];
 
 				[_profileName release];
 				_profileName = oname;
 				
 				dispatch_async(noticeQueue, ^{
 					
-					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedNameNotification object:self userInfo:info];					
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedNameNotification object:self userInfo:uinfo];					
 				});
 				
 				break;
@@ -640,11 +672,11 @@
 			{
 				TCString        *alias = dynamic_cast<TCString *>(info->context());
                 NSString        *oalias = [NSString stringWithUTF8String:alias->content().c_str()];
-                NSDictionary    *info = [NSDictionary dictionaryWithObject:oalias forKey:@"alias"];
+                NSDictionary    *uinfo = [NSDictionary dictionaryWithObject:oalias forKey:@"alias"];
 
 				dispatch_async(noticeQueue, ^{
 					
-					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedAliasNotification object:self userInfo:info];
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedAliasNotification object:self userInfo:uinfo];
 				});
 				
 				break;
@@ -661,14 +693,14 @@
 			{
 				TCString        *version = dynamic_cast<TCString *>(info->context());
 				NSString        *oversion = [[NSString alloc] initWithUTF8String:version->content().c_str()];
-                NSDictionary    *info = [NSDictionary dictionaryWithObject:oversion forKey:@"version"];
+                NSDictionary    *uinfo = [NSDictionary dictionaryWithObject:oversion forKey:@"version"];
 
 				[_peerVersion release];
                 _peerVersion = oversion;
 				
 				dispatch_async(noticeQueue, ^{
 					
-					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedPeerVersionNotification object:self userInfo:info];
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedPeerVersionNotification object:self userInfo:uinfo];
 				});
 				
 				break;
@@ -678,14 +710,14 @@
 			{
 				TCString        *client = dynamic_cast<TCString *>(info->context());
 				NSString        *oclient = [[NSString alloc] initWithUTF8String:client->content().c_str()];
-                NSDictionary    *info = [NSDictionary dictionaryWithObject:oclient forKey:@"client"];
+                NSDictionary    *uinfo = [NSDictionary dictionaryWithObject:oclient forKey:@"client"];
 
 				[_peerClient release];
 				_peerClient = oclient;
 				
 				dispatch_async(noticeQueue, ^{
 					
-					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedPeerClientNotification object:self userInfo:info];					
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedPeerClientNotification object:self userInfo:uinfo];					
 				});
 				
 				break;
@@ -702,16 +734,19 @@
 				NSString	*ouuid = [[NSString alloc] initWithUTF8String:finfo->uuid().c_str()];
 				NSString	*opath = [[NSString alloc] initWithUTF8String:finfo->filePath().c_str()];
 				NSString	*obaddres = [[NSString alloc] initWithUTF8String:aBuddy->address().content().c_str()];
-				NSString	*obalias = [[NSString alloc] initWithUTF8String:aBuddy->alias()->content().c_str()];
+				TCString	*bname = aBuddy->getFinalName();
+				NSString	*obname = [[NSString alloc] initWithUTF8String:bname->content().c_str()];
 				
 				// Add the file transfert to the controller
-				[[TCFilesController sharedController] startFileTransfert:ouuid withFilePath:opath buddyAddress:obaddres buddyAlias:obalias transfertWay:tcfile_upload fileSize:finfo->fileSizeTotal()];
+				[[TCFilesController sharedController] startFileTransfert:ouuid withFilePath:opath buddyAddress:obaddres buddyName:obname transfertWay:tcfile_upload fileSize:finfo->fileSizeTotal()];
 				
 				// Release
 				[ouuid release];
 				[opath release];
 				[obaddres release];
-				[obalias release];
+				[obname release];
+				
+				bname->release();
 				
 				break;
 			}
@@ -776,7 +811,7 @@
 				
 			case tcbuddy_notify_file_receive_start:
 			{
-				TCFileInfo	*finfo = dynamic_cast<TCFileInfo *>(info->context());
+				TCFileInfo *finfo = dynamic_cast<TCFileInfo *>(info->context());
 				
 				if (!finfo)
 					return;
@@ -785,17 +820,19 @@
 				NSString	*ouuid = [[NSString alloc] initWithUTF8String:finfo->uuid().c_str()];
 				NSString	*opath = [[NSString alloc] initWithUTF8String:finfo->filePath().c_str()];
 				NSString	*obaddres = [[NSString alloc] initWithUTF8String:aBuddy->address().content().c_str()];
-				NSString	*obalias = [[NSString alloc] initWithUTF8String:aBuddy->alias()->content().c_str()];
-				
-				
+				TCString	*bname = aBuddy->getFinalName();
+				NSString	*obname = [[NSString alloc] initWithUTF8String:bname->content().c_str()];
+
 				// Add the file transfert to the controller
-				[[TCFilesController sharedController] startFileTransfert:ouuid withFilePath:opath buddyAddress:obaddres buddyAlias:obalias transfertWay:tcfile_download fileSize:finfo->fileSizeTotal()];
+				[[TCFilesController sharedController] startFileTransfert:ouuid withFilePath:opath buddyAddress:obaddres buddyName:obname transfertWay:tcfile_download fileSize:finfo->fileSizeTotal()];
 				
 				// Release
 				[ouuid release];
 				[opath release];
 				[obaddres release];
-				[obalias release];
+				[obname release];
+				
+				bname->release();
 				
 				break;
 			}

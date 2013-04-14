@@ -60,7 +60,7 @@ typedef enum
 #define TCFileUUIDKey			@"uuid"
 #define TCFileFilePathKey		@"filepath"
 #define TCFileBuddyAddressKey	@"buddy_address"
-#define TCFileBuddyAliasKey		@"buddy_alias"
+#define TCFileBuddyNameKey		@"buddy_name"
 #define TCFileWayKey			@"way"
 #define TCFileStatusKey			@"status"
 #define TCFileStatusTextKey		@"status_txt"

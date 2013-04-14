@@ -56,10 +56,10 @@
 
 
 /*
-** TCAssistantController - Constructor & Destructor
+** TCAssistantController - Instance
 */
 #pragma mark -
-#pragma mark TCAssistantController - Constructor & Destructor
+#pragma mark TCAssistantController - Instance
 
 + (TCAssistantController *)sharedController
 {
@@ -309,7 +309,7 @@
 {
 	NSMatrix	*mtr = sender;
 	NSButton	*obj = [mtr selectedCell];
-	int			tag = [obj tag];
+	NSInteger	tag = [obj tag];
 	
 	if (tag == 1)
 	{
@@ -337,16 +337,16 @@
 	[openDlg setCanCreateDirectories:NO];
 	[openDlg setAllowsMultipleSelection:NO];
 	
-	if ([openDlg runModalForDirectory:nil file:nil] == NSOKButton)
+	if ([openDlg runModal] == NSFileHandlingPanelOKButton)
 	{
-		NSArray			*files = [openDlg filenames];
-		NSString		*path = [files objectAtIndex:0];
+		NSArray			*urls = [openDlg URLs];
+		NSURL			*url = [urls objectAtIndex:0];
 		TCCocoaConfig	*aconfig = NULL;
 		
 		// Try to build a config with the file
 		try
 		{
-			aconfig = new TCCocoaConfig(path);
+			aconfig = new TCCocoaConfig([url path]);
 		}
 		catch (const char *err)
 		{
@@ -369,7 +369,7 @@
 		config = aconfig;
 		pathSet = YES;
 		
-		[confPathField setStringValue:path];
+		[confPathField setStringValue:[url path]];
 		
 		[proxy setDisableContinue:NO];
 	}
@@ -421,7 +421,7 @@
 {
 	NSMatrix	*mtr = sender;
 	NSButton	*obj = [mtr selectedCell];
-	int			tag = [obj tag];
+	NSInteger	tag = [obj tag];
 	
 	if (tag == 1)
 		[proxy setNextPanelID:@"ac_basic"];
@@ -516,8 +516,8 @@
 		aconfig->set_download_folder(down_folder);
 	}
 
-	aconfig->set_tor_port([torPortField intValue]);
-	aconfig->set_client_port([imInPortField intValue]);
+	aconfig->set_tor_port((uint16_t)[torPortField intValue]);
+	aconfig->set_client_port((uint16_t)[imInPortField intValue]);
 	aconfig->set_mode(tc_config_advanced);
 	
 	// Return the config
@@ -534,12 +534,12 @@
 	[openDlg setCanCreateDirectories:YES];
 	[openDlg setAllowsMultipleSelection:NO];
 	
-	if ([openDlg runModalForDirectory:nil file:nil] == NSOKButton)
+	if ([openDlg runModal] == NSOKButton)
 	{
-		NSArray		*files = [openDlg filenames];
-		NSString	*path = [files objectAtIndex:0];
+		NSArray		*urls = [openDlg URLs];
+		NSURL		*url = [urls objectAtIndex:0];
 		
-		[imDownloadField setStringValue:path];
+		[imDownloadField setStringValue:[url path]];
 	}
 }
 
@@ -667,13 +667,13 @@
 	[openDlg setCanCreateDirectories:YES];
 	[openDlg setAllowsMultipleSelection:NO];
 	
-	if ([openDlg runModalForDirectory:nil file:nil] == NSOKButton)
+	if ([openDlg runModal] == NSOKButton)
 	{
-		NSArray		*files = [openDlg filenames];
-		NSString	*path = [files objectAtIndex:0];
+		NSArray		*urls = [openDlg URLs];
+		NSURL		*url = [urls objectAtIndex:0];
 		
-		[imDownloadField setStringValue:path];
-		cconfig->set_download_folder([path UTF8String]);
+		[imDownloadField setStringValue:[url path]];
+		cconfig->set_download_folder([[url path] UTF8String]);
 	}
 }
 

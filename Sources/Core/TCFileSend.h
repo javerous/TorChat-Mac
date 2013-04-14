@@ -41,7 +41,7 @@
 class TCFileSend : public TCObject
 {
 public:
-	// -- Constructor & Destructor ---
+	// -- Instance ---
 	TCFileSend(const std::string & filePath);
 	~TCFileSend();
 	

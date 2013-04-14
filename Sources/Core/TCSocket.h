@@ -115,10 +115,10 @@ public:
 	bool	sendData(const TCBuffer &buffer);
 	
 	// -- Operations --
-	void	setGlobalOperation(tcsocket_operation op, ssize_t psize, int tag);
+	void	setGlobalOperation(tcsocket_operation op, size_t psize, int tag);
 	void	removeGlobalOperation();
 	
-	void	scheduleOperation(tcsocket_operation op, ssize_t psize, int tag);
+	void	scheduleOperation(tcsocket_operation op, size_t psize, int tag);
 	
 	// -- Running --
 	void	stop();

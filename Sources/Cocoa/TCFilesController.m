@@ -50,10 +50,10 @@
 
 
 /*
-** TCFilesController - Constructor & Destructor
+** TCFilesController - Instance
 */
 #pragma mark -
-#pragma mark TCFilesController - Constructor & Destructor
+#pragma mark TCFilesController - Instance
 
 + (TCFilesController *)sharedController
 {
@@ -114,12 +114,13 @@
 - (IBAction)doClear:(id)sender
 {
 	NSNotificationCenter	*center = [NSNotificationCenter defaultCenter];
-	int						i;
+	NSMutableIndexSet		*indSet = [NSMutableIndexSet indexSet];
+	NSUInteger				i, cnt = [files count];
 	
-	for (i = [files count] - 1; i >=0; i--)
+	for (i = 0; i < cnt; i++)
 	{
 		NSDictionary	*file = [files objectAtIndex:i];
-		tcfile_status	status = [[file objectForKey:TCFileStatusKey] intValue];
+		tcfile_status	status = (tcfile_status)[[file objectForKey:TCFileStatusKey] intValue];
 
 		if (status != tcfile_status_running)
 		{
@@ -128,13 +129,17 @@
 			NSDictionary	*info = [[NSDictionary alloc] initWithObjectsAndKeys:uuid, @"uuid", way, @"way", nil];
 
 			[center postNotificationName:TCFileRemovingNotify object:self userInfo:info];
-			[files removeObjectAtIndex:i];
+			
+			[indSet addIndex:i];
 			
 			[info release];
 		}
 	}
 	
+	[files removeObjectsAtIndexes:indSet];
+	
 	[filesView reloadData];
+	
 	[self _updateCount];
 }
 
@@ -151,9 +156,9 @@
 #pragma mark -
 #pragma mark TCFilesController - Action
 
-- (void)startFileTransfert:(NSString *)uuid withFilePath:(NSString *)filePath buddyAddress:(NSString *)address buddyAlias:(NSString *)alias transfertWay:(tcfile_way)way fileSize:(uint64_t)size
+- (void)startFileTransfert:(NSString *)uuid withFilePath:(NSString *)filePath buddyAddress:(NSString *)address buddyName:(NSString *)name transfertWay:(tcfile_way)way fileSize:(uint64_t)size
 {
-	if (!uuid || !filePath || !alias || !address)
+	if (!uuid || !filePath || !name || !address)
 		return;
 	
 	// Build file description
@@ -178,7 +183,7 @@
 	[item setObject:uuid forKey:TCFileUUIDKey];
 	[item setObject:filePath forKey:TCFileFilePathKey];
 	[item setObject:address forKey:TCFileBuddyAddressKey];
-	[item setObject:alias forKey:TCFileBuddyAliasKey];
+	[item setObject:name forKey:TCFileBuddyNameKey];
 	[item setObject:[NSNumber numberWithInt:way] forKey:TCFileWayKey];
 	[item setObject:[NSNumber numberWithInt:tcfile_status_running] forKey:TCFileStatusKey];
 	[item setObject:[NSNumber numberWithFloat:0.0] forKey:TCFilePercentKey];
@@ -220,7 +225,7 @@
 		for (NSMutableDictionary *file in files)
 		{
 			NSString	*auuid = [file objectForKey:TCFileUUIDKey];
-			tcfile_way	away = [[file objectForKey:TCFileWayKey] intValue];
+			tcfile_way	away = (tcfile_way)[[file objectForKey:TCFileWayKey] intValue];
 			
 			if (away == way && [auuid isEqualToString:uuid])
 			{
@@ -243,7 +248,7 @@
 		for (NSMutableDictionary *file in files)
 		{
 			NSString	*auuid = [file objectForKey:TCFileUUIDKey];
-			tcfile_way	away = [[file objectForKey:TCFileWayKey] intValue];
+			tcfile_way	away = (tcfile_way)[[file objectForKey:TCFileWayKey] intValue];
 			
 			if (away == way && [auuid isEqualToString:uuid])
 			{
@@ -267,7 +272,7 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {	
-	return [files count];
+	return (NSInteger)[files count];
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
@@ -275,7 +280,7 @@
 	if (rowIndex < 0 || rowIndex >= [files count])
 		return nil;
 	
-	NSMutableDictionary *file = [files objectAtIndex:rowIndex];
+	NSMutableDictionary *file = [files objectAtIndex:(NSUInteger)rowIndex];
 	
 	return file;
 }
@@ -290,7 +295,7 @@
     while (currentIndex != NSNotFound)
 	{
 		NSDictionary	*file = [files objectAtIndex:currentIndex];
-		tcfile_status	status = [[file objectForKey:TCFileStatusKey] intValue];
+		tcfile_status	status = (tcfile_status)[[file objectForKey:TCFileStatusKey] intValue];
 
 		if (status != tcfile_status_running)
 		{
@@ -334,12 +339,12 @@
 {
 	NSDictionary	*info = [notice userInfo];
 	NSString		*uuid = [info objectForKey:@"uuid"];
-	tcfile_way		way = [[info objectForKey:@"way"] intValue];
+	tcfile_way		way = (tcfile_way)[[info objectForKey:@"way"] intValue];
 	
 	for (NSMutableDictionary *file in files)
 	{
 		NSString	*auuid = [file objectForKey:TCFileUUIDKey];
-		tcfile_way	away = [[file objectForKey:TCFileWayKey] intValue];
+		tcfile_way	away = (tcfile_way)[[file objectForKey:TCFileWayKey] intValue];
 		
 		if (away == way && [auuid isEqualToString:uuid])
 		{
@@ -355,12 +360,12 @@
 {
 	NSDictionary	*info = [notice userInfo];
 	NSString		*uuid = [info objectForKey:@"uuid"];
-	tcfile_way		way = [[info objectForKey:@"way"] intValue];
+	tcfile_way		way = (tcfile_way)[[info objectForKey:@"way"] intValue];
 		
 	for (NSMutableDictionary *file in files)
 	{
 		NSString	*auuid = [file objectForKey:TCFileUUIDKey];
-		tcfile_way	away = [[file objectForKey:TCFileWayKey] intValue];
+		tcfile_way	away = (tcfile_way)[[file objectForKey:TCFileWayKey] intValue];
 		
 		if (away == way && [auuid isEqualToString:uuid])
 		{
@@ -391,8 +396,8 @@
 	
 	for (NSDictionary *file in files)
 	{
-		tcfile_status	status = [[file objectForKey:TCFileStatusKey] intValue];
-		tcfile_way		way = [[file objectForKey:TCFileWayKey] intValue];
+		tcfile_status	status = (tcfile_status)[[file objectForKey:TCFileStatusKey] intValue];
+		tcfile_way		way = (tcfile_way)[[file objectForKey:TCFileWayKey] intValue];
 		
 		if (status == tcfile_status_running)
 			count_run++;

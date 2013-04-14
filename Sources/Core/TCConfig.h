@@ -42,6 +42,8 @@
 # define TCConfigBuddyAddress	"address"
 # define TCConfigBuddyAlias		"alias"
 # define TCConfigBuddyNotes		"notes"
+# define TCConfigBuddyLastName	"lname"
+
 
 
 
@@ -118,10 +120,14 @@ public:
 	virtual const tc_array &buddies() = 0;
 	virtual void			add_buddy(const std::string &address, const std::string &alias, const std::string &notes) = 0;
 	virtual bool			remove_buddy(const std::string &address) = 0;
+	
 	virtual void			set_buddy_alias(const std::string &address, const std::string &alias) = 0;
 	virtual void			set_buddy_notes(const std::string &address, const std::string &notes) = 0;
-	virtual  std::string	get_buddy_alias(const std::string &address) const = 0;
-	virtual  std::string	get_buddy_notes(const std::string &address) const = 0;
+	virtual void			set_buddy_last_profile_name(const std::string &address, const std::string &lname) = 0;
+	
+	virtual std::string		get_buddy_alias(const std::string &address) const = 0;
+	virtual std::string		get_buddy_notes(const std::string &address) const = 0;
+	virtual std::string		get_buddy_last_profile_name(const std::string &address) const = 0;
 	
 	// -- UI --
 	virtual tc_config_title	get_mode_title() const = 0;

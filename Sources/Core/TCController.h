@@ -126,7 +126,7 @@ typedef void (^tcctrl_event)(TCController *controller, const TCInfo *info);
 class TCController : public TCObject
 {
 public:
-	// -- Constructor & Destructor --
+	// -- Instance --
 	TCController(TCConfig *config);
 	~TCController();
 	
