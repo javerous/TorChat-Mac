@@ -72,9 +72,6 @@ TCControlClient::~TCControlClient()
 		sock->stop();
 		sock->release();
 	}
-		
-	// Release Queue
-	dispatch_release(mainQueue);
 }
 
 
@@ -405,7 +402,8 @@ void TCControlClient::socketOperationAvailable(TCSocket *socket, tcsocket_operat
 			dispatch_async_cpp(this, mainQueue, ^{
 				
 				// Parse the line
-				parseLine(*line);
+#warning FIXME
+				//parseLine(*line);
 				
 				// Free memory
 				delete line;

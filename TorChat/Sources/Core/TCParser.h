@@ -22,12 +22,10 @@
 
 
 
-#ifndef _TCParser_H_
-# define _TCParser_H_
-
+/*
 # include <string>
 # include <vector>
-
+*/
 
 
 /*
@@ -36,6 +34,44 @@
 #pragma mark - Forward
 
 class TCInfo;
+
+@class TCParser;
+
+
+/*
+** Protocol
+*/
+#pragma mark - Protocol
+
+@protocol TCParserCommand <NSObject>
+
+@optional
+- (void)parser:(TCParser *)parser parsedPingWithAddress:(NSString *)address random:(NSString *)random;
+- (void)parser:(TCParser *)parser parsedPongWithRandom:(NSString *)random;
+- (void)parser:(TCParser *)parser parsedStatus:(NSString *)status;
+- (void)parsedMessage:(NSString *)message;
+- (void)parsedVersion:(NSString *)version;
+- (void)parsedClient:(NSString *)client;
+- (void)parsedProfileText:(NSString *)text;
+- (void)parsedProfileName:(NSString *)name;
+- (void)parsedProfileAvatar:(NSData *)bitmap;
+- (void)parsedProfileAvatarAlpha:(NSData *)bitmap;
+- (void)parsedAddMe;
+- (void)parsedRemoveMe;
+- (void)parsedFileNameWithUUIDD:(NSString *)uuid fileSize:(NSString *)fileSize blockSize:(NSString *)blockSize fileName:(NSString *)filename;
+- (void)parsedFileDataWithUUID:(NSString *)uuid start:(NSString *)start hash:(NSString *)hash data:(NSData *)data;
+- (void)parsedFileDataOkWithUUID:(NSString *)uuid start:(NSString *)start;
+- (void)parsedFileDataErrorWithUUID:(NSString *)uuid start:(NSString *)start;
+- (void)parsedFileStopSendingWithUUID:(NSString *)uuid;
+- (void)parsedFileStopReceivingWithUUID:(NSString *)uuid;
+
+@end
+
+@protocol TCParserDelegate <NSObject>
+
+- (void)parser:(TCParser *)parser information:(TCInfo *)info;
+
+@end
 
 
 
@@ -68,6 +104,20 @@ typedef enum
 	tcrec_cmd_filestopreceiving
 } tcrec_error;
 
+@interface TCParser : NSObject
+
+// -- Properties --
+@property (weak) id <TCParserDelegate> delegate;
+
+// -- Instance --
+- (id)initWithParsedCommand:(id <TCParserCommand>)receiver;
+
+// -- Parsing --
+- (void)parseLine:(NSData *)line;
+
+@end
+
+/*
 // == Class ==
 class TCParser
 {
@@ -124,5 +174,4 @@ private:
 	
 	void _parserError(tcrec_error error, const char *info);
 };
-
-#endif
+*/

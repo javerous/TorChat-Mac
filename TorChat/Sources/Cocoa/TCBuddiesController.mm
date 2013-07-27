@@ -946,7 +946,7 @@
 
 - (void)initDelegate
 {
-	control->setDelegate((__bridge void *)mainQueue, ^(TCController *controller, const TCInfo *info) {
+	control->setDelegate(mainQueue, ^(TCController *controller, const TCInfo *info) {
 		
 		// Log the item
 		[[TCLogsController sharedController] addGlobalLogEntry:[NSString stringWithUTF8String:info->render().c_str()]];
