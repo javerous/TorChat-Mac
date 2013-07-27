@@ -21,11 +21,10 @@
  */
 
 
+#import <CommonCrypto/CommonCrypto.h>
 
 #include <stdlib.h>
 #include <fcntl.h>
-
-#include <openssl/md5.h>
 
 #include <openssl/evp.h>
 #include <openssl/bio.h>
@@ -184,21 +183,21 @@ size_t memsearch(const uint8_t *token, size_t token_sz, const uint8_t *data, siz
 // == Build the MD5 of a chunk of data ==
 std::string * createMD5(const void *data, size_t size)
 {
-	MD5_CTX			state;
-	unsigned char	digest[MD5_DIGEST_LENGTH];
+	CC_MD5_CTX			state;
+	unsigned char	digest[CC_MD5_DIGEST_LENGTH];
 	int				di = 0;
 	int				rc;
 	char			hex[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 	
 	static char		temp[100];
 
-	MD5_Init(&state);
+	CC_MD5_Init(&state);
 
-	MD5_Update(&state, data, size);
+	CC_MD5_Update(&state, data, size);
 	
-	MD5_Final(digest, &state);
+	CC_MD5_Final(digest, &state);
 	
-	for (di = 0, rc = 0; di < MD5_DIGEST_LENGTH; ++di, rc += 2)
+	for (di = 0, rc = 0; di < CC_MD5_DIGEST_LENGTH; ++di, rc += 2)
 	{
 		temp[rc] = hex[digest[di] >> 4];
 		temp[rc + 1] = hex[digest[di] & 15];

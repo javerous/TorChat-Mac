@@ -88,7 +88,7 @@
 	if (self)
 	{
 		// Load Bundle
-		[NSBundle loadNibNamed:@"AssistantWindow" owner:self];
+		[[NSBundle mainBundle] loadNibNamed:@"AssistantWindow" owner:self topLevelObjects:nil];
 	}
 	
 	return self;
