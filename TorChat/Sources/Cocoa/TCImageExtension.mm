@@ -63,8 +63,6 @@
 			
 			if (rep)
 				[self addRepresentation:rep];
-			
-			[rep release];
 		}
 	}
 	
@@ -185,7 +183,6 @@
 	free(full);
 	free(bitmap);
 	free(bitmapAlpha);
-	[imageRep release];
 	
 	return result;
 }

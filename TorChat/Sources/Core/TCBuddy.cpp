@@ -66,20 +66,20 @@
 // == Structure representing a Socks connection request ==
 struct sockreq
 {
-	int8_t	version;
-	int8_t	command;
-	int16_t	dstport;
-	int32_t	dstip;
+	uint8_t		version;
+	uint8_t		command;
+	uint16_t	dstport;
+	uint32_t	dstip;
 	// A null terminated username goes here
 };
 
 // == Structure representing a Socks connection request response ==
 struct sockrep
 {
-	int8_t	version;
-	int8_t	result;
-	int16_t	ignore1;
-	int32_t	ignore2;
+	uint8_t		version;
+	uint8_t		result;
+	uint16_t	ignore1;
+	uint32_t	ignore2;
 };
 
 // == Socks State ==
@@ -400,9 +400,10 @@ void TCBuddy::keepAlive()
 */
 #pragma mark - TCBuddy - Delegate
 
-void TCBuddy::setDelegate(dispatch_queue_t queue, tcbuddy_event event)
+void TCBuddy::setDelegate(void *_queue, tcbuddy_event event)
 {
-	tcbuddy_event cpy = NULL;
+	tcbuddy_event		cpy = NULL;
+	dispatch_queue_t	queue = (dispatch_queue_t)_queue;
 	
 	if (event)
 		cpy = Block_copy(event);

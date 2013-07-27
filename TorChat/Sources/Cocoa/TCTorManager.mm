@@ -125,41 +125,25 @@ void catch_signal(int sig);
 		
 	// Kill the task
 	[_task waitUntilExit];
-	[_task release];
+	
 	_task = nil;
 	torPid = -1;
 	
 	// Close out source
 	if (outSource)
-	{
 		dispatch_source_cancel(outSource);
-		dispatch_release(outSource);
-	}
 	
 	// Close err source
 	if (errSource)
-	{
 		dispatch_source_cancel(errSource);
-		dispatch_release(errSource);
-	}
 	
-	// Release hidden
-	[_hidden release];
 	
 	// Kill the timer
 	if (testTimer)
-	{
 		dispatch_source_cancel(testTimer);
-		dispatch_release(testTimer);
-	}
-	
-	// Kill the queue
-	dispatch_release(mainQueue);
 	
 	// Remove notification
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-
-    [super dealloc];
 }
 
 
@@ -176,7 +160,6 @@ void catch_signal(int sig);
 		[_task terminate];
 		
 		[_task waitUntilExit];
-		[_task release];
 		
 		_task = nil;
 		torPid = -1;
@@ -274,11 +257,12 @@ void catch_signal(int sig);
 		outSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, (uintptr_t)outFD, 0, mainQueue);
 		
 		// Realease pipe when source canceled
-		dispatch_source_set_cancel_handler(errSource, ^{ [_errPipe release]; _errBuffer->release(); });
-		dispatch_source_set_cancel_handler(outSource, ^{ [_outPipe release]; _outBuffer->release(); });
+		dispatch_source_set_cancel_handler(errSource, ^{ _errBuffer->release(); });
+		dispatch_source_set_cancel_handler(outSource, ^{ _outBuffer->release(); });
 		
 		// Handle pipe data
 		dispatch_source_set_event_handler(errSource, ^{
+			
 			unsigned long	size = dispatch_source_get_data(errSource);
 			void			*data = malloc(size);
 			ssize_t			res;
@@ -303,8 +287,7 @@ void catch_signal(int sig);
 				if (errSource)
 				{
 					dispatch_source_cancel(errSource);
-					dispatch_release(errSource);
-					errSource = 0;
+					errSource = nil;
 				}
 			}
 		});
@@ -333,8 +316,7 @@ void catch_signal(int sig);
 				if (outSource)
 				{
 					dispatch_source_cancel(outSource);
-					dispatch_release(outSource);
-					outSource = 0;
+					outSource = nil;
 				}
 			}
 		});
@@ -403,7 +385,6 @@ void catch_signal(int sig);
 						*fnd = '\0';
 						
 						// Build NSString address
-						[_hidden release];
 						_hidden = [[NSString alloc] initWithUTF8String:buffer];
 						
 						// Set the address in the config
@@ -411,7 +392,6 @@ void catch_signal(int sig);
 						
 						// Cancel ourself
 						dispatch_source_cancel(testTimer);
-						dispatch_release(testTimer);
 						testTimer = 0;
 						
 						// Inform of the change
@@ -456,7 +436,6 @@ void catch_signal(int sig);
 			[_task terminate];
 			
 			[_task waitUntilExit];
-			[_task release];
 			
 			_task = nil;
 			torPid = -1;
@@ -466,7 +445,6 @@ void catch_signal(int sig);
 		if (errSource)
 		{
 			dispatch_source_cancel(errSource);
-			dispatch_release(errSource);
 			
 			errSource = 0;
 		}
@@ -475,21 +453,18 @@ void catch_signal(int sig);
 		if (outSource)
 		{
 			dispatch_source_cancel(outSource);
-			dispatch_release(outSource);
 			
 			outSource = 0;
 		}
 		
 
 		// Clean hidden hostname
-		[_hidden release];
 		_hidden = nil;
 		
 		// Kill timer
 		if (testTimer)
 		{
 			dispatch_source_cancel(testTimer);
-			dispatch_release(testTimer);
 			
 			testTimer = 0;
 		}
@@ -519,11 +494,12 @@ void catch_signal(int sig);
 	__block NSString *result = nil;
 	
 	dispatch_sync(mainQueue, ^{
+		
 		if (_hidden)
 			result = [[NSString alloc] initWithString:_hidden];
 	});
 	
-	return [result autorelease];
+	return result;
 }
 
 

@@ -369,9 +369,10 @@ void TCController::stop()
 */
 #pragma mark - TCController - Delegate
 
-void TCController::setDelegate(dispatch_queue_t queue, tcctrl_event event)
+void TCController::setDelegate(void *_queue, tcctrl_event event)
 {
-	tcctrl_event cpy = NULL;
+	tcctrl_event		cpy = NULL;
+	dispatch_queue_t	queue = (dispatch_queue_t)_queue;
 	
 	if (event)
 		cpy = Block_copy(event);

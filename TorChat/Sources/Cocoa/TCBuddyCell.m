@@ -100,9 +100,7 @@
 		r = NSMakeRect(cellFrame.origin.x + 2, cellFrame.origin.y + dy, cellFrame.size.width - 4, cellFrame.size.height);
 
 		[pname drawInRect:r withAttributes:nmAttribute];
-		
-		[paragraphStyle release];
-		
+				
 		dy += 19.0;
 	}
 	else

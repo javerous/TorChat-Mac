@@ -95,13 +95,6 @@ NSString *	TCStringWithInt(int value);
 
 @implementation TCPrefController
 
-@synthesize mainWindow;
-
-@synthesize generalView;
-@synthesize networkView;
-@synthesize buddiesView;
-
-
 
 /*
 ** TCPrefController - Constructor & Destructor
@@ -127,24 +120,17 @@ NSString *	TCStringWithInt(int value);
     if (self)
 	{
         // Load the nib
-		[NSBundle loadNibNamed:@"PreferencesWindow" owner:self];
+		[[NSBundle mainBundle] loadNibNamed:@"PreferencesWindow" owner:self topLevelObjects:nil];
     }
     
     return self;
 }
 
-- (void)dealloc
-{
-    // Clean-up code here.
-    
-    [super dealloc];
-}
-
 - (void)awakeFromNib
 {	
 	// Place Window
-	[mainWindow center];
-	[mainWindow setFrameAutosaveName:@"PreferencesWindow"];
+	[_mainWindow center];
+	[_mainWindow setFrameAutosaveName:@"PreferencesWindow"];
 	
 	// Select the default view
 	[self loadViewIdentifier:@"general" animated:NO];
@@ -160,7 +146,7 @@ NSString *	TCStringWithInt(int value);
 - (void)showWindow
 {
 	// Show window
-	[mainWindow makeKeyAndOrderFront:self];
+	[_mainWindow makeKeyAndOrderFront:self];
 }
 
 - (void)loadViewIdentifier:(NSString *)identifier animated:(BOOL)animated
@@ -169,18 +155,18 @@ NSString *	TCStringWithInt(int value);
 	TCConfig	*config = [[TCMainController sharedController] config];
 
 	if ([identifier isEqualToString:@"general"])
-		view = generalView;
+		view = _generalView;
 	else if ([identifier isEqualToString:@"network"])
-		view = networkView;
+		view = _networkView;
 	else if ([identifier isEqualToString:@"buddies"])
-		view = buddiesView;
+		view = _buddiesView;
 	
 	if (!view)
 		return;
 	
 	// Check if the toolbar item is well selected
-	if ([[[mainWindow toolbar] selectedItemIdentifier] isEqualToString:identifier] == NO)
-		[[mainWindow toolbar] setSelectedItemIdentifier:identifier];
+	if ([[[_mainWindow toolbar] selectedItemIdentifier] isEqualToString:identifier] == NO)
+		[[_mainWindow toolbar] setSelectedItemIdentifier:identifier];
 	
 	// Save current view config
 	currentView.config = config;
@@ -193,8 +179,8 @@ NSString *	TCStringWithInt(int value);
 	// Load view
 	if (animated)
 	{
-		NSRect	rect = [mainWindow frame];
-		NSSize	csize = [[mainWindow contentView] frame].size;
+		NSRect	rect = [_mainWindow frame];
+		NSSize	csize = [[_mainWindow contentView] frame].size;
 		NSSize	size = [view frame].size;
 		CGFloat	previous = rect.size.height;
 		
@@ -207,21 +193,18 @@ NSString *	TCStringWithInt(int value);
 		{
 			[[NSAnimationContext currentContext] setDuration:0.125];
 			
-			[[[mainWindow contentView] animator] replaceSubview:currentView with:view];
-			[[mainWindow animator] setFrame:rect display:YES];
+			[[[_mainWindow contentView] animator] replaceSubview:currentView with:view];
+			[[_mainWindow animator] setFrame:rect display:YES];
 		}
 		[NSAnimationContext endGrouping];
 	}
 	else
 	{
 		[currentView removeFromSuperview];
-		[[mainWindow contentView] addSubview:view];
+		[[_mainWindow contentView] addSubview:view];
 	}
 	
 	// Hold the current view
-	[view retain];
-	[currentView release];
-	
 	currentView = view;
 }
 
@@ -297,8 +280,6 @@ NSString *	TCStringWithInt(int value);
 {
     if (config)
 		config->release();
-	
-    [super dealloc];
 }
 
 
@@ -329,11 +310,6 @@ NSString *	TCStringWithInt(int value);
 
 @implementation TCPrefView_General
 
-@synthesize downloadField;
-
-@synthesize clientNameField;
-@synthesize clientVersionField;
-
 
 /*
 ** TCPrefView_General - IBAction
@@ -357,7 +333,7 @@ NSString *	TCStringWithInt(int value);
 		
 		if (self.config)
 		{
-			[downloadField setStringValue:[[url path] lastPathComponent]];	
+			[_downloadField setStringValue:[[url path] lastPathComponent]];
 			
 			self.config->set_download_folder([[url path] UTF8String]);
 		}
@@ -378,19 +354,19 @@ NSString *	TCStringWithInt(int value);
 	if (!self.config)
 		return;
 		
-	[downloadField setStringValue:[TCStringWithCPPString(self.config->get_download_folder()) lastPathComponent]];
+	[_downloadField setStringValue:[TCStringWithCPPString(self.config->get_download_folder()) lastPathComponent]];
 	
-	[[clientNameField cell] setPlaceholderString:TCStringWithCPPString(self.config->get_client_name(tc_config_get_default))];
-	[[clientVersionField cell] setPlaceholderString:TCStringWithCPPString(self.config->get_client_version(tc_config_get_default))];
+	[[_clientNameField cell] setPlaceholderString:TCStringWithCPPString(self.config->get_client_name(tc_config_get_default))];
+	[[_clientVersionField cell] setPlaceholderString:TCStringWithCPPString(self.config->get_client_version(tc_config_get_default))];
 
-	[clientNameField setStringValue:TCStringWithCPPString(self.config->get_client_name(tc_config_get_defined))];
-	[clientVersionField setStringValue:TCStringWithCPPString(self.config->get_client_version(tc_config_get_defined))];
+	[_clientNameField setStringValue:TCStringWithCPPString(self.config->get_client_name(tc_config_get_defined))];
+	[_clientVersionField setStringValue:TCStringWithCPPString(self.config->get_client_version(tc_config_get_defined))];
 }
 
 - (void)saveConfig
 {
-	self.config->set_client_name(TCCPPStringWithString([clientNameField stringValue]));
-	self.config->set_client_version(TCCPPStringWithString([clientVersionField stringValue]));
+	self.config->set_client_name(TCCPPStringWithString([_clientNameField stringValue]));
+	self.config->set_client_version(TCCPPStringWithString([_clientVersionField stringValue]));
 }
 
 @end
@@ -403,13 +379,6 @@ NSString *	TCStringWithInt(int value);
 #pragma mark - TCPrefView_Network
 
 @implementation TCPrefView_Network
-
-@synthesize imAddressField;
-@synthesize imPortField;
-
-@synthesize torAddressField;
-@synthesize torPortField;
-
 
 
 /*
@@ -441,24 +410,24 @@ NSString *	TCStringWithInt(int value);
 	// Set mode
 	if (mode == tc_config_basic)
 	{		
-		[imAddressField setEnabled:NO];
-		[imPortField setEnabled:NO];
-		[torAddressField setEnabled:NO];
-		[torPortField setEnabled:NO];
+		[_imAddressField setEnabled:NO];
+		[_imPortField setEnabled:NO];
+		[_torAddressField setEnabled:NO];
+		[_torPortField setEnabled:NO];
 	}
 	else if (mode == tc_config_advanced)
 	{		
-		[imAddressField setEnabled:YES];
-		[imPortField setEnabled:YES];
-		[torAddressField setEnabled:YES];
-		[torPortField setEnabled:YES];
+		[_imAddressField setEnabled:YES];
+		[_imPortField setEnabled:YES];
+		[_torAddressField setEnabled:YES];
+		[_torPortField setEnabled:YES];
 	}
 	
 	// Set value field
-	[imAddressField setStringValue:TCStringWithCPPString(self.config->get_self_address())];
-	[imPortField setStringValue:TCStringWithInt(self.config->get_client_port())];
-	[torAddressField setStringValue:TCStringWithCPPString(self.config->get_tor_address())];
-	[torPortField setStringValue:TCStringWithInt(self.config->get_tor_port())];
+	[_imAddressField setStringValue:TCStringWithCPPString(self.config->get_self_address())];
+	[_imPortField setStringValue:TCStringWithInt(self.config->get_client_port())];
+	[_torAddressField setStringValue:TCStringWithCPPString(self.config->get_tor_address())];
+	[_torPortField setStringValue:TCStringWithInt(self.config->get_tor_port())];
 }
 
 - (void)saveConfig
@@ -469,10 +438,10 @@ NSString *	TCStringWithInt(int value);
 	if (self.config->get_mode() == tc_config_advanced)
 	{
 		// Set config value
-		self.config->set_self_address(TCCPPStringWithString([imAddressField stringValue]));
-		self.config->set_client_port((uint16_t)[[imPortField stringValue] intValue]);
-		self.config->set_tor_address(TCCPPStringWithString([torAddressField stringValue]));
-		self.config->set_tor_port((uint16_t)[[torPortField stringValue] intValue]);
+		self.config->set_self_address(TCCPPStringWithString([_imAddressField stringValue]));
+		self.config->set_client_port((uint16_t)[[_imPortField stringValue] intValue]);
+		self.config->set_tor_address(TCCPPStringWithString([_torAddressField stringValue]));
+		self.config->set_tor_port((uint16_t)[[_torPortField stringValue] intValue]);
 		
 		// Reload config
 		if (changes)
@@ -495,12 +464,6 @@ NSString *	TCStringWithInt(int value);
 #pragma mark - TCPrefView_Buddies
 
 @implementation TCPrefView_Buddies
-
-@synthesize tableView;
-@synthesize removeButton;
-
-@synthesize addBlockedWindow;
-@synthesize addBlockedField;
 
 
 /*
@@ -532,17 +495,17 @@ NSString *	TCStringWithInt(int value);
 		return;
 	
 	// Show add window
-	[addBlockedField setStringValue:@""];
+	[_addBlockedField setStringValue:@""];
 	
-	[[NSApplication sharedApplication] beginSheet:addBlockedWindow modalForWindow:self.window modalDelegate:nil didEndSelector:NULL contextInfo:NULL];
+	[[NSApplication sharedApplication] beginSheet:_addBlockedWindow modalForWindow:self.window modalDelegate:nil didEndSelector:NULL contextInfo:NULL];
 }
 
 
 - (IBAction)doAddBlockedCancel:(id)sender
 {
 	// Close
-	[[NSApplication sharedApplication] endSheet:addBlockedWindow];
-	[addBlockedWindow orderOut:self];
+	[[NSApplication sharedApplication] endSheet:_addBlockedWindow];
+	[_addBlockedWindow orderOut:self];
 }
 
 - (IBAction)doAddBlockedOK:(id)sender
@@ -552,7 +515,7 @@ NSString *	TCStringWithInt(int value);
 	if (!self.config)
 		return;
 	
-	address = [addBlockedField stringValue];
+	address = [_addBlockedField stringValue];
 	
 	// Add on controller
 	// XXX Here, we break the fact that config is local to this view,
@@ -565,11 +528,11 @@ NSString *	TCStringWithInt(int value);
 	else
 	{
 		// Reload
-		[tableView reloadData];
+		[_tableView reloadData];
 		
 		// Close
-		[[NSApplication sharedApplication] endSheet:addBlockedWindow];
-		[addBlockedWindow orderOut:self];
+		[[NSApplication sharedApplication] endSheet:_addBlockedWindow];
+		[_addBlockedWindow orderOut:self];
 	}
 }
 
@@ -579,7 +542,7 @@ NSString *	TCStringWithInt(int value);
 		return;
 	
 	const tc_sarray	&blocked = self.config->blocked_buddies();
-	NSIndexSet		*set = [tableView selectedRowIndexes];
+	NSIndexSet		*set = [_tableView selectedRowIndexes];
 	NSMutableArray	*removes = [NSMutableArray arrayWithCapacity:[set count]];
 	NSUInteger		index = [set firstIndex];
 	
@@ -596,9 +559,7 @@ NSString *	TCStringWithInt(int value);
 		address = [[NSString alloc] initWithUTF8String:caddress];
 		
 		[removes addObject:address];
-		
-		[address release];
-		
+				
 		// Next index
 		index = [set indexGreaterThanIndex:index];
 	}
@@ -614,13 +575,13 @@ NSString *	TCStringWithInt(int value);
 	}
 	
 	// Reload list
-	[tableView reloadData];
+	[_tableView reloadData];
 }
 
 - (void)buddyBlockedChanged:(NSNotification *)notice
 {
 	// Reload list
-	[tableView reloadData];
+	[_tableView reloadData];
 }
 
 
@@ -653,12 +614,12 @@ NSString *	TCStringWithInt(int value);
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
-	NSIndexSet *set = [tableView selectedRowIndexes];
+	NSIndexSet *set = [_tableView selectedRowIndexes];
 	
 	if ([set count] > 0)
-		[removeButton setEnabled:YES];
+		[_removeButton setEnabled:YES];
 	else
-		[removeButton setEnabled:NO];
+		[_removeButton setEnabled:NO];
 }
 
 - (BOOL)tableView:(NSTableView *)aTableView shouldEditTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
@@ -675,7 +636,7 @@ NSString *	TCStringWithInt(int value);
 */
 #pragma mark - C Tools
 
-NSString *	TCStringWithCPPString(const std::string &str)
+NSString * TCStringWithCPPString(const std::string &str)
 {
 	const char *cstr = str.c_str();
 	

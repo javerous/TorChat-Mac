@@ -69,9 +69,7 @@
 			return NO;
 		
 		[dropTarget performSelector:dropSelector withObject:img];
-		
-		[img release];
-		
+				
 		return YES;
 	}
 	else if ([NSImage canInitWithPasteboard:pboard])
@@ -79,9 +77,7 @@
 		NSImage *img = [[NSImage alloc] initWithPasteboard:pboard];
 				
 		[dropTarget performSelector:dropSelector withObject:img];
-		
-		[img release];
-		
+				
 		return YES;
 	}
 	
@@ -90,10 +86,7 @@
 
 - (void)setDropTarget:(id)target withSelector:(SEL)selector
 {
-	[target retain];
-	[dropTarget release];
 	dropTarget = target;
-	
 	dropSelector = selector;
 }
 

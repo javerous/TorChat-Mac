@@ -91,7 +91,7 @@ TCCocoaConfig::TCCocoaConfig(NSString *filepath)
 #endif
 	
 	// Hold path
-	fpath = [filepath retain];
+	fpath = filepath;
 	
 	// Load file
 	if ([mng fileExistsAtPath:fpath])
@@ -130,11 +130,11 @@ TCCocoaConfig::TCCocoaConfig(id <TCConfigProxy> _proxy)
 
 TCCocoaConfig::~TCCocoaConfig()
 {
-	[fcontent release];
-	[fpath release];
-	
+	fcontent = nil;
+	fpath = nil;
+
 #if defined(PROXY_ENABLED) && PROXY_ENABLED
-	[proxy release];
+	proxy = nil;
 #endif
 }
 
@@ -463,12 +463,6 @@ void TCCocoaConfig::set_profile_avatar(const TCImage & picture)
 	}
 	
 	[fcontent setObject:avatar forKey:TCCONF_KEY_PROFILE_AVATAR];
-	
-	[avatar release];
-	[width release];
-	[height release];
-	[bitmap release];
-	[bitmapAlpha release];
 
 	// Save
 	_saveConfig();
@@ -515,7 +509,6 @@ void TCCocoaConfig::add_buddy(const std::string &address, const std::string &ali
 	
 	// Save & Release
 	_saveConfig();
-	[obuddy release];
 }
 
 bool TCCocoaConfig::remove_buddy(const std::string &address)
@@ -869,22 +862,20 @@ std::string TCCocoaConfig::localized(const std::string &key) const
 	const char	*clocal = NULL;
 	
 	if (!okey)
-		goto bail;
+		return result;
 	
 	local = NSLocalizedString(okey, @"");
 	
 	if (!local)
-		goto bail;
+		return result;
 		
 	clocal = [local UTF8String];
 	
 	if (!clocal)
-		goto bail;
+		return result;
 	
 	result = clocal;
 	
-bail:
-	[okey release];
 	return result;
 }
 
@@ -1042,7 +1033,7 @@ void TCCocoaConfig::_loadConfig(NSData *data)
 		throw "conf_err_content";
 	
 	// Hold content
-	fcontent = [content retain];
+	fcontent = content;
 	
 	// Build buddies cache
 	NSArray			*buddies = [fcontent objectForKey:TCCONF_KEY_BUDDIES];
@@ -1068,13 +1059,9 @@ void TCCocoaConfig::_loadConfig(NSData *data)
 		entry[TCConfigBuddyLastName] = (lname ? [lname UTF8String] : "");
 
 		_bcache.push_back(entry);
-		
-		// Release
-		[nbuddy release];
 	}
 	
 	[fcontent setObject:nbuddies forKey:TCCONF_KEY_BUDDIES];
-	[nbuddies release];
 	
 	
 	// Build blocked cache
@@ -1096,7 +1083,6 @@ void TCCocoaConfig::_loadConfig(NSData *data)
 	}
 	
 	[fcontent setObject:nblocked forKey:TCCONF_KEY_BLOCKED];
-	[nblocked release];
 }
 
 void TCCocoaConfig::_saveConfig()

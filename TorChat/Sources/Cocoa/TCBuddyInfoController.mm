@@ -60,9 +60,7 @@ static NSMutableArray *_windows = nil;
 
 @interface TCBuddyInfoController ()
 {
-	TCCocoaBuddy			*_buddy;
 	NSMutableArray			*_logs;
-	NSString				*_address;
 	
 	NSMutableDictionary		*_infos;
 }
@@ -74,8 +72,8 @@ static NSMutableArray *_windows = nil;
 
 - (void)updateStatus:(tcbuddy_status)status;
 
-@property (retain, nonatomic) TCCocoaBuddy	*_buddy;
-@property (retain, nonatomic) NSString		*_address;
+@property (strong, nonatomic) TCCocoaBuddy	*buddy;
+@property (strong, nonatomic) NSString		*address;
 
 @end
 
@@ -93,24 +91,6 @@ static NSMutableArray *_windows = nil;
 ** TCBuddyInfoController - Properties
 */
 #pragma mark - TCBuddyInfoController - Properties
-
-@synthesize toolBar;
-@synthesize views;
-
-@synthesize avatarView;
-@synthesize statusView;
-@synthesize addressField;
-@synthesize aliasField;
-
-@synthesize notesField;
-
-@synthesize logTable;
-
-@synthesize infoView;
-
-@synthesize _buddy;
-@synthesize _address;
-
 
 
 /*
@@ -139,21 +119,14 @@ static NSMutableArray *_windows = nil;
 {
 	TCDebugLog("(%p) TCBuddyInfoController dealloc", self);
 	
-	[_buddy release];
-	[_logs release];
-	[_infos release];
-	[_address release];
-	
 	[self.window setDelegate:nil];
-	[logTable setDelegate:nil];
-	[logTable setDataSource:nil];
-	[views setDelegate:nil];
+	[_logTable setDelegate:nil];
+	[_logTable setDataSource:nil];
+	[_views setDelegate:nil];
 	
-	[addressField setDelegate:nil];
-	[aliasField setDelegate:nil];
-	[notesField setDelegate:nil];
-	
-    [super dealloc];
+	[_addressField setDelegate:nil];
+	[_aliasField setDelegate:nil];
+	[_notesField setDelegate:nil];
 }
 
 - (void)windowDidLoad
@@ -167,7 +140,7 @@ static NSMutableArray *_windows = nil;
 
 - (void)awakeFromNib
 {
-	[avatarView setFilename:_address];
+	[_avatarView setFilename:_address];
 }
 
 
@@ -179,9 +152,9 @@ static NSMutableArray *_windows = nil;
 
 - (IBAction)doToolBar:(id)sender
 {
-	NSInteger index = [toolBar selectedSegment];
+	NSInteger index = [_toolBar selectedSegment];
 			
-	[views selectTabViewItemAtIndex:index];
+	[_views selectTabViewItemAtIndex:index];
 }
 
 
@@ -201,7 +174,7 @@ static NSMutableArray *_windows = nil;
 	});
 	
 	// Alloc the controller
-	TCBuddyInfoController *result = [[[TCBuddyInfoController alloc] initWithWindowNibName:@"BuddyInfoWindow"] autorelease];
+	TCBuddyInfoController *result = [[TCBuddyInfoController alloc] initWithWindowNibName:@"BuddyInfoWindow"];
 
 	// Configure controller
 	[result.window setDelegate:result];
@@ -234,7 +207,7 @@ static NSMutableArray *_windows = nil;
 	{
 		TCBuddyInfoController *ctrl = [_windows objectAtIndex:i];
 		
-		if ([ctrl._address isEqualToString:address])
+		if ([ctrl.address isEqualToString:address])
 		{
 			[ctrl.window makeKeyAndOrderFront:nil];
 			return;
@@ -245,10 +218,10 @@ static NSMutableArray *_windows = nil;
 	TCBuddyInfoController *ctrl = [self buildController];
 	
 	// Retain buddy
-	ctrl._buddy = buddy;
+	ctrl.buddy = buddy;
 	
 	// Hold address
-	ctrl._address = address;
+	ctrl.address = address;
 	
 	// Set direct info
 	NSString *name = [buddy profileName];
@@ -256,11 +229,11 @@ static NSMutableArray *_windows = nil;
 	if ([name length] == 0)
 		name = [buddy lastProfileName];
 	
-	[ctrl->avatarView setImage:[buddy profileAvatar]];
-	[ctrl->addressField setStringValue:ctrl._address];
-	[ctrl->aliasField setStringValue:[buddy alias]];
-	[[ctrl->aliasField cell] setPlaceholderString:name];
-	[[[ctrl->notesField textStorage] mutableString] setString:[buddy notes]];
+	[ctrl->_avatarView setImage:[buddy profileAvatar]];
+	[ctrl->_addressField setStringValue:ctrl.address];
+	[ctrl->_aliasField setStringValue:[buddy alias]];
+	[[ctrl->_aliasField cell] setPlaceholderString:name];
+	[[[ctrl->_notesField textStorage] mutableString] setString:[buddy notes]];
 	
 	[ctrl updateStatus:[buddy status]];
 	
@@ -279,7 +252,7 @@ static NSMutableArray *_windows = nil;
 	[ctrl updateInfoView];
 	
 	// Register for logs
-	[[TCLogsController sharedController] setObserver:ctrl withSelector:@selector(logsChanged:) forKey:ctrl._address];
+	[[TCLogsController sharedController] setObserver:ctrl withSelector:@selector(logsChanged:) forKey:ctrl.address];
 	
 	// Register for buddy changes
 	[[NSNotificationCenter defaultCenter] addObserver:ctrl selector:@selector(buddyAvatarChanged:) name:TCCocoaBuddyChangedAvatarNotification object:buddy];
@@ -296,7 +269,7 @@ static NSMutableArray *_windows = nil;
 	[ctrl showWindow:nil];
 	
 	// Set the avatar drag name
-	[ctrl->avatarView setFilename:address];
+	[ctrl->_avatarView setFilename:address];
 }
 
 + (void)removingBuddy:(TCCocoaBuddy *)buddy
@@ -307,9 +280,9 @@ static NSMutableArray *_windows = nil;
 	{
 		TCBuddyInfoController *ctrl = [_windows objectAtIndex:i];
 		
-		if (ctrl._buddy == buddy)
+		if (ctrl.buddy == buddy)
 		{			
-			[[TCLogsController sharedController] removeObserverForKey:ctrl._address];
+			[[TCLogsController sharedController] removeObserverForKey:ctrl.address];
 			
 			[[NSNotificationCenter defaultCenter] removeObserver:ctrl];
 			
@@ -330,19 +303,19 @@ static NSMutableArray *_windows = nil;
 
 - (void)windowWillClose:(NSNotification *)notification
 {	
-	[[TCLogsController sharedController] removeObserverForKey:self._address];
+	[[TCLogsController sharedController] removeObserverForKey:self.address];
 	
 	[_windows removeObject:self];
 }
 
 - (void)windowDidResize:(NSNotification *)notification
 {
-	NSSize sz = self.window.frame.size;
-	NSInteger	i, count = [toolBar segmentCount];
+	NSSize		sz = self.window.frame.size;
+	NSInteger	i, count = [_toolBar segmentCount];
 	CGFloat		swidth = sz.width / count;
 	
 	for (i = 0; i < count; i++)
-		[toolBar setWidth:swidth forSegment:i];
+		[_toolBar setWidth:swidth forSegment:i];
 }
 
 
@@ -376,9 +349,9 @@ static NSMutableArray *_windows = nil;
 {
 	id object = [aNotification object];
 	
-	if (object == aliasField)
+	if (object == _aliasField)
 	{
-		[_buddy setAlias:[aliasField stringValue]];
+		[_buddy setAlias:[_aliasField stringValue]];
 	}
 }
 
@@ -386,9 +359,9 @@ static NSMutableArray *_windows = nil;
 {
 	id object = [aNotification object];
 	
-	if (object == notesField)
+	if (object == _notesField)
 	{
-		[_buddy setNotes:[[notesField textStorage] mutableString]];
+		[_buddy setNotes:[[_notesField textStorage] mutableString]];
 	}
 }
 
@@ -437,10 +410,7 @@ static NSMutableArray *_windows = nil;
 		[keyed addLineWithKey:NSLocalizedString(@"bdi_isblocked", @"") andContent:value];
 
 	// Show table
-	[[infoView textStorage] setAttributedString:[keyed renderedText]];
-	
-	// Release
-	[keyed release];
+	[[_infoView textStorage] setAttributedString:[keyed renderedText]];
 }
 	 
 - (void)updateStatus:(tcbuddy_status)status
@@ -448,19 +418,19 @@ static NSMutableArray *_windows = nil;
 	switch (status)
 	{
 		case tcbuddy_status_available:
-			[statusView setImage:[NSImage imageNamed:@"stat_online"]];
+			[_statusView setImage:[NSImage imageNamed:@"stat_online"]];
 			break;
 			
 		case tcbuddy_status_away:
-			[statusView setImage:[NSImage imageNamed:@"stat_away"]];
+			[_statusView setImage:[NSImage imageNamed:@"stat_away"]];
 			break;
 			
 		case tcbuddy_status_offline:
-			[statusView setImage:[NSImage imageNamed:@"stat_offline"]];
+			[_statusView setImage:[NSImage imageNamed:@"stat_offline"]];
 			break;
 			
 		case tcbuddy_status_xa:
-			[statusView setImage:[NSImage imageNamed:@"stat_xa"]];
+			[_statusView setImage:[NSImage imageNamed:@"stat_xa"]];
 			break;
 	}
 }
@@ -488,7 +458,7 @@ static NSMutableArray *_windows = nil;
 			[_logs addObjectsFromArray:content];
 		}
 		
-		[logTable reloadData];
+		[_logTable reloadData];
 	});
 }
 
@@ -498,7 +468,7 @@ static NSMutableArray *_windows = nil;
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		[avatarView setImage:avatar];
+		[_avatarView setImage:avatar];
 	});
 }
 
@@ -511,7 +481,7 @@ static NSMutableArray *_windows = nil;
 		[self setInfo:name withKey:BICInfoProfileName];
 		[self updateInfoView];
 		
-		[[aliasField cell] setPlaceholderString:name];
+		[[_aliasField cell] setPlaceholderString:name];
 	});
 }
 

@@ -80,10 +80,9 @@
 	
 	// -- Once load --
 	dispatch_once(&onceToken, ^{
-		
-		lb = [[NSImage imageNamed:@"balloon_left.png"] retain];
-		cb = [[NSImage imageNamed:@"balloon_center.png"] retain];
-		rb = [[NSImage imageNamed:@"balloon_rigth.png"] retain];
+		lb = [NSImage imageNamed:@"balloon_left.png"];
+		cb = [NSImage imageNamed:@"balloon_center.png"];
+		rb = [NSImage imageNamed:@"balloon_rigth.png"];
 	});
 	
 	// -- Over --
@@ -141,7 +140,7 @@
 	NSString				*name = [content objectForKey:TCChatCellNameKey];
 	NSString				*text = [content objectForKey:TCChatCellChatTextKey];
 	NSDictionary			*attributes;
-	NSMutableParagraphStyle *truncateStyle = [[[NSMutableParagraphStyle alloc] init] autorelease];
+	NSMutableParagraphStyle *truncateStyle = [[NSMutableParagraphStyle alloc] init];
 	CGFloat					dy = 3;
 	NSColor					*fontColor;
 	NSShadow				*shadow = nil;
@@ -187,9 +186,6 @@
 		[name drawInRect:NSMakeRect(org.x + 42, org.y + dy, sz.width - org.x - 50, 20) withAttributes:attributes];
 	}
 	[NSGraphicsContext restoreGraphicsState];
-	
-	// > Clean
-	[shadow release];
 	
 	// -- Last unread message --
 	if (text)

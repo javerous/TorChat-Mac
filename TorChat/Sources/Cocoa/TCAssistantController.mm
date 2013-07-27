@@ -37,16 +37,16 @@
 
 @interface TCAssistantController () <TCAssistantProxy>
 {
-	NSMutableDictionary			*pannels;
+	NSMutableDictionary			*_pannels;
 	
-	id <TCAssistantPanel>		currentPanel;
+	id <TCAssistantPanel>		_currentPanel;
 	
-	NSString					*nextID;
-	BOOL						isLast;
-	BOOL						fDisable;
+	NSString					*_nextID;
+	BOOL						_isLast;
+	BOOL						_fDisable;
 	
-	id							respObj;
-	SEL							respSel;
+	id							_respObj;
+	SEL							_respSel;
 }
 
 - (void)_switchToPanel:(NSString *)panel;
@@ -62,17 +62,6 @@
 #pragma mark - TCAssistantController
 
 @implementation TCAssistantController
-
-@synthesize welcomePanel;
-@synthesize modePanel;
-@synthesize advancedPanel;
-@synthesize basicPanel;
-
-@synthesize mainWindow;
-@synthesize mainTitle;
-@synthesize mainView;
-@synthesize cancelButton;
-@synthesize nextButton;
 
 
 /*
@@ -108,24 +97,13 @@
 - (void)awakeFromNib
 {
 	// Catalog pannels
-	pannels = [[NSMutableDictionary alloc] init];
+	_pannels = [[NSMutableDictionary alloc] init];
 	
-	[pannels setObject:welcomePanel forKey:[welcomePanel panelID]];
-	[pannels setObject:modePanel forKey:[modePanel panelID]];
-	[pannels setObject:basicPanel forKey:[basicPanel panelID]];
-	[pannels setObject:advancedPanel forKey:[advancedPanel panelID]];
+	[_pannels setObject:_welcomePanel forKey:[_welcomePanel panelID]];
+	[_pannels setObject:_modePanel forKey:[_modePanel panelID]];
+	[_pannels setObject:_basicPanel forKey:[_basicPanel panelID]];
+	[_pannels setObject:_advancedPanel forKey:[_advancedPanel panelID]];
 }
-
-- (void)dealloc
-{
-    [pannels release];
-	[respObj release];
-	[currentPanel release];
-	[nextID release];
-    
-    [super dealloc];
-}
-
 
 
 /*
@@ -135,16 +113,13 @@
 
 - (void)startWithCallback:(SEL)selector onObject:(id)obj
 {
-	respSel = selector;
-	
-	[obj retain];
-	[respObj release];
-	respObj = obj;
+	_respSel = selector;
+	_respObj = obj;
 		
 	[self _switchToPanel:@"ac_welcome"];
 	
-	[mainWindow center];
-	[mainWindow makeKeyAndOrderFront:self];
+	[_mainWindow center];
+	[_mainWindow makeKeyAndOrderFront:self];
 }
 
 
@@ -161,22 +136,22 @@
 
 - (IBAction)doNext:(id)sender
 {
-	if (!currentPanel)
+	if (!_currentPanel)
 	{
 		NSBeep();
 		return;
 	}
 	
-	if (isLast)
+	if (_isLast)
 	{
-		[respObj performSelector:respSel withObject:[NSValue valueWithPointer:[currentPanel content]]];
+		[_respObj performSelector:_respSel withObject:[NSValue valueWithPointer:[_currentPanel content]]];
 
-		[mainWindow orderOut:sender];
+		[_mainWindow orderOut:sender];
 	}
 	else
 	{
 		// Switch
-		[self _switchToPanel:nextID];
+		[self _switchToPanel:_nextID];
 	}
 }
 
@@ -189,49 +164,47 @@
 
 - (void)_switchToPanel:(NSString *)panel
 {
-	if ([[currentPanel panelID] isEqualToString:panel])
+	if ([[_currentPanel panelID] isEqualToString:panel])
 		return;
 	
-	[[currentPanel panelView] removeFromSuperview];
+	[[_currentPanel panelView] removeFromSuperview];
 	
-	id <TCAssistantPanel> nPanel = [pannels objectForKey:panel];
+	id <TCAssistantPanel> nPanel = [_pannels objectForKey:panel];
 	
 
 	// Set the view
 	if (nPanel)
-		[mainView addSubview:[nPanel panelView]];
+		[_mainView addSubview:[nPanel panelView]];
 
 	// Set the title
-	mainTitle.stringValue = [nPanel panelTitle];
+	_mainTitle.stringValue = [nPanel panelTitle];
 	
 	// Set the proxy
-	nextID = nil;
-	isLast = YES;
-	[nextButton setEnabled:NO];
-	[nextButton setTitle:NSLocalizedString(@"ac_next_finish", @"")];
+	_nextID = nil;
+	_isLast = YES;
+	[_nextButton setEnabled:NO];
+	[_nextButton setTitle:NSLocalizedString(@"ac_next_finish", @"")];
 	[nPanel showWithProxy:self];
 	 
 	// Hold the panel
-	[nPanel retain];
-	[currentPanel release];
-	currentPanel = nPanel;
+	_currentPanel = nPanel;
 }
 
 - (void)_checkNextButton
 {
-	if (fDisable)
+	if (_fDisable)
 	{
-		[nextButton setEnabled:NO];
+		[_nextButton setEnabled:NO];
 		return;
 	}
 			
-	if (isLast)
-		[nextButton setEnabled:YES];
+	if (_isLast)
+		[_nextButton setEnabled:YES];
 	else
 	{
-		id obj = [pannels objectForKey:nextID];
+		id obj = [_pannels objectForKey:_nextID];
 		
-		[nextButton setEnabled:(obj != nil)];
+		[_nextButton setEnabled:(obj != nil)];
 	}
 	
 
@@ -246,29 +219,26 @@
 
 - (void)setNextPanelID:(NSString *)panelID
 {
-	[panelID retain];
-	[nextID release];
-	
-	nextID = panelID;
+	_nextID = panelID;
 	
 	[self _checkNextButton];
 }
 
 - (void)setIsLastPanel:(BOOL)last
 {
-	isLast = last;
+	_isLast = last;
 	
-	if (isLast)
-		[nextButton setTitle:NSLocalizedString(@"ac_next_finish", @"")];
+	if (_isLast)
+		[_nextButton setTitle:NSLocalizedString(@"ac_next_finish", @"")];
 	else
-		[nextButton setTitle:NSLocalizedString(@"ac_next_continue", @"")];
+		[_nextButton setTitle:NSLocalizedString(@"ac_next_continue", @"")];
 	
 	[self _checkNextButton];
 }
 
 - (void)setDisableContinue:(BOOL)disabled
 {
-	fDisable = disabled;
+	_fDisable = disabled;
 	
 	[self _checkNextButton];
 }
@@ -293,19 +263,8 @@
 
 @implementation TCPanel_Welcome
 
-@synthesize confPathField;
-
-- (void)dealloc
-{
-    [proxy release];
-	
-    [super dealloc];
-}
-
 - (void)showWithProxy:(id <TCAssistantProxy>)_proxy
 {
-	[_proxy retain];
-	[proxy release];
 	proxy = _proxy;
 	
 	[proxy setIsLastPanel:NO];
@@ -396,7 +355,7 @@
 		config = aconfig;
 		pathSet = YES;
 		
-		[confPathField setStringValue:[url path]];
+		[_confPathField setStringValue:[url path]];
 		
 		[proxy setDisableContinue:NO];
 	}
@@ -422,8 +381,6 @@
 
 - (void)showWithProxy:(id <TCAssistantProxy>)_proxy
 {
-	[_proxy retain];
-	[proxy release];
 	proxy = _proxy;
 	
 	[proxy setIsLastPanel:NO];
@@ -608,9 +565,6 @@
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-	[aproxy release];
-	
-    [super dealloc];
 }
 
 - (void)showWithProxy:(id <TCAssistantProxy>)proxy
@@ -619,9 +573,6 @@
 	[proxy setDisableContinue:YES]; // Wait for tor
 	
 	// Retain proxy
-	[proxy retain];
-	[aproxy release];
-	
 	aproxy = proxy;
 	
 	// If we already a config, stop here

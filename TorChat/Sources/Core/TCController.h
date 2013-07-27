@@ -132,7 +132,7 @@ public:
 	void					stop();
 	
 	// -- Delegate --
-	void					setDelegate(dispatch_queue_t queue, tcctrl_event event);
+	void					setDelegate(void *queue, tcctrl_event event);
 	
 	// -- Status --
 	void					setStatus(tccontroller_status status);

@@ -33,7 +33,6 @@
 
 @interface TCDropButton : NSButton
 {
-	
 @private
     SEL	dropSelector;
 	id	dropTarget;

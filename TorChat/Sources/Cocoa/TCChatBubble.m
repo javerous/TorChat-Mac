@@ -61,7 +61,7 @@
 
 + (TCChatBubble *)bubbleWithText:(NSString *)_text andStyle:(tcbubble_style)_style
 {
-	TCChatBubble *result = [[[TCChatBubble alloc] initWithFrame:NSMakeRect(0, 0, 150, 150)] autorelease];
+	TCChatBubble *result = [[TCChatBubble alloc] initWithFrame:NSMakeRect(0, 0, 150, 150)];
 	
 	result->style = _style;
 	[result->field setStringValue:_text];
@@ -75,7 +75,7 @@
 	
     if (self)
 	{
-		font = [[NSFont fontWithName:@"Helvetica" size:14] retain];
+		font = [NSFont fontWithName:@"Helvetica" size:14];
 		
 		field = [[NSTextField alloc] initWithFrame:frame];
 		
@@ -91,14 +91,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-	[field release];
-	[font release];
-	
-    [super dealloc];
-}
-
 
 
 /*
@@ -108,9 +100,6 @@
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-	static BOOL		initGray = NO;
-	static BOOL		initBlue = NO;
-	
 	// Blue Part
 	static NSImage	*b_bl = nil;
 	static NSImage	*b_bm = nil;
@@ -156,20 +145,19 @@
 	{
 		case tcbubble_blue:
 		{
-			if (!initBlue)
-			{
-				b_tl = [[NSImage imageNamed: @"chat_bluebubble_topleft.png"] retain];
-				b_tr = [[NSImage imageNamed: @"chat_bluebubble_topright.png"] retain];
-				b_bl = [[NSImage imageNamed: @"chat_bluebubble_bottomleft.png"] retain];
-				b_br = [[NSImage imageNamed: @"chat_bluebubble_bottomright.png"] retain];
-				b_mi = [[NSImage imageNamed: @"chat_bluebubble_middle.png"] retain];
-				b_tm = [[NSImage imageNamed: @"chat_bluebubble_topmiddle.png"] retain];
-				b_bm = [[NSImage imageNamed: @"chat_bluebubble_bottommiddle.png"] retain];
-				b_le = [[NSImage imageNamed: @"chat_bluebubble_left.png"] retain];
-				b_ri = [[NSImage imageNamed: @"chat_bluebubble_right.png"] retain];
-				
-				initBlue = YES;
-			}
+			static dispatch_once_t onceToken;
+			
+			dispatch_once(&onceToken, ^{
+				b_tl = [NSImage imageNamed: @"chat_bluebubble_topleft.png"];
+				b_tr = [NSImage imageNamed: @"chat_bluebubble_topright.png"];
+				b_bl = [NSImage imageNamed: @"chat_bluebubble_bottomleft.png"];
+				b_br = [NSImage imageNamed: @"chat_bluebubble_bottomright.png"];
+				b_mi = [NSImage imageNamed: @"chat_bluebubble_middle.png"];
+				b_tm = [NSImage imageNamed: @"chat_bluebubble_topmiddle.png"];
+				b_bm = [NSImage imageNamed: @"chat_bluebubble_bottommiddle.png"];
+				b_le = [NSImage imageNamed: @"chat_bluebubble_left.png"];
+				b_ri = [NSImage imageNamed: @"chat_bluebubble_right.png"];
+			});
 			
 			bl = b_bl;
 			bm = b_bm;
@@ -188,20 +176,20 @@
 			
 		case tcbubble_gray:
 		{
-			if (!initGray)
-			{
-				g_tl = [[NSImage imageNamed: @"chat_graybubble_topleft.png"] retain];
-				g_tr = [[NSImage imageNamed: @"chat_graybubble_topright.png"] retain];
-				g_bl = [[NSImage imageNamed: @"chat_graybubble_bottomleft.png"] retain];
-				g_br = [[NSImage imageNamed: @"chat_graybubble_bottomright.png"] retain];
-				g_mi = [[NSImage imageNamed: @"chat_graybubble_middle.png"] retain];
-				g_tm = [[NSImage imageNamed: @"chat_graybubble_topmiddle.png"] retain];
-				g_bm = [[NSImage imageNamed: @"chat_graybubble_bottommiddle.png"] retain];
-				g_le = [[NSImage imageNamed: @"chat_graybubble_left.png"] retain];
-				g_ri = [[NSImage imageNamed: @"chat_graybubble_right.png"] retain];
-				
-				initGray = YES;
-			}
+			
+			static dispatch_once_t onceToken;
+			
+			dispatch_once(&onceToken, ^{
+				g_tl = [NSImage imageNamed: @"chat_graybubble_topleft.png"];
+				g_tr = [NSImage imageNamed: @"chat_graybubble_topright.png"];
+				g_bl = [NSImage imageNamed: @"chat_graybubble_bottomleft.png"];
+				g_br = [NSImage imageNamed: @"chat_graybubble_bottomright.png"];
+				g_mi = [NSImage imageNamed: @"chat_graybubble_middle.png"];
+				g_tm = [NSImage imageNamed: @"chat_graybubble_topmiddle.png"];
+				g_bm = [NSImage imageNamed: @"chat_graybubble_bottommiddle.png"];
+				g_le = [NSImage imageNamed: @"chat_graybubble_left.png"];
+				g_ri = [NSImage imageNamed: @"chat_graybubble_right.png"];
+			});
 			
 			bl = g_bl;
 			bm = g_bm;

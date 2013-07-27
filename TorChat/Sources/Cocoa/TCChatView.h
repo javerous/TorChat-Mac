@@ -57,17 +57,17 @@
 @interface TCChatView : NSObject
 
 // -- Property --
-@property (assign) IBOutlet NSView		*view;
+@property (strong, nonatomic) IBOutlet NSView		*view;
 
-@property (assign) IBOutlet NSTextField	*userField;
-@property (assign) IBOutlet TCChatTalk	*talkView;
-@property (assign) IBOutlet NSBox		*lineView;
-@property (assign) IBOutlet NSView		*backView;
+@property (strong, nonatomic) IBOutlet NSTextField	*userField;
+@property (strong, nonatomic) IBOutlet TCChatTalk	*talkView;
+@property (strong, nonatomic) IBOutlet NSBox		*lineView;
+@property (strong, nonatomic) IBOutlet NSView		*backView;
 
-@property (retain, nonatomic, readonly) NSString *identifier;
-@property (retain, nonatomic)			NSString *name;
+@property (strong, nonatomic, readonly) NSString *identifier;
+@property (strong, nonatomic)			NSString *name;
 
-@property (assign, nonatomic)			id <TCChatViewDelegate> delegate;
+@property (weak, nonatomic)				id <TCChatViewDelegate> delegate;
 
 
 // -- Instance --
