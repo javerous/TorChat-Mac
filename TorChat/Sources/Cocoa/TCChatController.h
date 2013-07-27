@@ -85,9 +85,9 @@
 @interface TCChatWindowController : NSWindowController <TCChatsTableViewDropDelegate>
 
 // -- Property --
-@property (assign, nonatomic) IBOutlet NSSplitView		*splitView;
-@property (assign, nonatomic) IBOutlet TCChatsTableView	*userList;
-@property (assign, nonatomic) IBOutlet NSView			*userView;
-@property (assign, nonatomic) IBOutlet NSView			*chatView;
+@property (strong, nonatomic) IBOutlet NSSplitView		*splitView;
+@property (strong, nonatomic) IBOutlet TCChatsTableView	*userList;
+@property (strong, nonatomic) IBOutlet NSView			*userView;
+@property (strong, nonatomic) IBOutlet NSView			*chatView;
 
 @end
