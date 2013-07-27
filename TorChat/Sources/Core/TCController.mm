@@ -113,23 +113,14 @@ TCController::~TCController()
 	buddies.clear();
 		
 	// Release delegate
-	if (nBlock)
-		Block_release(nBlock);
-	nBlock = NULL;
-		
-	if (nQueue)
-		dispatch_release(nQueue);
-	nQueue = 0;
+	nBlock = nil;
+	nQueue = nil;
 	
 	// Release config
 	config->release();
 	
 	// Release avatar
 	pavatar->release();
-
-	// Release
-	dispatch_release(mainQueue);
-	dispatch_release(socketQueue);
 }
 
 
@@ -328,16 +319,12 @@ void TCController::stop()
 		
 		// Cancel the socket
 		dispatch_source_cancel(socketAccept);
-		dispatch_release(socketAccept);
 		
 		// Cancel the timer
 		if (timer)
-		{
 			dispatch_source_cancel(timer);
-			dispatch_release(timer);
-		}
 		
-		socketAccept = 0;
+		socketAccept = nil;
 		
 		// Stop & release clients
 		size_t i, cnt = clients.size();
@@ -369,31 +356,12 @@ void TCController::stop()
 */
 #pragma mark - TCController - Delegate
 
-void TCController::setDelegate(void *_queue, tcctrl_event event)
+void TCController::setDelegate(dispatch_queue_t queue, tcctrl_event event)
 {
-	tcctrl_event		cpy = NULL;
-	dispatch_queue_t	queue = (dispatch_queue_t)_queue;
-	
-	if (event)
-		cpy = Block_copy(event);
-	
-	if (queue)
-		dispatch_retain(queue);
-	
 	// Asign on a block
 	dispatch_async_cpp(this, mainQueue, ^{
-		
-		// Queue
-		if (nQueue)
-			dispatch_release(nQueue);
-		
 		nQueue = queue;
-		
-		
-		// Block
-		if (nBlock)
-			Block_release(nBlock);
-		nBlock = cpy;
+		nBlock = event;
 	});
 }
 

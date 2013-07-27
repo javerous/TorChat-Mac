@@ -32,16 +32,17 @@
 		E82FA259121583A800106C47 /* AssistantWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E85923F8120A9E3E0035C420 /* AssistantWindow.xib */; };
 		E82FA25A121583B300106C47 /* ChatWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E85923FA120A9E460035C420 /* ChatWindow.xib */; };
 		E83423F111F6FA2100922152 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E83423EA11F6F97B00922152 /* Localizable.strings */; };
-		E837DAE011E7739D004BC524 /* TCBuddy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E837DAD511E7739D004BC524 /* TCBuddy.cpp */; };
+		E837DAE011E7739D004BC524 /* TCBuddy.mm in Sources */ = {isa = PBXBuildFile; fileRef = E837DAD511E7739D004BC524 /* TCBuddy.mm */; };
 		E837DAE111E7739D004BC524 /* TCBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E837DAD711E7739D004BC524 /* TCBuffer.cpp */; };
-		E837DAE311E7739D004BC524 /* TCController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E837DADB11E7739D004BC524 /* TCController.cpp */; };
+		E837DAE311E7739D004BC524 /* TCController.mm in Sources */ = {isa = PBXBuildFile; fileRef = E837DADB11E7739D004BC524 /* TCController.mm */; };
 		E8455D3D17A425F00046307B /* TCValue.m in Sources */ = {isa = PBXBuildFile; fileRef = E8455D3C17A425F00046307B /* TCValue.m */; };
+		E8455D4617A4386C0046307B /* NSData+TCTools.m in Sources */ = {isa = PBXBuildFile; fileRef = E8455D4517A438660046307B /* NSData+TCTools.m */; };
 		E849F93711F5E8F300193F06 /* engrenage.png in Resources */ = {isa = PBXBuildFile; fileRef = E849F93611F5E8F300193F06 /* engrenage.png */; };
 		E85310F812F8170E009FC05B /* logs.png in Resources */ = {isa = PBXBuildFile; fileRef = E85310F712F8170E009FC05B /* logs.png */; };
 		E854FDF912F7FD88009C2E5E /* TCImageExtension.mm in Sources */ = {isa = PBXBuildFile; fileRef = E854FDF812F7FD88009C2E5E /* TCImageExtension.mm */; };
 		E854FDFC12F8082C009C2E5E /* TCBuddyCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E854FDFB12F8082C009C2E5E /* TCBuddyCell.m */; };
-		E858C4271208066400A51F7A /* TCObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E858C4261208066400A51F7A /* TCObject.cpp */; };
-		E85903B211EC9877005CE53F /* TCTools.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E85903B011EC9877005CE53F /* TCTools.cpp */; };
+		E858C4271208066400A51F7A /* TCObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = E858C4261208066400A51F7A /* TCObject.mm */; };
+		E85903B211EC9877005CE53F /* TCTools.mm in Sources */ = {isa = PBXBuildFile; fileRef = E85903B011EC9877005CE53F /* TCTools.mm */; };
 		E85923F7120A9E060035C420 /* FilesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E85923F5120A9E060035C420 /* FilesWindow.xib */; };
 		E861274911F59E3C00901B29 /* stat_away.png in Resources */ = {isa = PBXBuildFile; fileRef = E861274511F59E3C00901B29 /* stat_away.png */; };
 		E861274A11F59E3C00901B29 /* stat_offline.png in Resources */ = {isa = PBXBuildFile; fileRef = E861274611F59E3C00901B29 /* stat_offline.png */; };
@@ -90,13 +91,13 @@
 		E889F0C512531DBD000C36B2 /* TCFileViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0C412531DBD000C36B2 /* TCFileViewCell.m */; };
 		E889F0C812531DC9000C36B2 /* TCLogsController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0C712531DC9000C36B2 /* TCLogsController.m */; };
 		E889F0CB12531DD6000C36B2 /* TorChatAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = E889F0CA12531DD6000C36B2 /* TorChatAppDelegate.mm */; };
-		E88AE83711EDE9D50037D808 /* TCControlClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E88AE83511EDE9D50037D808 /* TCControlClient.cpp */; };
+		E88AE83711EDE9D50037D808 /* TCControlClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = E88AE83511EDE9D50037D808 /* TCControlClient.mm */; };
 		E8A5C5E214F690630096367C /* blocked_buddy.png in Resources */ = {isa = PBXBuildFile; fileRef = E8A5C5E114F690630096367C /* blocked_buddy.png */; };
 		E8BE843C124254BE0013968B /* tor in Resources */ = {isa = PBXBuildFile; fileRef = E8BE843B124254BD0013968B /* tor */; };
-		E8C1EFF312F7169400E24C42 /* TCImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C1EFF112F7169400E24C42 /* TCImage.cpp */; };
-		E8C3982B1205D51000B9307B /* TCSocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C398291205D51000B9307B /* TCSocket.cpp */; };
-		E8CCCD7211FEE70E00C8EEFF /* TCFileSend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CCCD7011FEE70E00C8EEFF /* TCFileSend.cpp */; };
-		E8CCCD7511FEE72500C8EEFF /* TCFileReceive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CCCD7311FEE72500C8EEFF /* TCFileReceive.cpp */; };
+		E8C1EFF312F7169400E24C42 /* TCImage.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8C1EFF112F7169400E24C42 /* TCImage.mm */; };
+		E8C3982B1205D51000B9307B /* TCSocket.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8C398291205D51000B9307B /* TCSocket.mm */; };
+		E8CCCD7211FEE70E00C8EEFF /* TCFileSend.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8CCCD7011FEE70E00C8EEFF /* TCFileSend.mm */; };
+		E8CCCD7511FEE72500C8EEFF /* TCFileReceive.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8CCCD7311FEE72500C8EEFF /* TCFileReceive.mm */; };
 		E8D249C812F82C4700B476E3 /* bar.png in Resources */ = {isa = PBXBuildFile; fileRef = E8D249C712F82C4700B476E3 /* bar.png */; };
 		E8D5E25F14DA98B800973297 /* back_send_field.png in Resources */ = {isa = PBXBuildFile; fileRef = E8D5E25E14DA98B800973297 /* back_send_field.png */; };
 		E8D5E26214DAA0B400973297 /* TCSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = E8D5E26114DAA0B400973297 /* TCSplitView.m */; };
@@ -104,7 +105,7 @@
 		E8D5E26B14DAD3E200973297 /* TCChatView.m in Sources */ = {isa = PBXBuildFile; fileRef = E8D5E26A14DAD3E200973297 /* TCChatView.m */; };
 		E8EBCA7011FF2C6500E3E878 /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E8EBCA6F11FF2C6500E3E878 /* libcrypto.dylib */; };
 		E8F15A7A130425A4000593E1 /* TCKeyedText.m in Sources */ = {isa = PBXBuildFile; fileRef = E8F15A79130425A4000593E1 /* TCKeyedText.m */; };
-		E8F16D3411FF7E9700DFA05F /* TCParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F16D3211FF7E9700DFA05F /* TCParser.cpp */; };
+		E8F16D3411FF7E9700DFA05F /* TCParser.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8F16D3211FF7E9700DFA05F /* TCParser.mm */; };
 		E8FAF02E14DE00D900E120C4 /* TCChatCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E8FAF02D14DE00D900E120C4 /* TCChatCell.m */; };
 /* End PBXBuildFile section */
 
@@ -138,24 +139,26 @@
 		E82D3F81142D2ABF00A33C7A /* TorChat_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TorChat_Prefix.pch; path = TorChat/TorChat_Prefix.pch; sourceTree = "<group>"; };
 		E82D3F82142D2AF300A33C7A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = TorChat/main.m; sourceTree = "<group>"; };
 		E83423EB11F6F97B00922152 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = TorChat/en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		E837DAD511E7739D004BC524 /* TCBuddy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TCBuddy.cpp; sourceTree = "<group>"; };
+		E837DAD511E7739D004BC524 /* TCBuddy.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TCBuddy.mm; sourceTree = "<group>"; };
 		E837DAD611E7739D004BC524 /* TCBuddy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCBuddy.h; sourceTree = "<group>"; };
 		E837DAD711E7739D004BC524 /* TCBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TCBuffer.cpp; sourceTree = "<group>"; };
 		E837DAD811E7739D004BC524 /* TCBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCBuffer.h; sourceTree = "<group>"; };
 		E837DADA11E7739D004BC524 /* TCConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCConfig.h; sourceTree = "<group>"; };
-		E837DADB11E7739D004BC524 /* TCController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TCController.cpp; sourceTree = "<group>"; };
+		E837DADB11E7739D004BC524 /* TCController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TCController.mm; sourceTree = "<group>"; };
 		E837DADC11E7739D004BC524 /* TCController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCController.h; sourceTree = "<group>"; };
 		E8455D3B17A425F00046307B /* TCValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCValue.h; path = Cocoa/TCValue.h; sourceTree = "<group>"; };
 		E8455D3C17A425F00046307B /* TCValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCValue.m; path = Cocoa/TCValue.m; sourceTree = "<group>"; };
 		E8455D3E17A427920046307B /* libcommonCrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcommonCrypto.dylib; path = usr/lib/system/libcommonCrypto.dylib; sourceTree = SDKROOT; };
+		E8455D4417A438660046307B /* NSData+TCTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+TCTools.h"; sourceTree = "<group>"; };
+		E8455D4517A438660046307B /* NSData+TCTools.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+TCTools.m"; sourceTree = "<group>"; };
 		E849F93611F5E8F300193F06 /* engrenage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = engrenage.png; sourceTree = "<group>"; };
 		E85310F712F8170E009FC05B /* logs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logs.png; sourceTree = "<group>"; };
 		E854FDF712F7FD88009C2E5E /* TCImageExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCImageExtension.h; path = Cocoa/TCImageExtension.h; sourceTree = "<group>"; };
 		E854FDF812F7FD88009C2E5E /* TCImageExtension.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = TCImageExtension.mm; path = Cocoa/TCImageExtension.mm; sourceTree = "<group>"; };
 		E854FDFA12F8082C009C2E5E /* TCBuddyCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCBuddyCell.h; path = Cocoa/TCBuddyCell.h; sourceTree = "<group>"; };
 		E854FDFB12F8082C009C2E5E /* TCBuddyCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCBuddyCell.m; path = Cocoa/TCBuddyCell.m; sourceTree = "<group>"; };
-		E858C4261208066400A51F7A /* TCObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TCObject.cpp; sourceTree = "<group>"; };
-		E85903B011EC9877005CE53F /* TCTools.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TCTools.cpp; sourceTree = "<group>"; };
+		E858C4261208066400A51F7A /* TCObject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TCObject.mm; sourceTree = "<group>"; };
+		E85903B011EC9877005CE53F /* TCTools.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TCTools.mm; sourceTree = "<group>"; };
 		E85903B111EC9877005CE53F /* TCTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCTools.h; sourceTree = "<group>"; };
 		E85923F6120A9E060035C420 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = TorChat/en.lproj/FilesWindow.xib; sourceTree = "<group>"; };
 		E85923F9120A9E3E0035C420 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = en; path = TorChat/en.lproj/AssistantWindow.xib; sourceTree = "<group>"; };
@@ -233,17 +236,17 @@
 		E889F0C712531DC9000C36B2 /* TCLogsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCLogsController.m; path = Cocoa/TCLogsController.m; sourceTree = "<group>"; };
 		E889F0C912531DD6000C36B2 /* TorChatAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TorChatAppDelegate.h; path = Cocoa/TorChatAppDelegate.h; sourceTree = "<group>"; };
 		E889F0CA12531DD6000C36B2 /* TorChatAppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = TorChatAppDelegate.mm; path = Cocoa/TorChatAppDelegate.mm; sourceTree = "<group>"; };
-		E88AE83511EDE9D50037D808 /* TCControlClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TCControlClient.cpp; sourceTree = "<group>"; };
+		E88AE83511EDE9D50037D808 /* TCControlClient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TCControlClient.mm; sourceTree = "<group>"; };
 		E88AE83611EDE9D50037D808 /* TCControlClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCControlClient.h; sourceTree = "<group>"; };
 		E8A5C5E114F690630096367C /* blocked_buddy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blocked_buddy.png; sourceTree = "<group>"; };
 		E8BE843B124254BD0013968B /* tor */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = tor; path = TorChat/Resources/tor; sourceTree = "<group>"; };
-		E8C1EFF112F7169400E24C42 /* TCImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TCImage.cpp; sourceTree = "<group>"; };
+		E8C1EFF112F7169400E24C42 /* TCImage.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TCImage.mm; sourceTree = "<group>"; };
 		E8C1EFF212F7169400E24C42 /* TCImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCImage.h; sourceTree = "<group>"; };
-		E8C398291205D51000B9307B /* TCSocket.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TCSocket.cpp; sourceTree = "<group>"; };
+		E8C398291205D51000B9307B /* TCSocket.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TCSocket.mm; sourceTree = "<group>"; };
 		E8C3982A1205D51000B9307B /* TCSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCSocket.h; sourceTree = "<group>"; };
-		E8CCCD7011FEE70E00C8EEFF /* TCFileSend.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TCFileSend.cpp; sourceTree = "<group>"; };
+		E8CCCD7011FEE70E00C8EEFF /* TCFileSend.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TCFileSend.mm; sourceTree = "<group>"; };
 		E8CCCD7111FEE70E00C8EEFF /* TCFileSend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCFileSend.h; sourceTree = "<group>"; };
-		E8CCCD7311FEE72500C8EEFF /* TCFileReceive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TCFileReceive.cpp; sourceTree = "<group>"; };
+		E8CCCD7311FEE72500C8EEFF /* TCFileReceive.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TCFileReceive.mm; sourceTree = "<group>"; };
 		E8CCCD7411FEE72500C8EEFF /* TCFileReceive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCFileReceive.h; sourceTree = "<group>"; };
 		E8D249C712F82C4700B476E3 /* bar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bar.png; sourceTree = "<group>"; };
 		E8D5E25E14DA98B800973297 /* back_send_field.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back_send_field.png; sourceTree = "<group>"; };
@@ -255,7 +258,7 @@
 		E8EBCA6F11FF2C6500E3E878 /* libcrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.dylib; path = /usr/lib/libcrypto.dylib; sourceTree = "<absolute>"; };
 		E8F15A78130425A4000593E1 /* TCKeyedText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCKeyedText.h; path = Cocoa/TCKeyedText.h; sourceTree = "<group>"; };
 		E8F15A79130425A4000593E1 /* TCKeyedText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCKeyedText.m; path = Cocoa/TCKeyedText.m; sourceTree = "<group>"; };
-		E8F16D3211FF7E9700DFA05F /* TCParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TCParser.cpp; sourceTree = "<group>"; };
+		E8F16D3211FF7E9700DFA05F /* TCParser.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TCParser.mm; sourceTree = "<group>"; };
 		E8F16D3311FF7E9700DFA05F /* TCParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCParser.h; sourceTree = "<group>"; };
 		E8FAF02C14DE00D900E120C4 /* TCChatCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatCell.h; path = Cocoa/TCChatCell.h; sourceTree = "<group>"; };
 		E8FAF02D14DE00D900E120C4 /* TCChatCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCChatCell.m; path = Cocoa/TCChatCell.m; sourceTree = "<group>"; };
@@ -348,7 +351,7 @@
 			isa = PBXGroup;
 			children = (
 				E837DAD411E7739D004BC524 /* Core */,
-				E83AD974127B543700538925 /* Cocoa */,
+				E83AD974127B543700538925 /* Interface */,
 			);
 			name = Sources;
 			path = TorChat/Sources;
@@ -362,20 +365,20 @@
 				E8EF53781209A6FC007C5A04 /* Tools */,
 				E837DADA11E7739D004BC524 /* TCConfig.h */,
 				E837DADC11E7739D004BC524 /* TCController.h */,
-				E837DADB11E7739D004BC524 /* TCController.cpp */,
+				E837DADB11E7739D004BC524 /* TCController.mm */,
 				E88AE83611EDE9D50037D808 /* TCControlClient.h */,
-				E88AE83511EDE9D50037D808 /* TCControlClient.cpp */,
+				E88AE83511EDE9D50037D808 /* TCControlClient.mm */,
 				E837DAD611E7739D004BC524 /* TCBuddy.h */,
-				E837DAD511E7739D004BC524 /* TCBuddy.cpp */,
+				E837DAD511E7739D004BC524 /* TCBuddy.mm */,
 				E8CCCD7111FEE70E00C8EEFF /* TCFileSend.h */,
-				E8CCCD7011FEE70E00C8EEFF /* TCFileSend.cpp */,
+				E8CCCD7011FEE70E00C8EEFF /* TCFileSend.mm */,
 				E8CCCD7411FEE72500C8EEFF /* TCFileReceive.h */,
-				E8CCCD7311FEE72500C8EEFF /* TCFileReceive.cpp */,
+				E8CCCD7311FEE72500C8EEFF /* TCFileReceive.mm */,
 			);
 			path = Core;
 			sourceTree = "<group>";
 		};
-		E83AD974127B543700538925 /* Cocoa */ = {
+		E83AD974127B543700538925 /* Interface */ = {
 			isa = PBXGroup;
 			children = (
 				E83AD975127B544B00538925 /* Tools */,
@@ -383,7 +386,7 @@
 				E889F0C912531DD6000C36B2 /* TorChatAppDelegate.h */,
 				E889F0CA12531DD6000C36B2 /* TorChatAppDelegate.mm */,
 			);
-			name = Cocoa;
+			name = Interface;
 			sourceTree = "<group>";
 		};
 		E83AD975127B544B00538925 /* Tools */ = {
@@ -494,6 +497,15 @@
 			name = Preferences;
 			sourceTree = "<group>";
 		};
+		E8455D4017A4382C0046307B /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				E8455D4417A438660046307B /* NSData+TCTools.h */,
+				E8455D4517A438660046307B /* NSData+TCTools.m */,
+			);
+			name = Categories;
+			sourceTree = "<group>";
+		};
 		E868535711F9D7740064C0CC /* Chat */ = {
 			isa = PBXGroup;
 			children = (
@@ -564,7 +576,7 @@
 				E874146512FA9EBC00BD4862 /* TCNumber.h */,
 				E874146612FAA29D00BD4862 /* TCString.h */,
 				E8C1EFF212F7169400E24C42 /* TCImage.h */,
-				E8C1EFF112F7169400E24C42 /* TCImage.cpp */,
+				E8C1EFF112F7169400E24C42 /* TCImage.mm */,
 			);
 			name = Types;
 			sourceTree = "<group>";
@@ -604,7 +616,7 @@
 			isa = PBXGroup;
 			children = (
 				E863B2371205D95A00C3C162 /* TCObject.h */,
-				E858C4261208066400A51F7A /* TCObject.cpp */,
+				E858C4261208066400A51F7A /* TCObject.mm */,
 			);
 			name = Root;
 			sourceTree = "<group>";
@@ -612,14 +624,15 @@
 		E8EF53781209A6FC007C5A04 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				E8455D4017A4382C0046307B /* Categories */,
 				E8F16D3311FF7E9700DFA05F /* TCParser.h */,
-				E8F16D3211FF7E9700DFA05F /* TCParser.cpp */,
+				E8F16D3211FF7E9700DFA05F /* TCParser.mm */,
 				E837DAD811E7739D004BC524 /* TCBuffer.h */,
 				E837DAD711E7739D004BC524 /* TCBuffer.cpp */,
 				E85903B111EC9877005CE53F /* TCTools.h */,
-				E85903B011EC9877005CE53F /* TCTools.cpp */,
+				E85903B011EC9877005CE53F /* TCTools.mm */,
 				E8C3982A1205D51000B9307B /* TCSocket.h */,
-				E8C398291205D51000B9307B /* TCSocket.cpp */,
+				E8C398291205D51000B9307B /* TCSocket.mm */,
 			);
 			name = Tools;
 			sourceTree = "<group>";
@@ -740,16 +753,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E837DAE011E7739D004BC524 /* TCBuddy.cpp in Sources */,
+				E837DAE011E7739D004BC524 /* TCBuddy.mm in Sources */,
 				E837DAE111E7739D004BC524 /* TCBuffer.cpp in Sources */,
-				E837DAE311E7739D004BC524 /* TCController.cpp in Sources */,
-				E85903B211EC9877005CE53F /* TCTools.cpp in Sources */,
-				E88AE83711EDE9D50037D808 /* TCControlClient.cpp in Sources */,
-				E8CCCD7211FEE70E00C8EEFF /* TCFileSend.cpp in Sources */,
-				E8CCCD7511FEE72500C8EEFF /* TCFileReceive.cpp in Sources */,
-				E8F16D3411FF7E9700DFA05F /* TCParser.cpp in Sources */,
-				E8C3982B1205D51000B9307B /* TCSocket.cpp in Sources */,
-				E858C4271208066400A51F7A /* TCObject.cpp in Sources */,
+				E837DAE311E7739D004BC524 /* TCController.mm in Sources */,
+				E85903B211EC9877005CE53F /* TCTools.mm in Sources */,
+				E88AE83711EDE9D50037D808 /* TCControlClient.mm in Sources */,
+				E8CCCD7211FEE70E00C8EEFF /* TCFileSend.mm in Sources */,
+				E8CCCD7511FEE72500C8EEFF /* TCFileReceive.mm in Sources */,
+				E8F16D3411FF7E9700DFA05F /* TCParser.mm in Sources */,
+				E8C3982B1205D51000B9307B /* TCSocket.mm in Sources */,
+				E858C4271208066400A51F7A /* TCObject.mm in Sources */,
 				E889F09712531CFB000C36B2 /* TCStringExtension.m in Sources */,
 				E889F09A12531D07000C36B2 /* TCButton.m in Sources */,
 				E889F09D12531D12000C36B2 /* TCTableView.m in Sources */,
@@ -770,7 +783,7 @@
 				E889F0CB12531DD6000C36B2 /* TorChatAppDelegate.mm in Sources */,
 				E82B7D7A125A08A800B7BA8A /* TCPrefController.mm in Sources */,
 				E82B7D8F125A115400B7BA8A /* TCMainController.mm in Sources */,
-				E8C1EFF312F7169400E24C42 /* TCImage.cpp in Sources */,
+				E8C1EFF312F7169400E24C42 /* TCImage.mm in Sources */,
 				E854FDF912F7FD88009C2E5E /* TCImageExtension.mm in Sources */,
 				E854FDFC12F8082C009C2E5E /* TCBuddyCell.m in Sources */,
 				E874146B12FAE0C200BD4862 /* TCDropButton.m in Sources */,
@@ -781,6 +794,7 @@
 				E8D5E26B14DAD3E200973297 /* TCChatView.m in Sources */,
 				E8FAF02E14DE00D900E120C4 /* TCChatCell.m in Sources */,
 				E8455D3D17A425F00046307B /* TCValue.m in Sources */,
+				E8455D4617A4386C0046307B /* NSData+TCTools.m in Sources */,
 				E82754F514E972A900250C00 /* TCChatsTableView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -232,10 +232,7 @@ TCSocket::TCSocket(int sock)
 TCSocket::~TCSocket()
 {
 	TCDebugLog("TCSocket Destructor");
-	
-	// Release queue
-	dispatch_release(socketQueue);
-	
+		
 	// Release buffer
 	readBuffer->release();
 	writeBuffer->release();
@@ -243,8 +240,6 @@ TCSocket::~TCSocket()
 	if (delObject)
 		delObject->release();
 	
-	if (delQueue)
-		dispatch_release(delQueue);
 	
 	// Clean global operation
 	if (goperation)
@@ -268,10 +263,6 @@ TCSocket::~TCSocket()
 
 void TCSocket::setDelegate(dispatch_queue_t queue, TCSocketDelegate *delegate)
 {
-	// Retain Queue
-	if (queue)
-		dispatch_retain(queue);
-	
 	// Retain Delegate
 	if (delegate)
 		delegate->retain();
@@ -280,8 +271,6 @@ void TCSocket::setDelegate(dispatch_queue_t queue, TCSocketDelegate *delegate)
 	dispatch_async_cpp(this, socketQueue, ^{
 		
 		// Set delegate queue
-		if (delQueue)
-			dispatch_release(delQueue);
 		delQueue = queue;
 		
 		// Set delegate object
@@ -414,9 +403,7 @@ void TCSocket::stop()
 			
 			// Cancel & release it
 			dispatch_source_cancel(tcpWriter);
-			dispatch_release(tcpWriter);
-			
-			tcpWriter = 0;
+			tcpWriter = nil;
 		}
 
 	
@@ -424,9 +411,7 @@ void TCSocket::stop()
 		{
 			// Cancel & release the source
 			dispatch_source_cancel(tcpReader);
-			dispatch_release(tcpReader);
-			
-			tcpReader = 0;
+			tcpReader = nil;
 		}
 	});
 }

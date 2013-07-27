@@ -515,7 +515,7 @@ static char gMainQueueContext;
 - (void)initDelegate
 {
 	// Set the delegate to ourself
-	buddy->setDelegate((__bridge void *)mainQueue, ^(TCBuddy *aBuddy, const TCInfo *info) {
+	buddy->setDelegate(mainQueue, ^(TCBuddy *aBuddy, const TCInfo *info) {
 		
 		// Add the error in the error manager
 		[[TCLogsController sharedController] addBuddyLogEntryFromAddress:[self address] alias:[self alias] andText:[NSString stringWithUTF8String:info->render().c_str()]];
