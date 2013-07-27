@@ -32,10 +32,6 @@
 #pragma mark - TCDragImageView
 
 @interface TCDragImageView : NSImageView
-{
-@private
-    NSString *_filename;
-}
 
 - (void)setFilename:(NSString *)filename;
 

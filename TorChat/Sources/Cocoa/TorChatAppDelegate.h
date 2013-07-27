@@ -28,17 +28,15 @@
 #pragma mark - TorChatAppDelegate
 
 @interface TorChatAppDelegate : NSObject <NSApplicationDelegate>
-{
-	NSWindow				*window;
-	
-	IBOutlet NSMenuItem		*buddyShowMenu;
-	IBOutlet NSMenuItem		*buddyDeleteMenu;
-	IBOutlet NSMenuItem		*buddyChatMenu;
-	IBOutlet NSMenuItem		*buddyBlockMenu;
-	IBOutlet NSMenuItem		*buddyFileMenu;
-}
 
-@property (assign) IBOutlet NSWindow *window;
+@property (strong, nonatomic) IBOutlet NSWindow *window;
+
+@property (strong, nonatomic) IBOutlet NSMenuItem	*buddyShowMenu;
+@property (strong, nonatomic) IBOutlet NSMenuItem	*buddyDeleteMenu;
+@property (strong, nonatomic) IBOutlet NSMenuItem	*buddyChatMenu;
+@property (strong, nonatomic) IBOutlet NSMenuItem	*buddyBlockMenu;
+@property (strong, nonatomic) IBOutlet NSMenuItem	*buddyFileMenu;
+
 
 - (IBAction)showPreferences:(id)sender;
 
@@ -56,4 +54,3 @@
 - (IBAction)doEditProfile:(id)sender;
 
 @end
-

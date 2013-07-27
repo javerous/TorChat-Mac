@@ -119,21 +119,8 @@
 	buddy->setDelegate(0, NULL);
 	buddy->release();
 	
-	// Release queue
-	dispatch_release(mainQueue);
-	dispatch_release(noticeQueue);
-	
-	// Release cache
-	[profileAvatar release];
-	[profileName release];
-	[profileText release];
-	
-	[localAvatar release];
-	
 	// Remove notification
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-    [super dealloc];
 }
 
 
@@ -238,6 +225,8 @@
 
 - (NSImage *)localAvatar
 {
+#pragma warning FIXME: don't use this kind of comparison.
+	
 	if (dispatch_get_current_queue() == mainQueue)
 		return localAvatar;
 	else
@@ -245,11 +234,10 @@
 		__block NSImage *result = nil;
 		
 		dispatch_sync(mainQueue, ^{
-			
-			result = [localAvatar retain];
+			result = localAvatar;
 		});
 		
-		return [result autorelease];
+		return result;
 	}
 }
 
@@ -257,10 +245,6 @@
 {
 	// Hold avatar
 	dispatch_async(mainQueue, ^{
-		
-		[avatar retain];
-		[localAvatar release];
-		
 		localAvatar = avatar;
 	});
 	
@@ -284,11 +268,10 @@
 		__block NSImage *result = nil;
 
 		dispatch_sync(mainQueue, ^{
-
-			result = [[self _profileAvatar] retain];
+			result = [self _profileAvatar];
 		});
 		
-		return [result autorelease];
+		return result;
 	}
 }
 
@@ -313,12 +296,11 @@
 	__block NSString *result = nil;
 	
 	dispatch_sync(mainQueue, ^{
-	
-		result = [profileName retain];
+		result = profileName;
 	});
 	
 	if (result)
-		return [result autorelease];
+		return result;
 	else
 		return @"";
 }
@@ -338,12 +320,11 @@
 	__block NSString *result = nil;
 	
 	dispatch_sync(mainQueue, ^{
-		
-		result = [profileText retain];
+		result = profileText;
 	});
 	
 	if (result)
-		return [result autorelease];
+		return result;
 	else
 		return @"";
 }
@@ -370,12 +351,11 @@
 	__block NSString *result = nil;
 	
 	dispatch_sync(mainQueue, ^{
-		
-		result = [peerVersion retain];
+		result = peerVersion;
 	});
 	
 	if (result)
-		return [result autorelease];
+		return result;
 	else
 		return @"";
 }
@@ -386,11 +366,11 @@
 	
 	dispatch_sync(mainQueue, ^{
 		
-		result = [peerClient retain];
+		result = peerClient;
 	});
 	
 	if (result)
-		return [result autorelease];
+		return result;
 	else
 		return @"";
 }
@@ -525,7 +505,7 @@
 - (void)initDelegate
 {
 	// Set the delegate to ourself
-	buddy->setDelegate(mainQueue, ^(TCBuddy *aBuddy, const TCInfo *info) {
+	buddy->setDelegate((__bridge void *)mainQueue, ^(TCBuddy *aBuddy, const TCInfo *info) {
 		
 		// Add the error in the error manager
 		[[TCLogsController sharedController] addBuddyLogEntryFromAddress:[self address] alias:[self alias] andText:[NSString stringWithUTF8String:info->render().c_str()]];
@@ -611,9 +591,7 @@
 				// If no avatar, use standard user
 				if ([[avatar representations] count] == 0)
 				{
-					[avatar release];
-					
-					avatar = [[NSImage imageNamed:NSImageNameUser] retain];
+					avatar = [NSImage imageNamed:NSImageNameUser];
 					
 					[avatar setSize:NSMakeSize(64, 64)];
 				}
@@ -622,7 +600,6 @@
 				uinfo = [NSDictionary dictionaryWithObject:avatar forKey:@"avatar"];
 				
 				// Hold avatar
-				[profileAvatar release];
 				profileAvatar = avatar;
 								
 				// Notify of the new avatar
@@ -643,7 +620,6 @@
 				NSString		*otext = [[NSString alloc] initWithUTF8String:text->content().c_str()];
 				NSDictionary	*uinfo = [NSDictionary dictionaryWithObject:otext forKey:@"text"];
 
-				[profileText release];
 				profileText = otext;
 				
 				dispatch_async(noticeQueue, ^{
@@ -660,7 +636,6 @@
 				NSString		*oname = [[NSString alloc] initWithUTF8String:name->content().c_str()];
 				NSDictionary	*uinfo = [NSDictionary dictionaryWithObject:oname forKey:@"name"];
 
-				[profileName release];
 				profileName = oname;
 				
 				dispatch_async(noticeQueue, ^{
@@ -681,9 +656,6 @@
 				
 				// Add the message (on main queue, else the chat can be not started)
 				[[TCChatController sharedController] receiveMessage:omessage forIdentifier:[self address]];
-				
-				// Clean
-				[omessage release];
 				
 				break;
 			}
@@ -729,7 +701,6 @@
 				NSString        *oversion = [[NSString alloc] initWithUTF8String:version->content().c_str()];
                 NSDictionary    *uinfo = [NSDictionary dictionaryWithObject:oversion forKey:@"version"];
 
-				[peerVersion release];
                 peerVersion = oversion;
 				
 				dispatch_async(noticeQueue, ^{
@@ -746,7 +717,6 @@
 				NSString        *oclient = [[NSString alloc] initWithUTF8String:client->content().c_str()];
                 NSDictionary    *uinfo = [NSDictionary dictionaryWithObject:oclient forKey:@"client"];
 
-				[peerClient release];
 				peerClient = oclient;
 				
 				dispatch_async(noticeQueue, ^{
@@ -775,11 +745,6 @@
 				[[TCFilesController sharedController] startFileTransfert:ouuid withFilePath:opath buddyAddress:obaddres buddyName:obname transfertWay:tcfile_upload fileSize:finfo->fileSizeTotal()];
 				
 				// Release
-				[ouuid release];
-				[opath release];
-				[obaddres release];
-				[obname release];
-				
 				bname->release();
 				
 				break;
@@ -799,9 +764,6 @@
 				// Update bytes received
 				[[TCFilesController sharedController] setCompleted:finfo->fileSizeCompleted() forFileTransfert:ouuid withWay:tcfile_upload];
 				
-				// Release
-				[ouuid release];
-				
 				break;
 			}
 			
@@ -819,8 +781,6 @@
 				// Update status					
 				[[TCFilesController sharedController] setStatus:tcfile_status_finish andTextStatus:NSLocalizedString(@"file_upload_done", @"") forFileTransfert:ouuid withWay:tcfile_upload];
 				
-				// Release
-				[ouuid release];
 				break;
 			}
 			
@@ -837,9 +797,7 @@
 				
 				// Update status
 				[[TCFilesController sharedController] setStatus:tcfile_status_stoped andTextStatus:NSLocalizedString(@"file_upload_stoped", @"") forFileTransfert:ouuid withWay:tcfile_upload];
-				
-				// Release
-				[ouuid release];
+
 				break;
 			}
 			
@@ -861,11 +819,6 @@
 				[[TCFilesController sharedController] startFileTransfert:ouuid withFilePath:opath buddyAddress:obaddres buddyName:obname transfertWay:tcfile_download fileSize:finfo->fileSizeTotal()];
 				
 				// Release
-				[ouuid release];
-				[opath release];
-				[obaddres release];
-				[obname release];
-				
 				bname->release();
 				
 				break;
@@ -884,9 +837,6 @@
 				// Update bytes received
 				[[TCFilesController sharedController] setCompleted:finfo->fileSizeCompleted() forFileTransfert:ouuid withWay:tcfile_download];
 				
-				// Release
-				[ouuid release];
-				
 				break;
 			}
 			
@@ -904,8 +854,6 @@
 				// Update status					
 				[[TCFilesController sharedController] setStatus:tcfile_status_finish andTextStatus:NSLocalizedString(@"file_download_done", @"") forFileTransfert:ouuid withWay:tcfile_download];
 				
-				// Release
-				[ouuid release];
 				break;
 			}
 			
@@ -923,8 +871,6 @@
 				// Update status
 				[[TCFilesController sharedController] setStatus:tcfile_status_stoped andTextStatus:NSLocalizedString(@"file_download_stoped", @"") forFileTransfert:ouuid withWay:tcfile_download];
 				
-				// Release
-				[ouuid release];
 				break;
 			}
 				
@@ -956,9 +902,6 @@
 				// Add the error
 				[[TCChatController sharedController] receiveError:full forIdentifier:[self address]];
 				
-				// Clean
-				[full release];
-				
 				break;
 			}
 				
@@ -974,9 +917,6 @@
 				
 				// Add the error
 				[[TCChatController sharedController] receiveError:full forIdentifier:[self address]];
-				
-				// Clean
-				[full release];
 				
 				break;
 			}

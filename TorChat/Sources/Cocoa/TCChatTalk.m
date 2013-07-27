@@ -36,15 +36,15 @@
 
 @interface TCChatTalk ()
 {
-	NSDate			*last_stamp;
-	NSFont			*event_font;
-    NSView			*contentView;
+	NSDate			*_last_stamp;
+	NSFont			*_event_font;
+    NSView			*_contentView;
 	
-	NSImage			*localAvatar;
-	NSImage			*remoteAvatar;
+	NSImage			*_localAvatar;
+	NSImage			*_remoteAvatar;
 	
-	NSMutableArray	*localAvatars;
-	NSMutableArray	*remoteAvatars;
+	NSMutableArray	*_localAvatars;
+	NSMutableArray	*_remoteAvatars;
 }
 
 - (void)scrollToEnd;
@@ -111,31 +111,16 @@
 {
 	NSSize sz = [self bounds].size;
 	
-	contentView = [[TCChatPage alloc] initWithFrame:NSMakeRect(0, 0, sz.width - 2, 0)];
-	[contentView setAutoresizingMask: NSViewWidthSizable];
+	_contentView = [[TCChatPage alloc] initWithFrame:NSMakeRect(0, 0, sz.width - 2, 0)];
+	[_contentView setAutoresizingMask: NSViewWidthSizable];
 	
-	event_font = [[NSFont fontWithName:@"Helvetica" size:12] retain];
-	last_stamp = nil;
+	_event_font = [NSFont fontWithName:@"Helvetica" size:12];
+	_last_stamp = nil;
 	
-	remoteAvatars = [[NSMutableArray alloc] init];
-	localAvatars = [[NSMutableArray alloc] init];
+	_remoteAvatars = [[NSMutableArray alloc] init];
+	_localAvatars = [[NSMutableArray alloc] init];
 	
-	[self setDocumentView:contentView];
-}
-
-- (void)dealloc
-{
-	[contentView release];
-	[last_stamp release];
-	[event_font release];
-	
-	[localAvatar release];
-	[remoteAvatar release];
-	
-	[remoteAvatars release];
-	[localAvatars release];
-		
-    [super dealloc];
+	[self setDocumentView:_contentView];
 }
 
 
@@ -148,29 +133,28 @@
 - (void)addTimeStamp
 {
 	float	stamp_height = 20.0f;
-	NSRect	r = [contentView frame];
+	NSRect	r = [_contentView frame];
 	
-	if (last_stamp == nil)
-		last_stamp = [[NSDate alloc] initWithTimeIntervalSinceNow: -100000];
+	if (_last_stamp == nil)
+		_last_stamp = [[NSDate alloc] initWithTimeIntervalSinceNow: -100000];
 	
-	if ([last_stamp timeIntervalSinceNow] < -(60.0 * 5.0))
+	if ([_last_stamp timeIntervalSinceNow] < -(60.0 * 5.0))
 	{
 		NSRect	new_area = NSMakeRect(0, r.size.height, r.size.width, stamp_height);
 		NSColor	*color = [NSColor colorWithDeviceRed:0.47f green:0.47f blue:0.47f alpha:1.0f];
 		
 		// Current date
-		[last_stamp release];
-		last_stamp = [[NSDate alloc] init];
+		_last_stamp = [NSDate date];
 		
-		NSDateFormatter *format = [[[NSDateFormatter alloc] init] autorelease];
+		NSDateFormatter *format = [[NSDateFormatter alloc] init];
 		
 		[format setDateFormat:@"HH:mm:ss"];
 				
 		// Build the stamp
-		NSString		*label = [format stringFromDate:last_stamp];
+		NSString		*label = [format stringFromDate:_last_stamp];
 		NSTextField		*stamp = [[NSTextField alloc] initWithFrame:new_area];
 		
-		[stamp setFont:event_font];
+		[stamp setFont:_event_font];
 		[stamp setEditable:NO];
 		[stamp setSelectable:YES];
 		[stamp setBordered:NO];
@@ -183,30 +167,27 @@
 		
 		
 		// Add it to the view
-		[contentView addSubview:stamp];
+		[_contentView addSubview:stamp];
 		
 		// Refresh the current position
 		r.size.height += stamp_height;
-		[contentView setFrame:r];
+		[_contentView setFrame:r];
 		
 		// Scroll to end
 		[self scrollToEnd];
-		
-		// Clean
-		[stamp release];
 	}
 }
 
 - (void)addStatusMessage:(NSString *)msg fromUserName:(NSString *)userName
 {
 	float			stamp_height = 30.0f;
-	NSRect			r = [contentView frame];
+	NSRect			r = [_contentView frame];
 	NSString		*label = [NSString stringWithFormat: @"%@ : %@", userName, msg];
 	NSRect			new_area = NSMakeRect(0, r.size.height, r.size.width, stamp_height);
 	NSTextField		*stamp = [[NSTextField alloc] initWithFrame:new_area];	
 	
 	// Build the stamp
-	[stamp setFont:event_font];
+	[stamp setFont:_event_font];
 	[stamp setEditable:NO];
 	[stamp setSelectable:YES];
 	[stamp setBordered:NO];
@@ -217,23 +198,20 @@
 	[stamp setStringValue:label];
 	
 	// Add it to the view
-	[contentView addSubview:stamp];
+	[_contentView addSubview:stamp];
 	
 	// Refresh the current position
 	r.size.height += stamp_height;
-	[contentView setFrame:r];
+	[_contentView setFrame:r];
 	
 	// Scroll to end
 	[self scrollToEnd];
-	
-	// Clean
-	[stamp release];
 }
 
 - (void)addErrorMessage:(NSString *)msg
 {
 	float	stamp_height = 20.0f;
-	NSRect	r = [contentView frame];
+	NSRect	r = [_contentView frame];
 
 	NSRect	new_area = NSMakeRect(0, r.size.height, r.size.width, stamp_height);
 	NSColor	*color = [NSColor colorWithDeviceRed:0.47f green:0.47f blue:0.47f alpha:1.0f];
@@ -254,17 +232,14 @@
 	[stamp setStringValue:msg];
 		
 	// Add it to the view
-	[contentView addSubview:stamp];
+	[_contentView addSubview:stamp];
 		
 	// Refresh the current position
 	r.size.height += stamp_height;
-	[contentView setFrame:r];
+	[_contentView setFrame:r];
 		
 	// Scroll to end
 	[self scrollToEnd];
-		
-	// Clean
-	[stamp release];
 }
 
 - (void)appendToConversation:(NSString *)text fromUser:(tcchat_user)user
@@ -275,7 +250,7 @@
 	[self addTimeStamp];
 	
 	TCChatBubble	*bubble = nil;
-	NSRect			r = [contentView frame];
+	NSRect			r = [_contentView frame];
 	float			delta = 0;
 	tcbubble_style	style = 0;
 	NSImageView		*avatar = nil;
@@ -292,9 +267,9 @@
 		delta = 50;
 		
 		avatar = [[NSImageView alloc] initWithFrame:NSMakeRect(9, 0, 32, 32)];
-		[avatar setImage:localAvatar];
+		[avatar setImage:_localAvatar];
 		
-		[localAvatars addObject:avatar];
+		[_localAvatars addObject:avatar];
 	}
 	else if (user == tcchat_remote)
 	{
@@ -302,11 +277,11 @@
 		delta = 0;
 		
 		avatar = [[NSImageView alloc] initWithFrame:NSMakeRect(109, 0, 32, 32)];
-		[avatar setImage:remoteAvatar];
+		[avatar setImage:_remoteAvatar];
 		
 		[avatar setAutoresizingMask:NSViewMinXMargin];
 		
-		[remoteAvatars addObject:avatar];
+		[_remoteAvatars addObject:avatar];
 	}
 			
 	// Build and configure a bubble
@@ -325,21 +300,17 @@
 	r.size.height += [line frame].size.height;
 	
 	// Add the bubble to the document view
-	[contentView addSubview:line];
-	[contentView setFrame:r];
+	[_contentView addSubview:line];
+	[_contentView setFrame:r];
 		
 	// Scroll to end
 	[self scrollToEnd];
-	
-	// Clean
-	[avatar release];
-	[line release];
 }
 
 - (void)scrollToEnd
 {
 	NSClipView	*content = [self contentView];
-	NSPoint		pt = [content constrainScrollPoint:NSMakePoint(0, [contentView frame].size.height)];
+	NSPoint		pt = [content constrainScrollPoint:NSMakePoint(0, [_contentView frame].size.height)];
 	
 	[content scrollToPoint:pt];
 	
@@ -349,26 +320,20 @@
 - (void)setLocalAvatar:(NSImage *)image
 {
 	// Hold the image
-	[image retain];
-	[localAvatar release];
-	
-	localAvatar = image;
+	_localAvatar = image;
 	
 	// Update current avatar
-	for (NSImageView *view in localAvatars)
+	for (NSImageView *view in _localAvatars)
 		[view setImage:image];
 }
 
 - (void)setRemoteAvatar:(NSImage *)image
 {
 	// Hold the image
-	[image retain];
-	[remoteAvatar release];
-	
-	remoteAvatar = image;
+	_remoteAvatar = image;
 	
 	// Update current avatar
-	for (NSImageView *view in remoteAvatars)
+	for (NSImageView *view in _remoteAvatars)
 		[view setImage:image];
 }
 

@@ -36,10 +36,10 @@
 // == Class ==
 @interface TCFilesController : NSObject
 
-@property (assign) IBOutlet NSWindow	*mainWindow;
-@property (assign) IBOutlet NSTextField	*countField;
-@property (assign) IBOutlet NSButton	*clearButton;
-@property (assign) IBOutlet NSTableView	*filesView;
+@property (strong, nonatomic) IBOutlet NSWindow	*mainWindow;
+@property (strong, nonatomic) IBOutlet NSTextField	*countField;
+@property (strong, nonatomic) IBOutlet NSButton	*clearButton;
+@property (strong, nonatomic) IBOutlet NSTableView	*filesView;
 
 // -- Constructor --
 + (TCFilesController *)sharedController;

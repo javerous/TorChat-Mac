@@ -37,9 +37,7 @@
 	NSImage					*rollOverImage;
 	
 	BOOL					isOver;
-	
-	id <TCButtonDelegate>	delegate;
-	
+		
 	NSTrackingRectTag		tracking;
 }
 
@@ -57,9 +55,6 @@
 #pragma mark - TCButton
 
 @implementation TCButton
-
-@synthesize delegate;
-
 
 
 /*
@@ -105,15 +100,10 @@
 
 - (void)dealloc
 {
-	[rollOverImage release];
-	[image release];
-		
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidResizeNotification object:nil];
 
 	if (tracking)
 		 [self removeTrackingRect:tracking];
-    
-    [super dealloc];
 }
 
 
@@ -192,6 +182,8 @@
 	isOver = YES;
 	[self _loadImage];
 	
+	id <TCButtonDelegate> delegate = _delegate;
+	
 	if ([delegate respondsToSelector:@selector(button:isRollOver:)])
 		[delegate button:self isRollOver:YES];
 }
@@ -201,6 +193,8 @@
 	isOver = NO;
 	[self _loadImage];
 	
+	id <TCButtonDelegate> delegate = _delegate;
+
 	if ([delegate respondsToSelector:@selector(button:isRollOver:)])
 		[delegate button:self isRollOver:NO];
 }
@@ -214,9 +208,6 @@
 
 - (void)setImage:(NSImage *)img
 {
-	[img retain];
-	[image release];
-	
 	image = img;
 	
 	[self _loadImage];
@@ -229,9 +220,6 @@
 
 - (void)setRollOverImage:(NSImage *)img
 {
-	[img retain];
-	[rollOverImage release];
-	
 	rollOverImage = img;
 	
 	[self _loadImage];

@@ -38,9 +38,9 @@
 {
 	// http://developer.apple.com/mac/library/documentation/Cocoa/Conceptual/TextLayout/Tasks/StringHeight.html
 	
-	NSTextStorage	*textStorage = [[[NSTextStorage alloc] initWithString:self] autorelease];
-	NSTextContainer *textContainer = [[[NSTextContainer alloc] initWithContainerSize: NSMakeSize(width, FLT_MAX)] autorelease];
-	NSLayoutManager *layoutManager = [[[NSLayoutManager alloc] init] autorelease];
+	NSTextStorage	*textStorage = [[NSTextStorage alloc] initWithString:self];
+	NSTextContainer *textContainer = [[NSTextContainer alloc] initWithContainerSize: NSMakeSize(width, FLT_MAX)];
+	NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
 	
 	[layoutManager addTextContainer:textContainer];
 	[textStorage addLayoutManager:layoutManager];
@@ -91,9 +91,9 @@
 {
 	// http://developer.apple.com/mac/library/documentation/Cocoa/Conceptual/TextLayout/Tasks/StringHeight.html
 	
-	NSTextStorage	*textStorage = [[[NSTextStorage alloc] initWithAttributedString:self] autorelease];
-	NSTextContainer *textContainer = [[[NSTextContainer alloc] initWithContainerSize: NSMakeSize(width, FLT_MAX)] autorelease];
-	NSLayoutManager *layoutManager = [[[NSLayoutManager alloc] init] autorelease];
+	NSTextStorage	*textStorage = [[NSTextStorage alloc] initWithAttributedString:self];
+	NSTextContainer *textContainer = [[NSTextContainer alloc] initWithContainerSize: NSMakeSize(width, FLT_MAX)];
+	NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
 	
 	[layoutManager addTextContainer:textContainer];
 	[textStorage addLayoutManager:layoutManager];

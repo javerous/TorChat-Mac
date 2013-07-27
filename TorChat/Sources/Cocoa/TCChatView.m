@@ -40,7 +40,7 @@
 }
 
 // -- Property --
-@property (retain, nonatomic) NSString *identifier;
+@property (strong, nonatomic) NSString *identifier;
 
 // -- Functions --
 - (void)_resizeUserField;
@@ -62,19 +62,6 @@
 */
 #pragma mark - TCChatView - Property
 
-@synthesize view;
-
-@synthesize userField;
-@synthesize talkView;
-@synthesize lineView;
-@synthesize backView;
-
-@synthesize name;
-@synthesize identifier;
-
-@synthesize delegate;
-
-
 
 /*
 ** TCChatView - Instance
@@ -89,7 +76,7 @@
 	result.identifier = identifier;
 	result.delegate = delegate;
 
-	return [result autorelease];
+	return result;
 }
 
 - (id)init
@@ -99,7 +86,7 @@
 	if (self)
 	{
 		// Load bundle
-		[NSBundle loadNibNamed:@"ChatView" owner:self];
+		[[NSBundle mainBundle] loadNibNamed:@"ChatView" owner:self topLevelObjects:nil];
 	}
 
 	return self;
@@ -107,21 +94,16 @@
 
 - (void)dealloc
 {
-	[name release];
-	[identifier release];
-	
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-    [super dealloc];
 }
 
 - (void)awakeFromNib
 {
 	// "Mark" field size
-	baseRect = [userField frame];
+	baseRect = [_userField frame];
 	
 	// Install notification
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowDidResize:) name:NSWindowDidResizeNotification object:view.window];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowDidResize:) name:NSWindowDidResizeNotification object:_view.window];
 }
 
 
@@ -133,10 +115,12 @@
 
 - (IBAction)textAction:(id)sender
 {
-	[talkView appendToConversation:[userField stringValue] fromUser:tcchat_local];
-	[self.delegate chat:self sendMessage:[userField stringValue]];
+	[_talkView appendToConversation:[_userField stringValue] fromUser:tcchat_local];
 	
-	[userField setStringValue:@""];
+	id <TCChatViewDelegate> delegate = _delegate;
+	[delegate chat:self sendMessage:[_userField stringValue]];
+	
+	[_userField setStringValue:@""];
 	[self _resizeUserField];
 }
 
@@ -148,28 +132,28 @@
 
 - (void)receiveMessage:(NSString *)message
 {	
-	[talkView appendToConversation:message fromUser:tcchat_remote];
+	[_talkView appendToConversation:message fromUser:tcchat_remote];
 }
 
 - (void)receiveError:(NSString *)error
 {
-	[talkView addErrorMessage:error];
+	[_talkView addErrorMessage:error];
 	
 }
 
 - (void)receiveStatus:(NSString *)status
 {
-	[talkView addStatusMessage:status fromUserName:self.name];
+	[_talkView addStatusMessage:status fromUserName:self.name];
 }
 
 - (void)setLocalAvatar:(NSImage *)image
 {
-	[talkView setLocalAvatar:image];
+	[_talkView setLocalAvatar:image];
 }
 
 - (void)setRemoteAvatar:(NSImage *)image
 {
-	[talkView setRemoteAvatar:image];
+	[_talkView setRemoteAvatar:image];
 }
 
 
@@ -199,13 +183,13 @@
 
 - (void)_resizeUserField
 {
-	NSString *text = [userField stringValue];
+	NSString *text = [_userField stringValue];
 
 	if ([text length] == 0)
 		text = @" ";
 
-	NSRect	r = [userField frame];
-	NSFont	*font = [userField font];
+	NSRect	r = [_userField frame];
+	NSFont	*font = [_userField font];
 	CGFloat	height = [text heightForDrawingWithFont:font andWidth:(r.size.width - 8)];
 	CGFloat	lheight = [@" " heightForDrawingWithFont:font andWidth:100];
 
@@ -216,7 +200,7 @@
 		NSRect rect;
 		
 		// > Update talkView size
-		rect = [talkView frame];
+		rect = [_talkView frame];
 	
 		rect.origin.y += (height - r.size.height);
 		rect.size.height -= (height - r.size.height);
@@ -224,26 +208,26 @@
 		if (rect.size.height < 150)
 			return;
 	
-		[talkView setFrame:rect];
+		[_talkView setFrame:rect];
 		
 		// > Update back size
-		rect = [backView frame];
+		rect = [_backView frame];
 		
 		rect.size.height += (height - r.size.height);
 
-		[backView setFrame:rect];
+		[_backView setFrame:rect];
 	
 		// > Update line position
-		rect = [lineView frame];
+		rect = [_lineView frame];
 		
 		rect.origin.y += (height - r.size.height);
 
-		[lineView setFrame:rect];
+		[_lineView setFrame:rect];
 
 		// > Update user field size
 		r.size.height = height;
 
-		[userField setFrame:r];
+		[_userField setFrame:r];
 	}
 }
 

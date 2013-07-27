@@ -55,7 +55,7 @@
 
 @interface TCButton : NSButton
 
-@property (assign, nonatomic) id <TCButtonDelegate> delegate;
+@property (weak, nonatomic) id <TCButtonDelegate> delegate;
 
 - (void)setImage:(NSImage *)img;
 - (void)setPushImage:(NSImage *)img;

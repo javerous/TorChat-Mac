@@ -55,21 +55,16 @@ NSString *NSStringFromFileSize(uint64_t size);
 @interface TCFileCellItems : NSObject
 {
 @private
-    NSProgressIndicator *indicator;
-	NSButton			*icon;
-	TCButton			*showFile;
-	TCButton			*cancelFile;
-	
 	NSString			*_uuid;
 	NSString			*_address;
 	tcfile_way			_way;
 }
 
 // -- Properties --
-@property (nonatomic, retain) NSProgressIndicator	*indicator;
-@property (nonatomic, retain) NSButton				*icon;
-@property (nonatomic, retain) NSButton				*showFile;
-@property (nonatomic, retain) NSButton				*cancelFile;
+@property (strong, nonatomic) NSProgressIndicator	*indicator;
+@property (strong, nonatomic) NSButton				*icon;
+@property (strong, nonatomic) TCButton				*showFile;
+@property (strong, nonatomic) TCButton				*cancelFile;
 
 // -- Constructors --
 + (TCFileCellItems *)cellItemsWithIcon:(NSImage *)image onView:(NSView *)view withUUID:(NSString *)uuid withAddress:(NSString *)address withWay:(tcfile_way)way;
@@ -86,75 +81,72 @@ NSString *NSStringFromFileSize(uint64_t size);
 
 @implementation TCFileCellItems
 
-@synthesize indicator;
-@synthesize icon;
-@synthesize showFile;
-@synthesize cancelFile;
-
 + (TCFileCellItems *)cellItemsWithIcon:(NSImage *)image onView:(NSView *)view withUUID:(NSString *)uuid withAddress:(NSString *)address withWay:(tcfile_way)way
 {
-	return [[[[self class] alloc] initWithIcon:image onView:view withUUID:uuid withAddress:address withWay:way] autorelease];
+	return [[[self class] alloc] initWithIcon:image onView:view withUUID:uuid withAddress:address withWay:way];
 }
 
 - (id)initWithIcon:(NSImage *)image onView:(NSView *)view withUUID:(NSString *)uuid withAddress:(NSString *)address withWay:(tcfile_way)way
 {
-	if ((self = [super init]))
+	self = [super init];
+	
+	if (self)
 	{
-		_uuid = [uuid retain];
-		_address = [address retain];
+		_uuid =  uuid;
+		_address = address;
 		_way = way;
 		
 		// -- Build Indicator --
-		indicator = [[NSProgressIndicator alloc] init];
+		_indicator = [[NSProgressIndicator alloc] init];
 		
-		[indicator setStyle:NSProgressIndicatorBarStyle];
-		[indicator setIndeterminate:NO];
-		[indicator setControlSize:NSSmallControlSize];
-		[indicator setMinValue:0.0];
-		[indicator setMaxValue:1.0];
-		[indicator setDoubleValue:0.5];
-		[indicator startAnimation:nil];
-		[indicator setHidden:NO];
-		[indicator sizeToFit];
+		[_indicator setStyle:NSProgressIndicatorBarStyle];
+		[_indicator setIndeterminate:NO];
+		[_indicator setControlSize:NSSmallControlSize];
+		[_indicator setMinValue:0.0];
+		[_indicator setMaxValue:1.0];
+		[_indicator setDoubleValue:0.5];
+		[_indicator startAnimation:nil];
+		[_indicator setHidden:NO];
+		[_indicator sizeToFit];
 		
-		[view addSubview:indicator];
+		[view addSubview:_indicator];
 		
 		
 		// -- Build Icon Button --
-		icon = [[NSButton alloc] init];
+		_icon = [[NSButton alloc] init];
 		
-		[icon setBordered:NO];
-		[icon setImage:image];
-		[icon setButtonType:NSMomentaryChangeButton];
-		[icon.cell setImageScaling:NSImageScaleProportionallyUpOrDown];
-		[icon setTarget:self];
-		[icon setAction:@selector(iconAction:)];
+		[_icon setBordered:NO];
+		[_icon setImage:image];
+		[_icon setButtonType:NSMomentaryChangeButton];
+		[_icon.cell setImageScaling:NSImageScaleProportionallyUpOrDown];
+		[_icon setTarget:self];
+		[_icon setAction:@selector(iconAction:)];
 		
-		[view addSubview:icon];
+		[view addSubview:_icon];
 		
 		
 		// -- Build Show Button --
-		showFile  = [[TCButton alloc] init];
+		_showFile  = [[TCButton alloc] init];
 		
-		[showFile setImage:[NSImage imageNamed:@"file_reveal"]];
-		[showFile setRollOverImage:[NSImage imageNamed:@"file_reveal_rollover"]];
-		[showFile setPushImage:[NSImage imageNamed:@"file_reveal_pushed"]];
-		[showFile setTarget:self];
-		[showFile setAction:@selector(revealAction:)];
+		[_showFile setImage:[NSImage imageNamed:@"file_reveal"]];
+		[_showFile setRollOverImage:[NSImage imageNamed:@"file_reveal_rollover"]];
+		[_showFile setPushImage:[NSImage imageNamed:@"file_reveal_pushed"]];
+		[_showFile setTarget:self];
+		[_showFile setAction:@selector(revealAction:)];
 		
-		[view addSubview:showFile];
+		[view addSubview:_showFile];
 		
 		
 		// -- Build Cancel Button --
-		cancelFile = [[TCButton alloc] init];
+		_cancelFile = [[TCButton alloc] init];
 		
-		[cancelFile setImage:[NSImage imageNamed:@"file_stop"]];
-		[cancelFile setRollOverImage:[NSImage imageNamed:@"file_stop_rollover"]];
-		[cancelFile setPushImage:[NSImage imageNamed:@"file_stop_pushed"]];
-		[cancelFile setTarget:self];
-		[cancelFile setAction:@selector(cancelAction:)];
+		[_cancelFile setImage:[NSImage imageNamed:@"file_stop"]];
+		[_cancelFile setRollOverImage:[NSImage imageNamed:@"file_stop_rollover"]];
+		[_cancelFile setPushImage:[NSImage imageNamed:@"file_stop_pushed"]];
+		[_cancelFile setTarget:self];
+		[_cancelFile setAction:@selector(cancelAction:)];
 		
-		[view addSubview:cancelFile];
+		[view addSubview:_cancelFile];
 		
 	}
 	
@@ -163,24 +155,15 @@ NSString *NSStringFromFileSize(uint64_t size);
 
 - (void)dealloc
 {
-	[indicator removeFromSuperview];
-    [indicator release];
+	[_indicator removeFromSuperview];
 	
-	[icon removeFromSuperview];
-	[icon release];
+	[_icon removeFromSuperview];
 	
-	[showFile setDelegate:nil];
-	[showFile removeFromSuperview];
-	[showFile release];
+	[_showFile setDelegate:nil];
+	[_showFile removeFromSuperview];
 	
-	[cancelFile setDelegate:nil];
-	[cancelFile removeFromSuperview];
-	[cancelFile release];
-	
-	[_uuid release];
-	[_address release];
-	
-    [super dealloc];
+	[_cancelFile setDelegate:nil];
+	[_cancelFile removeFromSuperview];
 }
 
 - (void)iconAction:(id)sender
@@ -257,16 +240,13 @@ NSString *NSStringFromFileSize(uint64_t size);
 - (void)dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	[file release];
-    
-    [super dealloc];
 }
 
 - (id)copyWithZone:(NSZone *)zone
 {
     TCFileViewCell *cell = (TCFileViewCell *)[super copyWithZone:zone];
 	
-	cell->file = [file retain];
+	cell->file = file;
 
     return cell;
 }
@@ -428,9 +408,6 @@ NSString *NSStringFromFileSize(uint64_t size);
 	
 	if ([obj isKindOfClass:[NSDictionary class]] == NO)
 		return;
-	
-	[obj retain];
-	[file release];
 	
 	file = obj;
 }

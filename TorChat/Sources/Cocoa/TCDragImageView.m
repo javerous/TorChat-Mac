@@ -32,6 +32,9 @@
 #pragma mark - TCDragImageView - Private
 
 @interface TCDragImageView ()
+{
+    NSString *_filename;
+}
 
 - (NSData *)pngImage;
 
@@ -48,20 +51,6 @@
 
 
 /*
-** TCDragImageView - Instance
-*/
-#pragma mark - TCDragImageView - Instance
-
-- (void)dealloc
-{
-    [_filename release];
-	
-    [super dealloc];
-}
-
-
-
-/*
 ** TCDragImageView - Public
 */
 #pragma mark - TCDragImageView - Public
@@ -71,10 +60,7 @@
 {
 	if (!filename)
 		return;
-	
-	[filename retain];
-	[_filename release];
-	
+
 	_filename = filename;
 }
 
@@ -106,9 +92,6 @@
 	
 	// Start drag session
 	[self dragImage:dragImage at:pt offset:NSZeroSize event:event pasteboard:dragPasteboard source:self slideBack:YES];
-
-	// Release
-	[dragImage release];
 }
 
 - (NSArray *)namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
@@ -169,9 +152,7 @@
 		return nil;
 	
 	png = [imp representationUsingType:NSPNGFileType properties:nil];
-	
-	[imp release];
-	
+		
 	return png;
 }
 

@@ -33,9 +33,9 @@
 
 @interface TCLogsController : NSObject
 
-@property (assign) IBOutlet NSWindow	*mainWindow;
-@property (assign) IBOutlet NSTableView	*entriesView;
-@property (assign) IBOutlet NSTableView	*logsView;
+@property (strong, atomic) IBOutlet NSWindow	*mainWindow;
+@property (strong, atomic) IBOutlet NSTableView	*entriesView;
+@property (strong, atomic) IBOutlet NSTableView	*logsView;
 
 // -- Singleton --
 + (TCLogsController *)sharedController;

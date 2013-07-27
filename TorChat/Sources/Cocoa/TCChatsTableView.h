@@ -56,6 +56,6 @@
 
 @interface TCChatsTableView : NSTableView
 
-@property (assign, nonatomic) id <TCChatsTableViewDropDelegate> dropDelegate;
+@property (weak, nonatomic) id <TCChatsTableViewDropDelegate> dropDelegate;
 
 @end

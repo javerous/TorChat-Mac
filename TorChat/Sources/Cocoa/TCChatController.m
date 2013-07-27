@@ -168,16 +168,6 @@
 	return self;
 }
 
-- (void)dealloc
-{
-	[identifiers release];
-
-	[windows release];
-	[identifiers release];
-	
-    [super dealloc];
-}
-
 
 
 /*
@@ -205,20 +195,13 @@
 		
 		// Remove from current
 		if (currentWindow == controller)
-		{			
-			[currentWindow release];
 			currentWindow = nil;
-		}
 	});
 }
 
 - (void)showedWindowController:(TCChatWindowController *)controller
 {
 	dispatch_async(mainQueue, ^{
-
-		[controller retain];
-		[currentWindow release];
-		
 		currentWindow = controller;
 	});
 }
@@ -232,10 +215,6 @@
 		// Store the controller
 		[windows addObject:ctrl];
 
-		// Hold current window controller
-		[ctrl retain];
-		[currentWindow release];
-		
 		currentWindow = ctrl;
 		
 		// Cache the controller for this identifier
@@ -303,9 +282,6 @@
 		if (ctrl)
 		{
 			// Hold current window controller
-			[ctrl retain];
-			[currentWindow release];
-			
 			currentWindow = ctrl;
 			
 			// Cache the controller for this identifier
@@ -438,12 +414,6 @@
 */
 #pragma mark - TCChatWindowController - Property
 
-@synthesize splitView;
-@synthesize userList;
-@synthesize userView;
-@synthesize chatView;
-
-
 
 /*
 ** TCChatWindowController - Instance
@@ -454,7 +424,7 @@
 {
 	if (dispatch_get_current_queue() == dispatch_get_main_queue())
 	{
-		return [[[TCChatWindowController alloc] init] autorelease];
+		return [[TCChatWindowController alloc] init];
 	}
 	else
 	{
@@ -465,13 +435,13 @@
 			result = [[TCChatWindowController alloc] init];
 		});
 		
-		return [result autorelease];
+		return result;
 	}
 }
 
 - (id)init
 {
-	self = [super init];
+	self = [super initWithWindowNibName:@"ChatWindow"];
 
 	if (self)
 	{
@@ -483,9 +453,6 @@
 		// Create containers
 		identifiers = [[NSMutableArray alloc] init];
 		identifiers_content = [[NSMutableDictionary alloc] init];
-		
-		// Load bundle
-		[NSBundle loadNibNamed:@"ChatWindow" owner:self];
 	}
 
 	return self;
@@ -502,7 +469,7 @@
 	// Activate tracking on UserList
 	trakingArea= [[NSTrackingArea alloc] initWithRect:NSZeroRect options:(NSTrackingMouseEnteredAndExited | NSTrackingMouseMoved | NSTrackingActiveInKeyWindow | NSTrackingInVisibleRect) owner:self userInfo:nil];
 							   
-	[userList addTrackingArea:trakingArea];
+	[_userList addTrackingArea:trakingArea];
 	
 	// Build close button
 	closeButton = [[TCButton alloc] init];
@@ -515,29 +482,19 @@
 	[closeButton setHidden:YES];
 	[closeButton setFrame:NSMakeRect(0, 0, 14, 14)];
 	
-	[userList addSubview:closeButton];
+	[_userList addSubview:closeButton];
 	
 	// Activate pb type
-	[userList registerForDraggedTypes:[NSArray arrayWithObject:TCChatPBType]];
+	[_userList registerForDraggedTypes:[NSArray arrayWithObject:TCChatPBType]];
 	
-	userList.dropDelegate = self;
+	_userList.dropDelegate = self;
 }
 
 - (void)dealloc
 {
 	TCDebugLog("TCChatWindowController Dealloc");
-	
-    [identifiers release];
-	[identifiers_content release];
 
-	[userList removeTrackingArea:trakingArea];
-	[trakingArea release];
-	
-	[closeButton release];
-	
-	[selectedIdentifier release];
-	
-    [super dealloc];
+	[_userList removeTrackingArea:trakingArea];
 }
 
 
@@ -558,7 +515,7 @@
 
 - (void)mouseMoved:(NSEvent *)theEvent
 {
-	NSInteger index = [userList rowAtPoint:[userList convertPoint:[theEvent locationInWindow] fromView:nil]];
+	NSInteger index = [_userList rowAtPoint:[_userList convertPoint:[theEvent locationInWindow] fromView:nil]];
 	
 	[self mouseOverRow:index];
 }
@@ -574,11 +531,11 @@
 	trakingRow = index;
 	
 	if (lindex != -1)
-		[userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)lindex] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
+		[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)lindex] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 	
 	if (trakingRow != -1)
 	{		
-		[userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)trakingRow] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
+		[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)trakingRow] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 		
 		[closeButton setHidden:NO];
 	}
@@ -625,34 +582,34 @@
 	multiChatMode = multichat;
 	
 	// Get current sizes
-	list_rect = [userList frame];
+	list_rect = [_userList frame];
 	win_rect = [self.window frame];
 	
 	// Compute new size
 	if (multichat)
 	{
-		win_rect.origin.x -= list_rect.size.width + [splitView dividerThickness];
-		win_rect.size.width += list_rect.size.width + [splitView dividerThickness];
+		win_rect.origin.x -= list_rect.size.width + [_splitView dividerThickness];
+		win_rect.size.width += list_rect.size.width + [_splitView dividerThickness];
 		
 		if (win_rect.origin.x < 0)
 			win_rect.origin.x = 0;
 	}
 	else
 	{
-		win_rect.origin.x += list_rect.size.width + [splitView dividerThickness];
-		win_rect.size.width -= list_rect.size.width + [splitView dividerThickness];
+		win_rect.origin.x += list_rect.size.width + [_splitView dividerThickness];
+		win_rect.size.width -= list_rect.size.width + [_splitView dividerThickness];
 	}
 	
-	[splitView setAutoresizingMask:NSViewMinXMargin];
+	[_splitView setAutoresizingMask:NSViewMinXMargin];
 	[self.window setFrame:win_rect display:YES animate:animated];
-	[splitView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+	[_splitView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 }
 
 - (void)_loadChatView:(TCChatView *)view
 {
 	// > Main Queue <
 	
-	NSArray *subviews = [chatView subviews];
+	NSArray *subviews = [_chatView subviews];
 	NSRect	crect, vrect;
 	
 	// Remove current view
@@ -664,12 +621,12 @@
 	}
 	
 	// Add the new one
-	vrect = [chatView frame];
+	vrect = [_chatView frame];
 	crect = NSMakeRect(0, 0, vrect.size.width, vrect.size.height);
 
 	[view.view setFrame:crect];
 	
-	[chatView addSubview:view.view];
+	[_chatView addSubview:view.view];
 	
 	// Select the field (XXX direct or call a method ?)
 	[view.userField becomeFirstResponder];
@@ -734,7 +691,7 @@
 		[identifiers addObject:identifier];
 		
 		// Reload table
-		[userList reloadData];
+		[_userList reloadData];
 
 		// Select row (and load view with delegate)
 		[self _selectChatWithIdentifier:identifier];
@@ -781,8 +738,8 @@
 		[self stopChatWithIdentifier:identifier];
 		
 		// Select the item
-		[controller->userList reloadData];
-		[controller->userList selectRowIndexes:[NSIndexSet indexSetWithIndex:index] byExtendingSelection:NO];
+		[controller->_userList reloadData];
+		[controller->_userList selectRowIndexes:[NSIndexSet indexSetWithIndex:index] byExtendingSelection:NO];
 		[controller showWindow:self];
 		
 		// Update title
@@ -803,8 +760,8 @@
 		
 		NSString						*identifier = chat.identifier;
 		NSValue							*vdelegate = [[identifiers_content objectForKey:identifier] objectForKey:TCChatDelegateKey];
-		id <TCChatControllerDelegate>	delegate = [vdelegate pointerValue];
-		
+		id <TCChatControllerDelegate>	delegate = [vdelegate nonretainedObjectValue];
+#warning Any better than "nonretainedObjectValue" in ARC ?
 		if (!delegate)
 			return;
 		
@@ -836,7 +793,7 @@
 		
 		// > Set weak delegate
 		if (delegate)
-			pdelegate = [NSValue valueWithPointer:delegate];
+			pdelegate = [NSValue valueWithNonretainedObject:delegate];
 		
 		content = [NSMutableDictionary dictionary];
 		
@@ -867,7 +824,7 @@
 		[identifiers addObject:identifier];
 		
 		// Reload table
-		[userList reloadData];
+		[_userList reloadData];
 		
 		// Activate multichat mode
 		if ([identifiers count] == 2)
@@ -906,17 +863,14 @@
 		return;
 	
 	// Update selection
-	if ([userList selectedRow] != index)
-		[userList selectRowIndexes:[NSIndexSet indexSetWithIndex:index] byExtendingSelection:NO];
+	if ([_userList selectedRow] != index)
+		[_userList selectRowIndexes:[NSIndexSet indexSetWithIndex:index] byExtendingSelection:NO];
 	
 	// Check not already loaded
 	if ([identifier isEqualToString:selectedIdentifier])
 		return;
 	
 	// Hold selection
-	[identifier retain];
-	[selectedIdentifier release];
-	
 	selectedIdentifier = identifier;
 	
 	// Load view
@@ -924,7 +878,7 @@
 	
 	// Clean unread
 	[content removeObjectForKey:TCChatLastChatKey];
-	[userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
+	[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 }
 
 - (void)stopChatWithIdentifier:(NSString *)identifier
@@ -953,7 +907,7 @@
 			NSUInteger	nindex;
 
 			// Reload table
-			[userList reloadData];
+			[_userList reloadData];
 			
 			// Update selection
 			if ([selectedIdentifier isEqualToString:identifier])
@@ -996,7 +950,7 @@
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		TCChatView	*view = [[identifiers_content objectForKey:identifier] objectForKey:TCChatViewKey];
-		NSInteger	index = [userList selectedRow];
+		NSInteger	index = [_userList selectedRow];
 		BOOL		setUnread = NO;
 		
 		if (!view)
@@ -1022,7 +976,7 @@
 			
 			[content setObject:message forKey:TCChatLastChatKey];
 			
-			[userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:cindex] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
+			[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:cindex] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 		}
 	});
 }
@@ -1083,7 +1037,7 @@
 		// Update user table
 		[content setObject:image forKey:TCChatAvatarKey];
 	
-		[userList reloadData];
+		[_userList reloadData];
 	});
 }
 
@@ -1107,17 +1061,17 @@
 
 - (void)splitView:(NSSplitView *)sender resizeSubviewsWithOldSize:(NSSize)oldSize
 {
-	NSSize	userSize = [userView frame].size;
-	NSSize	chatSize = [chatView frame].size;
-	NSSize	splitSize = [splitView frame].size;
+	NSSize	userSize = [_userView frame].size;
+	NSSize	chatSize = [_chatView frame].size;
+	NSSize	splitSize = [_splitView frame].size;
 	
 	chatSize.height = splitSize.height;
 	userSize.height = splitSize.height;
 	
-	chatSize.width = splitSize.width - [splitView dividerThickness] - userSize.width;
+	chatSize.width = splitSize.width - [_splitView dividerThickness] - userSize.width;
 	
-	[userView setFrameSize:userSize];
-	[chatView setFrameSize:chatSize];
+	[_userView setFrameSize:userSize];
+	[_chatView setFrameSize:chatSize];
 }
 
 
@@ -1130,14 +1084,14 @@
 - (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)frameSize
 {
 	NSSize	wsize = [sender frame].size;
-	NSSize	csize = [chatView frame].size;
+	NSSize	csize = [_chatView frame].size;
 	
 	CGFloat	deltaw = frameSize.width - wsize.width;
 	CGFloat	deltah = frameSize.height - wsize.height;
 
 	
 	if (csize.width + deltaw < 300)
-		wsize.width = [userView frame].size.width + [splitView dividerThickness] + 300;
+		wsize.width = [_userView frame].size.width + [_splitView dividerThickness] + 300;
 	else
 		wsize.width = frameSize.width;
 	
@@ -1184,7 +1138,7 @@
 	[[TCChatController sharedController] showedWindowController:self];
 	
 	// Clean the selected unread messages content
-	index = [userList selectedRow];
+	index = [_userList selectedRow];
 	
 	if (index >= 0 && index < [identifiers count])
 	{
@@ -1196,7 +1150,7 @@
 
 		// Clean unread
 		[content removeObjectForKey:TCChatLastChatKey];
-		[userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
+		[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 	}
 }
 
@@ -1269,7 +1223,7 @@
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
-	NSInteger			index = [userList selectedRow];
+	NSInteger			index = [_userList selectedRow];
 	NSString			*identifier;
 
 	if (index < 0 || index >= [identifiers count])
@@ -1323,7 +1277,7 @@
 			[identifiers removeObjectAtIndex:index];
 		
 		[self _selectChatWithIdentifier:identifier];
-		[userList mouseMoved:[NSApp currentEvent]];
+		[_userList mouseMoved:[NSApp currentEvent]];
 	}
 
 	return YES;
@@ -1338,7 +1292,7 @@
 	NSImage				*result;
 	
 	if (row >= [identifiers count])
-		return [[[NSImage alloc] initWithSize:NSMakeSize(1, 1)] autorelease];
+		return [[NSImage alloc] initWithSize:NSMakeSize(1, 1)];
 	
 	// Get the chat view
 	identifier = [identifiers objectAtIndex:row];
@@ -1349,13 +1303,14 @@
 	pdfContent = [view.view dataWithPDFInsideRect:[view.view bounds]];
 	
 	if (!pdfContent)
-		return [[[NSImage alloc] initWithSize:NSMakeSize(1, 1)] autorelease];
+		return [[NSImage alloc] initWithSize:NSMakeSize(1, 1)];
 
 	result = [[NSImage alloc] initWithData:pdfContent];
 	
 	[result setSize:NSMakeSize(150, 150)];
 
 	// Add a frame
+#warning Use new draw API.
 	[result lockFocus];
 	{
 		[[NSBezierPath bezierPathWithRect:NSMakeRect(0, 0, 150, 150)] stroke];
@@ -1363,7 +1318,7 @@
 	[result unlockFocus];
 
 	
-	return [result autorelease];
+	return result;
 
 }
 
