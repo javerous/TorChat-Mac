@@ -28,6 +28,7 @@
 #import "TCChatView.h"
 #import "TCChatCell.h"
 #import "TCButton.h"
+#import "TCValue.h"
 
 
 
@@ -431,7 +432,6 @@
 		__block TCChatWindowController *result = nil;
 
 		dispatch_sync(dispatch_get_main_queue(), ^{
-			
 			result = [[TCChatWindowController alloc] init];
 		});
 		
@@ -759,9 +759,9 @@
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		NSString						*identifier = chat.identifier;
-		NSValue							*vdelegate = [[identifiers_content objectForKey:identifier] objectForKey:TCChatDelegateKey];
-		id <TCChatControllerDelegate>	delegate = [vdelegate nonretainedObjectValue];
-#warning Any better than "nonretainedObjectValue" in ARC ?
+		TCValue							*vdelegate = [[identifiers_content objectForKey:identifier] objectForKey:TCChatDelegateKey];
+		id <TCChatControllerDelegate>	delegate = [vdelegate object];
+
 		if (!delegate)
 			return;
 		
@@ -784,7 +784,7 @@
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		NSMutableDictionary		*content = [identifiers_content objectForKey:identifier];
-		NSValue					*pdelegate = nil;
+		TCValue					*pdelegate = nil;
 		TCChatView				*view;
 		
 		// No need to start a chat if already started
@@ -793,7 +793,7 @@
 		
 		// > Set weak delegate
 		if (delegate)
-			pdelegate = [NSValue valueWithNonretainedObject:delegate];
+			pdelegate = [TCValue valueWithWeakObject:delegate];
 		
 		content = [NSMutableDictionary dictionary];
 		
@@ -1310,7 +1310,6 @@
 	[result setSize:NSMakeSize(150, 150)];
 
 	// Add a frame
-#warning Use new draw API.
 	[result lockFocus];
 	{
 		[[NSBezierPath bezierPathWithRect:NSMakeRect(0, 0, 150, 150)] stroke];

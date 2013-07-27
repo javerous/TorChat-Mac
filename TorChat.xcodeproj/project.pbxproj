@@ -35,6 +35,7 @@
 		E837DAE011E7739D004BC524 /* TCBuddy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E837DAD511E7739D004BC524 /* TCBuddy.cpp */; };
 		E837DAE111E7739D004BC524 /* TCBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E837DAD711E7739D004BC524 /* TCBuffer.cpp */; };
 		E837DAE311E7739D004BC524 /* TCController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E837DADB11E7739D004BC524 /* TCController.cpp */; };
+		E8455D3D17A425F00046307B /* TCValue.m in Sources */ = {isa = PBXBuildFile; fileRef = E8455D3C17A425F00046307B /* TCValue.m */; };
 		E849F93711F5E8F300193F06 /* engrenage.png in Resources */ = {isa = PBXBuildFile; fileRef = E849F93611F5E8F300193F06 /* engrenage.png */; };
 		E85310F812F8170E009FC05B /* logs.png in Resources */ = {isa = PBXBuildFile; fileRef = E85310F712F8170E009FC05B /* logs.png */; };
 		E854FDF912F7FD88009C2E5E /* TCImageExtension.mm in Sources */ = {isa = PBXBuildFile; fileRef = E854FDF812F7FD88009C2E5E /* TCImageExtension.mm */; };
@@ -144,6 +145,9 @@
 		E837DADA11E7739D004BC524 /* TCConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCConfig.h; sourceTree = "<group>"; };
 		E837DADB11E7739D004BC524 /* TCController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TCController.cpp; sourceTree = "<group>"; };
 		E837DADC11E7739D004BC524 /* TCController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCController.h; sourceTree = "<group>"; };
+		E8455D3B17A425F00046307B /* TCValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCValue.h; path = Cocoa/TCValue.h; sourceTree = "<group>"; };
+		E8455D3C17A425F00046307B /* TCValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCValue.m; path = Cocoa/TCValue.m; sourceTree = "<group>"; };
+		E8455D3E17A427920046307B /* libcommonCrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcommonCrypto.dylib; path = usr/lib/system/libcommonCrypto.dylib; sourceTree = SDKROOT; };
 		E849F93611F5E8F300193F06 /* engrenage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = engrenage.png; sourceTree = "<group>"; };
 		E85310F712F8170E009FC05B /* logs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logs.png; sourceTree = "<group>"; };
 		E854FDF712F7FD88009C2E5E /* TCImageExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCImageExtension.h; path = Cocoa/TCImageExtension.h; sourceTree = "<group>"; };
@@ -325,6 +329,7 @@
 		E81FD9EF11E7259B000614D5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E8455D3E17A427920046307B /* libcommonCrypto.dylib */,
 				E8EBCA6F11FF2C6500E3E878 /* libcrypto.dylib */,
 				E81FD9F711E7259B000614D5 /* Cocoa.framework */,
 			);
@@ -393,6 +398,8 @@
 				E889F0A212531D33000C36B2 /* TCCocoaConfig.mm */,
 				E8F15A78130425A4000593E1 /* TCKeyedText.h */,
 				E8F15A79130425A4000593E1 /* TCKeyedText.m */,
+				E8455D3B17A425F00046307B /* TCValue.h */,
+				E8455D3C17A425F00046307B /* TCValue.m */,
 			);
 			name = Tools;
 			sourceTree = "<group>";
@@ -773,6 +780,7 @@
 				E8D5E26214DAA0B400973297 /* TCSplitView.m in Sources */,
 				E8D5E26B14DAD3E200973297 /* TCChatView.m in Sources */,
 				E8FAF02E14DE00D900E120C4 /* TCChatCell.m in Sources */,
+				E8455D3D17A425F00046307B /* TCValue.m in Sources */,
 				E82754F514E972A900250C00 /* TCChatsTableView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -944,6 +952,10 @@
 				GCC_PREFIX_HEADER = TorChat/TorChat_Prefix.pch;
 				INFOPLIST_FILE = "TorChat/TorChat-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/usr/lib/system",
+				);
 				PRODUCT_NAME = TorChat;
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
@@ -959,6 +971,10 @@
 				GCC_PREFIX_HEADER = TorChat/TorChat_Prefix.pch;
 				INFOPLIST_FILE = "TorChat/TorChat-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/usr/lib/system",
+				);
 				PRODUCT_NAME = TorChat;
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;

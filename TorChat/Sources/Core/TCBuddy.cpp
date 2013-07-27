@@ -99,6 +99,17 @@ typedef enum
 
 
 /*
+** Global
+*/
+#pragma mark - Global
+
+static char gQueueIdentityKey;
+static char gMainQueueContext;
+
+
+
+
+/*
 ** TCBuddy - Instance
 */
 #pragma mark - TCBuddy - Instance
@@ -118,6 +129,8 @@ TCBuddy::TCBuddy(TCConfig *_config, const std::string &_alias, const std::string
 
 	// Build queue
 	mainQueue = dispatch_queue_create("com.torchat.core.buddy.main", DISPATCH_QUEUE_SERIAL);
+	
+	dispatch_queue_set_specific(mainQueue, &gQueueIdentityKey, &gMainQueueContext, NULL);
 
 	// Init notice queue & block
 	nQueue = 0;
@@ -507,7 +520,7 @@ void TCBuddy::setNotes(TCString *notes)
 bool TCBuddy::blocked()
 {
 	// Prevent dead-lock
-	if (dispatch_get_current_queue() == mainQueue)
+	if (dispatch_get_specific(&gQueueIdentityKey) == &gMainQueueContext)
 	{
 		return mblocked;
 	}
