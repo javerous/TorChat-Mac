@@ -33,11 +33,11 @@
 
 @interface TCKeyedText ()
 {
-    NSAttributedString			*nline;
-	NSTextTable					*table;
-	NSMutableAttributedString	*result;
-	NSUInteger					rowIndex;
-	NSUInteger					keySize;
+    NSAttributedString			*_nline;
+	NSTextTable					*_table;
+	NSMutableAttributedString	*_result;
+	NSUInteger					_rowIndex;
+	NSUInteger					_keySize;
 }
 
 - (void)addValue:(NSAttributedString *)value color:(NSColor *)color row:(NSUInteger)row column:(NSUInteger)column alignment:(NSTextAlignment)alignment;
@@ -66,30 +66,21 @@
     if (self)
 	{
 		// Allocate
-		result = [[NSMutableAttributedString alloc] init];
-		table = [[NSTextTable alloc] init];
-		nline = [[NSAttributedString alloc] initWithString:@"\n"];
+		_result = [[NSMutableAttributedString alloc] init];
+		_table = [[NSTextTable alloc] init];
+		_nline = [[NSAttributedString alloc] initWithString:@"\n"];
 
 		
 		// Configure
-		[table setNumberOfColumns:2];
-		[table setLayoutAlgorithm:NSTextTableAutomaticLayoutAlgorithm];
-		[table setHidesEmptyCells:YES];
+		[_table setNumberOfColumns:2];
+		[_table setLayoutAlgorithm:NSTextTableAutomaticLayoutAlgorithm];
+		[_table setHidesEmptyCells:YES];
 
 		// Hold arguments
-		keySize = ksize;
+		_keySize = ksize;
     }
     
     return self;
-}
-
-- (void)dealloc
-{
-	[nline release];
-	[table release];
-	[result release];
-	
-    [super dealloc];
 }
 
 
@@ -105,22 +96,19 @@
 	NSAttributedString	*acontent = [[NSAttributedString alloc] initWithString:content];
 	
 	[self addAttributedLineWithKey:akey andContent:acontent];
-	
-	[akey release];
-	[acontent release];
 }
 
 - (void)addAttributedLineWithKey:(NSAttributedString *)key andContent:(NSAttributedString *)content;
 {
-	[self addValue:key color:[NSColor grayColor] row:rowIndex column:0 alignment:NSRightTextAlignment];
-	[self addValue:content color:nil row:rowIndex column:1 alignment:NSLeftTextAlignment];
+	[self addValue:key color:[NSColor grayColor] row:_rowIndex column:0 alignment:NSRightTextAlignment];
+	[self addValue:content color:nil row:_rowIndex column:1 alignment:NSLeftTextAlignment];
 	
-	rowIndex++;
+	_rowIndex++;
 }
 
 - (NSAttributedString *)renderedText
 {
-	return result;
+	return _result;
 }
 
 
@@ -132,9 +120,9 @@
 
 - (void)addValue:(NSAttributedString *)value color:(NSColor *)color row:(NSUInteger)row column:(NSUInteger)column alignment:(NSTextAlignment)alignment
 {
-	NSTextTableBlock		*block = [[NSTextTableBlock alloc] initWithTable:table startingRow:(NSInteger)row rowSpan:1 startingColumn:(NSInteger)column columnSpan:1];
+	NSTextTableBlock		*block = [[NSTextTableBlock alloc] initWithTable:_table startingRow:(NSInteger)row rowSpan:1 startingColumn:(NSInteger)column columnSpan:1];
 	NSMutableParagraphStyle	*style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-	NSUInteger				textLength = [result length];
+	NSUInteger				textLength = [_result length];
 	
 	// Configure the text block
 	[block setVerticalAlignment:NSTextBlockTopAlignment];
@@ -146,7 +134,7 @@
 	
 	// Set the size of the first column
 	if (column == 0)
-		[block setValue:keySize type:NSTextBlockAbsoluteValueType forDimension:NSTextBlockWidth];
+		[block setValue:_keySize type:NSTextBlockAbsoluteValueType forDimension:NSTextBlockWidth];
 	
 	// Configure the style with the block
 	[style setTextBlocks:[NSArray arrayWithObject:block]];
@@ -155,19 +143,15 @@
 	[style setAlignment:alignment];
 	
 	// Add the value on the result string
-	[result appendAttributedString:value];
-	[result appendAttributedString:nline];
+	[_result appendAttributedString:value];
+	[_result appendAttributedString:_nline];
 	
 	// Apply color
 	if (color)
-		[result addAttribute:NSForegroundColorAttributeName value:color range:NSMakeRange(textLength, [result length] - textLength)];
+		[_result addAttribute:NSForegroundColorAttributeName value:color range:NSMakeRange(textLength, [_result length] - textLength)];
 	
 	// Apply style
-	[result addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(textLength, [result length] - textLength)];
-	
-	// Release
-	[style release];
-	[block release];
+	[_result addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(textLength, [_result length] - textLength)];
 }
 
 @end

@@ -33,7 +33,7 @@
 
 @interface TCFilesController ()
 {
-	NSMutableArray *files;
+	NSMutableArray *_files;
 }
 
 - (void)_updateCount;
@@ -49,11 +49,6 @@
 
 @implementation TCFilesController
 
-@synthesize mainWindow;
-@synthesize countField;
-@synthesize clearButton;
-@synthesize filesView;
-
 
 /*
 ** TCFilesController - Instance
@@ -62,10 +57,10 @@
 
 + (TCFilesController *)sharedController
 {
-	static dispatch_once_t		pred;
+	static dispatch_once_t		onceToken;
 	static TCFilesController	*shr;
 	
-	dispatch_once(&pred, ^{
+	dispatch_once(&onceToken, ^{
 		shr = [[TCFilesController alloc] init];
 	});
 
@@ -79,7 +74,7 @@
     if (self)
 	{
 		// Alloc files array
-		files =  [[NSMutableArray alloc] init];
+		_files =  [[NSMutableArray alloc] init];
 		
 		// Register notification
 		NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
@@ -87,25 +82,17 @@
 		[center addObserver:self selector:@selector(fileReveal:) name:TCFileCellRevealNotify object:nil];
 		[center addObserver:self selector:@selector(fileOpen:) name:TCFileCellOpenNotify object:nil];
 
-		
 		// Load the nib
-		[NSBundle loadNibNamed:@"FilesWindow" owner:self];
+		[[NSBundle mainBundle] loadNibNamed:@"FilesWindow" owner:self topLevelObjects:nil];
     }
     
     return self;
 }
 
-- (void)dealloc
-{
-    [files release];
-    
-    [super dealloc];
-}
-
 - (void)awakeFromNib
 {
-	[mainWindow center];
-	[mainWindow setFrameAutosaveName:@"FilesWindow"];
+	[_mainWindow center];
+	[_mainWindow setFrameAutosaveName:@"FilesWindow"];
 
 	[self _updateCount];
 }
@@ -121,11 +108,11 @@
 {
 	NSNotificationCenter	*center = [NSNotificationCenter defaultCenter];
 	NSMutableIndexSet		*indSet = [NSMutableIndexSet indexSet];
-	NSUInteger				i, cnt = [files count];
+	NSUInteger				i, cnt = [_files count];
 	
 	for (i = 0; i < cnt; i++)
 	{
-		NSDictionary	*file = [files objectAtIndex:i];
+		NSDictionary	*file = [_files objectAtIndex:i];
 		tcfile_status	status = (tcfile_status)[[file objectForKey:TCFileStatusKey] intValue];
 
 		if (status != tcfile_status_running)
@@ -137,21 +124,19 @@
 			[center postNotificationName:TCFileRemovingNotify object:self userInfo:info];
 			
 			[indSet addIndex:i];
-			
-			[info release];
 		}
 	}
 	
-	[files removeObjectsAtIndexes:indSet];
+	[_files removeObjectsAtIndexes:indSet];
 	
-	[filesView reloadData];
+	[_filesView reloadData];
 	
 	[self _updateCount];
 }
 
 - (IBAction)showWindow:(id)sender
 {
-	[mainWindow makeKeyAndOrderFront:sender];
+	[_mainWindow makeKeyAndOrderFront:sender];
 }
 
 
@@ -205,18 +190,16 @@
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		// Add the file
-		[files addObject:item];
-		
-		[item release];
-		
+		[_files addObject:item];
+				
 		// Reload the view
-		[filesView reloadData];
+		[_filesView reloadData];
 		
 		// Reaload count
 		[self _updateCount];
 		
 		// Show the window
-		[mainWindow makeKeyAndOrderFront:self];
+		[_mainWindow makeKeyAndOrderFront:self];
 	});
 }
 
@@ -227,7 +210,7 @@
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		for (NSMutableDictionary *file in files)
+		for (NSMutableDictionary *file in _files)
 		{
 			NSString	*auuid = [file objectForKey:TCFileUUIDKey];
 			tcfile_way	away = (tcfile_way)[[file objectForKey:TCFileWayKey] intValue];
@@ -237,7 +220,7 @@
 				[file setObject:[NSNumber numberWithInt:status] forKey:TCFileStatusKey];
 				[file setObject:txtStatus forKey:TCFileStatusTextKey];
 				
-				[filesView reloadData];
+				[_filesView reloadData];
 				[self _updateCount];
 				break;
 			}
@@ -250,7 +233,7 @@
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		for (NSMutableDictionary *file in files)
+		for (NSMutableDictionary *file in _files)
 		{
 			NSString	*auuid = [file objectForKey:TCFileUUIDKey];
 			tcfile_way	away = (tcfile_way)[[file objectForKey:TCFileWayKey] intValue];
@@ -259,7 +242,7 @@
 			{
 				[file setObject:[NSNumber numberWithUnsignedLongLong:size] forKey:TCFileCompletedKey];
 				
-				[filesView reloadData];
+				[_filesView reloadData];
 				[self _updateCount];
 				break;
 			}
@@ -276,29 +259,29 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {	
-	return (NSInteger)[files count];
+	return (NSInteger)[_files count];
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
-	if (rowIndex < 0 || rowIndex >= [files count])
+	if (rowIndex < 0 || rowIndex >= [_files count])
 		return nil;
 	
-	NSMutableDictionary *file = [files objectAtIndex:(NSUInteger)rowIndex];
+	NSMutableDictionary *file = [_files objectAtIndex:(NSUInteger)rowIndex];
 	
 	return file;
 }
 
 - (BOOL)doDeleteKeyInTableView:(NSTableView *)aTableView
 {
-	NSIndexSet				*set = [filesView selectedRowIndexes];
+	NSIndexSet				*set = [_filesView selectedRowIndexes];
 	NSMutableIndexSet		*final = [NSMutableIndexSet indexSet];
 	NSNotificationCenter	*center = [NSNotificationCenter defaultCenter];
     NSUInteger				currentIndex = [set firstIndex];
 	
     while (currentIndex != NSNotFound)
 	{
-		NSDictionary	*file = [files objectAtIndex:currentIndex];
+		NSDictionary	*file = [_files objectAtIndex:currentIndex];
 		tcfile_status	status = (tcfile_status)[[file objectForKey:TCFileStatusKey] intValue];
 
 		if (status != tcfile_status_running)
@@ -309,9 +292,7 @@
 			
 			// Inform of the remove
 			[center postNotificationName:TCFileRemovingNotify object:self userInfo:info];
-			
-			[info release];
-		
+					
 			[final addIndex:currentIndex];
 		}
 
@@ -322,10 +303,10 @@
 		return NO;
 	
 	// Remove items from array
-	[files removeObjectsAtIndexes:final];
+	[_files removeObjectsAtIndexes:final];
 	
 	// Reload
-	[filesView reloadData];
+	[_filesView reloadData];
 	[self _updateCount];
 	
 	return YES;
@@ -344,7 +325,7 @@
 	NSString		*uuid = [info objectForKey:@"uuid"];
 	tcfile_way		way = (tcfile_way)[[info objectForKey:@"way"] intValue];
 	
-	for (NSMutableDictionary *file in files)
+	for (NSMutableDictionary *file in _files)
 	{
 		NSString	*auuid = [file objectForKey:TCFileUUIDKey];
 		tcfile_way	away = (tcfile_way)[[file objectForKey:TCFileWayKey] intValue];
@@ -365,7 +346,7 @@
 	NSString		*uuid = [info objectForKey:@"uuid"];
 	tcfile_way		way = (tcfile_way)[[info objectForKey:@"way"] intValue];
 		
-	for (NSMutableDictionary *file in files)
+	for (NSMutableDictionary *file in _files)
 	{
 		NSString	*auuid = [file objectForKey:TCFileUUIDKey];
 		tcfile_way	away = (tcfile_way)[[file objectForKey:TCFileWayKey] intValue];
@@ -396,7 +377,7 @@
 	unsigned count_run = 0;
 	unsigned count_unrun = 0;
 	
-	for (NSDictionary *file in files)
+	for (NSDictionary *file in _files)
 	{
 		tcfile_status	status = (tcfile_status)[[file objectForKey:TCFileStatusKey] intValue];
 		tcfile_way		way = (tcfile_way)[[file objectForKey:TCFileWayKey] intValue];
@@ -413,8 +394,8 @@
 	}
 	
 	// Activate items
-	[clearButton setEnabled:(count_unrun > 0)];
-	[countField setHidden:([files count] == 0)];
+	[_clearButton setEnabled:(count_unrun > 0)];
+	[_countField setHidden:([_files count] == 0)];
 
 	// Build up string
 	NSString *txt_up = nil;
@@ -432,13 +413,13 @@
 
 	// Show the final string
 	if (txt_up && txt_down)
-		[countField setStringValue:[NSString stringWithFormat:@"%@ — %@", txt_down, txt_up]];
+		[_countField setStringValue:[NSString stringWithFormat:@"%@ — %@", txt_down, txt_up]];
 	else
 	{
 		if (txt_up)
-			[countField setStringValue:txt_up];
+			[_countField setStringValue:txt_up];
 		else if (txt_down)
-			[countField setStringValue:txt_down];
+			[_countField setStringValue:txt_down];
 	}
 }
 

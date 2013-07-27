@@ -173,7 +173,7 @@ public:
 	
 	
 	// -- Delegate --
-	void setDelegate(dispatch_queue_t queue, tcbuddy_event event);
+	void setDelegate(void *queue, tcbuddy_event event);
 	
 	// -- Accessors --
 	TCString *			alias();

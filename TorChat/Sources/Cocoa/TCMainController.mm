@@ -90,8 +90,6 @@
 {
 	if (_config)
 		_config->release();
-	
-    [super dealloc];
 }
 
 

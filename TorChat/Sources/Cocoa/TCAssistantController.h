@@ -83,17 +83,17 @@ class TCCocoaConfig;
 
 // -- Property --
 // > Pannels
-@property (assign)	IBOutlet TCPanel_Welcome	*welcomePanel;
-@property (assign)	IBOutlet TCPanel_Mode		*modePanel;
-@property (assign)	IBOutlet TCPanel_Advanced	*advancedPanel;
-@property (assign)	IBOutlet TCPanel_Basic		*basicPanel;
+@property (strong, nonatomic)	IBOutlet TCPanel_Welcome	*welcomePanel;
+@property (strong, nonatomic)	IBOutlet TCPanel_Mode		*modePanel;
+@property (strong, nonatomic)	IBOutlet TCPanel_Advanced	*advancedPanel;
+@property (strong, nonatomic)	IBOutlet TCPanel_Basic		*basicPanel;
 	
 // > Assistant
-@property (assign)	IBOutlet NSWindow			*mainWindow;
-@property (assign)	IBOutlet NSTextField		*mainTitle;
-@property (assign)	IBOutlet NSView				*mainView;
-@property (assign)	IBOutlet NSButton			*cancelButton;
-@property (assign)	IBOutlet NSButton			*nextButton;
+@property (strong, nonatomic)	IBOutlet NSWindow			*mainWindow;
+@property (strong, nonatomic)	IBOutlet NSTextField		*mainTitle;
+@property (strong, nonatomic)	IBOutlet NSView				*mainView;
+@property (strong, nonatomic)	IBOutlet NSButton			*cancelButton;
+@property (strong, nonatomic)	IBOutlet NSButton			*nextButton;
 
 // -- Constructor --
 + (TCAssistantController *)sharedController;
@@ -116,7 +116,7 @@ class TCCocoaConfig;
 
 @interface TCPanel_Welcome : NSView <TCAssistantPanel>
 
-@property (assign)	IBOutlet NSTextField *confPathField;
+@property (strong, nonatomic)	IBOutlet NSTextField *confPathField;
 
 - (IBAction)selectChange:(id)sender;
 - (IBAction)selectFile:(id)sender;
@@ -133,12 +133,12 @@ class TCCocoaConfig;
 
 @interface TCPanel_Advanced : NSView <TCAssistantPanel>
 
-@property (assign)	IBOutlet NSTextField	*imAddressField;
-@property (assign)	IBOutlet NSTextField	*imInPortField;
-@property (assign)	IBOutlet NSTextField	*imDownloadField;
+@property (strong, nonatomic)	IBOutlet NSTextField	*imAddressField;
+@property (strong, nonatomic)	IBOutlet NSTextField	*imInPortField;
+@property (strong, nonatomic)	IBOutlet NSTextField	*imDownloadField;
 	
-@property (assign)	IBOutlet NSTextField	*torAddressField;
-@property (assign)	IBOutlet NSTextField	*torPortField;
+@property (strong, nonatomic)	IBOutlet NSTextField	*torAddressField;
+@property (strong, nonatomic)	IBOutlet NSTextField	*torPortField;
 
 - (IBAction)selectFolder:(id)sender;
 
@@ -147,9 +147,9 @@ class TCCocoaConfig;
 
 @interface TCPanel_Basic : NSView <TCAssistantPanel>
 
-@property (assign)	IBOutlet NSTextField			*imAddressField;
-@property (assign)	IBOutlet NSTextField			*imDownloadField;
-@property (assign)	IBOutlet NSProgressIndicator	*loadingIndicator;
+@property (strong, nonatomic)	IBOutlet NSTextField			*imAddressField;
+@property (strong, nonatomic)	IBOutlet NSTextField			*imDownloadField;
+@property (strong, nonatomic)	IBOutlet NSProgressIndicator	*loadingIndicator;
 
 - (IBAction)selectFolder:(id)sender;
 

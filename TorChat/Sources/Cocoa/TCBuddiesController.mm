@@ -85,25 +85,6 @@
 
 @implementation TCBuddiesController
 
-@synthesize mainWindow;
-@synthesize indicator;
-@synthesize tableView;
-@synthesize imTitle;
-@synthesize imRemove;
-@synthesize imStatus;
-@synthesize imStatusImage;
-@synthesize imAvatar;
-
-@synthesize addWindow;
-@synthesize addNameField;
-@synthesize addAddressField;
-@synthesize addNotesField;
-
-@synthesize profileWindow;
-@synthesize profileName;
-@synthesize profileText;
-
-
 
 /*
 ** TCBuddiesController - Constructor & Destuctor
@@ -143,9 +124,8 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddyAliasChanged:) name:TCCocoaBuddyChangedAliasNotification object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddyBlockedChanged:) name:TCCocoaBuddyChangedBlockedNotification object:nil];
 
-
 		// Load interface bundle
-		[NSBundle loadNibNamed:@"BuddiesWindow" owner:self];
+		[[NSBundle mainBundle] loadNibNamed:@"BuddiesWindow" owner:self topLevelObjects:nil];
 	}
 	return self;
 }
@@ -153,28 +133,22 @@
 - (void)dealloc
 {
 	TCDebugLog("TCBuddieController dealloc");
-	
-	[buddies release];
-	
+		
 	control->release();
 	config->release();
-	
-	dispatch_release(mainQueue);
-	
+		
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-    [super dealloc];
 }
 
 - (void)awakeFromNib
 {	
 	// Place Window
-	[mainWindow center];
-	[mainWindow setFrameAutosaveName:@"BuddiesWindow"];
+	[_mainWindow center];
+	[_mainWindow setFrameAutosaveName:@"BuddiesWindow"];
 	
 	// Configure table view
-	[tableView setTarget:self];
-	[tableView setDoubleAction:@selector(tableViewDoubleClick:)];
+	[_tableView setTarget:self];
+	[_tableView setDoubleAction:@selector(tableViewDoubleClick:)];
 }
 
 
@@ -214,9 +188,8 @@
 	
 	
 	// -- Init window content --
-	
 	// > Show load indicator
-	[indicator startAnimation:self];
+	[_indicator startAnimation:self];
 
 	// > Init title
 	[self updateTitleUI];
@@ -229,29 +202,28 @@
 	avatar = [[NSImage alloc] initWithTCImage:tavatar];
 	
 	if ([[avatar representations] count] > 0)
-		[imAvatar setImage:avatar];
+		[_imAvatar setImage:avatar];
 	else
 	{
 		NSImage *img = [NSImage imageNamed:NSImageNameUser];
 		
 		[img setSize:NSMakeSize(64, 64)];
 		 
-		[imAvatar setImage:img];
+		[_imAvatar setImage:img];
 	}
 	
-	[avatar release];
 	tavatar->release();
 	
 	// > Init table file drag
-	[tableView registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
-	[tableView setDraggingSourceOperationMask:NSDragOperationAll forLocal:NO];
+	[_tableView registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
+	[_tableView setDraggingSourceOperationMask:NSDragOperationAll forLocal:NO];
 	
 	// > Redirect avatar drop
-	[imAvatar setDropTarget:self withSelector:@selector(doAvatarDrop:)];
+	[_imAvatar setDropTarget:self withSelector:@selector(doAvatarDrop:)];
 
 	
 	// Show the window
-	[mainWindow makeKeyAndOrderFront:self];
+	[_mainWindow makeKeyAndOrderFront:self];
 	
 	// Init delegate
 	[self initDelegate];
@@ -276,7 +248,7 @@
 	}
 	
 	[buddies removeAllObjects];
-	[tableView reloadData];
+	[_tableView reloadData];
 	
 	// Clean controller
 	if (control)
@@ -298,7 +270,7 @@
 	}
 	
 	// Set status to offline
-	[imStatus selectItemWithTag:-2];
+	[_imStatus selectItemWithTag:-2];
 	[self updateTitleUI];
 	
 	// Update status
@@ -404,9 +376,9 @@
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
-	NSInteger	row = [tableView selectedRow];
+	NSInteger	row = [_tableView selectedRow];
 	
-	[imRemove setEnabled:(row >= 0)];
+	[_imRemove setEnabled:(row >= 0)];
 
 	// Hold current selection (not perfect)
 	if (row >= 0 && row < [buddies count])
@@ -423,7 +395,7 @@
 
 - (void)tableViewDoubleClick:(id)sender
 {
-	NSInteger		row = [tableView clickedRow];
+	NSInteger		row = [_tableView clickedRow];
 	TCCocoaBuddy	*buddy;
 
 	if (row < 0 || row >= [buddies count])
@@ -525,15 +497,9 @@
 		[buddies addObjectsFromArray:temp_aw];
 		[buddies addObjectsFromArray:temp_xa];
 		[buddies addObjectsFromArray:temp_off];
-		
-		// Release
-		[temp_av release];
-		[temp_aw release];
-		[temp_xa release];
-		[temp_off release];
-		
+
 		// Reload table
-		[tableView reloadData];
+		[_tableView reloadData];
 	});
 }
 
@@ -542,7 +508,7 @@
 	dispatch_async(dispatch_get_main_queue(), ^{
 
 		// Reload table
-		[tableView reloadData];
+		[_tableView reloadData];
 	});
 }
 
@@ -551,7 +517,7 @@
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		// Reload table
-		[tableView reloadData];
+		[_tableView reloadData];
 	});
 }
 
@@ -560,7 +526,7 @@
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		// Reload table
-		[tableView reloadData];
+		[_tableView reloadData];
 	});
 }
 
@@ -569,7 +535,7 @@
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		// Reload table
-		[tableView reloadData];
+		[_tableView reloadData];
 	});
 }
 
@@ -616,7 +582,7 @@
 - (IBAction)doStatus:(id)sender
 {
 	// Change status
-	switch ([imStatus selectedTag])
+	switch ([_imStatus selectedTag])
 	{
 		case -2:
 			control->stop();
@@ -655,8 +621,6 @@
 		NSImage *avatar = [[NSImage alloc] initWithContentsOfURL:[urls objectAtIndex:0]];
 
 		[self doAvatarDrop:avatar];
-		
-		[avatar release];
 	}
 }
 
@@ -674,7 +638,7 @@
 
 - (IBAction)doTitle:(id)sender
 {
-	NSMenuItem	*selected = [imTitle selectedItem];
+	NSMenuItem	*selected = [_imTitle selectedItem];
 	NSInteger	tag = [selected tag];
 	
 	if (!selected)
@@ -703,7 +667,7 @@
 
 - (IBAction)doRemove:(id)sender
 {
-	NSInteger		row = [tableView selectedRow];
+	NSInteger		row = [_tableView selectedRow];
 	TCCocoaBuddy	*buddy;
 	NSString		*address;
 	
@@ -720,7 +684,7 @@
 	// Remove the buddy from interface side
 	[buddy yieldCore];
 	[buddies removeObjectAtIndex:(NSUInteger)row];
-	[tableView reloadData];
+	[_tableView reloadData];
 	
 	// Remove the buddy from the controller
 	std::string addr([address UTF8String]);
@@ -730,19 +694,19 @@
 
 - (IBAction)doAdd:(id)sender
 {
-	[addNameField setStringValue:@""];
-	[addAddressField setStringValue:@""];
-	[[[addNotesField textStorage] mutableString] setString:@""];
+	[_addNameField setStringValue:@""];
+	[_addAddressField setStringValue:@""];
+	[[[_addNotesField textStorage] mutableString] setString:@""];
 	
-	[addNameField becomeFirstResponder];
+	[_addNameField becomeFirstResponder];
 	
-	[addWindow center];
-	[addWindow makeKeyAndOrderFront:sender];
+	[_addWindow center];
+	[_addWindow makeKeyAndOrderFront:sender];
 }
 
 - (IBAction)doChat:(id)sender
 {
-	NSInteger		row = [tableView selectedRow];
+	NSInteger		row = [_tableView selectedRow];
 	TCCocoaBuddy	*buddy;
 	
 	if (row < 0 || row >= [buddies count])
@@ -755,7 +719,7 @@
 
 - (IBAction)doSendFile:(id)sender
 {
-	NSInteger		row = [tableView selectedRow];
+	NSInteger		row = [_tableView selectedRow];
 	TCCocoaBuddy	*buddy;
 	
 	if (row < 0 || row >= [buddies count])
@@ -783,7 +747,7 @@
 
 - (IBAction)doToggleBlock:(id)sender
 {
-	NSInteger		row = [tableView selectedRow];
+	NSInteger		row = [_tableView selectedRow];
 	TCCocoaBuddy	*buddy;
 	
 	if (row < 0 || row >= [buddies count])
@@ -804,41 +768,41 @@
 	TCString *tname = control->profileName();
 	TCString *ttext = control->profileText();
 	
-	[profileName setStringValue:[NSString stringWithUTF8String:tname->content().c_str()]];
-	[[[profileText textStorage] mutableString] setString:[NSString stringWithUTF8String:ttext->content().c_str()]];
+	[_profileName setStringValue:[NSString stringWithUTF8String:tname->content().c_str()]];
+	[[[_profileText textStorage] mutableString] setString:[NSString stringWithUTF8String:ttext->content().c_str()]];
 	
 	tname->release();
 	ttext->release();
 	
-	[NSApp beginSheet:profileWindow modalForWindow:mainWindow modalDelegate:nil didEndSelector:NULL contextInfo:NULL];
+	[NSApp beginSheet:_profileWindow modalForWindow:_mainWindow modalDelegate:nil didEndSelector:NULL contextInfo:NULL];
 }
 
 - (IBAction)doAddOk:(id)sender
 {
-	NSString *notes = [[addNotesField textStorage] mutableString];
+	NSString *notes = [[_addNotesField textStorage] mutableString];
 	
-	std::string nameTxt([[addNameField stringValue] UTF8String]);
-	std::string addressTxt([[addAddressField stringValue] UTF8String]);
+	std::string nameTxt([[_addNameField stringValue] UTF8String]);
+	std::string addressTxt([[_addAddressField stringValue] UTF8String]);
 	std::string notesTxt([notes UTF8String]);	
 	
 	// Add the buddy to the controller. Notification will add it on our interface.
 	control->addBuddy(nameTxt, addressTxt, notesTxt);
 	
-	[addWindow orderOut:self];
+	[_addWindow orderOut:self];
 }
 
 - (IBAction)doAddCancel:(id)sender
 {
-	[addWindow orderOut:self];
+	[_addWindow orderOut:self];
 }
 
 - (IBAction)doProfileOk:(id)sender
 {
-	[NSApp endSheet:profileWindow];
-	[profileWindow orderOut:self];
+	[NSApp endSheet:_profileWindow];
+	[_profileWindow orderOut:self];
 	
 	// -- Hold name --
-	NSString	*name = [profileName stringValue];
+	NSString	*name = [_profileName stringValue];
 	const char	*cname = [name UTF8String];
 	
 	if (cname)
@@ -854,7 +818,7 @@
 	}
 	
 	// -- Hold text --
-	NSString	*text = [[profileText textStorage] mutableString];
+	NSString	*text = [[_profileText textStorage] mutableString];
 	const char	*ctext = [text UTF8String];
 
 	if (ctext)
@@ -872,13 +836,13 @@
 
 - (IBAction)doProfileCancel:(id)sender
 {
-	[NSApp endSheet:profileWindow];
-	[profileWindow orderOut:self];
+	[NSApp endSheet:_profileWindow];
+	[_profileWindow orderOut:self];
 }
 
 - (IBAction)showWindow:(id)sender
 {
-	[mainWindow makeKeyAndOrderFront:sender];
+	[_mainWindow makeKeyAndOrderFront:sender];
 }
 
 
@@ -890,7 +854,7 @@
 
 - (TCCocoaBuddy *)selectedBuddy
 {
-	NSInteger row = [tableView selectedRow];
+	NSInteger row = [_tableView selectedRow];
 	
 	if (row < 0 || row >= [buddies count])
 		return nil;
@@ -901,29 +865,29 @@
 - (void)updateStatusUI:(int)status
 {
 	// Unselect old item
-	for (NSMenuItem *item in [imStatus itemArray])
+	for (NSMenuItem *item in [_imStatus itemArray])
 		[item setState:NSOffState];
 	
 	// Select the new item
-	NSInteger index = [imStatus indexOfItemWithTag:status];
+	NSInteger index = [_imStatus indexOfItemWithTag:status];
 	
 	if (index > -1)
 	{
-		NSMenuItem *select = [imStatus itemAtIndex:index];
-		NSMenuItem *title = [imStatus itemAtIndex:0];
+		NSMenuItem *select = [_imStatus itemAtIndex:index];
+		NSMenuItem *title = [_imStatus itemAtIndex:0];
 		
 		[title setTitle:[select title]];
 		[select setState:NSOnState];
 		
-		[imStatusImage setImage:[select image]];
+		[_imStatusImage setImage:[select image]];
 
 		// Update popup-size
-		NSSize	sz = [[select title] sizeWithAttributes:[NSDictionary dictionaryWithObject:[imStatus font] forKey:NSFontAttributeName]];
-		NSRect	rect = [imStatus frame];
+		NSSize	sz = [[select title] sizeWithAttributes:[NSDictionary dictionaryWithObject:[_imStatus font] forKey:NSFontAttributeName]];
+		NSRect	rect = [_imStatus frame];
 		
 		rect.size.width = sz.width + 25;
 		
-		[imStatus setFrame:rect];
+		[_imStatus setFrame:rect];
 	}
 }
 
@@ -940,8 +904,8 @@
 			{
 				content = [NSString stringWithUTF8String:config->get_self_address().c_str()];
 				
-				[[imTitle itemAtIndex:[imTitle indexOfItemWithTag:0]] setState:NSOffState];
-				[[imTitle itemAtIndex:[imTitle indexOfItemWithTag:1]] setState:NSOnState];
+				[[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:0]] setState:NSOffState];
+				[[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:1]] setState:NSOnState];
 				break;
 			}
 				
@@ -956,34 +920,33 @@
 				
 				tname->release();
 				
-				[[imTitle itemAtIndex:[imTitle indexOfItemWithTag:0]] setState:NSOnState];
-				[[imTitle itemAtIndex:[imTitle indexOfItemWithTag:1]] setState:NSOffState];
+				[[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:0]] setState:NSOnState];
+				[[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:1]] setState:NSOffState];
 				break;
 			}
 		}
 	}
 	else
 	{
-		[[imTitle itemAtIndex:[imTitle indexOfItemWithTag:0]] setState:NSOffState];
-		[[imTitle itemAtIndex:[imTitle indexOfItemWithTag:1]] setState:NSOffState];
+		[[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:0]] setState:NSOffState];
+		[[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:1]] setState:NSOffState];
 	}
 	
 	// Update popup-title
-	[[imTitle itemAtIndex:0] setTitle:content];
+	[[_imTitle itemAtIndex:0] setTitle:content];
 	
 	// Update popup-size
-	NSSize	sz = [content sizeWithAttributes:[NSDictionary dictionaryWithObject:[imTitle font] forKey:NSFontAttributeName]];
-	NSRect	rect = [imTitle frame];
+	NSSize	sz = [content sizeWithAttributes:[NSDictionary dictionaryWithObject:[_imTitle font] forKey:NSFontAttributeName]];
+	NSRect	rect = [_imTitle frame];
 	
 	rect.size.width = sz.width + 14;
 	
-	
-	[imTitle setFrame:rect];
+	[_imTitle setFrame:rect];
 }
 
 - (void)initDelegate
 {
-	control->setDelegate(mainQueue, ^(TCController *controller, const TCInfo *info) {
+	control->setDelegate((__bridge void *)mainQueue, ^(TCController *controller, const TCInfo *info) {
 		
 		// Log the item
 		[[TCLogsController sharedController] addGlobalLogEntry:[NSString stringWithUTF8String:info->render().c_str()]];
@@ -994,7 +957,7 @@
 			case tcctrl_notify_started:
 			{
 				dispatch_async(dispatch_get_main_queue(), ^{					
-					[indicator stopAnimation:self];
+					[_indicator stopAnimation:self];
 				});
 				
 				break;
@@ -1028,9 +991,7 @@
 				
 				if ([[final representations] count] == 0)
 				{
-					[final release];
-					
-					final = [[NSImage imageNamed:NSImageNameUser] retain];
+					final = [NSImage imageNamed:NSImageNameUser];
 					
 					[final setSize:NSMakeSize(64, 64)];
 				}
@@ -1039,12 +1000,9 @@
 						
 					NSDictionary *uinfo = [NSDictionary dictionaryWithObject:final forKey:@"avatar"];
 					
-					[imAvatar setImage:final];
+					[_imAvatar setImage:final];
 	
 					[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesControllerAvatarChanged object:self userInfo:uinfo];
-					
-					// Release
-					[final release];
 				});
 				
 				break;
@@ -1057,7 +1015,7 @@
 				dispatch_async(dispatch_get_main_queue(), ^{
 					
 					// Reload table
-					[tableView reloadData];
+					[_tableView reloadData];
 					
 					// Update Title
 					[self updateTitleUI];
@@ -1082,10 +1040,9 @@
 					
 					[buddies addObject:obuddy];
 					
-					[obuddy setLocalAvatar:[imAvatar image]];
-					[obuddy release];
+					[obuddy setLocalAvatar:[_imAvatar image]];
 
-					[tableView reloadData];
+					[_tableView reloadData];
 				});
 				
 				break;

@@ -117,10 +117,6 @@
 
 @implementation TCLogsController
 
-@synthesize mainWindow;
-@synthesize entriesView;
-@synthesize logsView;
-
 
 /*
 ** TCLogsController - Constructor & Destructor
@@ -165,26 +161,10 @@
 		textCell = [[NSTextFieldCell alloc] initTextCell:@""];
 		
 		// Load the nib
-		[NSBundle loadNibNamed:@"LogsWindow" owner:self];
+		[[NSBundle mainBundle] loadNibNamed:@"LogsWindow" owner:self topLevelObjects:nil];
     }
     
     return self;
-}
-
-- (void)dealloc
-{
-	dispatch_release(mainQueue);
-	
-	[logs release];
-	[klogs release];
-	[kalias release];
-	[allLogs release];
-	
-	[allLastKey release];
-	
-	[observers release];
-    
-    [super dealloc];
 }
 
 
@@ -196,7 +176,7 @@
 
 - (IBAction)showWindow:(id)sender
 {
-	[mainWindow makeKeyAndOrderFront:sender];
+	[_mainWindow makeKeyAndOrderFront:sender];
 }
 
 
@@ -208,7 +188,7 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
-	if (aTableView == entriesView)
+	if (aTableView == _entriesView)
 	{
 		__block NSUInteger cnt = 0;
 		
@@ -218,9 +198,9 @@
 		
 		return (NSInteger)cnt;
 	}
-	else if (aTableView == logsView)
+	else if (aTableView == _logsView)
 	{
-		NSInteger			kindex = [entriesView selectedRow];
+		NSInteger			kindex = [_entriesView selectedRow];
 		__block NSUInteger	cnt = 0;
 		
 		dispatch_sync(mainQueue, ^{
@@ -256,7 +236,7 @@
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
-	if (aTableView == entriesView)
+	if (aTableView == _entriesView)
 	{
 		__block NSString *str =  nil;
 		
@@ -273,15 +253,13 @@
 				str = NSLocalizedString(@"logs_global_logs", @"");
 			else
 				str = [kalias objectForKey:key];
-				
-			[str retain];	
 		});
 		
-		return [str autorelease];
+		return str;
 	}
-	else if (aTableView == logsView)
+	else if (aTableView == _logsView)
 	{
-		NSInteger			kindex = [entriesView selectedRow];
+		NSInteger			kindex = [_entriesView selectedRow];
 		__block NSString	*str =  nil;
 		
 		dispatch_sync(mainQueue, ^{
@@ -307,8 +285,6 @@
 					else
 						str = [NSString stringWithFormat:@"%@ (%@)", [kalias objectForKey:str], str];
 				}
-				
-				[str retain];
 			}
 			else if ([key isEqualToString:TCLogsGlobalKey])
 			{
@@ -317,7 +293,7 @@
 				if (rowIndex < 0 || rowIndex >= [array count])
 					return;
 				
-				str = [[array objectAtIndex:(NSUInteger)rowIndex] retain];
+				str = [array objectAtIndex:(NSUInteger)rowIndex];
 			}
 			else if ([key isEqualToString:TCLogsSeparatorKey])
 			{
@@ -329,11 +305,11 @@
 				if (rowIndex < 0 || rowIndex >= [array count])
 					return;
 				
-				str = [[array objectAtIndex:(NSUInteger)rowIndex] retain];
+				str = [array objectAtIndex:(NSUInteger)rowIndex];
 			}
 		});
 		
-		return [str autorelease];
+		return str;
 	}
 	
 	return nil;
@@ -347,13 +323,13 @@
 
 - (BOOL)tableView:(NSTableView *)tableView isGroupRow:(NSInteger)rowIndex
 {
-	if (tableView == logsView)
+	if (tableView == _logsView)
 	{
 		__block BOOL result = NO;
 		
 		dispatch_sync(mainQueue, ^{
 			
-			NSInteger	kindex = [entriesView selectedRow];
+			NSInteger	kindex = [_entriesView selectedRow];
 			NSString	*key;
 			
 			if (kindex < 0 || kindex >= [klogs count])
@@ -377,7 +353,7 @@
 
 - (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)rowIndex
 {
-	if (tableView == entriesView)
+	if (tableView == _entriesView)
 	{
 		__block CGFloat result = [tableView rowHeight];
 		
@@ -402,7 +378,7 @@
 
 - (NSCell *)tableView:(NSTableView *)tableView dataCellForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)rowIndex
 {
-	if (tableView == entriesView)
+	if (tableView == _entriesView)
 	{
 		__block NSCell *result = textCell;
 		
@@ -434,7 +410,7 @@
 
 - (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(NSInteger)rowIndex
 {
-	if (aTableView == entriesView)
+	if (aTableView == _entriesView)
 	{
 		__block BOOL result = YES;
 		
@@ -453,13 +429,13 @@
 		
 		return result;
 	}
-	else if (aTableView == logsView)
+	else if (aTableView == _logsView)
 	{
 		__block BOOL result = YES;
 		
 		dispatch_sync(mainQueue, ^{
 			
-			NSInteger	kindex = [entriesView selectedRow];
+			NSInteger	kindex = [_entriesView selectedRow];
 			NSString	*key;
 			
 			if (kindex < 0 || kindex > [klogs count])
@@ -492,8 +468,8 @@
 	{
 		NSTableView *view = object;
 		
-		if (view == entriesView)
-			[logsView reloadData];
+		if (view == _entriesView)
+			[_logsView reloadData];
 	}
 }
 
@@ -528,13 +504,10 @@
 				// Add the object
 				[klogs addObject:key];
 			}
-			
-			[array release];
 		}
 		
 		
 		// -- Add the log in the array --
-
 		// > Remove first item if more than 500
 		if ([array count] > 500)
 			[array removeObjectAtIndex:0];
@@ -545,7 +518,6 @@
 		
 		
 		// -- Add the item in the full log --
-
 		// > Remove the first item (and item until we reach a title) if more than 2000
 		if ([allLogs count] > 2000)
 		{
@@ -565,9 +537,6 @@
 		// > Add the key as title if different than the previous one
 		if (!allLastKey || [allLastKey isEqualToString:key] == NO)
 		{
-			[key retain];
-			[allLastKey release];
-			
 			allLastKey = key;
 			
 			[allLogs addObject:[NSDictionary dictionaryWithObjectsAndKeys:key, TCLogsContentKey, [NSNumber numberWithBool:YES], TCLogsTitleKey, nil]];
@@ -575,7 +544,6 @@
 		
 		// > Add
 		[allLogs addObject:[NSDictionary dictionaryWithObject:text forKey:TCLogsContentKey]];
-		
 		
 		// Give the item to the observer
 		NSDictionary	*observer = [observers objectForKey:key];
@@ -586,8 +554,8 @@
 				
 		// Refresh
 		dispatch_async(dispatch_get_main_queue(), ^{
-			[entriesView reloadData]; 
-			[logsView reloadData];
+			[_entriesView reloadData];
+			[_logsView reloadData];
 		});
 	});
 }
@@ -611,9 +579,6 @@
 	
 	// Add the rendered log
 	[self addLogEntry:address withContent:msg];
-	
-	// Release
-	[msg release];
 }
 
 - (void)addGlobalLogEntry:(NSString *)log, ...
@@ -630,9 +595,6 @@
 	
 	// Add the log
 	[self addLogEntry:TCLogsGlobalKey withContent:msg];
-	
-	// Release
-	[msg release];
 }
 
 - (void)addGlobalAlertLog:(NSString *)log, ...
@@ -657,10 +619,6 @@
 	[alert setInformativeText:msg];
 	
 	[alert runModal];
-		
-	// Release
-	[msg release];
-	[alert release];
 }
 
 
@@ -688,8 +646,6 @@
 		
 		if (items)
 			[object performSelector:selector withObject:items];
-		
-		[observer release];
 	});
 }
 
