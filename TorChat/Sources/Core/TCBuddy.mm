@@ -212,9 +212,6 @@ TCBuddy::~TCBuddy()
 	// Release
 	peerClient->release();
 	peerVersion->release();
-	
-	// Clean main queue
-	dispatch_release(mainQueue);
 }
 
 
@@ -413,30 +410,12 @@ void TCBuddy::keepAlive()
 */
 #pragma mark - TCBuddy - Delegate
 
-void TCBuddy::setDelegate(void *_queue, tcbuddy_event event)
+void TCBuddy::setDelegate(dispatch_queue_t queue, tcbuddy_event event)
 {
-	tcbuddy_event		cpy = NULL;
-	dispatch_queue_t	queue = (dispatch_queue_t)_queue;
-	
-	if (event)
-		cpy = Block_copy(event);
-	
-	if (queue)
-		dispatch_retain(queue);
-
 	// Asign on a block
 	dispatch_async_cpp(this, mainQueue, ^{
-		
-		// Queue
-		if (nQueue)
-			dispatch_release(nQueue);
-		
 		nQueue = queue;
-		
-		// Block
-		if (nBlock)
-			Block_release(nBlock);
-		nBlock = cpy;
+		nBlock = event;
 	});
 }
 
@@ -1044,7 +1023,8 @@ void TCBuddy::socketOperationAvailable(TCSocket *socket, tcsocket_operation oper
 			dispatch_async_cpp(this, mainQueue, ^{
 				
 				// Parse the line
-				parseLine(*line);
+#warning FIXME
+				//parseLine(*line);
 				
 				// Free memory
 				delete line;

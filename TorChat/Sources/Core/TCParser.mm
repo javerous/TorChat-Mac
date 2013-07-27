@@ -22,13 +22,446 @@
 
 
 
-#include "TCParser.h"
+#import "TCParser.h"
 
 #include "TCTools.h"
 #include "TCInfo.h"
 
+#import "NSData+TCTools.h"
 
 
+
+/*
+** TCParser - Private
+*/
+#pragma mark - TCParser - Private
+
+@interface TCParser ()
+{
+	__weak id <TCParserCommand> _receiver;
+}
+
+@end
+
+
+
+/*
+** TCParser
+*/
+#pragma mark - TCParser
+
+@implementation TCParser
+
+
+/*
+** TCParser - Instance
+*/
+#pragma mark - TCParser - Instance
+
+- (id)initWithParsedCommand:(id <TCParserCommand>)receiver
+{
+	self = [super init];
+	
+	if (self)
+	{
+		_receiver = receiver;
+	}
+	
+	return self;
+}
+
+
+
+/*
+** TCParser - Parsing
+*/
+#pragma mark - TCParser - Parsing
+
+- (void)parseLine:(NSData *)line
+{
+	if (!line)
+		return;
+	
+	// Unscape protocol special chars.
+	NSMutableData *mutableLine = [line mutableCopy];
+	
+	[mutableLine replaceCStr:"\\n" withCStr:"\n"];
+	[mutableLine replaceCStr:"\\/" withCStr:"\\"];
+
+	// Eplode the line from spaces.
+	NSArray *items = [mutableLine explodeWithCStr:" "];
+	
+	[self parseCommand:items];
+}
+
+- (void)parseCommand:(NSArray *)items
+{
+	if ([items count] == 0)
+        return;
+    
+    NSString *command = [[NSString alloc] initWithData:items[0] encoding:NSASCIIStringEncoding];
+		
+    // Dispatch command
+    if ([command isEqualToString:@"ping"])
+		[self parsePing:items];
+    else if ([command isEqualToString:@"pong"])
+        [self parsePong:items];
+    else if ([command isEqualToString:@"status"])
+        [self parseStatus:items];
+    else if ([command isEqualToString:@"version"])
+        [self parseVersion:items];
+	else if ([command isEqualToString:@"client"])
+        [self parseClient:items];
+	else if ([command isEqualToString:@"profile_name"])
+        [self parseProfileName:items];
+	else if ([command isEqualToString:@"profile_text"])
+        [self parseProfileText:items];
+	else if ([command isEqualToString:@"profile_avatar_alpha"])
+		 [self parseProfileAvatarAlpha:items];
+	else if ([command isEqualToString:@"profile_avatar"])
+        [self parseProfileAvatar:items];
+	else if ([command isEqualToString:@"message"])
+        [self parseMessage:items];
+	else if ([command isEqualToString:@"add_me"])
+        [self parseAddMe:items];
+	else if ([command isEqualToString:@"remove_me"])
+        [self parseRemoveMe:items];
+	else if ([command isEqualToString:@"filename"])
+        [self parseFileName:items];
+	else if ([command isEqualToString:@"filedata"])
+        [self parseFileData:items];
+	else if ([command isEqualToString:@"filedata_ok"])
+        [self parseFileDataOk:items];
+	else if ([command isEqualToString:@"filedata_error"])
+        [self parseFileDataError:items];
+	else if ([command isEqualToString:@"file_stop_sending"])
+        [self parseFileStopSending:items];
+	else if ([command isEqualToString:@"file_stop_receiving"])
+        [self parseFileStopReceiving:items];
+    else
+	{
+		NSString *error = [NSString stringWithFormat:@"Unknown command '%@'", command];
+
+		[self parserError:tcrec_unknown_command withString:error];
+	}
+}
+
+
+- (void)parsePing:(NSArray *)args
+{
+	// Check args.
+	if ([args count] != 3)
+    {
+		[self parserError:tcrec_cmd_ping withString:@"Bad ping argument"];
+        return;
+    }
+	
+	// Parse command.
+	NSString *address = [[NSString alloc] initWithData:args[1] encoding:NSASCIIStringEncoding];
+	NSString *random = [[NSString alloc] initWithData:args[1] encoding:NSASCIIStringEncoding];
+	
+	// Give to receiver.
+	id <TCParserCommand> receiver = _receiver;
+	
+	if ([receiver respondsToSelector:@selector(parser:parsedPingWithAddress:)])
+		[receiver parser:self parsedPingWithAddress:address random:random];
+	else
+		[self parserError:tcrec_cmd_ping withString:@"Ping: Not handled"];
+
+		
+}
+
+- (void)parsePong:(NSArray *)args
+{
+	if ([args count] != 2)
+    {
+		[self parserError:tcrec_cmd_pong withString:@"Bad pong argument"];
+        return;
+	}
+	
+	// Parse command.
+	NSString *random = [[NSString alloc] initWithData:args[1] encoding:NSASCIIStringEncoding];
+	
+	// Give to receiver.
+	id <TCParserCommand> receiver = _receiver;
+	
+	if ([receiver respondsToSelector:@selector(parser:parsedPongWithRandom:)])
+		[receiver parser:self parsedPongWithRandom:random];
+	else
+		[self parserError:tcrec_cmd_pong withString:@"Pong: Not handled"];
+}
+
+- (void)parseStatus:(NSArray *)args
+{
+	if ([args count] != 2)
+    {
+		[self parserError:tcrec_cmd_status withString:@"Bad status argument"];
+        return;
+	}
+	
+	// Parse command.
+	NSString *status = [[NSString alloc] initWithData:args[1] encoding:NSASCIIStringEncoding];
+	
+	// Give to receiver.
+	id <TCParserCommand> receiver = _receiver;
+	
+	if ([receiver respondsToSelector:@selector(parser:parsedStatus:)])
+		[receiver parser:self parsedStatus:status];
+	else
+		[self parserError:tcrec_cmd_status withString:@"Status: Not handled"];
+}
+
+- (void)parseVersion:(NSArray *)args
+{
+#warning FIXME
+	/*
+	if (args.size() != 1)
+    {
+		_parserError(tcrec_cmd_version, "Bad version argument");
+        return;
+	}
+	
+	doVersion(args[0]);
+	 */
+}
+
+- (void)parseClient:(NSArray *)args
+{
+#warning FIXME
+
+	/*
+	if (args.size() == 0)
+    {
+		_parserError(tcrec_cmd_version, "Empty client argument");
+        return;
+	}
+	
+	std::string *text = createJoin(args, " ");
+	
+	doClient(*text);
+	
+	delete text;
+	 */
+}
+
+- (void)parseProfileText:(NSArray *)args
+{
+#warning FIXME
+
+	/*
+	std::string *text = createJoin(args, " ");
+	
+	doProfileText(*text);
+	
+	delete text;
+	 */
+}
+
+- (void)parseProfileName:(NSArray *)args
+{
+#warning FIXME
+	
+	/*
+	std::string *name = createJoin(args, " ");
+	
+	doProfileName(*name);
+	
+	delete name;
+	 */
+}
+
+- (void)parseProfileAvatar:(NSArray *)args
+{
+#warning FIXME
+	
+	/*
+	std::string *bitmap = createJoin(args, " ");
+	
+	doProfileAvatar(*bitmap);
+	
+	delete bitmap;
+	 */
+}
+
+- (void)parseProfileAvatarAlpha:(NSArray *)args
+{
+	
+#warning FIXME
+	
+	/*
+	std::string *bitmap = createJoin(args, " ");
+	
+	doProfileAvatarAlpha(*bitmap);
+	
+	delete bitmap;
+	 */
+}
+
+- (void)parseMessage:(NSArray *)args
+{
+	
+#warning FIXME
+	
+	/*
+	if (args.size() == 0)
+    {
+		_parserError(tcrec_cmd_message, "Empty message content");
+        return;
+	}
+	
+	std::string * msg = createJoin(args, " ");
+	
+	doMessage(*msg);
+	
+	delete msg;
+	 */
+}
+
+- (void)parseAddMe:(NSArray *)args
+{
+	
+#warning FIXME
+	
+	/*
+	doAddMe();
+	 */
+}
+
+- (void)parseRemoveMe:(NSArray *)args
+{
+	
+#warning FIXME
+	
+	/*
+	doRemoveMe();
+	 */
+}
+
+- (void)parseFileName:(NSArray *)args
+{
+	
+#warning FIXME
+	
+	/*
+	if (args.size() != 4)
+    {
+		_parserError(tcrec_cmd_filename, "Bad filename argument");
+        return;
+	}
+	
+	doFileName(args[0], args[1], args[2], args[3]);
+	 */
+}
+
+- (void)parseFileData:(NSArray *)args
+{
+	
+#warning FIXME
+	
+	/*
+	if (args.size() < 4)
+    {
+		_parserError(tcrec_cmd_filedata, "Bad filedata argument");
+		
+        return;
+	}
+	
+	std::string *data = createJoin(args, 3, " ");
+	
+	if (data)
+	{
+		doFileData(args[0], args[1], args[2], *data);
+		
+		delete data;
+	}
+	else
+		doFileData(args[0], args[1], args[2], "");
+	 */
+}
+
+- (void)parseFileDataOk:(NSArray *)args
+{
+	
+#warning FIXME
+	
+	/*
+	if (args.size() != 2)
+    {
+		_parserError(tcrec_cmd_filedataok, "Bad filedataok argument");
+        return;
+	}
+	
+	doFileDataOk(args[0], args[1]);
+	 */
+}
+
+- (void)parseFileDataError:(NSArray *)args
+{
+	
+#warning FIXME
+	
+	/*
+	if (args.size() != 2)
+    {
+		_parserError(tcrec_cmd_filedataerror, "Bad filedataerror argument");
+        return;
+	}
+	
+	doFileDataError(args[0], args[1]);
+	 */
+}
+
+- (void)parseFileStopSending:(NSArray *)args
+{
+	/*
+	if (args.size() != 1)
+    {
+		_parserError(tcrec_cmd_filestopsending, "Bad filestopsending argument");
+        return;
+	}
+	
+	doFileStopSending(args[0]);
+	 */
+}
+
+- (void)parseFileStopReceiving:(NSArray *)args
+{
+	
+#warning FIXME
+	
+	/*
+	if (args.size() != 1)
+    {
+		_parserError(tcrec_cmd_filestopreceiving, "Bad filestopreceiving argument");
+        return;
+	}
+	
+	doFileStopReceiving(args[0]);
+	 */
+}
+
+
+
+/*
+** TCParser - Error
+*/
+#pragma mark - TCParser - Error
+
+- (void)parserError:(tcrec_error)errorCode withString:(NSString *)string
+{
+	TCInfo *err = new TCInfo(tcinfo_error, errorCode, [string UTF8String]);
+	
+	id <TCParserDelegate> delegate = _delegate;
+	
+	[delegate parser:self information:err];
+	
+	err->release();
+}
+
+@end
+
+
+#if 0
 /*
 ** TCParser - Parsing
 */
@@ -431,3 +864,5 @@ void TCParser::_parserError(tcrec_error error, const char *info)
 	
 	err->release();
 }
+
+#endif

@@ -32,8 +32,9 @@
 
 # include "TCBuffer.h"
 # include "TCController.h"
-# include "TCParser.h"
 # include "TCSocket.h"
+
+#import "TCParser.h"
 
 
 
@@ -53,7 +54,7 @@ class TCConfig;
 #pragma mark - TCControlClient
 
 // == Class ==
-class TCControlClient : public TCParser, public TCSocketDelegate // Inherit from TCObject
+class TCControlClient : public TCSocketDelegate // Inherit from TCObject
 {
 public:
 	// -- Instance --
