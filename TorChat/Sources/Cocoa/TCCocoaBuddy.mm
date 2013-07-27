@@ -37,6 +37,15 @@
 #include "TCNumber.h"
 
 
+/*
+** Global
+*/
+#pragma mark - Global
+
+static char gQueueIdentityKey;
+static char gMainQueueContext;
+
+
 
 /*
 ** TCCocoaBuddy
@@ -92,6 +101,9 @@
 		mainQueue = dispatch_queue_create("com.torchat.cocoa.buddy.main", DISPATCH_QUEUE_SERIAL);
 		noticeQueue = dispatch_queue_create("com.torchat.cocoa.buddy.notice", DISPATCH_QUEUE_SERIAL);
 
+		dispatch_queue_set_specific(mainQueue, &gQueueIdentityKey, &gMainQueueContext, NULL);
+
+		
 		// Retain the TCBuddy object handled by this object
 		buddy = _buddy;
 		buddy->retain();
@@ -225,9 +237,7 @@
 
 - (NSImage *)localAvatar
 {
-#pragma warning FIXME: don't use this kind of comparison.
-	
-	if (dispatch_get_current_queue() == mainQueue)
+	if (dispatch_get_specific(&gQueueIdentityKey) == &gMainQueueContext)
 		return localAvatar;
 	else
 	{
@@ -261,7 +271,7 @@
 
 - (NSImage *)profileAvatar
 {
-	if (dispatch_get_current_queue() == mainQueue)
+	if (dispatch_get_specific(&gQueueIdentityKey) == &gMainQueueContext)
 		return [self _profileAvatar];
 	else
 	{
