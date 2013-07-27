@@ -62,23 +62,23 @@ class TCController;
 @interface TCBuddiesController : NSObject
 
 // -- Propertie --
-@property (assign) IBOutlet NSWindow			*mainWindow;
-@property (assign) IBOutlet NSProgressIndicator	*indicator;
-@property (assign) IBOutlet NSTableView			*tableView;
-@property (assign) IBOutlet NSPopUpButton		*imTitle;
-@property (assign) IBOutlet NSButton			*imRemove;
-@property (assign) IBOutlet NSPopUpButton		*imStatus;
-@property (assign) IBOutlet NSImageView			*imStatusImage;
-@property (assign) IBOutlet TCDropButton		*imAvatar;
+@property (strong, nonatomic) IBOutlet NSWindow				*mainWindow;
+@property (strong, nonatomic) IBOutlet NSProgressIndicator	*indicator;
+@property (strong, nonatomic) IBOutlet NSTableView			*tableView;
+@property (strong, nonatomic) IBOutlet NSPopUpButton		*imTitle;
+@property (strong, nonatomic) IBOutlet NSButton				*imRemove;
+@property (strong, nonatomic) IBOutlet NSPopUpButton		*imStatus;
+@property (strong, nonatomic) IBOutlet NSImageView			*imStatusImage;
+@property (strong, nonatomic) IBOutlet TCDropButton			*imAvatar;
 
-@property (assign) IBOutlet NSWindow			*addWindow;
-@property (assign) IBOutlet NSTextField			*addNameField;
-@property (assign) IBOutlet NSTextField			*addAddressField;
-@property (assign) IBOutlet NSTextView			*addNotesField;
+@property (strong, nonatomic) IBOutlet NSWindow				*addWindow;
+@property (strong, nonatomic) IBOutlet NSTextField			*addNameField;
+@property (strong, nonatomic) IBOutlet NSTextField			*addAddressField;
+@property (strong, nonatomic) IBOutlet NSTextView			*addNotesField;
 
-@property (assign) IBOutlet NSWindow			*profileWindow;
-@property (assign) IBOutlet NSTextField			*profileName;
-@property (assign) IBOutlet NSTextView			*profileText;
+@property (strong, nonatomic) IBOutlet NSWindow				*profileWindow;
+@property (strong, nonatomic) IBOutlet NSTextField			*profileName;
+@property (strong, nonatomic) IBOutlet NSTextView			*profileText;
 
 // -- Singleton --
 + (TCBuddiesController *)sharedController;

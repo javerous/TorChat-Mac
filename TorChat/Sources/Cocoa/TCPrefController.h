@@ -42,11 +42,11 @@
 
 @interface TCPrefController : NSObject
 
-@property (assign) IBOutlet NSWindow	*mainWindow;
+@property (strong, nonatomic) IBOutlet NSWindow	*mainWindow;
 
-@property (assign) IBOutlet TCPrefView	*generalView;
-@property (assign) IBOutlet TCPrefView	*networkView;
-@property (assign) IBOutlet TCPrefView	*buddiesView;
+@property (strong, nonatomic) IBOutlet TCPrefView	*generalView;
+@property (strong, nonatomic) IBOutlet TCPrefView	*networkView;
+@property (strong, nonatomic) IBOutlet TCPrefView	*buddiesView;
 
 // -- Singleton --
 + (TCPrefController *)sharedController;
@@ -80,10 +80,10 @@
 @interface TCPrefView_General : TCPrefView
 
 // -- Properties --
-@property (assign) IBOutlet NSTextField	*downloadField;
+@property (strong, nonatomic) IBOutlet NSTextField	*downloadField;
 
-@property (assign) IBOutlet NSTextField	*clientNameField;
-@property (assign) IBOutlet NSTextField	*clientVersionField;
+@property (strong, nonatomic) IBOutlet NSTextField	*clientNameField;
+@property (strong, nonatomic) IBOutlet NSTextField	*clientVersionField;
 
 
 // -- IBAction --
@@ -101,10 +101,10 @@
 
 @interface TCPrefView_Network : TCPrefView
 
-@property (assign) IBOutlet NSTextField	*imAddressField;
-@property (assign) IBOutlet NSTextField	*imPortField;
-@property (assign) IBOutlet NSTextField	*torAddressField;
-@property (assign) IBOutlet NSTextField	*torPortField;
+@property (strong, nonatomic) IBOutlet NSTextField	*imAddressField;
+@property (strong, nonatomic) IBOutlet NSTextField	*imPortField;
+@property (strong, nonatomic) IBOutlet NSTextField	*torAddressField;
+@property (strong, nonatomic) IBOutlet NSTextField	*torPortField;
 
 @end
 
@@ -117,11 +117,11 @@
 
 @interface TCPrefView_Buddies : TCPrefView
 
-@property (assign) IBOutlet NSTableView	*tableView;
-@property (assign) IBOutlet NSButton	*removeButton;
+@property (strong, nonatomic) IBOutlet NSTableView	*tableView;
+@property (strong, nonatomic) IBOutlet NSButton	*removeButton;
 
-@property (assign) IBOutlet NSWindow	*addBlockedWindow;
-@property (assign) IBOutlet NSTextField	*addBlockedField;
+@property (strong, nonatomic) IBOutlet NSWindow	*addBlockedWindow;
+@property (strong, nonatomic) IBOutlet NSTextField	*addBlockedField;
 
 - (IBAction)doAddBlockedUser:(id)sender;
 - (IBAction)doRemoveBlockedUser:(id)sender;

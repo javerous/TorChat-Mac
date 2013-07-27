@@ -44,19 +44,19 @@
 @interface TCBuddyInfoController : NSWindowController <NSWindowDelegate>
 
 // -- Property --
-@property (assign) IBOutlet NSSegmentedControl	*toolBar;
-@property (assign) IBOutlet NSTabView			*views;
+@property (strong, nonatomic) IBOutlet NSSegmentedControl	*toolBar;
+@property (strong, nonatomic) IBOutlet NSTabView			*views;
 
-@property (assign) IBOutlet TCDragImageView		*avatarView;
-@property (assign) IBOutlet NSImageView			*statusView;
-@property (assign) IBOutlet NSTextField			*addressField;
-@property (assign) IBOutlet NSTextField			*aliasField;
+@property (strong, nonatomic) IBOutlet TCDragImageView		*avatarView;
+@property (strong, nonatomic) IBOutlet NSImageView			*statusView;
+@property (strong, nonatomic) IBOutlet NSTextField			*addressField;
+@property (strong, nonatomic) IBOutlet NSTextField			*aliasField;
 
-@property (assign) IBOutlet NSTextView			*notesField;
+@property (strong, nonatomic) IBOutlet NSTextView			*notesField;
 
-@property (assign) IBOutlet NSTableView			*logTable;
+@property (strong, nonatomic) IBOutlet NSTableView			*logTable;
 
-@property (assign) IBOutlet NSTextView			*infoView;
+@property (strong, nonatomic) IBOutlet NSTextView			*infoView;
 
 // -- IBAction --
 - (IBAction)doToolBar:(id)sender;

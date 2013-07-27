@@ -153,43 +153,43 @@
 		
 	if ([buddy isKindOfClass:[TCCocoaBuddy class]])
 	{
-		[buddyShowMenu setTarget:self];
-		[buddyShowMenu setAction:@selector(doBuddyShowInfo:)];
+		[_buddyShowMenu setTarget:self];
+		[_buddyShowMenu setAction:@selector(doBuddyShowInfo:)];
 		
-		[buddyDeleteMenu setTarget:self];
-		[buddyDeleteMenu setAction:@selector(doBuddyRemove:)];
+		[_buddyDeleteMenu setTarget:self];
+		[_buddyDeleteMenu setAction:@selector(doBuddyRemove:)];
 		
-		[buddyChatMenu setTarget:self];
-		[buddyChatMenu setAction:@selector(doBuddyChat:)];
+		[_buddyChatMenu setTarget:self];
+		[_buddyChatMenu setAction:@selector(doBuddyChat:)];
 		
-		[buddyBlockMenu setTarget:self];
-		[buddyBlockMenu setAction:@selector(doBuddyToggleBlocked:)];
+		[_buddyBlockMenu setTarget:self];
+		[_buddyBlockMenu setAction:@selector(doBuddyToggleBlocked:)];
 		
 		if ([buddy blocked])
-			[buddyBlockMenu setTitle:NSLocalizedString(@"menu_unblock_buddy", @"")];
+			[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_unblock_buddy", @"")];
 		else
-			[buddyBlockMenu setTitle:NSLocalizedString(@"menu_block_buddy", @"")];
+			[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_block_buddy", @"")];
 		
-		[buddyFileMenu setTarget:self];
-		[buddyFileMenu setAction:@selector(doBuddySendFile:)];
+		[_buddyFileMenu setTarget:self];
+		[_buddyFileMenu setAction:@selector(doBuddySendFile:)];
 	}
 	else
 	{
-		[buddyShowMenu setTarget:nil];
-		[buddyShowMenu setAction:NULL];
+		[_buddyShowMenu setTarget:nil];
+		[_buddyShowMenu setAction:NULL];
 		
-		[buddyDeleteMenu setTarget:nil];
-		[buddyDeleteMenu setAction:NULL];
+		[_buddyDeleteMenu setTarget:nil];
+		[_buddyDeleteMenu setAction:NULL];
 		
-		[buddyChatMenu setTarget:nil];
-		[buddyChatMenu setAction:NULL];
+		[_buddyChatMenu setTarget:nil];
+		[_buddyChatMenu setAction:NULL];
 		
-		[buddyBlockMenu setTarget:nil];
-		[buddyBlockMenu setAction:NULL];
-		[buddyBlockMenu setTitle:NSLocalizedString(@"menu_block_buddy", @"")];
+		[_buddyBlockMenu setTarget:nil];
+		[_buddyBlockMenu setAction:NULL];
+		[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_block_buddy", @"")];
 
-		[buddyFileMenu setTarget:nil];
-		[buddyFileMenu setAction:NULL];
+		[_buddyFileMenu setTarget:nil];
+		[_buddyFileMenu setAction:NULL];
 	}
 }
 
@@ -203,9 +203,9 @@
 	if ([buddy isEqualToString:selected])
 	{
 		if ([blocked boolValue])
-			[buddyBlockMenu setTitle:NSLocalizedString(@"menu_unblock_buddy", @"")];
+			[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_unblock_buddy", @"")];
 		else
-			[buddyBlockMenu setTitle:NSLocalizedString(@"menu_block_buddy", @"")];
+			[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_block_buddy", @"")];
 	}
 }
 
