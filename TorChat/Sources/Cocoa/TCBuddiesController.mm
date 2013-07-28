@@ -36,7 +36,6 @@
 #import "TCLogsController.h"
 
 #import "TCTorManager.h"
-#import "TCImageExtension.h"
 #import "TCDropButton.h"
 
 #include "TCController.h"
@@ -199,7 +198,7 @@
 	
 	// > Init avatar
 	tavatar = control->profileAvatar();
-	avatar = [[NSImage alloc] initWithTCImage:tavatar];
+	avatar = [tavatar imageRepresentation];
 	
 	if ([[avatar representations] count] > 0)
 		[_imAvatar setImage:avatar];
@@ -211,9 +210,7 @@
 		 
 		[_imAvatar setImage:img];
 	}
-	
-	tavatar->release();
-	
+		
 	// > Init table file drag
 	[_tableView registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
 	[_tableView setDraggingSourceOperationMask:NSDragOperationAll forLocal:NO];
@@ -626,14 +623,12 @@
 
 - (void)doAvatarDrop:(NSImage *)avatar
 {
-	TCImage *image = [avatar createTCImage];
+	TCImage *image = [[TCImage alloc] initWithImage:avatar];
 	
 	if (!image)
 		return;
 	
 	control->setProfileAvatar(image);
-	
-	image->release();
 }
 
 - (IBAction)doTitle:(id)sender
@@ -986,8 +981,8 @@
 				
 			case tcctrl_notify_profile_avatar:
 			{
-				TCImage *image = dynamic_cast<TCImage *>(info->context());
-				NSImage	*final = [[NSImage alloc] initWithTCImage:image];
+				TCImage *image = (__bridge TCImage *)(info->context());
+				NSImage	*final = [image imageRepresentation];
 				
 				if ([[final representations] count] == 0)
 				{

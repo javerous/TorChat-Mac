@@ -419,17 +419,17 @@ TCImage * TCCocoaConfig::get_profile_avatar()
 		return NULL;
 	
 	// Build TorChat core image
-	image = new TCImage([width unsignedIntValue], [height unsignedIntValue]);
+	image = [[TCImage alloc] initWithWidth:[width unsignedIntValue] andHeight:[height unsignedIntValue]];
 	
-	image->setBitmap([bitmap bytes], [bitmap length]);
-	image->setAlphaBitmap([bitmapAlpha bytes], [bitmapAlpha length]);
-	
+	[image setBitmap:bitmap];
+	[image setBitmapAlpha:bitmapAlpha];
+
 	return image;
 }
 
-void TCCocoaConfig::set_profile_avatar(const TCImage & picture)
+void TCCocoaConfig::set_profile_avatar(const TCImage *picture)
 {
-	if (picture.getWidth() == 0 || picture.getHeight() == 0 || picture.getBitmap() == NULL)
+	if ([picture width] == 0 || [picture height] == 0 || [picture bitmap] == nil)
 	{
 		[fcontent removeObjectForKey:TCCONF_KEY_PROFILE_AVATAR];
 		
@@ -440,27 +440,15 @@ void TCCocoaConfig::set_profile_avatar(const TCImage & picture)
 	}
 	
 	NSMutableDictionary *avatar = [[NSMutableDictionary alloc] initWithCapacity:4];
-	NSNumber			*width = [[NSNumber alloc] initWithUnsignedLong:picture.getWidth()];
-	NSNumber			*height = [[NSNumber alloc] initWithUnsignedLong:picture.getHeight()];
-	NSData				*bitmap = nil;
-	NSData				*bitmapAlpha = nil;
+
+	[avatar setObject:@([picture width]) forKey:@"width"];
+	[avatar setObject:@([picture height]) forKey:@"height"];
 	
-	[avatar setObject:width forKey:@"width"];
-	[avatar setObject:height forKey:@"height"];
+	if ([picture bitmap])
+		[avatar setObject:[picture bitmap] forKey:@"bitmap"];
 	
-	if (picture.getBitmap())
-	{
-		bitmap = [[NSData alloc] initWithBytesNoCopy:(void *)picture.getBitmap() length:picture.getBitmapSize() freeWhenDone:NO];
-				
-		[avatar setObject:bitmap forKey:@"bitmap"];
-	}
-	
-	if (picture.getBitmapAlpha())
-	{
-		bitmapAlpha = [[NSData alloc] initWithBytesNoCopy:(void *)picture.getBitmapAlpha() length:picture.getBitmapAlphaSize() freeWhenDone:NO];
-		
-		[avatar setObject:bitmapAlpha forKey:@"bitmap_alpha"];
-	}
+	if ([picture bitmapAlpha])
+		[avatar setObject:[picture bitmapAlpha] forKey:@"bitmap_alpha"];
 	
 	[fcontent setObject:avatar forKey:TCCONF_KEY_PROFILE_AVATAR];
 

@@ -42,7 +42,7 @@ class TCBuddy;
 class TCConfig;
 class TCControlClient;
 class TCController;
-class TCImage;
+@class TCImage;
 class TCString;
 
 
