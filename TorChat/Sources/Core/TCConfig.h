@@ -30,7 +30,7 @@
 # include <vector>
 
 # include "TCObject.h"
-# include "TCImage.h"
+# import "TCImage.h"
 
 
 /*
@@ -120,7 +120,7 @@ public:
 	virtual void			set_profile_text(const std::string & text) = 0;
 	
 	virtual	TCImage *		get_profile_avatar() = 0;
-	virtual void			set_profile_avatar(const TCImage & picture) = 0;
+	virtual void			set_profile_avatar(const TCImage * picture) = 0;
 	
 	// -- Buddies --
 	virtual const tc_darray &buddies() = 0;
