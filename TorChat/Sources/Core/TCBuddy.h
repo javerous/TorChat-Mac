@@ -47,7 +47,7 @@
 class TCBuddy;
 class TCConfig;
 class TCFileReceive;
-class TCFileSend;
+@class TCFileSend;
 class TCString;
 @class TCImage;
 class TCArray;
@@ -336,7 +336,9 @@ private:
 	
 	// > File session
 	std::map<std::string, TCFileReceive *>	freceive;
-	std::map<std::string, TCFileSend *>		fsend;
+	//std::map<std::string, TCFileSend *>		fsend;
+	
+	NSMutableDictionary	*fsend;
 };
 
 
@@ -355,13 +357,13 @@ public:
 	~TCFileInfo();
 	
 	// -- Property --
-	const std::string & uuid();
+	const std::string uuid();
 	
 	uint64_t			fileSizeCompleted();
 	uint64_t			fileSizeTotal();
 	
-	const std::string & fileName();
-	const std::string & filePath();
+	const std::string fileName();
+	const std::string filePath();
 	
 private:
 	TCFileSend		*sender;

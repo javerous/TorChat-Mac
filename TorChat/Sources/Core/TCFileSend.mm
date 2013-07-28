@@ -20,14 +20,33 @@
  *
  */
 
+#import "TCFileSend.h"
+
+#import "TCTools.h"
 
 
-#include <uuid/uuid.h>
+/*
+** TCFileSend - Private
+*/
+#pragma mark - TCFileSend - Private
 
-#include "TCFileSend.h"
+@interface TCFileSend ()
+{
+	FILE		*_file;
 
-#include "TCTools.h"
+	uint64_t	_validatedOffset;
+}
 
+@end
+
+
+
+/*
+** TCFileSend
+*/
+#pragma mark - TCFileSend
+
+@implementation TCFileSend
 
 
 /*
@@ -35,86 +54,75 @@
 */
 #pragma mark - TCFileSend - Instance
 
-TCFileSend::TCFileSend(const std::string & _filePath)
+- (id)initWithFilePath:(NSString *)filePath
 {
-	// -- Vars --
-	_voffset = 0;
-	_fpath = _filePath;
+	self = [super init];
 	
-	// -- Open the file --
-	_file = fopen(_filePath.c_str(), "r");
-	
-	if (!_file)
-		throw std::string("core_fsend_err_cant_open");
-	
-	
-	// -- Compute the file size --
-	long tl;
-	
-	if (fseek(_file, 0, SEEK_END) < 0)
-		throw std::string("core_fsend_err_cant_seek");
-	
-	if ((tl = ftell(_file)) < 0)
-		throw std::string("core_fsend_err_cant_tell");
-	
-	if (fseek(_file, 0, SEEK_SET) < 0)
-		throw std::string("core_fsend_err_cant_seek");
-	
-	_fsize = (uint64_t)tl;
-	
-	
-	// -- Set the block size --
-	_bsize = 8192;
-	
-	
-	// -- Compute uuid --
-	uuid_t	out;
-	char	cout[40];
-	
-	uuid_generate(out);
-	uuid_unparse(out, cout);
-	
-	_uuid = cout;
-	
-	
-	// -- Compute filename --
-	char	*path = strdup(_filePath.c_str());
-	char	*name = NULL;
-	size_t	i, sz;
-	
-	if (path && path[0] != '\0')
+	if (self)
 	{
-		sz = strlen(path);
-		i = sz - 1;
-	
-		while (1)
-		{
-			if (path[i] == '/')
-			{
-				name = path + i + 1;
-				break;
-			}
-			
-			if (i == 0)
-				break;
-			
-			i--;
-		}
-	}
-	else
-		name = path;
-	
-	_fname = name;
+		// -- Vars --
+		_validatedOffset = 0;
+		_filePath = filePath;
 		
-	free(path);
+		// -- Open the file --
+		_file = fopen([_filePath UTF8String], "r");
+		
+		if (!_file)
+			return nil;
+		//throw std::string("core_fsend_err_cant_open");
+#warning Remove this localized string.
+		
+		// -- Compute the file size --
+		long tl;
+		
+		if (fseek(_file, 0, SEEK_END) < 0)
+			return nil;
+//		throw std::string("core_fsend_err_cant_seek");
+#warning Remove this localized string.
+
+		
+		if ((tl = ftell(_file)) < 0)
+			return nil;
+		//throw std::string("core_fsend_err_cant_tell");
+#warning Remove this localized string.
+
+		if (fseek(_file, 0, SEEK_SET) < 0)
+			return nil;
+		
+			//throw std::string("core_fsend_err_cant_seek");
+#warning Remove this localized string.
+
+		_fileSize = (uint64_t)tl;
+		
+		
+		// -- Set the block size --
+		_blockSize = 8192;
+		
+		
+		// -- Compute uuid --
+		uuid_t	out;
+		char	cout[40];
+		
+		uuid_generate(out);
+		uuid_unparse(out, cout);
+		
+		_uuid = [[NSString alloc] initWithCString:cout encoding:NSASCIIStringEncoding];
+		
+		
+		// -- Filename --
+		_fileName = [_filePath lastPathComponent];
+	}
+	
+	return self;
 }
 
-TCFileSend::~TCFileSend()
+- (void)dealloc
 {
 	TCDebugLog("TCFileSend destructor");
 	
 	if (_file)
 		fclose(_file);
+	
 	_file = NULL;
 }
 
@@ -125,70 +133,76 @@ TCFileSend::~TCFileSend()
 */
 #pragma mark - TCFileSend - Tools
 
-std::string * TCFileSend::readChunk(void *chunk, uint64_t *chunksz, uint64_t *offset)
+- (NSString *)readChunk:(void *)bytes chunkSize:(uint64_t *)chunkSize fileOffset:(uint64_t *)fileOffset
 {
-	if (!chunk)
-		return NULL;
+	if (!bytes)
+		return nil;
 	
-	// Get the current file position
-	long	tl = ftell(_file);
+	// Get the current file position.
+	long tl = ftell(_file);
 	
 	if (tl < 0)
-		return NULL;
+		return nil;
 	
-	// Read a chunk of data
-	size_t	sz = fread(chunk, 1, _bsize, _file);
-
+	// Read a chunk of data.
+	size_t	sz = fread(bytes, 1, _blockSize, _file);
+	
 	if (sz <= 0)
 		return NULL;
 	
-	if (chunksz)
-		*chunksz = sz;
+	if (chunkSize)
+		*chunkSize = sz;
 	
-	if (offset)
-		*offset = (uint64_t)tl;
-
-	// Return the chunk MD5
-	return createMD5(chunk, sz);
+	if (fileOffset)
+		*fileOffset = (uint64_t)tl;
+	
+	// Return the chunk MD5.
+	std::string *md5 = createMD5(bytes, sz);
+	NSString	*md5String = [[NSString alloc] initWithCString:md5->c_str() encoding:NSASCIIStringEncoding];
+	
+	delete md5;
+	
+	return md5String;
 }
 
-void TCFileSend::setNextChunkOffset(uint64_t offset)
+- (void)setNextChunkOffset:(uint64_t)offset
 {
-	if (offset <= _voffset)
+	if (offset <= _validatedOffset)
 		return;
 	
 	// Set the file cursor
 	fseek(_file, (long)offset, SEEK_SET);
 }
 
-
-bool TCFileSend::isFinished()
+- (BOOL)isFinished
 {
-	return ((_voffset + _bsize) >= _fsize);
+	return ((_validatedOffset + _blockSize) >= _fileSize);
+
 }
 
-uint64_t TCFileSend::validatedSize()
+- (uint64_t)validatedSize
 {
-	uint64_t amount = _voffset + _bsize;
+	uint64_t amount = _validatedOffset + _blockSize;
 	
-	if (amount > _fsize)
-		amount = _fsize;
+	if (amount > _fileSize)
+		amount = _fileSize;
 	
 	return amount;
 }
 
-uint64_t TCFileSend::readSize()
+- (uint64_t)readSize
 {
-	long	tl = ftell(_file);
-
+	long tl = ftell(_file);
+	
 	if (tl >= 0)
 		return (uint64_t)tl;
 	else
 		return 0;
 }
 
-void TCFileSend::setValidatedOffset(uint64_t offset)
+- (void)setValidatedOffset:(uint64_t)offset
 {
-	_voffset = offset;
+	_validatedOffset = offset;
 }
 
+@end
