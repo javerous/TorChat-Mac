@@ -20,16 +20,11 @@
  *
  */
 
+#import "TCSocket.h"
 
-
-#include <errno.h>
-#include <stdlib.h>
-
-#include "TCSocket.h"
-
-#include "TCTools.h"
-#include "TCBuffer.h"
-#include "TCInfo.h"
+#import "TCBuffer.h"
+#import "TCTools.h"
+#import "TCInfo.h"
 
 
 
@@ -38,221 +33,213 @@
 */
 #pragma mark - TCSocketOperation
 
-// == Class ==
-class TCSocketOperation
-{
-public:
-	// -- Constructor & Destructor --
-	TCSocketOperation(tcsocket_operation op, size_t size, int tag):
-		_op(op),
-		_size(size),
-		_tag(tag),
-		_ctx(NULL)
-	{ };
-	
-	~TCSocketOperation()
-	{
-		if (_op == tcsocket_op_line)
-		{
-			if (!_ctx)
-				return;
-			
-			std::vector<std::string *>	*lines = static_cast<std::vector<std::string *> *>(_ctx);
-			size_t						i, cnt = lines->size();
-			
-			for (i = 0; i < cnt; i++)
-				delete lines->at(i);
-			
-			delete lines;
-		}
-	}
-	
-	// -- Property --
-	tcsocket_operation	operation() const { return _op; };
-	size_t				size() const { return _size; };
-	int					tag() const { return _tag; };
-	void				*context() const { return _ctx; }
-	
-	void				setSize(size_t size) { _size = size; };
-	void				setContext(void *ctx) { _ctx = ctx; };
-	
-private:
-	tcsocket_operation	_op;
-	size_t				_size;
-	int					_tag;
-	void				*_ctx;
-};
+@interface TCSocketOperation : NSObject
+
+@property (assign, nonatomic) tcsocket_operation	operation;
+@property (assign, nonatomic) NSUInteger			size;
+@property (assign, nonatomic) NSUInteger			tag;
+@property (strong, nonatomic) id					context;
+
+@end
 
 
 
 /*
-** TCSocket - Constructor & Destructor
+** TCSocket - Private
 */
-#pragma mark - TCSocket - Constructor & Destructor
+#pragma mark - TCSocket - Private
 
-TCSocket::TCSocket(int sock)
+@interface TCSocket ()
 {
-	// -- Set vars --
-	_sock = sock;
-	writeActive = false;
-	goperation = NULL;
+	// -- Vars --
+	// > Managed socket
+	int					_sock;
 	
-	delObject = NULL;
-	delQueue = 0;
+	// > Queue & Sources
+	dispatch_queue_t	_socketQueue;
 	
-	// -- Configure socket as asynchrone --
-	doAsyncSocket(_sock);
+	dispatch_source_t	_tcpReader;
+	dispatch_source_t	_tcpWriter;
 	
-	// -- Create Buffer --
-	readBuffer = [[TCBuffer alloc] init];
-	writeBuffer = [[TCBuffer alloc] init];
+	// > Buffer
+	TCBuffer			*_readBuffer;
+	TCBuffer			*_writeBuffer;
+	bool				_writeActive;
 	
-	// -- Create Queue --
-	socketQueue = dispatch_queue_create("com.torchat.core.socket.main", DISPATCH_QUEUE_SERIAL);
+	// > Delegate
+	dispatch_queue_t	_delegateQueue;
+	__weak id <TCSocketDelegate> _delegate;
+	
+	// > Operations
+	TCSocketOperation	*_goperation;
+	NSMutableArray		*_operations;
+}
 
-	// -- Build Read / Write Source --
-	tcpReader = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, (uintptr_t)_sock, 0, socketQueue);
-	tcpWriter = dispatch_source_create(DISPATCH_SOURCE_TYPE_WRITE, (uintptr_t)_sock, 0, socketQueue);
+// -- Errors --
+- (void)callError:(tcsocket_error) error info:(NSString *)info fatal:(BOOL)fatal;
+
+// -- Data Input --
+- (void)_dataAvailable;
+- (BOOL)_runOperation:(TCSocketOperation *)operation;
+
+@end
+
+
+
+/*
+** TCSocket
+*/
+#pragma mark - TCSocket
+
+@implementation TCSocket
+
+
+/*
+** TCSocket - Instance
+*/
+#pragma mark - TCSocket - Instance
+
+- (id)initWithSocket:(int)descriptor
+{
+	self = [super init];
 	
-	// Set the read handler
-	dispatch_source_set_event_handler_cpp(this, tcpReader, ^{
+	if (self)
+	{
+		// -- Set vars --
+		_sock = descriptor;
+
+		// -- Configure socket as asynchrone --
+		doAsyncSocket(_sock);
 		
-		// Build a buffer to read available data
-		size_t		estimate = dispatch_source_get_data(tcpReader);
-		void		*buffer = malloc(estimate);
-		ssize_t		sz;
+		// -- Create Buffer --
+		_readBuffer = [[TCBuffer alloc] init];
+		_writeBuffer = [[TCBuffer alloc] init];
 		
-		// Read data
-		sz = read(sock, buffer, estimate);
+		// -- Create Queue --
+		_socketQueue = dispatch_queue_create("com.torchat.core.socket.main", DISPATCH_QUEUE_SERIAL);
+		_delegateQueue = dispatch_queue_create("com.torchat.core.socket.delegate", DISPATCH_QUEUE_SERIAL);
+
+		// -- Build Read / Write Source --
+		_tcpReader = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, (uintptr_t)_sock, 0, _socketQueue);
+		_tcpWriter = dispatch_source_create(DISPATCH_SOURCE_TYPE_WRITE, (uintptr_t)_sock, 0, _socketQueue);
 		
-		// Check read result
-		if (sz < 0)
-		{
-			_callError(tcsocket_read_error, "core_socket_read_error", true);
-			free(buffer);
-		}
-		else if (sz == 0 && errno != EAGAIN)
-		{
-			_callError(tcsocket_read_closed, "core_socket_read_closed", true);
-			free(buffer);
-		}
-		else if (sz > 0)
-		{			
-			if ([readBuffer size] + (size_t)sz > 50 * 1024 * 1024)
-			{
-				_callError(tcsocket_read_full, "core_socker_read_full", true);
-			}
-			else
-			{
-				// Append data to the buffer
-				[readBuffer appendBytes:buffer ofSize:(NSUInteger)sz copy:NO];
-				
-				// Manage datas
-				_dataAvailable();
-			}
-		}
-	});
-	
-	// Set the read handler
-	dispatch_source_set_event_handler_cpp(this, tcpWriter, ^{
-				
-		// If we are no more data, deactivate the write event, else write them
-		if ([writeBuffer size] == 0)
-		{
-			if (writeActive)
-			{
-				writeActive = false;
-				dispatch_suspend(tcpWriter);
-			}
-		}
-		else
-		{
-			char		buffer[4096];
-			NSUInteger	size = [writeBuffer readBytes:buffer ofSize:sizeof(buffer)];
+		// Set the read handler
+		dispatch_source_set_event_handler(_tcpReader, ^{
+			
+			// Build a buffer to read available data
+			size_t		estimate = dispatch_source_get_data(_tcpReader);
+			void		*buffer = malloc(estimate);
 			ssize_t		sz;
 			
-			// Write data
-			sz = write(sock, buffer, size);
+			// Read data
+			sz = read(_sock, buffer, estimate);
 			
-			// Check write result
+			// Check read result
 			if (sz < 0)
 			{
-				_callError(tcsocket_write_error, "core_socket_write_error", true);
+				[self callError:tcsocket_read_error info:@"core_socket_read_error" fatal:YES];
+				free(buffer);
 			}
 			else if (sz == 0 && errno != EAGAIN)
 			{
-				_callError(tcsocket_write_closed, "core_socket_write_closed", true);
+				[self callError:tcsocket_read_closed info:@"core_socket_read_closed" fatal:YES];
+				free(buffer);
 			}
 			else if (sz > 0)
 			{
-				// Reinject remaining data in the buffer
-				if (sz < size)
-					[writeBuffer pushBytes:buffer + sz ofSize:(size - (NSUInteger)sz) copy:YES];
-				
-				// If we have space, signal it to fill if necessary
-				if ([writeBuffer size] < 1024 && delQueue && delObject)
+				if ([_readBuffer size] + (size_t)sz > 50 * 1024 * 1024)
 				{
-					TCSocketDelegate *obj = delObject;
+					[self callError:tcsocket_read_full info:@"core_socker_read_full" fatal:YES];
+				}
+				else
+				{
+					// Append data to the buffer
+					[_readBuffer appendBytes:buffer ofSize:(NSUInteger)sz copy:NO];
 					
-					obj->retain();
-					dispatch_async_cpp(this, delQueue, ^{
-						
-						obj->socketRunPendingWrite(this);
-						
-						// Clean
-						obj->release();
-					});
+					// Manage datas
+					[self _dataAvailable];
 				}
 			}
-		}
-	});
-	
-	// -- Set Cancel Handler --
-	__block int count = 2;
-	
-	dispatch_block_t bcancel = ^{
+		});
 		
-		count--;
+		// Set the read handler
+		dispatch_source_set_event_handler(_tcpWriter, ^{
+			
+			// If we are no more data, deactivate the write event, else write them
+			if ([_writeBuffer size] == 0)
+			{
+				if (_writeActive)
+				{
+					_writeActive = false;
+					dispatch_suspend(_tcpWriter);
+				}
+			}
+			else
+			{
+				char		buffer[4096];
+				NSUInteger	size = [_writeBuffer readBytes:buffer ofSize:sizeof(buffer)];
+				ssize_t		sz;
+				
+				// Write data
+				sz = write(_sock, buffer, size);
+				
+				// Check write result
+				if (sz < 0)
+				{
+					[self callError:tcsocket_write_error info:@"core_socket_write_error" fatal:YES];
+				}
+				else if (sz == 0 && errno != EAGAIN)
+				{
+					[self callError:tcsocket_write_closed info:@"core_socket_write_closed" fatal:YES];
+				}
+				else if (sz > 0)
+				{
+					// Reinject remaining data in the buffer
+					if (sz < size)
+						[_writeBuffer pushBytes:buffer + sz ofSize:(size - (NSUInteger)sz) copy:YES];
+					
+					// If we have space, signal it to fill if necessary
+					id <TCSocketDelegate> delegate = _delegate;
+					
+					if ([_writeBuffer size] < 1024 && _delegateQueue && delegate)
+					{
+						dispatch_async(_delegateQueue, ^{
+							[delegate socketRunPendingWrite:self];
+						});
+					}
+				}
+			}
+		});
 		
-		if (count <= 0 && _sock != -1)
-		{
-			// Close the socket
-			close(_sock);
-			_sock = -1;
-		}
-	};
+		// -- Set Cancel Handler --
+		__block int count = 2;
+		
+		dispatch_block_t bcancel = ^{
+			
+			count--;
+			
+			if (count <= 0 && _sock != -1)
+			{
+				// Close the socket
+				close(_sock);
+				_sock = -1;
+			}
+		};
+		
+		dispatch_source_set_cancel_handler(_tcpReader, bcancel);
+		dispatch_source_set_cancel_handler(_tcpWriter, bcancel);
+		
+		// -- Resume Read Source --
+		dispatch_resume(_tcpReader);
+	}
 	
-	dispatch_source_set_cancel_handler_cpp(this, tcpReader, bcancel);
-	dispatch_source_set_cancel_handler_cpp(this, tcpWriter, bcancel);
-	
-	// -- Resume Read Source --
-	dispatch_resume(tcpReader);
+	return self;
 }
 
-TCSocket::~TCSocket()
+- (void)dealloc
 {
 	TCDebugLog("TCSocket Destructor");
-		
-	// Release buffer
-	readBuffer = nil;
-	writeBuffer = nil;
-	
-	if (delObject)
-		delObject->release();
-	
-	// Clean global operation
-	if (goperation)
-		delete goperation;
-	goperation = NULL;
-	
-	// Clean global operations
-	size_t i, cnt = operations.size();
-	
-	for (i = 0; i < cnt; i++)
-		delete operations[i];
-	operations.clear();
 }
-
 
 
 /*
@@ -260,27 +247,28 @@ TCSocket::~TCSocket()
 */
 #pragma mark - TCSocket - Delegate
 
-void TCSocket::setDelegate(dispatch_queue_t queue, TCSocketDelegate *delegate)
+- (void)setDelegate:(id<TCSocketDelegate>)delegate
 {
-	// Retain Delegate
-	if (delegate)
-		delegate->retain();
-	
-	// Set items in socket queue
-	dispatch_async_cpp(this, socketQueue, ^{
+	dispatch_async(_socketQueue, ^{
 		
-		// Set delegate queue
-		delQueue = queue;
-		
-		// Set delegate object
-		if (delObject)
-			delObject->release();
-		delObject = delegate;
-		
+		// Hold delegate.
+		_delegate = delegate;
+
 		// Check if some data can send to the new delegate
-		if ([readBuffer size] > 0)
-			_dataAvailable();
+		if ([_readBuffer size] > 0)
+			[self _dataAvailable];
 	});
+}
+
+- (id <TCSocketDelegate>)delegate
+{
+	__block id <TCSocketDelegate> delegate;
+	
+	dispatch_sync(_socketQueue, ^{
+		delegate = _delegate;
+	});
+	
+	return delegate;
 }
 
 
@@ -290,51 +278,54 @@ void TCSocket::setDelegate(dispatch_queue_t queue, TCSocketDelegate *delegate)
 */
 #pragma mark - TCSocket - Sending
 
-bool TCSocket::sendData(void *data, size_t size, bool copy)
+- (BOOL)sendBytes:(const void *)bytes ofSize:(NSUInteger)size copy:(BOOL)copy
 {
-	if (!data || size == 0)
-		return false;
+	if (!bytes || size == 0)
+		return NO;
 	
 	void *cpy = NULL;
 	
-	// Copy data if needed
+	// Copy data if needed.
 	if (copy)
 	{
 		cpy = malloc(size);
 		
-		memcpy(cpy, data, size);
+		memcpy(cpy, bytes, size);
 	}
 	else
-		cpy = data;
-
-	// Put data in send buffer, and activate sending if needed
-	dispatch_async_cpp(this, socketQueue, ^{
+		cpy = (void *)bytes;
+	
+	// Put data in send buffer, and activate sending if needed.
+	dispatch_async(_socketQueue, ^{
 		
 		// Check that we can alway write
-		if (!tcpWriter)
+		if (!_tcpWriter)
 		{
 			free(cpy);
 			return;
 		}
 		
 		// Append data in write buffer
-		[writeBuffer appendBytes:cpy ofSize:size copy:NO];
+		[_writeBuffer appendBytes:cpy ofSize:size copy:NO];
 		
 		// Activate write if needed
-		if ([writeBuffer size] > 0 && !writeActive)
+		if ([_writeBuffer size] > 0 && !_writeActive)
 		{
-			writeActive = true;
+			_writeActive = YES;
 			
-			dispatch_resume(tcpWriter);
+			dispatch_resume(_tcpWriter);
 		}
 	});
 	
 	return true;
 }
 
-bool TCSocket::sendData(const TCBuffer &buffer)
+- (BOOL)sendBuffer:(TCBuffer *)buffer
 {
-	return false;
+	if ([buffer size] == 0)
+		return NO;
+	
+	return NO;
 }
 
 
@@ -344,73 +335,77 @@ bool TCSocket::sendData(const TCBuffer &buffer)
 */
 #pragma mark - TCSocket - Operations
 
-void TCSocket::setGlobalOperation(tcsocket_operation op, size_t psize, int tag)
+- (void)setGlobalOperation:(tcsocket_operation)operation withSize:(NSUInteger)size andTag:(NSUInteger)tag
 {
-	dispatch_async_cpp(this, socketQueue, ^{
+	dispatch_async(_socketQueue, ^{
 		
-		if (goperation)
-			delete goperation;
+		// Create global operation.
+		_goperation = [[TCSocketOperation alloc] init];
 		
-		goperation = new TCSocketOperation(op, psize, tag);
+		_goperation.operation = operation;
+		_goperation.size = size;
+		_goperation.tag = tag;
 		
-		// Check if operations can be executed
-		if ([readBuffer size] > 0)
-			_dataAvailable();
+		// Check if operations can be executed.
+		if ([_readBuffer size] > 0)
+			[self _dataAvailable];
 	});
 }
 
-void TCSocket::removeGlobalOperation()
+- (void)removeGlobalOperation
 {
-	dispatch_async_cpp(this, socketQueue, ^{
-		
-		if (goperation)
-			delete goperation;
-		
-		goperation = NULL;
+	dispatch_async(_socketQueue, ^{
+		_goperation = nil;
 	});
 }
 
-void TCSocket::scheduleOperation(tcsocket_operation op, size_t psize, int tag)
+- (void)scheduleOperation:(tcsocket_operation)operation withSize:(NSUInteger)size andTag:(NSUInteger)tag
 {
-	dispatch_async_cpp(this, socketQueue, ^{
+	dispatch_async(_socketQueue, ^{
 		
-		// Add the operation
-		operations.push_back(new TCSocketOperation(op, psize, tag));
+		// Create global operation.
+		TCSocketOperation *op = [[TCSocketOperation alloc] init];
 		
-		// Check if operations can be executed
-		if ([readBuffer size] > 0)
-			_dataAvailable();
+		op.operation = operation;
+		op.size = size;
+		op.tag = tag;
+		
+		// Add the operation.
+		[_operations addObject:op];
+		
+		// Check if operations can be executed.
+		if ([_readBuffer size] > 0)
+			[self _dataAvailable];
 	});
 }
 
 
 
 /*
-** TCSocket - Running
+** TCSocket - Life
 */
-#pragma mark - TCSocket - Running
+#pragma mark - TCSocket - Life
 
-void TCSocket::stop()
+- (void)stop
 {
-	dispatch_async_cpp(this, socketQueue, ^{
+	dispatch_async(_socketQueue, ^{
 		
-		if (tcpWriter)
+		if (_tcpWriter)
 		{
-			// Resume the source if suspended
-			if (!writeActive)
-				dispatch_resume(tcpWriter);
+			// Resume the source if suspended.
+			if (!_writeActive)
+				dispatch_resume(_tcpWriter);
 			
 			// Cancel & release it
-			dispatch_source_cancel(tcpWriter);
-			tcpWriter = nil;
+			dispatch_source_cancel(_tcpWriter);
+			_tcpWriter = nil;
 		}
-
-	
-		if (tcpReader)
+		
+		if (_tcpReader)
 		{
-			// Cancel & release the source
-			dispatch_source_cancel(tcpReader);
-			tcpReader = nil;
+			// Cancel & release the source.
+			dispatch_source_cancel(_tcpReader);
+			_tcpReader = nil;
 		}
 	});
 }
@@ -422,29 +417,26 @@ void TCSocket::stop()
 */
 #pragma mark - TCSocket - Errors
 
-void TCSocket::_callError(tcsocket_error error, const std::string &info, bool fatal)
+- (void)callError:(tcsocket_error)error info:(NSString *)info fatal:(BOOL)fatal
 {
-	// If fatal, just stop
+	// If fatal, just stop.
 	if (fatal)
-		stop();
+		[self stop];
 	
 	// Check delegate
-	if (!delObject || !delQueue)
+	id <TCSocketDelegate> delegate = _delegate;
+	
+	if (!delegate)
 		return;
 	
-	TCSocketDelegate	*obj = delObject;
-	TCInfo				*err = new TCInfo(tcinfo_error, error, info);
+	TCInfo *err = new TCInfo(tcinfo_error, error, [info UTF8String]);
 	
-	// Retain delegate
-	obj->retain();
-	
-	// Dispatch on the delegate queue
-	dispatch_async_cpp(this, delQueue, ^{
+	// Dispatch on the delegate queue.
+	dispatch_async(_delegateQueue, ^{
 		
-		obj->socketError(this, err);
+		[delegate socket:self error:err];
 		
-		// Release
-		obj->release();
+		// Release.
 		err->release();
 	});
 }
@@ -456,154 +448,153 @@ void TCSocket::_callError(tcsocket_error error, const std::string &info, bool fa
 */
 #pragma mark - TCSocket - Data Input
 
-// == Manage available data ==
-void TCSocket::_dataAvailable()
+- (void)_dataAvailable
 {
-	// Check if we have a global operation, else execute scheduled operation
-	if (goperation)
+	// > socketQueue <
+	
+	// Check if we have a global operation, else execute scheduled operation.
+	if (_goperation)
 	{
 		while (1)
 		{
-			if (!_runOperation(goperation))
+			if (![self _runOperation:_goperation])
 				break;
 		}
 	}
 	else
 	{
-		std::vector<TCSocketOperation *>::iterator it = operations.begin();
-
-		while (it != operations.end())
+		NSMutableIndexSet	*indexes = [[NSMutableIndexSet alloc] init];
+		NSUInteger			i, count = [_operations count];
+		
+		for (i = 0; i < count; i++)
 		{
-			TCSocketOperation *op = *it;
+			TCSocketOperation *op = _operations[i];
 			
-			if (_runOperation(op))
-			{
-				delete op;
-				
-				it = operations.erase(it);
-			}
+			if ([self _runOperation:op])
+				[indexes addIndex:i];
 			else
 				break;
 		}
+		
+		[_operations removeObjectsAtIndexes:indexes];
 	}
 }
 
-// == Run an operation on available data ==
-bool TCSocket::_runOperation(TCSocketOperation *op)
+- (BOOL)_runOperation:(TCSocketOperation *)operation
 {
-	// Check delegate
-	if (!delObject || !delQueue)
+	// > socketQueue <
+	
+	if (!operation)
+		return NO;
+	
+	// Check delegate.
+	id <TCSocketDelegate> delegate = _delegate;
+	
+	if (!delegate)
+		return NO;
+	
+	// Nothing to read, nothing to do.
+	if ([_readBuffer size] == 0)
 		return false;
 	
-	// Nothing to read, nothing to do
-	if ([readBuffer size] == 0)
-		return false;
-	
-	// Execute the  operation
-	switch (op->operation())
+	// Execute the  operation.
+	switch (operation.operation)
 	{
-		// Operation is to read a chunk of raw data
+		// Operation is to read a chunk of raw data.
 		case tcsocket_op_data:
 		{
-			// Get the amount to read
-			size_t size = op->size();
+			// Get the amount to read.
+			NSUInteger size = operation.size;
 			
 			if (size == 0)
-				size = [readBuffer size];
+				size = [_readBuffer size];
 			
-			if (size > [readBuffer size])
-				return false;
+			if (size > [_readBuffer size])
+				return NO;
 			
-			void	*buffer = malloc(size);
-			int		tag = op->tag();
+			void		*buffer = malloc(size);
+			NSUInteger	tag = operation.tag;
+			NSData		*data;
 			
-			// Read the chunk of data
-			size = [readBuffer readBytes:buffer ofSize:size];
+			// Read the chunk of data.
+			size = [_readBuffer readBytes:buffer ofSize:size];
+			
+			data = [[NSData alloc] initWithBytesNoCopy:buffer length:size freeWhenDone:YES];
 			
 			// -- Give to delegate --
-			TCSocketDelegate *obj = delObject;
-			
-			// Retain delegate
-			obj->retain();
-			
-			// Give the operation result
-			dispatch_async_cpp(this, delQueue, ^{
-				obj->socketOperationAvailable(this, tcsocket_op_data, tag, buffer, size);
-				
-				// Release delegate
-				obj->release();
+			dispatch_async(_delegateQueue, ^{
+				[delegate socket:self operationAvailable:tcsocket_op_data tag:tag content:data];
 			});
 			
-			return true;
+			return YES;
 		}
 			
-		// Operation is to read lines
+		// Operation is to read lines.
 		case tcsocket_op_line:
 		{
-			size_t						max = op->size();
-			std::vector<std::string *>	*lines = NULL;
-			int							tag = op->tag();
-			size_t						cnt;
+			NSUInteger		max = operation.size;
+			NSMutableArray	*lines = NULL;
+			NSUInteger		tag = operation.tag;
 			
 			// Build lines vector
-			if (op->context())
-				lines = static_cast<std::vector<std::string *> *> (op->context());
+			if (operation.context)
+				lines = operation.context;
 			else
 			{
-				lines = new std::vector<std::string *>;
+				lines = [[NSMutableArray alloc] init];
 				
-				op->setContext(lines);
+				operation.context = lines;
 			}
 			
 			// Parse lines
 			while (1)
 			{
-				// Check that we have the amount of line needed
-				if (max > 0 && lines->size() >= max)
+				// Check that we have the amount of line needed.
+				if (max > 0 && [lines count] >= max)
 					break;
 				
 				// Get line
-				NSData		*dline = [readBuffer dataUpToCStr:"\n" includeSearch:NO];
-				std::string *line = new std::string((char *)[dline bytes], (size_t)[dline length]);
+				NSData *line = [_readBuffer dataUpToCStr:"\n" includeSearch:NO];
 				
 				if (!line)
 					break;
 				
 				// Add the line
-				lines->push_back(line);
+				[lines addObject:line];
 			}
 			
 			// Check that we have lines
-			if (lines->size() == 0)
-				return false;
+			if ([lines count] == 0)
+				return NO;
 			
-			// Check that we have enought lines
-			if (max > 0 && lines->size() < max)
-				return false;
+			// Check that we have enought lines.
+			if (max > 0 && [lines count] < max)
+				return NO;
 			
-			// Clean context (the delegate is responsive to deallocate lines)
-			op->setContext(NULL);
-			
-			cnt = lines->size();
-
+			// Clean context (the delegate is responsive to deallocate lines).
+			operation.context = nil;
+						
 			// -- Give to delegate --
-			TCSocketDelegate *obj = delObject;
-			
-			// Retain delegate
-			obj->retain();
-				
-			// Give the operation result
-			dispatch_async_cpp(this, delQueue, ^{
-				obj->socketOperationAvailable(this, tcsocket_op_line, tag, lines, cnt);
-	
-				// Release delegate and this
-				obj->release();
+			dispatch_async(_delegateQueue, ^{
+				[delegate socket:self operationAvailable:tcsocket_op_line tag:tag content:lines];
 			});
-
-			return true;
+			
+			return YES;
 		}
 	}
 	
-	return false;
+	return NO;
 }
 
+@end
+
+
+
+/*
+** TCSocketOperation
+*/
+#pragma mark - TCSocketOperation
+
+@implementation TCSocketOperation
+
+@end
