@@ -104,7 +104,6 @@
 		E8D5E26214DAA0B400973297 /* TCSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = E8D5E26114DAA0B400973297 /* TCSplitView.m */; };
 		E8D5E26514DACFA200973297 /* ChatView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E8D5E26314DACFA200973297 /* ChatView.xib */; };
 		E8D5E26B14DAD3E200973297 /* TCChatView.m in Sources */ = {isa = PBXBuildFile; fileRef = E8D5E26A14DAD3E200973297 /* TCChatView.m */; };
-		E8EBCA7011FF2C6500E3E878 /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E8EBCA6F11FF2C6500E3E878 /* libcrypto.dylib */; };
 		E8F15A7A130425A4000593E1 /* TCKeyedText.m in Sources */ = {isa = PBXBuildFile; fileRef = E8F15A79130425A4000593E1 /* TCKeyedText.m */; };
 		E8F16D3411FF7E9700DFA05F /* TCParser.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8F16D3211FF7E9700DFA05F /* TCParser.mm */; };
 		E8FAF02E14DE00D900E120C4 /* TCChatCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E8FAF02D14DE00D900E120C4 /* TCChatCell.m */; };
@@ -152,7 +151,6 @@
 		E837DADC11E7739D004BC524 /* TCController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCController.h; sourceTree = "<group>"; };
 		E8455D3B17A425F00046307B /* TCValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCValue.h; path = Cocoa/TCValue.h; sourceTree = "<group>"; };
 		E8455D3C17A425F00046307B /* TCValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCValue.m; path = Cocoa/TCValue.m; sourceTree = "<group>"; };
-		E8455D3E17A427920046307B /* libcommonCrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcommonCrypto.dylib; path = usr/lib/system/libcommonCrypto.dylib; sourceTree = SDKROOT; };
 		E8455D4417A438660046307B /* NSData+TCTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+TCTools.h"; sourceTree = "<group>"; };
 		E8455D4517A438660046307B /* NSData+TCTools.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+TCTools.m"; sourceTree = "<group>"; };
 		E849F93611F5E8F300193F06 /* engrenage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = engrenage.png; sourceTree = "<group>"; };
@@ -257,7 +255,6 @@
 		E8D5E26414DACFA200973297 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = TorChat/en.lproj/ChatView.xib; sourceTree = "<group>"; };
 		E8D5E26914DAD3E200973297 /* TCChatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatView.h; path = Cocoa/TCChatView.h; sourceTree = "<group>"; };
 		E8D5E26A14DAD3E200973297 /* TCChatView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCChatView.m; path = Cocoa/TCChatView.m; sourceTree = "<group>"; };
-		E8EBCA6F11FF2C6500E3E878 /* libcrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.dylib; path = /usr/lib/libcrypto.dylib; sourceTree = "<absolute>"; };
 		E8F15A78130425A4000593E1 /* TCKeyedText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCKeyedText.h; path = Cocoa/TCKeyedText.h; sourceTree = "<group>"; };
 		E8F15A79130425A4000593E1 /* TCKeyedText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCKeyedText.m; path = Cocoa/TCKeyedText.m; sourceTree = "<group>"; };
 		E8F16D3211FF7E9700DFA05F /* TCParser.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TCParser.mm; sourceTree = "<group>"; };
@@ -273,7 +270,6 @@
 			files = (
 				E80414CB17A57722008220C9 /* Security.framework in Frameworks */,
 				E81FD9F811E7259B000614D5 /* Cocoa.framework in Frameworks */,
-				E8EBCA7011FF2C6500E3E878 /* libcrypto.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -335,8 +331,6 @@
 		E81FD9EF11E7259B000614D5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E8455D3E17A427920046307B /* libcommonCrypto.dylib */,
-				E8EBCA6F11FF2C6500E3E878 /* libcrypto.dylib */,
 				E80414CA17A57722008220C9 /* Security.framework */,
 				E81FD9F711E7259B000614D5 /* Cocoa.framework */,
 			);

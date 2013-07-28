@@ -26,10 +26,6 @@
 #include <stdlib.h>
 #include <fcntl.h>
 
-#include <openssl/evp.h>
-#include <openssl/bio.h>
-#include <openssl/buffer.h>
-
 #include "TCTools.h"
 
 
