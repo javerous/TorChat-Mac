@@ -147,6 +147,7 @@ std::string * createReplaceAll(const std::string &s, const std::string &o, const
 // == Build the MD5 of a chunk of data ==
 std::string * createMD5(const void *data, size_t size)
 {
+#warning XXX check this code.
 	CC_MD5_CTX			state;
 	unsigned char	digest[CC_MD5_DIGEST_LENGTH];
 	int				di = 0;
@@ -182,6 +183,8 @@ std::string * createMD5(const void *data, size_t size)
 // == Encode to base 64 a chunk of data ==
 std::string * createEncodeBase64(const void *data, size_t size)
 {
+#warning XXX check this code.
+
 	if (!data || size == 0)
 		return NULL;
 	
@@ -210,6 +213,8 @@ std::string * createEncodeBase64(const void *data, size_t size)
 // == Decode from base 64 a chunk of data ==
 bool createDecodeBase64(const std::string &data, size_t *osize, void **odata)
 {
+#warning XXX check this code.
+
 	if (!odata || !osize)
 		return false;
 	
