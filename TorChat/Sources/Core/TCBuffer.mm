@@ -21,15 +21,7 @@
  */
 
 
-
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-
 #include "TCBuffer.h"
-
-#include "TCTools.h"
-
 
 
 /*
@@ -48,6 +40,8 @@ struct _tc_item
 	tc_item *prev;
 };
 
+typedef struct _tc_items tc_items;
+
 struct _tc_items
 {
 	tc_item	*first;
@@ -59,39 +53,75 @@ struct _tc_items
 
 
 /*
+** Prototypes
+*/
+#pragma mark - Prototypes
+
+size_t memsearch(const uint8_t *token, size_t token_sz, const uint8_t *data, size_t data_sz);
+
+
+
+/*
+** TCBuffer - Private
+*/
+#pragma mark - TCBuffer - Private
+
+@interface TCBuffer ()
+{
+	tc_items *_items;
+}
+
+@end
+
+
+
+/*
+** TCBuffer
+*/
+#pragma mark - TCBuffer
+
+@implementation TCBuffer
+
+
+/*
 ** TCBuffer - Instance
 */
 #pragma mark - TCBuffer - Instance
 
-TCBuffer::TCBuffer()
+- (id)init
 {
-	items = static_cast<tc_items *>(malloc(sizeof(tc_items)));
+    self = [super init];
 	
-	items->first = NULL;
-	items->last = NULL;
-	items->size = 0;
+    if (self)
+	{
+		_items = (tc_items *)(malloc(sizeof(tc_items)));
+		
+		_items->first = NULL;
+		_items->last = NULL;
+		_items->size = 0;
+    }
+    return self;
 }
 
-TCBuffer::~TCBuffer()
+- (void)dealloc
 {
 	TCDebugLog("TCBuffer Destructor");
 	
-	clean();
+	[self clean];
 	
-	free(items);
+	free(_items);
 }
 
 
 
 /*
-** TCBuffer - Data
+** TCBuffer - Bytes
 */
-#pragma mark - TCBuffer - Data
+#pragma mark - TCBuffer - Bytes
 
-// == Insert data at the beggin ==
-void TCBuffer::pushData(const void *data, size_t size, bool copy)
+- (void)pushBytes:(const void *)bytes ofSize:(NSUInteger)size copy:(BOOL)copy
 {
-	if (size == 0 || !data)
+	if (size == 0 || !bytes)
 		return;
 	
 	tc_item	*item = static_cast<tc_item *>(malloc(sizeof(tc_item)));
@@ -101,10 +131,10 @@ void TCBuffer::pushData(const void *data, size_t size, bool copy)
 	{
 		item->data = malloc(size);
 		
-		memcpy(item->data, data, size);
+		memcpy(item->data, bytes, size);
 	}
 	else
-		item->data = (void *)data;
+		item->data = (void *)bytes;
 	
 	// Set others
 	item->size = size;
@@ -112,24 +142,23 @@ void TCBuffer::pushData(const void *data, size_t size, bool copy)
 	item->next = NULL;
 	
 	// Insert it
-	if (items->first)
+	if (_items->first)
 	{
-		item->next = items->first;
-		items->first->prev = item;
+		item->next = _items->first;
+		_items->first->prev = item;
 	}
-	items->first = item;
+	_items->first = item;
 	
-	if (!items->last)
-		items->last = item;
+	if (!_items->last)
+		_items->last = item;
 	
 	// Update global size
-	items->size += size;
+	_items->size += size;
 }
 
-// == Append data at the end ==
-void TCBuffer::appendData(const void *data, size_t size, bool copy)
+- (void)appendBytes:(const void *)bytes ofSize:(NSUInteger)size copy:(BOOL)copy
 {
-	if (size == 0 || !data)
+	if (size == 0 || !bytes)
 		return;
 	
 	tc_item	*item = static_cast<tc_item *>(malloc(sizeof(tc_item)));
@@ -139,10 +168,10 @@ void TCBuffer::appendData(const void *data, size_t size, bool copy)
 	{
 		item->data = malloc(size);
 		
-		memcpy(item->data, data, size);
+		memcpy(item->data, bytes, size);
 	}
 	else
-		item->data = (void *)data;
+		item->data = (void *)bytes;
 	
 	// Set others
 	item->size = size;
@@ -150,31 +179,30 @@ void TCBuffer::appendData(const void *data, size_t size, bool copy)
 	item->next = NULL;
 	
 	// Insert it
-	item->prev = items->last;
+	item->prev = _items->last;
 	
-	if (items->last)
-		items->last->next = item;
+	if (_items->last)
+		_items->last->next = item;
 	
-	items->last = item;
+	_items->last = item;
 	
-	if (!items->first)
-		items->first = item;
+	if (!_items->first)
+		_items->first = item;
 	
 	// Update global size
-	items->size += size;
+	_items->size += size;
 }
 
-// == Pop data from the buffer ==
-size_t TCBuffer::readData(void *buffer, size_t size)
-{	
-	if (!buffer || !size)
+- (NSUInteger)readBytes:(void *)bytes ofSize:(NSUInteger)size
+{
+	if (!bytes || !size)
 		return 0;
 	
 	size_t	readden = 0;
-	tc_item	*item  = items->first;
+	tc_item	*item  = _items->first;
 	
-	if (size > items->size)
-		size = items->size;
+	if (size > _items->size)
+		size = _items->size;
 	
 	while (size > 0 && item)
 	{
@@ -187,28 +215,28 @@ size_t TCBuffer::readData(void *buffer, size_t size)
 			part = item->size;
 		
 		// Write them
-		memcpy(buffer, item->data, part);
+		memcpy(bytes, item->data, part);
 		
 		// Update status
-		buffer = (char *)buffer + part;
+		bytes = (char *)bytes + part;
 		size -= part;
 		readden += part;
 		
 		tc_item	*tmp = item;
-			
+		
 		// Go on next
 		item = item->next;
-			
+		
 		// Remove item
-		items->first = tmp->next;
-		if (!items->first)
-			items->last = NULL;
-			
+		_items->first = tmp->next;
+		if (!_items->first)
+			_items->last = NULL;
+		
 		if (tmp->next)
 			tmp->next->prev = NULL;
 		
 		// The block is removed, remove its size
-		items->size -= tmp->size;
+		_items->size -= tmp->size;
 		
 		// Reinsert remening data
 		if (part < tmp->size)
@@ -218,9 +246,9 @@ size_t TCBuffer::readData(void *buffer, size_t size)
 			
 			memcpy(buff, (char *)tmp->data + part, rest);
 			
-			pushData(buff, rest, false);
+			[self pushBytes:buff ofSize:rest copy:NO];
 		}
-
+		
 		// Clean item
 		free(tmp->data);
 		free(tmp);
@@ -236,25 +264,26 @@ size_t TCBuffer::readData(void *buffer, size_t size)
 */
 #pragma mark - TCBuffer - Tools
 
-// == Pop a string from the buffer, up to a search string ==
-std::string * TCBuffer::createStringSearch(const std::string &search, bool returnSearch)
+- (NSData *)dataUpToCStr:(const char *)search includeSearch:(BOOL)includeSearch
 {
+	if (!search)
+		return nil;
+	
 	bool		found = false;
 	size_t		sz = 0;
-	tc_item		*item = items->first;
+	tc_item		*item = _items->first;
 	
-	const char *c_search = search.c_str();
-	size_t		c_size = search.size();
+	size_t		search_len = strlen(search);
 	
 	size_t		pos = 0;
 	
 	while (item)
 	{
-		pos = memsearch((uint8_t *)c_search, c_size, (uint8_t *)item->data, item->size);
-
-		if (pos != static_cast<size_t>(-1))
+		pos = memsearch((uint8_t *)search, search_len, (uint8_t *)item->data, item->size);
+		
+		if (pos != (size_t)(-1))
 		{
-			sz += pos + c_size;
+			sz += pos + search_len;
 			found = true;
 			
 			break;
@@ -266,29 +295,24 @@ std::string * TCBuffer::createStringSearch(const std::string &search, bool retur
 	
 	if (found && sz > 0)
 	{
-		char		*result = static_cast<char *>(malloc(sz));
-		std::string	*rresult = NULL;
+		void *result = malloc(sz);
 		
-		readData(result, sz);
+		[self readBytes:result ofSize:sz];
 		
-		if (!returnSearch)
-			sz -= c_size;
+		if (!includeSearch)
+			sz -= search_len;
 		
-		rresult = new std::string(result, sz);
-		free(result);
-		
-		return rresult;
+		return [[NSData alloc] initWithBytesNoCopy:result length:sz freeWhenDone:YES];
 	}
 	
-	return NULL;
+	return nil;
 }
 
-// == Clean buffer content ==
-void TCBuffer::clean()
+- (void)clean
 {
 	tc_item	*item, *nitem;
 	
-	item = items->first;
+	item = _items->first;
 	
 	while (item)
 	{
@@ -300,15 +324,14 @@ void TCBuffer::clean()
 		item = nitem;
 	}
 	
-	items->first = NULL;
-	items->last = NULL;
-	items->size = 0;
+	_items->first = NULL;
+	_items->last = NULL;
+	_items->size = 0;
 }
 
-// == Print buffer, for debug ==
-void TCBuffer::print()
+- (void)print
 {
-	tc_item	*item = items->first;
+	tc_item	*item = _items->first;
 	
 	fprintf(stderr, "First = %p\n", item);
 	
@@ -325,14 +348,45 @@ void TCBuffer::print()
 
 
 /*
-** TCBuffer - Property
+** TCBuffer - Properties
 */
-#pragma mark - TCBuffer - Property
+#pragma mark - TCBuffer - Properties
 
-size_t TCBuffer::size()
+- (NSUInteger)size
 {
-	return items->size;
+	return _items->size;
 }
 
+@end
 
 
+
+/*
+** C Function
+*/
+#pragma mark - C Function
+
+// == Search a chunk of data in another chunk of data ==
+size_t memsearch(const uint8_t *token, size_t token_sz, const uint8_t *data, size_t data_sz)
+{
+	size_t	pos = 0;
+	size_t	i = 0;
+	
+	while (token_sz <= data_sz)
+	{
+		for (i = 0; i < token_sz; i++)
+		{
+			if (data[i] != token[i])
+				break;
+		}
+		
+		if (i >= token_sz)
+			return pos;
+		
+		pos++;
+		data++;
+		data_sz--;
+	}
+	
+	return (size_t)(-1);
+}
