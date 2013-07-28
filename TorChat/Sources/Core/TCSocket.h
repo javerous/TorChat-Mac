@@ -22,27 +22,15 @@
 
 
 
-#ifndef _TCSOCKET_H_
-# define _TCSOCKET_H_
-
-# include <sys/types.h>
-# include <dispatch/dispatch.h>
-
-# include <vector>
-
-# include "TCObject.h"
-
-
-
 /*
 ** Forward
 */
 #pragma mark - Forward
 
+@class TCSocket;
 @class TCBuffer;
-class TCSocket;
+
 class TCInfo;
-class TCSocketOperation;
 
 
 
@@ -77,15 +65,16 @@ typedef enum
 */
 #pragma mark - TCSocketDelegate
 
-// == Class ==
-class TCSocketDelegate : public TCObject
-{
-public:
-	// -- Delegate Function --
-	virtual void socketOperationAvailable(TCSocket *socket, tcsocket_operation operation, int tag, void *content, size_t size) { };
-	virtual void socketError(TCSocket *socket, TCInfo *err) { };
-	virtual void socketRunPendingWrite(TCSocket *socket) { };
-};
+@protocol TCSocketDelegate <NSObject>
+
+@required
+- (void)socket:(TCSocket *)socket operationAvailable:(tcsocket_operation)operation tag:(NSUInteger)tag content:(id)content;
+
+@optional
+- (void)socket:(TCSocket *)socket error:(TCInfo *)error;
+- (void)socketRunPendingWrite:(TCSocket *)socket;
+
+@end
 
 
 
@@ -94,62 +83,25 @@ public:
 */
 #pragma mark - TCSocket
 
-// == Class ==
-class TCSocket : public TCObject
-{
-public:
-	// -- Constructor & Destructor --
-	TCSocket(int socket);
-	~TCSocket();
-	
-	// -- Delegate --
-	void	setDelegate(dispatch_queue_t queue, TCSocketDelegate *delegate);
-	
-	// -- Sending --
-	bool	sendData(void *data, size_t size, bool copy = true);
-	bool	sendData(const TCBuffer &buffer);
-	
-	// -- Operations --
-	void	setGlobalOperation(tcsocket_operation op, size_t psize, int tag);
-	void	removeGlobalOperation();
-	
-	void	scheduleOperation(tcsocket_operation op, size_t psize, int tag);
-	
-	// -- Running --
-	void	stop();
-	
-private:
-	
-	// -- Errors --
-	void	_callError(tcsocket_error error, const std::string &info, bool fatal);
-	
-	// -- Data Input --
-	void	_dataAvailable();
-	bool	_runOperation(TCSocketOperation *operation);
-	
-	// -- Vars --
-	// > Managed socket
-	int									_sock;
+@interface TCSocket : NSObject
 
-	// > Queue & Sources
-	dispatch_queue_t					socketQueue;
-	
-	dispatch_source_t					tcpReader;
-	dispatch_source_t					tcpWriter;
-	
-	// > Buffer
-	TCBuffer							*readBuffer;
-	TCBuffer							*writeBuffer;
-	bool								writeActive;
-	
-	// > Delegate Object
-	dispatch_queue_t					delQueue;
-	TCSocketDelegate					*delObject;
-	
-	// > Operations
-	TCSocketOperation					*goperation;
-	std::vector<TCSocketOperation *>	operations;
+// -- Properties --
+@property (weak) id <TCSocketDelegate> delegate;
 
-};
+// -- Instance --
+- (id)initWithSocket:(int)descriptor;
 
-#endif
+// -- Sending --
+- (BOOL)sendBytes:(const void *)bytes ofSize:(NSUInteger)size copy:(BOOL)copy;
+- (BOOL)sendBuffer:(TCBuffer *)buffer;
+
+// -- Operations --
+- (void)setGlobalOperation:(tcsocket_operation)operation withSize:(NSUInteger)size andTag:(NSUInteger)tag;
+- (void)removeGlobalOperation;
+
+- (void)scheduleOperation:(tcsocket_operation)operation withSize:(NSUInteger)size andTag:(NSUInteger)tag;
+
+// -- Life --
+- (void)stop;
+
+@end

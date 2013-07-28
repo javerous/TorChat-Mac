@@ -34,7 +34,7 @@
 # include "TCController.h"
 # include "TCInfo.h"
 
-# include "TCSocket.h"
+# import "TCSocket.h"
 # include "TCObject.h"
 
 
@@ -154,7 +154,7 @@ typedef std::map<std::string, TCFileSend *>::const_iterator		fsend_const_iterato
 #pragma mark - TCBuddy
 
 // == Class ==
-class TCBuddy : public TCSocketDelegate // Inherit from TCObject (via TCSocketDelegate)
+class TCBuddy : public TCObject
 {
 public:
 	
