@@ -22,6 +22,12 @@
 
 #import "NSData+TCTools.h"
 
+
+/*
+** NSData (TCTools)
+*/
+#pragma mark - NSData (TCTools)
+
 @implementation NSData (TCTools)
 
 - (NSArray *)explodeWithCStr:(const char *)str
@@ -59,6 +65,13 @@
 }
 
 @end
+
+
+
+/*
+** NSMutableData (TCTools)
+*/
+#pragma mark - NSMutableData (TCTools)
 
 @implementation NSMutableData (TCTools)
 

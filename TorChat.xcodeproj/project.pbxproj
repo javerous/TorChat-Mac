@@ -11,6 +11,7 @@
 		E80367CC14E056200089CE80 /* balloon_rigth.png in Resources */ = {isa = PBXBuildFile; fileRef = E80367C914E056200089CE80 /* balloon_rigth.png */; };
 		E80367CD14E056200089CE80 /* balloon_left.png in Resources */ = {isa = PBXBuildFile; fileRef = E80367CA14E056200089CE80 /* balloon_left.png */; };
 		E80367CE14E056200089CE80 /* balloon_center.png in Resources */ = {isa = PBXBuildFile; fileRef = E80367CB14E056200089CE80 /* balloon_center.png */; };
+		E80414C917A557B7008220C9 /* NSArray+TCTools.m in Sources */ = {isa = PBXBuildFile; fileRef = E80414C817A557B7008220C9 /* NSArray+TCTools.m */; };
 		E807B4B2124FB52700FDC769 /* LogsWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E807B4B0124FB52700FDC769 /* LogsWindow.xib */; };
 		E81FD9F811E7259B000614D5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81FD9F711E7259B000614D5 /* Cocoa.framework */; };
 		E81FD9FD11E7259B000614D5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E81FD9FB11E7259B000614D5 /* InfoPlist.strings */; };
@@ -115,6 +116,8 @@
 		E80367CA14E056200089CE80 /* balloon_left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = balloon_left.png; path = Balloon/balloon_left.png; sourceTree = "<group>"; };
 		E80367CB14E056200089CE80 /* balloon_center.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = balloon_center.png; path = Balloon/balloon_center.png; sourceTree = "<group>"; };
 		E803C6EE11F3BD99004FC5AA /* TCInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCInfo.h; sourceTree = "<group>"; };
+		E80414C717A557B7008220C9 /* NSArray+TCTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+TCTools.h"; sourceTree = "<group>"; };
+		E80414C817A557B7008220C9 /* NSArray+TCTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+TCTools.m"; sourceTree = "<group>"; };
 		E807B4B1124FB52700FDC769 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = TorChat/en.lproj/LogsWindow.xib; sourceTree = "<group>"; };
 		E81FD9F411E7259B000614D5 /* TorChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TorChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E81FD9F711E7259B000614D5 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -502,6 +505,8 @@
 			children = (
 				E8455D4417A438660046307B /* NSData+TCTools.h */,
 				E8455D4517A438660046307B /* NSData+TCTools.m */,
+				E80414C717A557B7008220C9 /* NSArray+TCTools.h */,
+				E80414C817A557B7008220C9 /* NSArray+TCTools.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -796,6 +801,7 @@
 				E8455D3D17A425F00046307B /* TCValue.m in Sources */,
 				E8455D4617A4386C0046307B /* NSData+TCTools.m in Sources */,
 				E82754F514E972A900250C00 /* TCChatsTableView.m in Sources */,
+				E80414C917A557B7008220C9 /* NSArray+TCTools.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
