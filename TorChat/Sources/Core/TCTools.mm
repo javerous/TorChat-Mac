@@ -144,38 +144,6 @@ std::string * createReplaceAll(const std::string &s, const std::string &o, const
 
 
 /*
-** Data
-*/
-#pragma mark - Data
-
-// == Search a chunk of data in another chunk of data ==
-size_t memsearch(const uint8_t *token, size_t token_sz, const uint8_t *data, size_t data_sz)
-{
-	size_t	pos = 0;
-	size_t	i = 0;
-	
-	while (token_sz <= data_sz)
-	{
-		for (i = 0; i < token_sz; i++)
-		{
-			if (data[i] != token[i])
-				break;
-		}
-		
-		if (i >= token_sz)
-			return pos;
-		
-		pos++;
-		data++;
-		data_sz--;
-	}
-	
-	return static_cast<size_t> (-1);
-}
-
-
-
-/*
 ** Hash
 */
 #pragma mark - Hash

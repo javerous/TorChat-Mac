@@ -21,58 +21,27 @@
  */
 
 
-
-#ifndef _TCBUFFER_H_
-# define _TCBUFFER_H_
-
-# include <sys/types.h>
-# include <string>
-
-# include "TCObject.h"
-
-
-
-/*
-** Types
-*/
-#pragma mark - Types
-
-typedef struct _tc_items tc_items;
-
-
-
 /*
 ** TCBuffer
 */
 #pragma mark - TCBuffer
 
-// == Class ==
-class TCBuffer : public TCObject
-{
-public:
-	
-	// -- Instance --
-	TCBuffer();
-	~TCBuffer();
-	
-	// -- Data --
-	void	pushData(const void *data, size_t size, bool copy);		// Insert at the beggin
-	void	appendData(const void *data, size_t size, bool copy);	// Insert at the end
-	
-	size_t	readData(void *buffer, size_t size);					// Read data from beggin
-	
-	// -- Tools --
-	std::string *createStringSearch(const std::string &search, bool returnSearch); // Read data up to the string "search"
-	
-	void		clean();
-	void		print();
-	
-	// -- Property --
-	size_t	size();
+@interface TCBuffer : NSObject
 
-private:
-	tc_items	*items;
-	
-};
+// -- Bytes --
+- (void)pushBytes:(const void *)bytes ofSize:(NSUInteger)size copy:(BOOL)copy; 	// Insert at the beggin
+- (void)appendBytes:(const void *)bytes ofSize:(NSUInteger)size copy:(BOOL)copy;	// Insert at the end
 
-#endif
+- (NSUInteger)readBytes:(void *)bytes ofSize:(NSUInteger)size; // Read data from beggin
+
+// -- Tools --
+- (NSData *)dataUpToCStr:(const char *)search includeSearch:(BOOL)includeSearch; // Read data up to the string "search"
+
+- (void)clean;
+- (void)print;
+
+// -- Properties --
+- (NSUInteger)size;
+
+@end
+
