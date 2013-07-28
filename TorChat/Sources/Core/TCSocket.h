@@ -39,9 +39,8 @@
 */
 #pragma mark - Forward
 
-class TCBuffer;
+@class TCBuffer;
 class TCSocket;
-class TCBuffer;
 class TCInfo;
 class TCSocketOperation;
 

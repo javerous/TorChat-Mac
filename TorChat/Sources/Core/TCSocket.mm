@@ -104,8 +104,8 @@ TCSocket::TCSocket(int sock)
 	doAsyncSocket(_sock);
 	
 	// -- Create Buffer --
-	readBuffer = new TCBuffer();
-	writeBuffer = new TCBuffer();
+	readBuffer = [[TCBuffer alloc] init];
+	writeBuffer = [[TCBuffer alloc] init];
 	
 	// -- Create Queue --
 	socketQueue = dispatch_queue_create("com.torchat.core.socket.main", DISPATCH_QUEUE_SERIAL);
@@ -138,14 +138,14 @@ TCSocket::TCSocket(int sock)
 		}
 		else if (sz > 0)
 		{			
-			if (readBuffer->size() + (size_t)sz > 50 * 1024 * 1024)
+			if ([readBuffer size] + (size_t)sz > 50 * 1024 * 1024)
 			{
 				_callError(tcsocket_read_full, "core_socker_read_full", true);
 			}
 			else
 			{
 				// Append data to the buffer
-				readBuffer->appendData(buffer, (size_t)sz, false);
+				[readBuffer appendBytes:buffer ofSize:(NSUInteger)sz copy:NO];
 				
 				// Manage datas
 				_dataAvailable();
@@ -157,7 +157,7 @@ TCSocket::TCSocket(int sock)
 	dispatch_source_set_event_handler_cpp(this, tcpWriter, ^{
 				
 		// If we are no more data, deactivate the write event, else write them
-		if (writeBuffer->size() == 0) 
+		if ([writeBuffer size] == 0)
 		{
 			if (writeActive)
 			{
@@ -167,9 +167,9 @@ TCSocket::TCSocket(int sock)
 		}
 		else
 		{
-			char	buffer[4096];
-			size_t	size = writeBuffer->readData(buffer, sizeof(buffer));
-			ssize_t	sz;
+			char		buffer[4096];
+			NSUInteger	size = [writeBuffer readBytes:buffer ofSize:sizeof(buffer)];
+			ssize_t		sz;
 			
 			// Write data
 			sz = write(sock, buffer, size);
@@ -187,10 +187,10 @@ TCSocket::TCSocket(int sock)
 			{
 				// Reinject remaining data in the buffer
 				if (sz < size)
-					writeBuffer->pushData(buffer + sz, size - (size_t)sz, true);
+					[writeBuffer pushBytes:buffer + sz ofSize:(size - (NSUInteger)sz) copy:YES];
 				
 				// If we have space, signal it to fill if necessary
-				if (writeBuffer->size() < 1024 && delQueue && delObject)
+				if ([writeBuffer size] < 1024 && delQueue && delObject)
 				{
 					TCSocketDelegate *obj = delObject;
 					
@@ -234,12 +234,11 @@ TCSocket::~TCSocket()
 	TCDebugLog("TCSocket Destructor");
 		
 	// Release buffer
-	readBuffer->release();
-	writeBuffer->release();
+	readBuffer = nil;
+	writeBuffer = nil;
 	
 	if (delObject)
 		delObject->release();
-	
 	
 	// Clean global operation
 	if (goperation)
@@ -279,7 +278,7 @@ void TCSocket::setDelegate(dispatch_queue_t queue, TCSocketDelegate *delegate)
 		delObject = delegate;
 		
 		// Check if some data can send to the new delegate
-		if (readBuffer->size() > 0)
+		if ([readBuffer size] > 0)
 			_dataAvailable();
 	});
 }
@@ -319,10 +318,10 @@ bool TCSocket::sendData(void *data, size_t size, bool copy)
 		}
 		
 		// Append data in write buffer
-		writeBuffer->appendData(cpy, size, false);
+		[writeBuffer appendBytes:cpy ofSize:size copy:NO];
 		
 		// Activate write if needed
-		if (writeBuffer->size() > 0 && !writeActive)
+		if ([writeBuffer size] > 0 && !writeActive)
 		{
 			writeActive = true;
 			
@@ -355,7 +354,7 @@ void TCSocket::setGlobalOperation(tcsocket_operation op, size_t psize, int tag)
 		goperation = new TCSocketOperation(op, psize, tag);
 		
 		// Check if operations can be executed
-		if (readBuffer->size() > 0)
+		if ([readBuffer size] > 0)
 			_dataAvailable();
 	});
 }
@@ -379,7 +378,7 @@ void TCSocket::scheduleOperation(tcsocket_operation op, size_t psize, int tag)
 		operations.push_back(new TCSocketOperation(op, psize, tag));
 		
 		// Check if operations can be executed
-		if (readBuffer->size() > 0)
+		if ([readBuffer size] > 0)
 			_dataAvailable();
 	});
 }
@@ -497,7 +496,7 @@ bool TCSocket::_runOperation(TCSocketOperation *op)
 		return false;
 	
 	// Nothing to read, nothing to do
-	if (readBuffer->size() == 0)
+	if ([readBuffer size] == 0)
 		return false;
 	
 	// Execute the  operation
@@ -510,16 +509,16 @@ bool TCSocket::_runOperation(TCSocketOperation *op)
 			size_t size = op->size();
 			
 			if (size == 0)
-				size = readBuffer->size();
+				size = [readBuffer size];
 			
-			if (size > readBuffer->size())
+			if (size > [readBuffer size])
 				return false;
 			
 			void	*buffer = malloc(size);
 			int		tag = op->tag();
 			
 			// Read the chunk of data
-			size = readBuffer->readData(buffer, size);
+			size = [readBuffer readBytes:buffer ofSize:size];
 			
 			// -- Give to delegate --
 			TCSocketDelegate *obj = delObject;
@@ -564,7 +563,8 @@ bool TCSocket::_runOperation(TCSocketOperation *op)
 					break;
 				
 				// Get line
-				std::string *line = readBuffer->createStringSearch("\n", false);
+				NSData		*dline = [readBuffer dataUpToCStr:"\n" includeSearch:NO];
+				std::string *line = new std::string((char *)[dline bytes], (size_t)[dline length]);
 				
 				if (!line)
 					break;
