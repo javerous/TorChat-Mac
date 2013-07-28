@@ -182,17 +182,15 @@ TCBuddy::~TCBuddy()
 	// Clean out connections
 	if (outSocket)
 	{
-		outSocket->stop();
-		outSocket->release();
-		outSocket = NULL;
+		[outSocket stop];
+		outSocket = nil;
 	}
 	
 	// Clean in connexions
 	if (inSocket)
 	{
-		inSocket->stop();
-		inSocket->release();
-		inSocket = NULL;
+		[inSocket stop];
+		inSocket = nil;
 	}
 	
 	// Release config
@@ -281,10 +279,12 @@ void TCBuddy::start()
 		}
 		
 		// Build a socket with this descriptor
-		outSocket = new TCSocket(s);
+		outSocket = [[TCSocket alloc] initWithSocket:s];
+		
 		
 		// Set ourself as delegate
-		outSocket->setDelegate(mainQueue, this);
+#warning FIXME: fix when switched to OC.
+		//outSocket->setDelegate(mainQueue, this);
 		
 		// Start SOCKS protocol
 		_startSocks();
@@ -308,19 +308,15 @@ void TCBuddy::stop()
 			// Realease out socket
 			if (outSocket)
 			{
-				outSocket->stop();
-				outSocket->release();
-				
-				outSocket = NULL;
+				[outSocket stop];
+				outSocket = nil;
 			}
 			
 			// Realease in socket
 			if (inSocket)
 			{
-				inSocket->stop();
-				inSocket->release();
-				
-				inSocket = NULL;
+				[inSocket stop];
+				inSocket = nil;
 			}
 			
 			// Clean receive session
@@ -913,15 +909,12 @@ void TCBuddy::setInputConnection(TCSocket *sock)
 {
 	if (!sock)
 		return;
-	
-	sock->retain();
-	
+		
 	dispatch_async_cpp(this, mainQueue, ^{
 		
 		if (mblocked)
 		{
-			sock->stop();
-			sock->release();
+			[sock stop];
 		}
 		else
 		{
@@ -929,19 +922,18 @@ void TCBuddy::setInputConnection(TCSocket *sock)
 			ponged = true;
 			
 			// Use this incomming connection
-			sock->setDelegate(mainQueue, this);
+#warning FIXME: use self when switched to OC.
+#warning XXX: check that we will not loose event during this change.
+			//sock->setDelegate(mainQueue, this);
 			
 			if (inSocket)
-			{
-				inSocket->stop();
-				inSocket->release();
-			}
+				[inSocket stop];
 			
 			inSocket = sock;
 			
-			inSocket->setGlobalOperation(tcsocket_op_line, 0, 0);
+			[inSocket setGlobalOperation:tcsocket_op_line withSize:0 andTag:0];
 			
-			// Notify that we are readdy
+			// Notify that we are ready
 			if (ponged && pongSent)
 				_notify(tcbuddy_notify_identified, "core_bd_note_identified");
 		}
@@ -957,6 +949,7 @@ void TCBuddy::setInputConnection(TCSocket *sock)
 
 void TCBuddy::socketOperationAvailable(TCSocket *socket, tcsocket_operation operation, int tag, void *content, size_t size)
 {
+#warning FIXME: use TCSocketDelegate once switched to OC.
 	// > mainQueue <
 	
 	if (mblocked)
@@ -974,7 +967,7 @@ void TCBuddy::socketOperationAvailable(TCSocket *socket, tcsocket_operation oper
 			{
 				socksstate = socks_finish;
 				
-				outSocket->setGlobalOperation(tcsocket_op_line, 0, 0);
+				[outSocket setGlobalOperation:tcsocket_op_line withSize:0 andTag:0];
 				
 				// Notify
 				_notify(tcbuddy_notify_connected_buddy, "core_bd_note_connected");
@@ -1017,7 +1010,7 @@ void TCBuddy::socketOperationAvailable(TCSocket *socket, tcsocket_operation oper
 			dispatch_async_cpp(this, mainQueue, ^{
 				
 				// Parse the line
-#warning FIXME
+#warning FIXME: use TCParser object once switched to OC
 				//parseLine(*line);
 				
 				// Free memory
@@ -1032,6 +1025,8 @@ void TCBuddy::socketOperationAvailable(TCSocket *socket, tcsocket_operation oper
 
 void TCBuddy::socketError(TCSocket *socket, TCInfo *err)
 {
+#warning FIXME: use TCSocketDelegate once switched to OC.
+
 	// > mainQueue <
 	
 	// Localize the info
@@ -1043,6 +1038,8 @@ void TCBuddy::socketError(TCSocket *socket, TCInfo *err)
 
 void TCBuddy::socketRunPendingWrite(TCSocket *socket)
 {
+#warning FIXME: use TCSocketDelegate once switched to OC.
+
 	// > mainQueue <
 	
 	_runPendingWrite();
@@ -1967,9 +1964,9 @@ bool TCBuddy::_sendData(const void *data, size_t size, tcbuddy_channel channel)
 	memcpy(cpy, data, size);
 
 	if (channel == tcbuddy_channel_in && inSocket)
-		inSocket->sendData(cpy, size, false);
+		[inSocket sendBytes:cpy ofSize:size copy:NO];
 	else if (channel == tcbuddy_channel_out && outSocket)
-		outSocket->sendData(cpy, size, false);
+		[outSocket sendBytes:cpy ofSize:size copy:NO];
 	else
 		free(cpy);
 
@@ -2018,7 +2015,7 @@ void TCBuddy::_startSocks()
 	strcpy(pos, host.c_str());
 	
 	// Set the next input operation
-	outSocket->scheduleOperation(tcsocket_op_data, sizeof(struct sockrep), socks_v4_reply);
+	[outSocket scheduleOperation:tcsocket_op_data withSize:sizeof(struct sockrep) andTag:socks_v4_reply];
 	
 	// Send the request
 	if (_sendData(buffer, datalen))

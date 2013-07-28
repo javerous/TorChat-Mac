@@ -24,8 +24,8 @@
 
 #import "TCParser.h"
 
-#include "TCTools.h"
-#include "TCInfo.h"
+#import "TCTools.h"
+#import "TCInfo.h"
 
 #import "NSData+TCTools.h"
 #import "NSArray+TCTools.h"

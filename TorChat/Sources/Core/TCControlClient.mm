@@ -68,10 +68,7 @@ TCControlClient::~TCControlClient()
 	config->release();
 	
 	if (sock)
-	{
-		sock->stop();
-		sock->release();
-	}
+		[sock stop];
 }
 
 
@@ -97,10 +94,11 @@ void TCControlClient::start(TCController *controller)
 			running = true;
 			
 			// Build a socket
-			sock = new TCSocket(sockd);
+			sock = [[TCSocket alloc] initWithSocket:sockd];
 			
-			sock->setDelegate(mainQueue, this);
-			sock->scheduleOperation(tcsocket_op_line, 1, 0);
+#warning FIXME: use self once switched to OC.
+			//sock->setDelegate(mainQueue, this);
+			[sock scheduleOperation:tcsocket_op_line withSize:1 andTag:0];
 			
 			// Notify
 			_notify(tcctrl_notify_client_started, "core_cctrl_note_started");
@@ -122,10 +120,8 @@ void TCControlClient::stop()
 		// Clean socket
 		if (sock)
 		{
-			sock->stop();
-			sock->release();
-			
-			sock = NULL;
+			[sock stop];
+			sock = nil;
 		}
 		
 		// Clean socket descriptor
@@ -153,7 +149,7 @@ void TCControlClient::doPing(const std::string &caddress, const std::string &cra
 	TCBuddy *abuddy = NULL;
 
 	// Reschedule a line read
-	sock->scheduleOperation(tcsocket_op_line, 1, 0);
+	[sock scheduleOperation:tcsocket_op_line withSize:1 andTag:0];
 	
 	// Check blocked list
 	abuddy = ctrl->getBuddyAddress(caddress);
@@ -269,9 +265,8 @@ void TCControlClient::doPong(const std::string &crandom)
 			buddy = NULL;
 			
 			// Stop socket
-			sock->stop();
-			sock->release();
-			sock = NULL;
+			[sock stop];
+			sock = nil;
 		}
 		else
 		{
@@ -283,8 +278,7 @@ void TCControlClient::doPong(const std::string &crandom)
 			buddy = NULL;
 			
 			// Unhandle socket
-			sock->release();
-			sock = NULL;
+			sock = nil;
 		}
 	}
 	else
@@ -389,6 +383,7 @@ void TCControlClient::parserError(tcrec_error err, const std::string &info)
 
 void TCControlClient::socketOperationAvailable(TCSocket *socket, tcsocket_operation operation, int tag, void *content, size_t size)
 {
+#warning FIXME: use TCSocketDelegate once switched to OC.
 	if (operation == tcsocket_op_line)
 	{
 		std::vector <std::string *> *vect = static_cast< std::vector <std::string *> * > (content);
@@ -416,6 +411,8 @@ void TCControlClient::socketOperationAvailable(TCSocket *socket, tcsocket_operat
 
 void TCControlClient::socketError(TCSocket *socket, TCInfo *err)
 {
+#warning FIXME: use TCSocketDelegate once switched to OC.
+
 	// Localize the info
 	err->setInfo(config->localized(err->info()));
 	
