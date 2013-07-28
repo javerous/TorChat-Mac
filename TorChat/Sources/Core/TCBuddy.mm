@@ -125,6 +125,8 @@ TCBuddy::TCBuddy(TCConfig *_config, const std::string &_alias, const std::string
 	maddress = new TCString(_address);
 	mnotes = new TCString(_notes);
 	
+	fsend = [[NSMutableDictionary alloc] init];
+	
 	TCDebugLog("Buddy (%s) - New", maddress->content().c_str());
 
 	// Build queue
@@ -210,6 +212,9 @@ TCBuddy::~TCBuddy()
 	// Release
 	peerClient->release();
 	peerVersion->release();
+	
+	// Clean.
+	fsend = nil;
 }
 
 
@@ -327,14 +332,8 @@ void TCBuddy::stop()
 			
 			freceive.clear();
 			
-			
 			// Clean send session
-			fsend_iterator fs;
-			
-			for (fs = fsend.begin(); fs != fsend.end(); fs++)
-				fs->second->release();
-			
-			fsend.clear();
+			[fsend removeAllObjects];
 			
 			// Reset status
 			lstatus = mstatus;
@@ -559,10 +558,9 @@ std::string TCBuddy::fileFileName(const std::string &uuid, tcbuddy_file_way way)
 		
 		if (way == tcbuddy_file_send)
 		{
-			fsend_const_iterator its = fsend.find(*c_uuid);
+			TCFileSend *file = fsend[@(c_uuid->c_str())];
 			
-			if (its != fsend.end())
-				res = its->second->fileName();
+			res = [[file fileName] UTF8String];
 		}
 		else if (way == tcbuddy_file_receive)
 		{
@@ -588,11 +586,9 @@ std::string TCBuddy::fileFilePath(const std::string &uuid, tcbuddy_file_way way)
 		
 		if (way == tcbuddy_file_send)
 		{
-			// Search the file send
-			fsend_const_iterator its = fsend.find(*c_uuid);
-			
-			if (its != fsend.end())
-				res = its->second->filePath();
+			TCFileSend *file = fsend[@(c_uuid->c_str())];
+
+			res = [[file filePath] UTF8String];
 		}
 		else if (way == tcbuddy_file_receive)
 		{
@@ -623,14 +619,12 @@ bool TCBuddy::fileStat(const std::string &uuid, tcbuddy_file_way way, uint64_t &
 		if (way == tcbuddy_file_send)
 		{
 			// Search the file send
-			fsend_const_iterator its = fsend.find(*c_uuid);
-			
-			if (its != fsend.end())
+			TCFileSend *file = fsend[@(c_uuid->c_str())];
+
+			if (file)
 			{
-				TCFileSend *file = its->second;
-				
-				rdone = file->validatedSize();
-				rtotal = file->fileSize();
+				rdone = [file validatedSize];
+				rtotal = [file fileSize];
 				
 				result = true;
 			}
@@ -671,12 +665,10 @@ void TCBuddy::fileCancel(const std::string &uuid, tcbuddy_file_way way)
 		if (way == tcbuddy_file_send)
 		{
 			// Search the file send
-			fsend_iterator its = fsend.find(*c_uuid);
-			
-			if (its != fsend.end())
+			TCFileSend *file = fsend[@(c_uuid->c_str())];
+
+			if (file)
 			{
-				TCFileSend	*file = its->second;
-				
 				// Say to the remote peer to stop receiving data
 				_sendFileStopReceiving(*c_uuid);
 				
@@ -688,8 +680,7 @@ void TCBuddy::fileCancel(const std::string &uuid, tcbuddy_file_way way)
 				info->release();
 				
 				// Release file
-				file->release();
-				fsend.erase(its);
+				[fsend removeObjectForKey:@(c_uuid->c_str())];
 			}
 		}
 		else if (way == tcbuddy_file_receive)
@@ -820,26 +811,24 @@ void TCBuddy::sendFile(TCString *filepath)
 		{
 			if (!mblocked)
 			{
-				TCFileSend *file = NULL;
+				TCFileSend *file;
 				
 				// Try to open the file for send
-				try
+				NSString *fpath = @(filepath->content().c_str());
+				
+				file = [[TCFileSend alloc] initWithFilePath:fpath];
+				
+				if (!file)
 				{
-					file = new TCFileSend(filepath->content());
-				}
-				catch (std::string error)
-				{
-					if (file)
-						file->release();
-					
-					_error(tcbuddy_error_send_file, error, filepath, false);
+					_error(tcbuddy_error_send_file, "io_error", filepath, false);
+#warning FIXME: localized string.
 					
 					filepath->release();
 					return;
 				}
 				
 				// Insert the new file session
-				fsend[file->uuid()] = file;
+				fsend[[file uuid]] = file;
 				
 				// Notify
 				TCFileInfo *info = new TCFileInfo(file);
@@ -1377,15 +1366,14 @@ void TCBuddy::doFileDataOk(const std::string &uuid, const std::string &start)
 	// Manage file chunk
 	dispatch_async_cpp(this, mainQueue, ^{
 		
-		fsend_iterator	it = fsend.find(*c_uuid);
-		
-		if (it != fsend.end())
+		TCFileSend *file = fsend[@(c_uuid->c_str())];
+
+		if (file)
 		{
-			uint64_t	offset = strtoull(c_start->c_str(), NULL, 10);
-			TCFileSend	*file = it->second;
+			uint64_t offset = strtoull(c_start->c_str(), NULL, 10);
 			
 			// Inform that this offset was validated
-			file->setValidatedOffset(offset);
+			[file setValidatedOffset:offset];
 			
 			// Notice the advancing
 			TCFileInfo *info = new TCFileInfo(file);
@@ -1393,14 +1381,13 @@ void TCBuddy::doFileDataOk(const std::string &uuid, const std::string &start)
 			_notify(tcbuddy_notify_file_send_running, "core_bd_note_file_chunk_send", info);
 			
 			// Do nothing if we are no more to send
-			if (file->isFinished())
+			if ([file isFinished])
 			{
 				// Notify
 				_notify(tcbuddy_notify_file_send_finish, "core_bd_note_file_send_finish", info);
 				
 				// Release the file
-				file->release();
-				fsend.erase(it);
+				[fsend removeObjectForKey:@(c_uuid->c_str())];
 			}
 			else
 				_runPendingFileWrite();
@@ -1431,15 +1418,14 @@ void TCBuddy::doFileDataError(const std::string &uuid, const std::string &start)
 	// Manage file chunk
 	dispatch_async_cpp(this, mainQueue, ^{
 
-		fsend_iterator	it = fsend.find(*c_uuid);
+		TCFileSend *file = fsend[@(c_uuid->c_str())];
 		
-		if (it != fsend.end())
+		if (file)
 		{
-			TCFileSend	*file = it->second;
-			uint64_t	offset = strtoull(c_start->c_str(), NULL, 10);
+			uint64_t offset = strtoull(c_start->c_str(), NULL, 10);
 			
 			// Set the position where we should re-send
-			file->setNextChunkOffset(offset);
+			[file setNextChunkOffset:offset];
 		}
 		else
 		{
@@ -1463,12 +1449,10 @@ void TCBuddy::doFileStopSending(const std::string &uuid)
 	// Manage file chunk
 	dispatch_async_cpp(this, mainQueue, ^{
 		
-		fsend_iterator	it = fsend.find(*c_uuid);
+		TCFileSend *file = fsend[@(c_uuid->c_str())];
 		
-		if (it != fsend.end())
+		if (file)
 		{
-			TCFileSend	*file = it->second;
-			
 			// Notify that we stop sending the file
 			TCFileInfo *info = new TCFileInfo(file);
 			
@@ -1476,10 +1460,8 @@ void TCBuddy::doFileStopSending(const std::string &uuid)
 			
 			info->release();
 
-			
 			// Release file
-			file->release();
-			fsend.erase(it);
+			[fsend removeObjectForKey:@(c_uuid->c_str())];
 		}
 		
 		// Clean
@@ -1762,18 +1744,18 @@ void TCBuddy::_sendFileName(TCFileSend *file)
 	char		buffer[1024];
 	
 	// Add the uuid
-	items.push_back(std::string(file->uuid()));
+	items.push_back(std::string([[file uuid] UTF8String]));
 	
 	// Add the file size
-	snprintf(buffer, sizeof(buffer), "%llu", file->fileSize());
+	snprintf(buffer, sizeof(buffer), "%llu", [file fileSize]);
 	items.push_back(std::string(buffer));
 	
 	// Add the block size
-	snprintf(buffer, sizeof(buffer), "%u", file->blockSize());
+	snprintf(buffer, sizeof(buffer), "%u", [file blockSize]);
 	items.push_back(std::string(buffer));
 	
 	// Add the filename
-	items.push_back(std::string(file->fileName()));
+	items.push_back(std::string([[file fileName] UTF8String]));
 		
 	// Send the command
 	_sendCommand("filename", items, tcbuddy_channel_in);
@@ -1786,36 +1768,44 @@ void TCBuddy::_sendFileData(TCFileSend *file)
 	if (!file)
 		return;
 	
-	uint8_t		chunk[file->blockSize()];
+	uint8_t		chunk[[file blockSize]];
 	uint64_t	chunksz = 0;
 	uint64_t	offset = 0;
+	NSString	*md5String;
+	
+	//
+	md5String = [file readChunk:chunk chunkSize:&chunksz fileOffset:&offset];
+	
+	if (!md5String)
+		return;
+	
+	//
 	std::string	*md5 = NULL;
+
+	md5 = new std::string([md5String UTF8String]);
 	
-	md5 = file->readChunk(chunk, &chunksz, &offset);
+	//
+	std::vector <std::string>	items;
+	char						buffer[50];
 	
-	if (md5)
-	{		
-		std::vector <std::string>	items;
-		char						buffer[50];
-		
-		// Add UUID
-		items.push_back(file->uuid());
-		
-		// Add the offset
-		snprintf(buffer, sizeof(buffer), "%llu", offset);
-		items.push_back(buffer);
-		
-		// Add the MD5
-		items.push_back(*md5);
-		delete md5;
-		
-		// Add the data
-		std::string chk((char *)chunk, static_cast <size_t>(chunksz));
-		items.push_back(chk);
-		
-		// Send the chunk
-		_sendCommand("filedata", items, tcbuddy_channel_in);
-	}
+	// Add UUID
+	items.push_back([[file uuid] UTF8String]);
+	
+	// Add the offset
+	snprintf(buffer, sizeof(buffer), "%llu", offset);
+	items.push_back(buffer);
+	
+	// Add the MD5
+	items.push_back(*md5);
+	delete md5;
+	
+	// Add the data
+	std::string chk((char *)chunk, static_cast <size_t>(chunksz));
+	items.push_back(chk);
+	
+	// Send the chunk
+	_sendCommand("filedata", items, tcbuddy_channel_in);
+	
 }
 
 void TCBuddy::_sendFileDataOk(const std::string &uuid, uint64_t start)
@@ -2060,13 +2050,11 @@ void TCBuddy::_runPendingFileWrite()
 	// > mainQueue <
 		
 	// Send a block of each send file session
-	fsend_iterator it;
-	
-	for (it = fsend.begin(); it != fsend.end(); it++)
+	for (NSString *uuid in fsend)
 	{
-		TCFileSend *file = it->second;
+		TCFileSend *file = fsend[uuid];
 		
-		if ((file->readSize() - file->validatedSize()) >= 16 * file->blockSize())
+		if (([file readSize] - [file validatedSize]) >= 16 * [file blockSize])
 			continue;
 		
 		_sendFileData(file);
@@ -2204,9 +2192,7 @@ TCFileInfo::TCFileInfo(TCFileSend *_sender)
 {
 	if (!_sender)
 		throw "NULL TCFileSend in TCFileInfo";
-	
-	_sender->retain();
-	
+		
 	sender = _sender;
 	receiver = NULL;
 }
@@ -2224,17 +2210,16 @@ TCFileInfo::TCFileInfo(TCFileReceive *_receiver)
 
 TCFileInfo::~TCFileInfo()
 {
-	if (sender)
-		sender->release();
-	sender = NULL;
+	sender = nil;
 	
 	if (receiver)
 		receiver->release();
+	
 	receiver = NULL;
 }
 
 // -- Property --
-const std::string & TCFileInfo::uuid()
+const std::string TCFileInfo::uuid()
 {
 	static std::string null;
 	
@@ -2242,7 +2227,7 @@ const std::string & TCFileInfo::uuid()
 		return receiver->uuid();
 	
 	if (sender)
-		return sender->uuid();
+		return [[sender uuid] UTF8String];
 	
 	return null;
 }
@@ -2253,7 +2238,7 @@ uint64_t TCFileInfo::fileSizeCompleted()
 		return receiver->receivedSize();
 	
 	if (sender)
-		return sender->validatedSize();
+		return [sender validatedSize];
 	
 	return 0;
 }
@@ -2264,12 +2249,12 @@ uint64_t TCFileInfo::fileSizeTotal()
 		return receiver->fileSize();
 	
 	if (sender)
-		return sender->fileSize();
+		return [sender fileSize];
 	
 	return 0;
 }
 
-const std::string & TCFileInfo::fileName()
+const std::string TCFileInfo::fileName()
 {
 	static std::string null;
 	
@@ -2277,12 +2262,12 @@ const std::string & TCFileInfo::fileName()
 		return receiver->fileName();
 	
 	if (sender)
-		return sender->fileName();
+		return [[sender fileName] UTF8String];
 	
 	return null;
 }
 
-const std::string & TCFileInfo::filePath()
+const std::string TCFileInfo::filePath()
 {
 	static std::string null;
 
@@ -2290,7 +2275,7 @@ const std::string & TCFileInfo::filePath()
 		return receiver->filePath();
 	
 	if (sender)
-		return sender->filePath();
+		return [[sender filePath] UTF8String];
 	
 	return null;
 }

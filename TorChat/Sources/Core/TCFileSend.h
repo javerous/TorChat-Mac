@@ -22,55 +22,31 @@
 
 
 
-#ifndef _TCFILESEND_H_
-# define _TCFILESEND_H_
-
-# include <string>
-
-# include "TCObject.h"
-
-
-
 /*
 ** TCFileSend
 */
 #pragma mark - TCFileSend
 
-// == Class ==
-class TCFileSend : public TCObject
-{
-public:
-	// -- Instance ---
-	TCFileSend(const std::string & filePath);
-	~TCFileSend();
-	
-	// -- Tools --
-	std::string *	readChunk(void *chunk, uint64_t *chunksz, uint64_t *offset);
-	void			setNextChunkOffset(uint64_t offset);
+@interface TCFileSend : NSObject
 
-	bool			isFinished();
-	uint64_t		validatedSize();
-	uint64_t		readSize();
-	
-	void			setValidatedOffset(uint64_t offset);
-		
-	// -- Accessors --
-	const std::string &	uuid() const { return _uuid; };
-	uint64_t 			fileSize() const { return _fsize; };
-	uint16_t 			blockSize() const { return _bsize; };
-	const std::string & fileName() const { return _fname; };
-	const std::string & filePath() const { return _fpath; };
-	
-private:
-	FILE		*_file;
-	
-	std::string _uuid;
-	uint64_t	_fsize;
-	uint16_t	_bsize;
-	std::string	_fname;
-	std::string _fpath;
-	
-	uint64_t	_voffset;
-};
+// -- Properties --
+@property (strong, nonatomic, readonly) NSString	*uuid;
+@property (assign, nonatomic, readonly) uint64_t	fileSize;
+@property (assign, nonatomic, readonly) uint16_t	blockSize;
+@property (strong, nonatomic, readonly) NSString	*fileName;
+@property (strong, nonatomic, readonly) NSString	*filePath;
 
-#endif
+// -- Instance --
+- (id)initWithFilePath:(NSString *)filePath;
+
+// -- Tools --
+- (NSString *)readChunk:(void *)bytes chunkSize:(uint64_t *)chunkSize fileOffset:(uint64_t *)fileOffset;
+- (void)setNextChunkOffset:(uint64_t)offset;
+
+- (BOOL)isFinished;
+- (uint64_t)validatedSize;
+- (uint64_t)readSize;
+
+- (void)setValidatedOffset:(uint64_t)offset;
+
+@end
