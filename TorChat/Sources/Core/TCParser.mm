@@ -28,6 +28,7 @@
 #include "TCInfo.h"
 
 #import "NSData+TCTools.h"
+#import "NSArray+TCTools.h"
 
 
 
@@ -99,45 +100,46 @@
 	if ([items count] == 0)
         return;
     
-    NSString *command = [[NSString alloc] initWithData:items[0] encoding:NSASCIIStringEncoding];
+    NSString	*command = [[NSString alloc] initWithData:items[0] encoding:NSASCIIStringEncoding];
+	NSArray		*subItems = [items subarrayWithRange:NSMakeRange(1, [items count] - 1)];
 		
     // Dispatch command
     if ([command isEqualToString:@"ping"])
-		[self parsePing:items];
+		[self parsePing:subItems];
     else if ([command isEqualToString:@"pong"])
-        [self parsePong:items];
+        [self parsePong:subItems];
     else if ([command isEqualToString:@"status"])
-        [self parseStatus:items];
+        [self parseStatus:subItems];
     else if ([command isEqualToString:@"version"])
-        [self parseVersion:items];
+        [self parseVersion:subItems];
 	else if ([command isEqualToString:@"client"])
-        [self parseClient:items];
+        [self parseClient:subItems];
 	else if ([command isEqualToString:@"profile_name"])
-        [self parseProfileName:items];
+        [self parseProfileName:subItems];
 	else if ([command isEqualToString:@"profile_text"])
-        [self parseProfileText:items];
+        [self parseProfileText:subItems];
 	else if ([command isEqualToString:@"profile_avatar_alpha"])
-		 [self parseProfileAvatarAlpha:items];
+		 [self parseProfileAvatarAlpha:subItems];
 	else if ([command isEqualToString:@"profile_avatar"])
-        [self parseProfileAvatar:items];
+        [self parseProfileAvatar:subItems];
 	else if ([command isEqualToString:@"message"])
-        [self parseMessage:items];
+        [self parseMessage:subItems];
 	else if ([command isEqualToString:@"add_me"])
-        [self parseAddMe:items];
+        [self parseAddMe:subItems];
 	else if ([command isEqualToString:@"remove_me"])
-        [self parseRemoveMe:items];
+        [self parseRemoveMe:subItems];
 	else if ([command isEqualToString:@"filename"])
-        [self parseFileName:items];
+        [self parseFileName:subItems];
 	else if ([command isEqualToString:@"filedata"])
-        [self parseFileData:items];
+        [self parseFileData:subItems];
 	else if ([command isEqualToString:@"filedata_ok"])
-        [self parseFileDataOk:items];
+        [self parseFileDataOk:subItems];
 	else if ([command isEqualToString:@"filedata_error"])
-        [self parseFileDataError:items];
+        [self parseFileDataError:subItems];
 	else if ([command isEqualToString:@"file_stop_sending"])
-        [self parseFileStopSending:items];
+        [self parseFileStopSending:subItems];
 	else if ([command isEqualToString:@"file_stop_receiving"])
-        [self parseFileStopReceiving:items];
+        [self parseFileStopReceiving:subItems];
     else
 	{
 		NSString *error = [NSString stringWithFormat:@"Unknown command '%@'", command];
@@ -150,14 +152,14 @@
 - (void)parsePing:(NSArray *)args
 {
 	// Check args.
-	if ([args count] != 3)
+	if ([args count] != 2)
     {
 		[self parserError:tcrec_cmd_ping withString:@"Bad ping argument"];
         return;
     }
 	
 	// Parse command.
-	NSString *address = [[NSString alloc] initWithData:args[1] encoding:NSASCIIStringEncoding];
+	NSString *address = [[NSString alloc] initWithData:args[0] encoding:NSASCIIStringEncoding];
 	NSString *random = [[NSString alloc] initWithData:args[1] encoding:NSASCIIStringEncoding];
 	
 	// Give to receiver.
@@ -167,20 +169,19 @@
 		[receiver parser:self parsedPingWithAddress:address random:random];
 	else
 		[self parserError:tcrec_cmd_ping withString:@"Ping: Not handled"];
-
-		
 }
 
 - (void)parsePong:(NSArray *)args
 {
-	if ([args count] != 2)
+	// Check args.
+	if ([args count] != 1)
     {
 		[self parserError:tcrec_cmd_pong withString:@"Bad pong argument"];
         return;
 	}
 	
 	// Parse command.
-	NSString *random = [[NSString alloc] initWithData:args[1] encoding:NSASCIIStringEncoding];
+	NSString *random = [[NSString alloc] initWithData:args[0] encoding:NSASCIIStringEncoding];
 	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
@@ -193,14 +194,15 @@
 
 - (void)parseStatus:(NSArray *)args
 {
-	if ([args count] != 2)
+	// Check args.
+	if ([args count] != 1)
     {
 		[self parserError:tcrec_cmd_status withString:@"Bad status argument"];
         return;
 	}
 	
 	// Parse command.
-	NSString *status = [[NSString alloc] initWithData:args[1] encoding:NSASCIIStringEncoding];
+	NSString *status = [[NSString alloc] initWithData:args[0] encoding:NSASCIIStringEncoding];
 	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
@@ -213,231 +215,295 @@
 
 - (void)parseVersion:(NSArray *)args
 {
-#warning FIXME
-	/*
-	if (args.size() != 1)
+	// Check args.
+	if ([args count] != 1)
     {
-		_parserError(tcrec_cmd_version, "Bad version argument");
+		[self parserError:tcrec_cmd_version withString:@"Bad version argument"];
         return;
 	}
 	
-	doVersion(args[0]);
-	 */
+	// Parse command.
+	NSString *version = [[NSString alloc] initWithData:args[0] encoding:NSASCIIStringEncoding];
+	
+	// Give to receiver.
+	id <TCParserCommand> receiver = _receiver;
+	
+	if ([receiver respondsToSelector:@selector(parser:parsedVersion:)])
+		[receiver parser:self parsedVersion:version];
+	else
+		[self parserError:tcrec_cmd_status withString:@"Version: Not handled"];
 }
 
 - (void)parseClient:(NSArray *)args
 {
-#warning FIXME
-
-	/*
-	if (args.size() == 0)
-    {
-		_parserError(tcrec_cmd_version, "Empty client argument");
+	// Check args.
+	if ([args count] == 0)
+	{
+		[self parserError:tcrec_cmd_client withString:@"Empty client argument"];
         return;
 	}
+
+	// Parse command.
+	NSString *client = [[NSString alloc] initWithData:[args joinWithCStr:" "] encoding:NSUTF8StringEncoding];
 	
-	std::string *text = createJoin(args, " ");
+	if (!client)
+		return;
 	
-	doClient(*text);
+	// Give to receiver.
+	id <TCParserCommand> receiver = _receiver;
 	
-	delete text;
-	 */
+	if ([receiver respondsToSelector:@selector(parser:parsedClient:)])
+		[receiver parser:self parsedClient:client];
+	else
+		[self parserError:tcrec_cmd_client withString:@"Client: Not handled"];
 }
 
 - (void)parseProfileText:(NSArray *)args
 {
-#warning FIXME
-
-	/*
-	std::string *text = createJoin(args, " ");
+	// Parse command.
+	NSString *text = [[NSString alloc] initWithData:[args joinWithCStr:" "] encoding:NSUTF8StringEncoding];
 	
-	doProfileText(*text);
+	if (!text)
+		return;
 	
-	delete text;
-	 */
+	// Give to receiver.
+	id <TCParserCommand> receiver = _receiver;
+	
+	if ([receiver respondsToSelector:@selector(parser:parsedProfileText:)])
+		[receiver parser:self parsedProfileText:text];
+	else
+		[self parserError:tcrec_cmd_profile_text withString:@"Profile-Text: Not handled"];
 }
 
 - (void)parseProfileName:(NSArray *)args
 {
-#warning FIXME
+	// Parse command.
+	NSString *name = [[NSString alloc] initWithData:[args joinWithCStr:" "] encoding:NSUTF8StringEncoding];
 	
-	/*
-	std::string *name = createJoin(args, " ");
+	if (!name)
+		return;
 	
-	doProfileName(*name);
+	// Give to receiver.
+	id <TCParserCommand> receiver = _receiver;
 	
-	delete name;
-	 */
+	if ([receiver respondsToSelector:@selector(parser:parsedProfileName:)])
+		[receiver parser:self parsedProfileName:name];
+	else
+		[self parserError:tcrec_cmd_profile_name withString:@"Profile-Name: Not handled"];
 }
 
 - (void)parseProfileAvatar:(NSArray *)args
 {
-#warning FIXME
+	// Parse command.
+	NSData *bitmap = [args joinWithCStr:" "];
 	
-	/*
-	std::string *bitmap = createJoin(args, " ");
+	if (!bitmap)
+		return;
 	
-	doProfileAvatar(*bitmap);
+	// Give to receiver.
+	id <TCParserCommand> receiver = _receiver;
 	
-	delete bitmap;
-	 */
+	if ([receiver respondsToSelector:@selector(parser:parsedProfileAvatar:)])
+		[receiver parser:self parsedProfileAvatar:bitmap];
+	else
+		[self parserError:tcrec_cmd_profile_avatar withString:@"Profile-Avatar: Not handled"];
 }
 
 - (void)parseProfileAvatarAlpha:(NSArray *)args
 {
+	// Parse command.
+	NSData *bitmap = [args joinWithCStr:" "];
 	
-#warning FIXME
+	if (!bitmap)
+		return;
 	
-	/*
-	std::string *bitmap = createJoin(args, " ");
+	// Give to receiver.
+	id <TCParserCommand> receiver = _receiver;
 	
-	doProfileAvatarAlpha(*bitmap);
-	
-	delete bitmap;
-	 */
+	if ([receiver respondsToSelector:@selector(parser:parsedProfileAvatarAlpha:)])
+		[receiver parser:self parsedProfileAvatarAlpha:bitmap];
+	else
+		[self parserError:tcrec_cmd_profile_avatar_alpha withString:@"Profile-AvatarAlpha: Not handled"];
 }
 
 - (void)parseMessage:(NSArray *)args
 {
-	
-#warning FIXME
-	
-	/*
-	if (args.size() == 0)
-    {
-		_parserError(tcrec_cmd_message, "Empty message content");
+	// Check args.
+	if ([args count] == 0)
+	{
+		[self parserError:tcrec_cmd_message withString:@"Empty message content"];
         return;
 	}
 	
-	std::string * msg = createJoin(args, " ");
+	// Parse command.
+	NSString *message = [[NSString alloc] initWithData:[args joinWithCStr:" "] encoding:NSUTF8StringEncoding];
 	
-	doMessage(*msg);
+	if (!message)
+		return;
 	
-	delete msg;
-	 */
+	// Give to receiver.
+	id <TCParserCommand> receiver = _receiver;
+	
+	if ([receiver respondsToSelector:@selector(parser:parsedMessage:)])
+		[receiver parser:self parsedMessage:message];
+	else
+		[self parserError:tcrec_cmd_message withString:@"Message: Not handled"];
 }
 
 - (void)parseAddMe:(NSArray *)args
 {
+	// Give to receiver.
+	id <TCParserCommand> receiver = _receiver;
 	
-#warning FIXME
-	
-	/*
-	doAddMe();
-	 */
+	if ([receiver respondsToSelector:@selector(parserParsedAddMe:)])
+		[receiver parserParsedAddMe:self];
+	else
+		[self parserError:tcrec_cmd_addme withString:@"AddMe: Not handled"];
 }
 
 - (void)parseRemoveMe:(NSArray *)args
 {
+	// Give to receiver.
+	id <TCParserCommand> receiver = _receiver;
 	
-#warning FIXME
-	
-	/*
-	doRemoveMe();
-	 */
+	if ([receiver respondsToSelector:@selector(parserparsedRemoveMe:)])
+		[receiver parserparsedRemoveMe:self];
+	else
+		[self parserError:tcrec_cmd_removeme withString:@"RemoveMe: Not handled"];
 }
 
 - (void)parseFileName:(NSArray *)args
 {
-	
-#warning FIXME
-	
-	/*
-	if (args.size() != 4)
+	// Check args.
+	if ([args count] != 4)
     {
-		_parserError(tcrec_cmd_filename, "Bad filename argument");
+		[self parserError:tcrec_cmd_filename withString:@"Bad filename argument"];
         return;
 	}
 	
-	doFileName(args[0], args[1], args[2], args[3]);
-	 */
+	// Parse command.
+	NSString *uuid = [[NSString alloc] initWithData:args[0] encoding:NSASCIIStringEncoding];
+	NSString *fileSize = [[NSString alloc] initWithData:args[1] encoding:NSASCIIStringEncoding];
+	NSString *blockSize = [[NSString alloc] initWithData:args[2] encoding:NSASCIIStringEncoding];
+	NSString *fileName = [[NSString alloc] initWithData:args[3] encoding:NSUTF8StringEncoding];
+
+	// Give to receiver.
+	id <TCParserCommand> receiver = _receiver;
+	
+	if ([receiver respondsToSelector:@selector(parser:parsedFileNameWithUUIDD:fileSize:blockSize:fileName:)])
+		[receiver parser:self parsedFileNameWithUUIDD:uuid fileSize:fileSize blockSize:blockSize fileName:fileName];
+	else
+		[self parserError:tcrec_cmd_filename withString:@"FileName: Not handled"];
 }
 
 - (void)parseFileData:(NSArray *)args
 {
-	
-#warning FIXME
-	
-	/*
-	if (args.size() < 4)
+	// Check args.
+	if ([args count] < 4)
     {
-		_parserError(tcrec_cmd_filedata, "Bad filedata argument");
-		
+		[self parserError:tcrec_cmd_filedata withString:@"Bad filedata argument"];
         return;
 	}
 	
-	std::string *data = createJoin(args, 3, " ");
+	// Parse command.
+	NSString	*uuid = [[NSString alloc] initWithData:args[0] encoding:NSASCIIStringEncoding];
+	NSString	*start = [[NSString alloc] initWithData:args[1] encoding:NSASCIIStringEncoding];
+	NSString	*hash = [[NSString alloc] initWithData:args[2] encoding:NSASCIIStringEncoding];
+	NSData		*data = [args joinFromIndex:3 withCStr:" "];
 	
-	if (data)
-	{
-		doFileData(args[0], args[1], args[2], *data);
-		
-		delete data;
-	}
+	// Give to receiver.
+	id <TCParserCommand> receiver = _receiver;
+	
+	if ([receiver respondsToSelector:@selector(parser:parsedFileDataWithUUID:start:hash:data:)])
+		[receiver parser:self parsedFileDataWithUUID:uuid start:start hash:hash data:data];
 	else
-		doFileData(args[0], args[1], args[2], "");
-	 */
+		[self parserError:tcrec_cmd_filedata withString:@"FileData: Not handled"];
 }
 
 - (void)parseFileDataOk:(NSArray *)args
 {
-	
-#warning FIXME
-	
-	/*
-	if (args.size() != 2)
+	// Check args.
+	if ([args count] != 2)
     {
-		_parserError(tcrec_cmd_filedataok, "Bad filedataok argument");
+		[self parserError:tcrec_cmd_filedataok withString:@"Bad filedataok argument"];
         return;
 	}
 	
-	doFileDataOk(args[0], args[1]);
-	 */
+	// Parse command.
+	NSString	*uuid = [[NSString alloc] initWithData:args[0] encoding:NSASCIIStringEncoding];
+	NSString	*start = [[NSString alloc] initWithData:args[1] encoding:NSASCIIStringEncoding];
+	
+	// Give to receiver.
+	id <TCParserCommand> receiver = _receiver;
+	
+	if ([receiver respondsToSelector:@selector(parser:parsedFileDataOkWithUUID:start:)])
+		[receiver parser:self parsedFileDataOkWithUUID:uuid start:start];
+	else
+		[self parserError:tcrec_cmd_filedataok withString:@"FileDataOk: Not handled"];
 }
 
 - (void)parseFileDataError:(NSArray *)args
 {
-	
-#warning FIXME
-	
-	/*
-	if (args.size() != 2)
+	// Check args.
+	if ([args count] != 2)
     {
-		_parserError(tcrec_cmd_filedataerror, "Bad filedataerror argument");
+		[self parserError:tcrec_cmd_filedataerror withString:@"Bad filedataerror argument"];
         return;
 	}
 	
-	doFileDataError(args[0], args[1]);
-	 */
+	// Parse command.
+	NSString	*uuid = [[NSString alloc] initWithData:args[0] encoding:NSASCIIStringEncoding];
+	NSString	*start = [[NSString alloc] initWithData:args[1] encoding:NSASCIIStringEncoding];
+	
+	// Give to receiver.
+	id <TCParserCommand> receiver = _receiver;
+	
+	if ([receiver respondsToSelector:@selector(parser:parsedFileDataErrorWithUUID:start:)])
+		[receiver parser:self parsedFileDataErrorWithUUID:uuid start:start];
+	else
+		[self parserError:tcrec_cmd_filedataerror withString:@"FileDataError: Not handled"];
 }
 
 - (void)parseFileStopSending:(NSArray *)args
 {
-	/*
-	if (args.size() != 1)
+	// Check args.
+	if ([args count] != 1)
     {
-		_parserError(tcrec_cmd_filestopsending, "Bad filestopsending argument");
+		[self parserError:tcrec_cmd_filestopsending withString:@"Bad filestopsending argument"];
         return;
 	}
 	
-	doFileStopSending(args[0]);
-	 */
+	// Parse command.
+	NSString *uuid = [[NSString alloc] initWithData:args[0] encoding:NSASCIIStringEncoding];
+	
+	// Give to receiver.
+	id <TCParserCommand> receiver = _receiver;
+	
+	if ([receiver respondsToSelector:@selector(parser:parsedFileStopSendingWithUUID:)])
+		[receiver parser:self parsedFileStopSendingWithUUID:uuid];
+	else
+		[self parserError:tcrec_cmd_filestopsending withString:@"FileStopSending: Not handled"];
 }
 
 - (void)parseFileStopReceiving:(NSArray *)args
 {
-	
-#warning FIXME
-	
-	/*
-	if (args.size() != 1)
+	// Check args.
+	if ([args count] != 1)
     {
-		_parserError(tcrec_cmd_filestopreceiving, "Bad filestopreceiving argument");
+		[self parserError:tcrec_cmd_filestopreceiving withString:@"Bad filestopreceiving argument"];
         return;
 	}
 	
-	doFileStopReceiving(args[0]);
-	 */
+	// Parse command.
+	NSString *uuid = [[NSString alloc] initWithData:args[0] encoding:NSASCIIStringEncoding];
+	
+	// Give to receiver.
+	id <TCParserCommand> receiver = _receiver;
+	
+	if ([receiver respondsToSelector:@selector(parser:parsedFileStopReceivingWithUUID:)])
+		[receiver parser:self parsedFileStopReceivingWithUUID:uuid];
+	else
+		[self parserError:tcrec_cmd_filestopreceiving withString:@"FileStopReceiving: Not handled"];
 }
 
 
@@ -459,410 +525,3 @@
 }
 
 @end
-
-
-#if 0
-/*
-** TCParser - Parsing
-*/
-#pragma mark - TCParser - Parsing
-
-// == Give a line to to be parsed to the parser ==
-void TCParser::parseLine(const std::string &line)
-{
-	// Unscape protocol special chars
-	std::string *l1 = createReplaceAll(line, "\\n", "\n");
-	std::string *l2 = createReplaceAll(*l1, "\\/", "\\");
-		
-	// Eplode the line with spaces
-	std::vector<std::string> *exp = createExplode(*l2, " ");
-	
-	// Parse the array
-	_parseCommand(*exp);
-	
-	// Free memory
-	delete l1;
-	delete l2;
-	delete exp;	
-}
-
-
-
-/*
-** TCParser - Command
-*/
-#pragma mark - TCParser - Command
-
-// -- To be overwritten --
-void TCParser::doPing(const std::string &address, const std::string &random)
-{
-	_parserError(tcrec_cmd_ping, "Ping: Not handled");
-}
-
-void TCParser::doPong(const std::string &random)
-{
-	_parserError(tcrec_cmd_pong, "Pong: Not handled");
-}
-
-void TCParser::doStatus(const std::string &status)
-{
-	_parserError(tcrec_cmd_status, "Status: Not handled");
-}
-
-void TCParser::doMessage(const std::string &message)
-{
-	_parserError(tcrec_cmd_message, "Message: Not handled");
-}
-
-void TCParser::doVersion(const std::string &version)
-{
-	_parserError(tcrec_cmd_version, "Version: Not handled");
-}
-
-void TCParser::doClient(const std::string &client)
-{
-	_parserError(tcrec_cmd_client, "Client: Not handled");
-}
-
-void TCParser::doProfileText(const std::string &text)
-{
-	_parserError(tcrec_cmd_profile_text, "Profile Text: Not handled");
-}
-
-void TCParser::doProfileName(const std::string &name)
-{
-	_parserError(tcrec_cmd_profile_name, "Profile Name: Not handled");
-}
-
-void TCParser::doProfileAvatar(const std::string &bitmap)
-{
-	_parserError(tcrec_cmd_profile_avatar, "Profile Avatar: Not handled");
-}
-
-void TCParser::doProfileAvatarAlpha(const std::string &bitmap)
-{
-	_parserError(tcrec_cmd_profile_avatar_alpha, "Profile Avatar Alpha: Not handled");
-}
-
-void TCParser::doAddMe()
-{
-	_parserError(tcrec_cmd_addme, "AddMe:  Not handled");
-}
-
-void TCParser::doRemoveMe()
-{
-	_parserError(tcrec_cmd_removeme, "RemoveMe: Not handled");
-}
-
-void TCParser::doFileName(const std::string &uuid, const std::string &fsize, const std::string &bsize, const std::string &filename)
-{
-	_parserError(tcrec_cmd_filename, "FileName: Not handled");
-}
-
-void TCParser::doFileData(const std::string &uuid, const std::string &start, const std::string &hash, const std::string &data)
-{
-	_parserError(tcrec_cmd_filedata, "FileData: Not handled");
-}
-
-void TCParser::doFileDataOk(const std::string &uuid, const std::string &start)
-{
-	_parserError(tcrec_cmd_filedataok, "FileDataOk: Not handled");
-}
-
-void TCParser::doFileDataError(const std::string &uuid, const std::string &start)
-{
-	_parserError(tcrec_cmd_filedataerror, "FileDataError: Not handled");
-}
-
-void TCParser::doFileStopSending(const std::string &uuid)
-{
-	_parserError(tcrec_cmd_filestopsending, "FileStopSending: Not handled");
-}
-
-void TCParser::doFileStopReceiving(const std::string &uuid)
-{
-	_parserError(tcrec_cmd_filestopreceiving, "FileStopReceiving: Not handled");
-}
-
-
-
-/*
-** TCParser - Error
-*/
-#pragma mark - TCParser - Error
-
-void TCParser::parserError(TCInfo *info)
-{
-	fprintf(stderr, "Unhandled error (%s)\n", info->render().c_str());
-}
-
-
-
-/*
-** TCParser - Parser
-*/
-#pragma mark - TCParser - Parser
-
-void TCParser::_parseCommand(std::vector<std::string> &items)
-{
-	if (items.size() == 0)
-        return;
-    
-    std::string command = items[0];
-	
-	items.erase(items.begin());
-	
-    // Dispatch command
-    if (command.compare("ping") == 0)
-        _parsePing(items);
-    else if (command.compare("pong") == 0)
-        _parsePong(items);
-    else if (command.compare("status") == 0)
-        _parseStatus(items);
-    else if (command.compare("version") == 0)
-        _parseVersion(items);
-	else if (command.compare("client") == 0)
-        _parseClient(items);
-	else if (command.compare("profile_name") == 0)
-        _parseProfileName(items);
-	else if (command.compare("profile_text") == 0)
-        _parseProfileText(items);
-	else if (command.compare("profile_avatar_alpha") == 0)
-        _parseProfileAvatarAlpha(items);
-	else if (command.compare("profile_avatar") == 0)
-        _parseProfileAvatar(items);
-	else if (command.compare("message") == 0)
-        _parseMessage(items);
-	else if (command.compare("add_me") == 0)
-        _parseAddMe(items);
-	else if (command.compare("remove_me") == 0)
-        _parseRemoveMe(items);
-	else if (command.compare("filename") == 0)
-        _parseFileName(items);
-	else if (command.compare("filedata") == 0)
-        _parseFileData(items);
-	else if (command.compare("filedata_ok") == 0)
-        _parseFileDataOk(items);
-	else if (command.compare("filedata_error") == 0)
-        _parseFileDataError(items);
-	else if (command.compare("file_stop_sending") == 0)
-        _parseFileStopSending(items);
-	else if (command.compare("file_stop_receiving") == 0)
-        _parseFileStopReceiving(items);
-    else
-	{
-		char buffer[1024];
-		
-		snprintf(buffer, sizeof(buffer), "Unknown command '%s'", command.c_str());
-		
-		_parserError(tcrec_unknown_command, buffer);
-	}
-}
-
-void TCParser::_parsePing(const std::vector<std::string> &args)
-{
-	if (args.size() != 2)
-    {
-		_parserError(tcrec_cmd_ping, "Bad ping argument");
-        return;
-    }
-	
-	doPing(args[0], args[1]);
-}
-
-void TCParser::_parsePong(const std::vector<std::string> &args)
-{
-	if (args.size() != 1)
-    {
-		_parserError(tcrec_cmd_pong, "Bad pong argument");
-        return;
-	}
-	
-	doPong(args[0]);
-}
-
-void TCParser::_parseStatus(const std::vector<std::string> &args)
-{
-	if (args.size() != 1)
-    {
-		_parserError(tcrec_cmd_status, "Bad status argument");
-        return;
-	}
-	
-	doStatus(args[0]);
-}
-
-void TCParser::_parseVersion(const std::vector<std::string> &args)
-{
-	if (args.size() != 1)
-    {
-		_parserError(tcrec_cmd_version, "Bad version argument");
-        return;
-	}
-	
-	doVersion(args[0]);
-}
-
-void TCParser::_parseClient(const std::vector<std::string> &args)
-{
-	if (args.size() == 0)
-    {
-		_parserError(tcrec_cmd_version, "Empty client argument");
-        return;
-	}
-	
-	std::string *text = createJoin(args, " ");
-	
-	doClient(*text);
-	
-	delete text;
-}
-
-void TCParser::_parseProfileText(const std::vector<std::string> &args)
-{
-	std::string *text = createJoin(args, " ");
-
-	doProfileText(*text);
-	
-	delete text;
-}
-
-void TCParser::_parseProfileName(const std::vector<std::string> &args)
-{
-	std::string *name = createJoin(args, " ");
-	
-	doProfileName(*name);
-	
-	delete name;
-}
-
-void TCParser::_parseProfileAvatar(const std::vector<std::string> &args)
-{
-	std::string *bitmap = createJoin(args, " ");
-	
-	doProfileAvatar(*bitmap);
-	
-	delete bitmap;
-}
-
-void TCParser::_parseProfileAvatarAlpha(const std::vector<std::string> &args)
-{
-	std::string *bitmap = createJoin(args, " ");
-	
-	doProfileAvatarAlpha(*bitmap);
-	
-	delete bitmap;
-}
-
-void TCParser::_parseMessage(const std::vector<std::string> &args)
-{
-	if (args.size() == 0)
-    {
-		_parserError(tcrec_cmd_message, "Empty message content");
-        return;
-	}
-	
-	std::string * msg = createJoin(args, " ");
-	
-	doMessage(*msg);
-	
-	delete msg;
-}
-
-void TCParser::_parseAddMe(const std::vector<std::string> &args)
-{
-	doAddMe();
-}
-
-void TCParser::_parseRemoveMe(const std::vector<std::string> &args)
-{
-	doRemoveMe();
-}
-
-void TCParser::_parseFileName(const std::vector<std::string> &args)
-{
-	if (args.size() != 4)
-    {
-		_parserError(tcrec_cmd_filename, "Bad filename argument");
-        return;
-	}
-	
-	doFileName(args[0], args[1], args[2], args[3]);
-}
-
-void TCParser::_parseFileData(const std::vector<std::string> &args)
-{
-	if (args.size() < 4)
-    {
-		_parserError(tcrec_cmd_filedata, "Bad filedata argument");
-		
-        return;
-	}
-	
-	std::string *data = createJoin(args, 3, " ");
-	
-	if (data)
-	{
-		doFileData(args[0], args[1], args[2], *data);
-		
-		delete data;
-	}
-	else
-		doFileData(args[0], args[1], args[2], "");
-}
-
-void TCParser::_parseFileDataOk(const std::vector<std::string> &args)
-{
-	if (args.size() != 2)
-    {
-		_parserError(tcrec_cmd_filedataok, "Bad filedataok argument");
-        return;
-	}
-	
-	doFileDataOk(args[0], args[1]);
-}
-
-void TCParser::_parseFileDataError(const std::vector<std::string> &args)
-{
-	if (args.size() != 2)
-    {
-		_parserError(tcrec_cmd_filedataerror, "Bad filedataerror argument");
-        return;
-	}
-
-	doFileDataError(args[0], args[1]);
-}
-
-void TCParser::_parseFileStopSending(const std::vector<std::string> &args)
-{
-	if (args.size() != 1)
-    {
-		_parserError(tcrec_cmd_filestopsending, "Bad filestopsending argument");
-        return;
-	}
-	
-	doFileStopSending(args[0]);
-}
-
-void TCParser::_parseFileStopReceiving(const std::vector<std::string> &args)
-{
-	if (args.size() != 1)
-    {
-		_parserError(tcrec_cmd_filestopreceiving, "Bad filestopreceiving argument");
-        return;
-	}
-
-	doFileStopReceiving(args[0]);
-}
-
-
-void TCParser::_parserError(tcrec_error error, const char *info)
-{
-	TCInfo *err = new TCInfo(tcinfo_error, error, info);
-	
-	parserError(err);
-	
-	err->release();
-}
-
-#endif
