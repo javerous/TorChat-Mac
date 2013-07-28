@@ -1,5 +1,5 @@
 /*
- *  NSData+TCTools.h
+ *  NSArray+TCTools.h
  *
  *  Copyright 2012 Avérous Julien-Pierre
  *
@@ -24,25 +24,13 @@
 
 
 /*
-** NSData (TCTools)
+** NSArray (TCTools)
 */
-#pragma mark - NSData (TCTools)
+#pragma mark - NSArray (TCTools)
 
-@interface NSData (TCTools)
+@interface NSArray (TCTools)
 
-- (NSArray *)explodeWithCStr:(const char *)str;
-
-@end
-
-
-
-/*
-** NSMutableData (TCTools)
-*/
-#pragma mark - NSMutableData (TCTools)
-
-@interface NSMutableData (TCTools)
-
-- (void)replaceCStr:(const char *)str withCStr:(const char *)replace;
+- (NSData *)joinWithCStr:(const char *)str;
+- (NSData *)joinFromIndex:(NSUInteger)index withCStr:(const char *)str;
 
 @end

@@ -1,5 +1,5 @@
 /*
- *  NSData+TCTools.h
+ *  NSArray+TCTools.m
  *
  *  Copyright 2012 Avérous Julien-Pierre
  *
@@ -20,29 +20,45 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import "NSArray+TCTools.h"
 
 
 /*
-** NSData (TCTools)
+** NSArray (TCTools)
 */
-#pragma mark - NSData (TCTools)
+#pragma mark - NSArray (TCTools)
 
-@interface NSData (TCTools)
+@implementation NSArray (TCTools)
 
-- (NSArray *)explodeWithCStr:(const char *)str;
+- (NSData *)joinWithCStr:(const char *)str
+{
+	return [self joinFromIndex:0 withCStr:str];
+}
 
-@end
+- (NSData *)joinFromIndex:(NSUInteger)index withCStr:(const char *)str
+{
+	NSMutableData	*result = [[NSMutableData alloc] init];
+	NSUInteger		i, count = [self count];
+	size_t			str_len;
+	
+	if (str)
+		str_len = strlen(str);
+	
+	for (i = index; i < count; i++)
+	{
+		id object = [self objectAtIndex:i];
+		
+		if ([object isKindOfClass:[NSData class]] == NO)
+			continue;
+		
+		if ([result length] > 0 && str_len > 0)
+			[result appendBytes:str length:str_len];
+		
+		[result appendData:object];
+	}
+	
+	return result;
+}
 
-
-
-/*
-** NSMutableData (TCTools)
-*/
-#pragma mark - NSMutableData (TCTools)
-
-@interface NSMutableData (TCTools)
-
-- (void)replaceCStr:(const char *)str withCStr:(const char *)replace;
 
 @end
