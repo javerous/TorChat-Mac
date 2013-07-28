@@ -28,8 +28,6 @@
 #import "TCLogsController.h"
 #import "TCBuddiesController.h"
 
-#import "TCImageExtension.h"
-
 #include "TCBuddy.h"
 #include "TCInfo.h"
 #include "TCString.h"
@@ -594,8 +592,8 @@ static char gMainQueueContext;
 			
 			case tcbuddy_notify_profile_avatar:
 			{
-				TCImage			*img = dynamic_cast<TCImage *>(info->context());
-				NSImage			*avatar = [[NSImage alloc] initWithTCImage:img];
+				TCImage			*img = (__bridge TCImage *)(info->context());
+				NSImage			*avatar = [img imageRepresentation];
 				NSDictionary	*uinfo;
 				
 				// If no avatar, use standard user

@@ -40,7 +40,6 @@
 		E8455D4617A4386C0046307B /* NSData+TCTools.m in Sources */ = {isa = PBXBuildFile; fileRef = E8455D4517A438660046307B /* NSData+TCTools.m */; };
 		E849F93711F5E8F300193F06 /* engrenage.png in Resources */ = {isa = PBXBuildFile; fileRef = E849F93611F5E8F300193F06 /* engrenage.png */; };
 		E85310F812F8170E009FC05B /* logs.png in Resources */ = {isa = PBXBuildFile; fileRef = E85310F712F8170E009FC05B /* logs.png */; };
-		E854FDF912F7FD88009C2E5E /* TCImageExtension.mm in Sources */ = {isa = PBXBuildFile; fileRef = E854FDF812F7FD88009C2E5E /* TCImageExtension.mm */; };
 		E854FDFC12F8082C009C2E5E /* TCBuddyCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E854FDFB12F8082C009C2E5E /* TCBuddyCell.m */; };
 		E858C4271208066400A51F7A /* TCObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = E858C4261208066400A51F7A /* TCObject.mm */; };
 		E85903B211EC9877005CE53F /* TCTools.mm in Sources */ = {isa = PBXBuildFile; fileRef = E85903B011EC9877005CE53F /* TCTools.mm */; };
@@ -156,8 +155,6 @@
 		E8455D4517A438660046307B /* NSData+TCTools.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+TCTools.m"; sourceTree = "<group>"; };
 		E849F93611F5E8F300193F06 /* engrenage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = engrenage.png; sourceTree = "<group>"; };
 		E85310F712F8170E009FC05B /* logs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logs.png; sourceTree = "<group>"; };
-		E854FDF712F7FD88009C2E5E /* TCImageExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCImageExtension.h; path = Cocoa/TCImageExtension.h; sourceTree = "<group>"; };
-		E854FDF812F7FD88009C2E5E /* TCImageExtension.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = TCImageExtension.mm; path = Cocoa/TCImageExtension.mm; sourceTree = "<group>"; };
 		E854FDFA12F8082C009C2E5E /* TCBuddyCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCBuddyCell.h; path = Cocoa/TCBuddyCell.h; sourceTree = "<group>"; };
 		E854FDFB12F8082C009C2E5E /* TCBuddyCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCBuddyCell.m; path = Cocoa/TCBuddyCell.m; sourceTree = "<group>"; };
 		E858C4261208066400A51F7A /* TCObject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TCObject.mm; sourceTree = "<group>"; };
@@ -555,8 +552,6 @@
 			children = (
 				E889F09512531CFB000C36B2 /* TCStringExtension.h */,
 				E889F09612531CFB000C36B2 /* TCStringExtension.m */,
-				E854FDF712F7FD88009C2E5E /* TCImageExtension.h */,
-				E854FDF812F7FD88009C2E5E /* TCImageExtension.mm */,
 			);
 			name = Extension;
 			sourceTree = "<group>";
@@ -789,7 +784,6 @@
 				E82B7D7A125A08A800B7BA8A /* TCPrefController.mm in Sources */,
 				E82B7D8F125A115400B7BA8A /* TCMainController.mm in Sources */,
 				E8C1EFF312F7169400E24C42 /* TCImage.mm in Sources */,
-				E854FDF912F7FD88009C2E5E /* TCImageExtension.mm in Sources */,
 				E854FDFC12F8082C009C2E5E /* TCBuddyCell.m in Sources */,
 				E874146B12FAE0C200BD4862 /* TCDropButton.m in Sources */,
 				E88879FF1303EA9F00C7D60E /* TCDragImageView.m in Sources */,

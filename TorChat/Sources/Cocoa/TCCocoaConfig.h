@@ -87,7 +87,7 @@ public:
 	void			set_profile_text(const std::string & text);
 	
 	TCImage *		get_profile_avatar();
-	void			set_profile_avatar(const TCImage & picture);
+	void			set_profile_avatar(const TCImage * picture);
 	
 	// -- Buddies --
 	const tc_darray	&buddies();

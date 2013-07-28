@@ -75,7 +75,7 @@ TCController::TCController(TCConfig *_config) :
 	pavatar = config->get_profile_avatar();
 	
 	if (!pavatar)
-		pavatar = new TCImage(64, 64);
+		pavatar = [[TCImage alloc] initWithWidth:64 andHeight:64];
 	
 	// Get profile name & text
 	pname = new TCString(config->get_profile_name());
@@ -118,9 +118,6 @@ TCController::~TCController()
 	
 	// Release config
 	config->release();
-	
-	// Release avatar
-	pavatar->release();
 }
 
 
@@ -424,18 +421,13 @@ void TCController::setProfileAvatar(TCImage *image)
 	if (!image)
 		return;
 	
-	image->retain();
-	
 	// Set the avatar
 	dispatch_async_cpp(this, mainQueue, ^{
-		
-		if (pavatar)
-			pavatar->release();
 		
 		pavatar = image;
 		
 		// Store avatar
-		config->set_profile_avatar(*pavatar);
+		config->set_profile_avatar(pavatar);
 		
 		// Give this avatar to buddy list
 		size_t i, cnt = cnt = buddies.size();
@@ -448,7 +440,7 @@ void TCController::setProfileAvatar(TCImage *image)
 		}
 		
 		// Notify
-		_notify(tcctrl_notify_profile_avatar, "core_ctrl_note_profile_avatar", pavatar);
+		_notify(tcctrl_notify_profile_avatar, "core_ctrl_note_profile_avatar", (__bridge TCObject *)pavatar);
 	});
 }
 
@@ -459,10 +451,7 @@ TCImage * TCController::profileAvatar()
 	dispatch_sync_cpp(this, mainQueue, ^{
 
 		if (pavatar)
-		{
-			pavatar->retain();
-			result = pavatar;
-		}
+			result = [pavatar copy];
 	});
 	
 	return result;
