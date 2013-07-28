@@ -150,8 +150,8 @@ TCBuddy::TCBuddy(TCConfig *_config, const std::string &_alias, const std::string
 	// Init profiles
 	profileName = new TCString("");
 	profileText = new TCString("");
-	profileAvatar = new TCImage(64, 64);
-	
+	profileAvatar = [[TCImage alloc] initWithWidth:64 andHeight:64];
+		
 	// Init remotes
 	peerClient = new TCString("");
 	peerVersion = new TCString("");
@@ -207,7 +207,7 @@ TCBuddy::~TCBuddy()
 	// Release profile
 	profileName->release();
 	profileText->release();
-	profileAvatar->release();
+	profileAvatar = nil;
 	
 	// Release
 	peerClient->release();
@@ -746,15 +746,11 @@ void TCBuddy::sendAvatar(TCImage *avatar)
 {
 	if (!avatar)
 		return;
-
-	avatar->retain();
 	
 	dispatch_async_cpp(this, mainQueue, ^{
 
 		if (pongSent && ponged && !mblocked)		
 			_sendAvatar(avatar);
-		
-		avatar->release();
 	});
 }
 
@@ -888,7 +884,6 @@ void TCBuddy::startHandshake(TCString *rrandom, tccontroller_status status, TCIm
 		return;
 		
 	rrandom->retain();
-	avatar->retain();
 	name->retain();
 	text->retain();
 	
@@ -909,7 +904,6 @@ void TCBuddy::startHandshake(TCString *rrandom, tccontroller_status status, TCIm
 		}
 		
 		rrandom->release();
-		avatar->release();
 		name->release();
 		text->release();
 	});
@@ -1189,10 +1183,10 @@ void TCBuddy::doProfileAvatar(const std::string &bitmap)
 		
 		if (!mblocked)
 		{
-			profileAvatar->setBitmap(abitmap->data(), abitmap->size());
+			[profileAvatar setBitmap:[[NSData alloc] initWithBytes:abitmap->data() length:abitmap->size()]];
 		
 			// Notify it
-			_notify(tcbuddy_notify_profile_avatar, "core_bd_note_new_profile_avatar", profileAvatar);
+			_notify(tcbuddy_notify_profile_avatar, "core_bd_note_new_profile_avatar", (__bridge TCObject *)profileAvatar);
 		}
 		
 		// Clean
@@ -1207,7 +1201,7 @@ void TCBuddy::doProfileAvatarAlpha(const std::string &bitmap)
 	dispatch_async_cpp(this, mainQueue, ^{
 		
 		if (!mblocked)
-			profileAvatar->setAlphaBitmap(abitmap->data(), abitmap->size());
+			[profileAvatar setBitmapAlpha:[[NSData alloc] initWithBytes:abitmap->data() length:abitmap->size()]];
 		
 		delete abitmap;
 	});
@@ -1572,8 +1566,6 @@ TCImage * TCBuddy::getProfileAvatar()
 	__block TCImage * result = NULL;
 	
 	dispatch_sync_cpp(this, mainQueue, ^{
-		
-		profileAvatar->retain();
 		result = profileAvatar;
 	});
 
@@ -1737,16 +1729,16 @@ void TCBuddy::_sendAvatar(TCImage *avatar)
 	if (!avatar)
 		return;
 	
-	if (avatar->getBitmapAlpha())
+	if ([avatar bitmapAlpha])
 	{
-		std::string data((char *)avatar->getBitmapAlpha(), avatar->getBitmapAlphaSize());
+		std::string data((char *)[[avatar bitmapAlpha] bytes], [[avatar bitmapAlpha] length]);
 		
 		_sendCommand("profile_avatar_alpha", data);
 	}
 
-	if (avatar->getBitmap())
+	if ([avatar bitmap])
 	{
-		std::string data((char *)avatar->getBitmap(), avatar->getBitmapSize());
+		std::string data((char *)[[avatar bitmap] bytes], [[avatar bitmap] length]);
 		
 		_sendCommand("profile_avatar", data);
 	}

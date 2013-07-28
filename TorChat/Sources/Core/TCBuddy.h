@@ -49,7 +49,7 @@ class TCConfig;
 class TCFileReceive;
 class TCFileSend;
 class TCString;
-class TCImage;
+@class TCImage;
 class TCArray;
 class TCNumber;
 

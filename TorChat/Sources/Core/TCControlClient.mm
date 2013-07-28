@@ -245,7 +245,6 @@ void TCControlClient::doPing(const std::string &caddress, const std::string &cra
 	
 	// Release
 	abuddy->release();
-	avatar->release();
 	trandom->release();
 	pname->release();
 	ptext->release();
