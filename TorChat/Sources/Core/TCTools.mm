@@ -186,77 +186,61 @@ std::string * createMD5(const void *data, size_t size)
 // == Encode to base 64 a chunk of data ==
 std::string * createEncodeBase64(const void *data, size_t size)
 {
-	BIO		*bmem, *b64;
-	BUF_MEM	*bptr;
+	if (!data || size == 0)
+		return NULL;
 	
-	// Create BIO
-	b64 = BIO_new(BIO_f_base64());
-	bmem = BIO_new(BIO_s_mem());
+	NSData			*input = [[NSData alloc] initWithBytesNoCopy:(void *)data length:size];
+	NSData			*output = nil;
+	SecTransformRef transform;
 	
-	b64 = BIO_push(b64, bmem);
+	// Create transform.
+	transform = SecEncodeTransformCreate(kSecBase64Encoding, NULL);
 	
-	// Write the data to encode
-	BIO_write(b64, data, (int)size);
-	(void)BIO_flush(b64);
-	BIO_get_mem_ptr(b64, &bptr);
-
-	// Build result
-	std::string *res = new std::string(bptr->data, (size_t)bptr->length); // Skip new line
+    if (!transform)
+        return nil;
 	
-	// Clean
-	BIO_free_all(b64);
+	// Execute transform.
+    if (SecTransformSetAttribute(transform, kSecTransformInputAttributeName, (__bridge CFTypeRef)input, NULL))
+        output = (__bridge_transfer NSData *)SecTransformExecute(transform, NULL);
 	
-	return res;
+	  CFRelease(transform);
+	
+	// Create string.
+	std::string *result = new std::string((char *)[output bytes], (size_t)[output length]);
+	
+    return result;
 }
 
 // == Decode from base 64 a chunk of data ==
 bool createDecodeBase64(const std::string &data, size_t *osize, void **odata)
 {
-	if (!osize || !odata)
+	if (!odata || !osize)
 		return false;
 	
-	BIO		*b64, *bmem;
-	int		readlen = -1;
-	uint8_t	*buffer;
+	NSString		*input = [[NSString alloc] initWithCString:data.c_str() encoding:NSASCIIStringEncoding];
+	NSData			*output = nil;
+	SecTransformRef transform;
 	
-
-	// Create BIO for base 64
-	b64 = BIO_new(BIO_f_base64());
-	if (!b64)
+	// Create transform.
+	transform = SecDecodeTransformCreate(kSecBase64Encoding, NULL);
+	
+    if (!transform)
+        return nil;
+	
+	// Execute transform.
+    if (SecTransformSetAttribute(transform, kSecTransformInputAttributeName, (__bridge CFTypeRef)input, NULL))
+        output = (__bridge_transfer NSData *)SecTransformExecute(transform, NULL);
+	
+	CFRelease(transform);
+	
+	// Create result.
+	if (!output)
 		return false;
 	
-	bmem = BIO_new_mem_buf((void *)data.data(), (int)data.size());
-	if (!bmem)
-		return false;
+	*odata = malloc([output length]);
+	*osize = [output length];
 	
-	b64 = BIO_push(b64, bmem);
-	if (!b64)
-		return false;
+	memcpy(*odata, [output bytes], [output length]);
 	
-	
-	// Read the data to decode
-	buffer = (uint8_t *)malloc(data.size() + 1);
-	
-	if (buffer)
-	{
-		readlen = BIO_read(b64, buffer, (int)data.size());
-		
-		if (readlen <= 0)
-			return false;
-		
-		buffer[readlen] = 0;
-	}
-	
-	// Free
-	BIO_free_all(b64);
-	
-	// Give result
-	if (readlen < 0)
-		*osize = static_cast<size_t>(-1);
-	else
-		*osize = static_cast<size_t>(readlen);
-	
-	*odata = buffer;
-	
-	return true;
+    return true;
 }
