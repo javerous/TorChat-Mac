@@ -247,8 +247,8 @@ void catch_signal(int sig);
 		// Build & handle pipe for tor task
 		NSPipe		*_errPipe = [[NSPipe alloc] init];
 		NSPipe		*_outPipe = [[NSPipe alloc] init];
-		TCBuffer	*_errBuffer = new TCBuffer();
-		TCBuffer	*_outBuffer = new TCBuffer();
+		TCBuffer	*_errBuffer = [[TCBuffer alloc] init];
+		TCBuffer	*_outBuffer =  [[TCBuffer alloc] init];
 		int			errFD = [[_errPipe fileHandleForReading] fileDescriptor];
 		int			outFD = [[_outPipe fileHandleForReading] fileDescriptor];
 		
@@ -257,8 +257,8 @@ void catch_signal(int sig);
 		outSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, (uintptr_t)outFD, 0, mainQueue);
 		
 		// Realease pipe when source canceled
-		dispatch_source_set_cancel_handler(errSource, ^{ _errBuffer->release(); });
-		dispatch_source_set_cancel_handler(outSource, ^{ _outBuffer->release(); });
+		dispatch_source_set_cancel_handler(errSource, ^{ });
+		dispatch_source_set_cancel_handler(outSource, ^{ });
 		
 		// Handle pipe data
 		dispatch_source_set_event_handler(errSource, ^{
@@ -269,15 +269,17 @@ void catch_signal(int sig);
 			
 			if (data && (res = read(errFD, data, size)) > 0)
 			{
-				std::string *line;
+				NSData *line;
 				
-				_errBuffer->appendData(data, (size_t)res, false);
-				line = _errBuffer->createStringSearch("\n", false);
+				[_errBuffer appendBytes:data ofSize:(NSUInteger)res copy:NO];
+
+				line = [_errBuffer dataUpToCStr:"\n" includeSearch:NO];
 				
-				while ((line = _outBuffer->createStringSearch("\n", false)))
+				while ((line = [_outBuffer dataUpToCStr:"\n" includeSearch:NO]))
 				{
-					[[TCLogsController sharedController] addGlobalLogEntry:@"tor_err_log", line->c_str()];
-					delete line;
+					NSString *string = [[NSString alloc] initWithData:line encoding:NSUTF8StringEncoding];
+					
+					[[TCLogsController sharedController] addGlobalLogEntry:@"tor_err_log", [string UTF8String]];
 				}
 			}
 			else
@@ -299,14 +301,15 @@ void catch_signal(int sig);
 			
 			if (data && (res = read(outFD, data, size)) > 0)
 			{
-				std::string *line;
+				NSData *line;
 				
-				_outBuffer->appendData(data, (size_t)res, false);
+				[_outBuffer appendBytes:data ofSize:(NSUInteger)res copy:NO];
 				
-				while ((line = _outBuffer->createStringSearch("\n", false)))
+				while ((line = [_outBuffer dataUpToCStr:"\n" includeSearch:NO]))
 				{
-					[[TCLogsController sharedController] addGlobalLogEntry:@"tor_out_log", line->c_str()];
-					delete line;
+					NSString *string = [[NSString alloc] initWithData:line encoding:NSUTF8StringEncoding];
+
+					[[TCLogsController sharedController] addGlobalLogEntry:@"tor_out_log", [string UTF8String]];
 				}
 			}
 			else
