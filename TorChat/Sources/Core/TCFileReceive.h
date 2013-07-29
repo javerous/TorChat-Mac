@@ -22,50 +22,27 @@
 
 
 
-#ifndef _TCFILRECEIVE_H_
-# define _TCFILRECEIVE_H_
-
-# include <string>
-
-# include "TCObject.h"
-
-
-
 /*
 ** TCFileReceive
 */
 #pragma mark - TCFileReceive
 
-class TCFileReceive : public TCObject
-{
-public:
-	// -- Instance ---
-	TCFileReceive(const std::string & uuid, const std::string & folder, const std::string & fileName, uint64_t fileSize, uint64_t blockSize);
-	~TCFileReceive();
-	
-	// -- Tools --
-	bool		writeChunk(const void *chunk, uint64_t chunksz, const std::string & hash, uint64_t *rOffset);
-	
-	bool		isFinished();
-	uint64_t	receivedSize();
+@interface TCFileReceive : NSObject
 
-	// -- Accessors --
-	const std::string &	uuid() const { return _uuid; };
-	uint64_t 			fileSize() const { return _fsize; };
-	uint64_t 			blockSize() const { return _bsize; };
-	const std::string & fileName() const { return _fname; };
-	const std::string & filePath() const { return _fpath; };
-	
-private:
-	FILE		*_file;
-	
-	std::string _uuid;
-	uint64_t	_fsize;
-	uint64_t	_bsize;
-	std::string	_fname;
-	std::string	_fpath;
-	
-	uint64_t	nextStart;
-};
+// -- Properties --
+@property (strong, nonatomic, readonly) NSString	*uuid;
+@property (assign, nonatomic, readonly) uint64_t	fileSize;
+@property (assign, nonatomic, readonly) uint64_t	blockSize;
+@property (strong, nonatomic, readonly) NSString	*fileName;
+@property (strong, nonatomic, readonly) NSString	*filePath;
 
-#endif
+// -- Instance --
+- (id)initWithUUID:(NSString *)uuid folder:(NSString *)folder fileName:(NSString *)fileName fileSize:(uint64_t)fileSize blockSiz:(uint64_t)blockSize;
+
+// -- Tools --
+- (BOOL)writeChunk:(const void *)bytes chunkSize:(uint64_t)chunkSize hash:(NSString *)hash offset:(uint64_t *)offset;
+
+- (BOOL)isFinished;
+- (uint64_t)receivedSize;
+
+@end
