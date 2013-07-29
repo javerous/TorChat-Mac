@@ -43,12 +43,11 @@ TCControlClient::TCControlClient(id <TCConfig> _conf, int _sock)
 	// Hold config
 	config = _conf;
 	
-	ctrl = NULL;
+	_ctrl = nil;
 	
 	// Build queue
 	mainQueue = dispatch_queue_create("com.torchat.core.controllclient.main", DISPATCH_QUEUE_SERIAL);
 
-	
 	// Init vars
 	running = false;
 	
@@ -61,9 +60,7 @@ TCControlClient::~TCControlClient()
 {
 	TCDebugLog("TCControlClient Destructor");
 	
-	if (ctrl)
-		ctrl->release();
-	
+	_ctrl = nil;
 	config = nil;
 	
 	if (sock)
@@ -83,13 +80,11 @@ void TCControlClient::start(TCController *controller)
 	if (!controller)
 		return;
 	
-	controller->retain();
-	
 	dispatch_async_cpp(this, mainQueue, ^{
 		
 		if (!running && sockd > 0)
 		{
-			ctrl = controller;
+			_ctrl = controller;
 			running = true;
 			
 			// Build a socket
@@ -102,8 +97,6 @@ void TCControlClient::start(TCController *controller)
 			// Notify
 			_notify(tcctrl_notify_client_started, "core_cctrl_note_started");
 		}
-		else
-			controller->release();
 	});
 }
 
@@ -129,9 +122,8 @@ void TCControlClient::stop()
 		// Notify
 		_notify(tcctrl_notify_client_stoped, "core_cctrl_note_stoped");
 		
-		// Release controller
-		ctrl->release();
-		ctrl = NULL;
+		// Remove ref to controller.
+		_ctrl = nil;
 	});
 }
 
@@ -151,7 +143,9 @@ void TCControlClient::doPing(const std::string &caddress, const std::string &cra
 	[sock scheduleOperation:tcsocket_op_line withSize:1 andTag:0];
 	
 	// Check blocked list
-	abuddy = ctrl->getBuddyAddress(caddress);
+	TCController *ctrl = _ctrl;
+	
+	abuddy = [ctrl buddyWithAddress:@(caddress.c_str())];
 	
 	if (abuddy)
 	{
@@ -188,7 +182,7 @@ void TCControlClient::doPing(const std::string &caddress, const std::string &cra
 	// but another incoming connection then this one must be a fake.
 	
 	if (ctrl)
-		abuddy = ctrl->getBuddyAddress(caddress);
+		abuddy = [ctrl buddyWithAddress:@(caddress.c_str())];
 	
 	if (abuddy && abuddy->isPonged())
 	{
@@ -217,9 +211,9 @@ void TCControlClient::doPing(const std::string &caddress, const std::string &cra
 	if (!abuddy)
 	{
 		if (ctrl)
-			ctrl->addBuddy([[config localized:@"core_cctrl_new_buddy"] UTF8String], caddress);
+			[ctrl addBuddy:[config localized:@"core_cctrl_new_buddy"] address:@(caddress.c_str())];
 		
-		abuddy = ctrl->getBuddyAddress(caddress);
+		abuddy = [ctrl buddyWithAddress:@(caddress.c_str())];
 		
 		if (!abuddy)
 		{
@@ -231,12 +225,12 @@ void TCControlClient::doPing(const std::string &caddress, const std::string &cra
 	
 	// ping messages must be answered with pong messages
 	// the pong must contain the same random string as the ping.
-	TCImage		*avatar = ctrl->profileAvatar();
+	TCImage		*avatar = [ctrl profileAvatar];
 	TCString	*trandom = new TCString(crandom);
-	TCString	*pname = ctrl->profileName();
-	TCString	*ptext = ctrl->profileText();
-	
-	abuddy->startHandshake(trandom, ctrl->status(), avatar, pname, ptext);
+	TCString	*pname = new TCString([[ctrl profileName] UTF8String]);
+	TCString	*ptext = new TCString([[ctrl profileText] UTF8String]);
+
+	abuddy->startHandshake(trandom, [ctrl status], avatar, pname, ptext);
 	
 	// Release
 	abuddy->release();
@@ -248,10 +242,11 @@ void TCControlClient::doPing(const std::string &caddress, const std::string &cra
 // == Handle Pong ==
 void TCControlClient::doPong(const std::string &crandom)
 {
-	TCBuddy *buddy = NULL;
+	TCBuddy			*buddy = NULL;
+	TCController	*ctrl = _ctrl;
 	
 	if (ctrl)
-		buddy = ctrl->getBuddyRandom(crandom);
+		buddy = [ctrl buddyWithRandom:@(crandom.c_str())];
 	
 	if (buddy)
 	{
@@ -428,10 +423,11 @@ void TCControlClient::socketError(TCSocket *socket, TCInfo *err)
 
 void TCControlClient::_error(tcctrl_info code, const std::string &info, bool fatal)
 {
-	TCInfo *err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String]);
+	TCController	*ctrl = _ctrl;
+	TCInfo			*err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String]);
 	
 	if (ctrl)
-		ctrl->cc_error(this, err);
+		[ctrl cc_error:this info:err];
 	
 	err->release();
 	
@@ -441,10 +437,11 @@ void TCControlClient::_error(tcctrl_info code, const std::string &info, bool fat
 
 void TCControlClient::_error(tcctrl_info code, const std::string &info, TCObject *ctx, bool fatal)
 {
-	TCInfo *err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String], ctx);
+	TCController	*ctrl = _ctrl;
+	TCInfo			*err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String], ctx);
 	
 	if (ctrl)
-		ctrl->cc_error(this, err);
+		[ctrl cc_error:this info:err];
 	
 	err->release();
 	
@@ -454,10 +451,11 @@ void TCControlClient::_error(tcctrl_info code, const std::string &info, TCObject
 
 void TCControlClient::_error(tcctrl_info code, const std::string &info, TCInfo *serr, bool fatal)
 {
-	TCInfo *err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String], serr);
+	TCController	*ctrl = _ctrl;
+	TCInfo			*err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String], serr);
 	
 	if (ctrl)
-		ctrl->cc_error(this, err);
+		[ctrl cc_error:this info:err];
 	
 	err->release();
 	
@@ -467,10 +465,11 @@ void TCControlClient::_error(tcctrl_info code, const std::string &info, TCInfo *
 
 void TCControlClient::_notify(tcctrl_info notice, const std::string &info)
 {
-	TCInfo *ifo = new TCInfo(tcinfo_info, notice, [[config localized:@(info.c_str())] UTF8String]);
+	TCController	*ctrl = _ctrl;
+	TCInfo			*ifo = new TCInfo(tcinfo_info, notice, [[config localized:@(info.c_str())] UTF8String]);
 	
 	if (ctrl)
-		ctrl->cc_notify(this, ifo);
+		[ctrl cc_notify:this info:ifo];
 	
 	ifo->release();
 }
