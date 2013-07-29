@@ -46,7 +46,7 @@
 
 class TCBuddy;
 class TCConfig;
-class TCFileReceive;
+@class TCFileReceive;
 @class TCFileSend;
 class TCString;
 @class TCImage;
@@ -335,9 +335,7 @@ private:
 
 	
 	// > File session
-	std::map<std::string, TCFileReceive *>	freceive;
-	//std::map<std::string, TCFileSend *>		fsend;
-	
+	NSMutableDictionary	*freceive;
 	NSMutableDictionary	*fsend;
 };
 
