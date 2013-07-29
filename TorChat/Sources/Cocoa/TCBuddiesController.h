@@ -34,7 +34,7 @@
 */
 #pragma mark - Forward
 
-class TCController;
+@class TCController;
 
 @class TCDropButton;
 

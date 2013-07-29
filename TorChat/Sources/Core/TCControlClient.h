@@ -96,7 +96,7 @@ private:
 	TCSocket				*sock;
 	
 	// > Controller
-	TCController			*ctrl;
+	__weak TCController		*_ctrl;
 	
 	// > Config
 	id <TCConfig>			config;

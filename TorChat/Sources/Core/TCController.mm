@@ -20,32 +20,88 @@
  *
  */
 
-
-
-#include <stdio.h>
-#include <errno.h>
-
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#include <string>
-#include <map>
+#import "TCController.h"
 
-#include <Block.h>
+#import "TCConfig.h"
+#import "TCImage.h"
 
-#include "TCController.h"
-
-#include "TCConfig.h"
-#include "TCBuddy.h"
-#include "TCTools.h"
-#include "TCImage.h"
-#include "TCNumber.h"
-#include "TCString.h"
-
-#include "TCControlClient.h"
+#import "TCControlClient.h"
+#import "TCBuddy.h"
+#import "TCString.h"
+#import "TCBuddy.h"
+#import "TCTools.h"
+#import "TCNumber.h"
 
 
+
+/*
+** TCController
+*/
+#pragma mark - TCController
+
+@interface TCController ()
+{
+	// -- Vars --
+	// > Main Queue
+	dispatch_queue_t		_mainQueue;
+	
+	// > Timer
+	dispatch_source_t		_timer;
+	
+	// > Accept Socket
+	dispatch_queue_t		_socketQueue;
+	dispatch_source_t		_socketAccept;
+	int						_sock;
+	
+	// > Buddies
+	BOOL					_buddiesLoaded;
+	std::vector<TCBuddy *>	_buddies;
+	
+	// > Config
+	id <TCConfig>			_config;
+	
+	// > Clients
+	std::vector<TCControlClient *> _clients;
+	
+	// > Status
+	bool					_running;
+	tccontroller_status		_mstatus;
+	
+	// > Delegate
+	dispatch_queue_t		_delegateQueue;
+	
+	// > Profile
+	TCImage					*_profileAvatar;
+	NSString				*_profileName;
+	NSString				*_profileText;
+}
+
+// -- Helpers --
+- (void)_addClient:(int)sock;
+- (void)_checkBlocked:(TCBuddy *)buddy;
+
+- (void)_error:(tcctrl_info)code info:(NSString *)info fatal:(BOOL)fatal;
+- (void)_error:(tcctrl_info)code info:(NSString *)info context:(TCObject *)ctx fatal:(BOOL)fatal;
+
+- (void)_notify:(tcctrl_info)notice info:(NSString *)info;
+- (void)_notify:(tcctrl_info)notice info:(NSString *)info context:(TCObject *)ctx;
+
+- (void)_sendEvent:(TCInfo *)info;
+
+@end
+
+
+
+/*
+** TCController
+*/
+#pragma mark - TCController
+
+@implementation TCController
 
 
 /*
@@ -53,89 +109,80 @@
 */
 #pragma mark - TCController - Instance
 
-TCController::TCController(id <TCConfig> _config) :
-	running(false)
+- (id)initWithConfiguration:(id <TCConfig>)config
 {
-	config = _config;
+	self = [super init];
 	
-	// Init vars
-	mstatus = tccontroller_available;
-	running = false;
-	socketAccept = 0;
+	if (self)
+	{
+		config = _config;
+		
+		// Init vars
+		_mstatus = tccontroller_available;
+
+		// Get profile avatar
+		_profileAvatar = [config profileAvatar];
+		
+		if (!_profileAvatar)
+			_profileAvatar = [[TCImage alloc] initWithWidth:64 andHeight:64];
+		
+		// Get profile name & text
+		_profileName = [config profileName];
+		_profileText = [config profileText];
+		
+		// Alloc queue
+		_mainQueue = dispatch_queue_create("com.torchat.core.controller.main", DISPATCH_QUEUE_SERIAL);
+		_socketQueue = dispatch_queue_create("com.torchat.core.controller.socket", DISPATCH_QUEUE_SERIAL);
+
+	}
 	
-	nQueue = 0;
-	nBlock = NULL;
-	
-	buddiesLoaded = false;
-	
-	timer = 0;
-	
-	// Get profile avatar
-	pavatar = [config profileAvatar];
-	
-	if (!pavatar)
-		pavatar = [[TCImage alloc] initWithWidth:64 andHeight:64];
-	
-	// Get profile name & text
-	pname = new TCString([[config profileName] UTF8String]);
-	ptext = new TCString([[config profileText] UTF8String]);
-	
-	// Alloc queue
-	mainQueue = dispatch_queue_create("com.torchat.core.controller.main", DISPATCH_QUEUE_SERIAL);
-	socketQueue = dispatch_queue_create("com.torchat.core.controller.socket", DISPATCH_QUEUE_SERIAL);
+	return self;
 }
 
-TCController::~TCController()
+- (void)dealloc
 {
 	TCDebugLog("TCController Destructor");
-
+	
 	// Close client
-	size_t i, cnt = clients.size();
-		
+	size_t i, cnt = _clients.size();
+	
 	for (i = 0; i < cnt; i++)
 	{
-		clients[i]->stop();
-		clients[i]->release();
+		_clients[i]->stop();
+		_clients[i]->release();
 	}
-		
-	clients.clear();
 	
+	_clients.clear();
 	
 	// Stop buddies
-	cnt = buddies.size();
-		
+	cnt = _buddies.size();
+	
 	for (i = 0; i < cnt; i++)
 	{
-		buddies[i]->stop();
-		buddies[i]->release();
+		_buddies[i]->stop();
+		_buddies[i]->release();
 	}
-	buddies.clear();
-		
-	// Release delegate
-	nBlock = nil;
-	nQueue = nil;
 	
-	// Release config
-	config = nil;
+	_buddies.clear();
 }
 
 
 
 /*
-** TCController - Running
+** TCController - Life
 */
-#pragma mark - TCController - Running
+#pragma mark - TCController - Life
 
-void TCController::start()
+- (void)start
 {
-	dispatch_async_cpp(this, mainQueue, ^{
+	dispatch_async(_mainQueue, ^{
 		
-		if (running)
+		if (_running)
 			return;
 		
-		if (!buddiesLoaded)
+		if (!_buddiesLoaded)
 		{
-			NSArray *sbuddies = [config buddies];
+			NSArray *sbuddies = [_config buddies];
 			size_t	i, cnt;
 			
 			//  -- Parse buddies --
@@ -144,27 +191,27 @@ void TCController::start()
 			for (i = 0; i < cnt; i++)
 			{
 				NSDictionary	*item = sbuddies[i];
-				TCBuddy			*buddy = new TCBuddy(config, [item[TCConfigBuddyAlias] UTF8String], [item[TCConfigBuddyAddress] UTF8String], [item[TCConfigBuddyNotes] UTF8String]);
+				TCBuddy			*buddy = new TCBuddy(_config, [item[TCConfigBuddyAlias] UTF8String], [item[TCConfigBuddyAddress] UTF8String], [item[TCConfigBuddyNotes] UTF8String]);
 				
 				// Check blocked status
-				_checkBlocked(buddy);
+				[self _checkBlocked:buddy];
 				
 				// Add to list
-				buddies.push_back(buddy);
+				_buddies.push_back(buddy);
 				
 				// Notify
-				_notify(tcctrl_notify_buddy_new, "core_ctrl_note_new_buddy", buddy);
+				[self _notify:tcctrl_notify_buddy_new info:@"core_ctrl_note_new_buddy" context:buddy];
 			}
 			
 			// -- Check that we are on the buddy list --
 			bool				found = false;
-			const std::string	self_address = [[config selfAddress] UTF8String];
+			const std::string	self_address = [[_config selfAddress] UTF8String];
 			
-			cnt = buddies.size();
+			cnt = _buddies.size();
 			
 			for (i = 0; i < cnt; i++)
 			{
-				TCBuddy	*buddy = buddies[i];
+				TCBuddy	*buddy = _buddies[i];
 				
 				if (buddy->address().content().compare(self_address) == 0)
 				{
@@ -174,66 +221,66 @@ void TCController::start()
 			}
 			
 			if (!found)
-				addBuddy([[config localized:@"core_ctrl_myself"] UTF8String], self_address);
+				[self addBuddy:[_config localized:@"core_ctrl_myself"] address:@(self_address.c_str())];
 			
 			// -- Buddy are loaded --
-			buddiesLoaded = true;
+			_buddiesLoaded = true;
 		}
 		
-		// -- Start command server -- 
+		// -- Start command server --
 		struct sockaddr_in	my_addr;
 		int					yes = 1;
-				
+		
 		// > Configure the port and address
 		my_addr.sin_family = AF_INET;
-		my_addr.sin_port = htons([config clientPort]);
+		my_addr.sin_port = htons([_config clientPort]);
 		my_addr.sin_addr.s_addr = INADDR_ANY;
 		memset(&(my_addr.sin_zero), '\0', 8);
-				
+		
 		// > Instanciate the listening socket
-		if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+		if ((_sock = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 		{
-			_error(tcctrl_error_serv_socket, "core_ctrl_err_socket", true);
+			[self _error:tcctrl_error_serv_socket info:@"core_ctrl_err_socket" fatal:YES];
 			return;
 		}
 		
 		// > Reuse the port
-		if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
+		if (setsockopt(_sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
 		{
-			_error(tcctrl_error_serv_socket, "core_ctrl_err_setsockopt", true);
+			[self _error:tcctrl_error_serv_socket info:@"core_ctrl_err_setsockopt" fatal:YES];
 			return;
 		}
 		
 		// > Bind the socket to the configuration perviously set
-		if (bind(sock, (struct sockaddr *)&my_addr, sizeof(struct sockaddr)) == -1)
+		if (bind(_sock, (struct sockaddr *)&my_addr, sizeof(struct sockaddr)) == -1)
 		{
-			_error(tcctrl_error_serv_socket, "core_ctrl_err_bind", true);
-			return;	
+			[self _error:tcctrl_error_serv_socket info:@"core_ctrl_err_bind" fatal:YES];
+			return;
 		}
 		
 		// > Set the socket as a listening socket
-		if (listen(sock, 10) == -1)
+		if (listen(_sock, 10) == -1)
 		{
-			_error(tcctrl_error_serv_socket, "core_ctrl_err_listen", true);
-			return;	
+			[self _error:tcctrl_error_serv_socket info:@"core_ctrl_err_listen" fatal:YES];
+			return;
 		}
 		
 		// > Build a source
-		socketAccept = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, (uintptr_t)sock, 0, socketQueue);
+		_socketAccept = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, (uintptr_t)_sock, 0, _socketQueue);
 		
 		// > Set the read handler
-		dispatch_source_set_event_handler_cpp(this, socketAccept, ^{
+		dispatch_source_set_event_handler(_socketAccept, ^{
 			
 			unsigned int		sin_size = sizeof(struct sockaddr);
 			struct sockaddr_in	their_addr;
 			int					csock;
 			
-			csock = accept(sock, (struct sockaddr *)&their_addr, &sin_size);
+			csock = accept(_sock, (struct sockaddr *)&their_addr, &sin_size);
 			
 			if (csock == -1)
 			{
-				dispatch_async_cpp(this, mainQueue, ^{
-					_error(tcctrl_error_serv_accept, "core_ctrl_err_accept", true);
+				dispatch_async(_mainQueue, ^{
+					[self _error:tcctrl_error_serv_accept info:@"core_ctrl_err_accept" fatal:YES];
 				});
 			}
 			else
@@ -241,162 +288,140 @@ void TCController::start()
 				// Make the client async
 				if (!doAsyncSocket(csock))
 				{
-					dispatch_async_cpp(this, mainQueue, ^{
-						_error(tcctrl_error_serv_accept, "core_ctrl_err_async", true);
+					dispatch_async(_mainQueue, ^{
+						[self _error:tcctrl_error_serv_accept info:@"core_ctrl_err_async" fatal:YES];
 					});
 					
 					return;
 				}
-
+				
 				// Add it later
-				dispatch_async_cpp(this, socketQueue, ^{
-					_addClient(csock);
+				dispatch_async(_socketQueue, ^{
+					[self _addClient:csock];
 				});
 			}
 		});
 		
 		// > Set the cancel handler
-		dispatch_source_set_cancel_handler_cpp(this, socketAccept, ^{
-			close(sock);
-			sock = -1;
+		dispatch_source_set_cancel_handler(_socketAccept, ^{
+			close(_sock);
+			_sock = -1;
 		});
-
-		dispatch_resume(socketAccept);
+		
+		dispatch_resume(_socketAccept);
 		
 		
 		// -- Build a timer to keep alive buddies (start or sendStatus) --
-		timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, mainQueue);
+		_timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _mainQueue);
 		
 		// Each 120s
-		dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 120000000000L, 0);
-		dispatch_source_set_event_handler_cpp(this, timer, ^{
+		dispatch_source_set_timer(_timer, DISPATCH_TIME_NOW, 120000000000L, 0);
+		dispatch_source_set_event_handler(_timer, ^{
 			
 			// Do nothing if not running
-			if (!running || !buddiesLoaded)
+			if (!_running || !_buddiesLoaded)
 				return;
 			
 			// (Re)start buddy (start do nothing if already started)
-			size_t i, cnt = cnt = buddies.size();
+			size_t i, cnt = cnt = _buddies.size();
 			
 			for (i = 0; i < cnt; i++)
-				buddies[i]->keepAlive();
+				_buddies[i]->keepAlive();
 			
 		});
-		dispatch_resume(timer);
+		dispatch_resume(_timer);
 		
 		// -- Start buddies --
-		size_t i, cnt = buddies.size();
+		size_t i, cnt = _buddies.size();
 		
 		for (i = 0; i < cnt; i++)
 		{
-			TCBuddy	*buddy = buddies[i];
+			TCBuddy	*buddy = _buddies[i];
 			
 			buddy->start();
 		}
 		
 		// Give the status
-		setStatus(mstatus);
+		[self setStatus:_mstatus];
 		
 		// Notify
-		_notify(tcctrl_notify_started, "core_ctrl_note_started");
+		[self _notify:tcctrl_notify_started info:@"core_ctrl_note_started"];
 		
 		// We are running !
-		running = true;
+		_running = YES;
 	});
 }
 
-void TCController::stop()
+- (void)stop
 {
-	dispatch_async_cpp(this, mainQueue, ^{
+	dispatch_async(_mainQueue, ^{
 		
 		// Check if we are running
-		if (!running)
+		if (!_running)
 			return;
 		
 		// Cancel the socket
-		dispatch_source_cancel(socketAccept);
+		dispatch_source_cancel(_socketAccept);
 		
 		// Cancel the timer
-		if (timer)
-			dispatch_source_cancel(timer);
+		if (_timer)
+			dispatch_source_cancel(_timer);
 		
-		socketAccept = nil;
+		_socketAccept = nil;
 		
 		// Stop & release clients
-		size_t i, cnt = clients.size();
+		size_t i, cnt = _clients.size();
 		
 		for (i = 0; i < cnt; i++)
 		{
-			clients[i]->stop();
-			clients[i]->release();
+			_clients[i]->stop();
+			_clients[i]->release();
 		}
-		clients.clear();
+		_clients.clear();
 		
 		// Stop buddies
-		cnt = buddies.size();
+		cnt = _buddies.size();
 		
 		for (i = 0; i < cnt; i++)
-			buddies[i]->stop();
-				
-		// Notify
-		_notify(tcctrl_notify_stoped, "core_ctrl_note_stoped");
+			_buddies[i]->stop();
 		
-		running = false;
+		// Notify
+		[self _notify:tcctrl_notify_stoped info:@"core_ctrl_note_stoped"];
+		
+		_running = false;
 	});
 }
 
-
-
-/*
-** TCController - Delegate
-*/
-#pragma mark - TCController - Delegate
-
-void TCController::setDelegate(dispatch_queue_t queue, tcctrl_event event)
-{
-	// Asign on a block
-	dispatch_async_cpp(this, mainQueue, ^{
-		nQueue = queue;
-		nBlock = event;
-	});
-}
-
-
-
-/*
-** TCController - Status
-*/
-#pragma mark - TCController - Status
-
-void TCController::setStatus(tccontroller_status status)
+// -- Status --
+- (void)setStatus:(tccontroller_status)status
 {
 	// Give the status
-	dispatch_async_cpp(this, mainQueue, ^{
+	dispatch_async(_mainQueue, ^{
 		
 		// Notify
-		if (status != mstatus)
+		if (status != _mstatus)
 		{
 			TCNumber *nstatus = new TCNumber((uint8_t)status);
 			
-			_notify(tcctrl_notify_status, "", nstatus);
+			[self _notify:tcctrl_notify_status info:@"" context:nstatus];
 			
 			nstatus->release();
 		}
 		
 		// Hold internal status
-		mstatus = status;
+		_mstatus = status;
 		
 		// Run the controller if needed, else send status
-		if (!running)
-			start();
+		if (!_running)
+			[self start];
 		else
 		{
 			// Give this status to buddy list
-			size_t i, cnt = cnt = buddies.size();
+			size_t i, cnt = cnt = _buddies.size();
 			
 			for (i = 0; i < cnt; i++)
 			{
-				TCBuddy	*buddy = buddies[i];
+				TCBuddy	*buddy = _buddies[i];
 				
 				buddy->sendStatus(status);
 			}
@@ -404,239 +429,228 @@ void TCController::setStatus(tccontroller_status status)
 	});
 }
 
-tccontroller_status	TCController::status()
+- (tccontroller_status)status
 {
 	__block tccontroller_status result = tccontroller_available;
 	
-	dispatch_sync_cpp(this, mainQueue, ^{
-		result = mstatus;
+	dispatch_sync(_mainQueue, ^{
+		result = _mstatus;
 	});
 	
 	return result;
 }
 
-void TCController::setProfileAvatar(TCImage *image)
+// -- Profile --
+- (void)setProfileAvatar:(TCImage *)avatar
 {
-	if (!image)
+	if (!avatar)
 		return;
 	
 	// Set the avatar
-	dispatch_async_cpp(this, mainQueue, ^{
+	dispatch_async(_mainQueue, ^{
 		
-		pavatar = image;
+		_profileAvatar = avatar;
 		
 		// Store avatar
-		[config setProfileAvatar:pavatar];
+		[_config setProfileAvatar:_profileAvatar];
 		
 		// Give this avatar to buddy list
-		size_t i, cnt = cnt = buddies.size();
+		size_t i, cnt = cnt = _buddies.size();
 		
 		for (i = 0; i < cnt; i++)
 		{
-			TCBuddy	*buddy = buddies[i];
+			TCBuddy	*buddy = _buddies[i];
 			
-			buddy->sendAvatar(pavatar);
+			buddy->sendAvatar(_profileAvatar);
 		}
 		
 		// Notify
-		_notify(tcctrl_notify_profile_avatar, "core_ctrl_note_profile_avatar", (__bridge TCObject *)pavatar);
+		[self _notify:tcctrl_notify_profile_avatar info:@"core_ctrl_note_profile_avatar" context:(__bridge TCObject *)_profileAvatar];
 	});
 }
 
-TCImage * TCController::profileAvatar()
+- (TCImage *)profileAvatar
 {
 	__block TCImage *result = NULL;
 	
-	dispatch_sync_cpp(this, mainQueue, ^{
-
-		if (pavatar)
-			result = [pavatar copy];
+	dispatch_sync(_mainQueue, ^{
+		
+		if (_profileAvatar)
+			result = [_profileAvatar copy];
 	});
 	
 	return result;
 }
 
-void TCController::setProfileName(TCString *name)
+
+- (void)setProfileName:(NSString *)name
 {
 	if (!name)
 		return;
 	
-	name->retain();
-	
 	// Set the avatar
-	dispatch_async_cpp(this, mainQueue, ^{
+	dispatch_async(_mainQueue, ^{
 		
 		// Hold the name
-		pname->release();
-		pname = name;
+		_profileName = name;
 		
 		// Store the name
-		[config setProfileName:@(name->content().c_str())];
+		[_config setProfileName:name];
 		
 		// Give this name to buddy list
-		size_t i, cnt = cnt = buddies.size();
-		
+		size_t		i, cnt = cnt = _buddies.size();
+		TCString	*pname = new TCString([_profileName UTF8String]);
+
 		for (i = 0; i < cnt; i++)
 		{
-			TCBuddy	*buddy = buddies[i];
+			TCBuddy *buddy = _buddies[i];
 			
 			buddy->sendProfileName(pname);
 		}
 		
 		// Notify
-		_notify(tcctrl_notify_profile_name, "core_ctrl_note_profile_name", pname);
+		[self _notify:tcctrl_notify_profile_name info:@"core_ctrl_note_profile_name" context:pname];
+		
+		pname->release();
 	});
 }
 
-TCString * TCController::profileName()
+- (NSString *)profileName
 {
-	__block TCString *result = NULL;
+	__block NSString *result = NULL;
 	
-	dispatch_sync_cpp(this, mainQueue, ^{
-
-		pname->retain();
-		
-		result = pname;
+	dispatch_sync(_mainQueue, ^{
+		result = _profileName;
 	});
-
+	
 	return result;
 }
 
-void TCController::setProfileText(TCString *text)
+- (void)setProfileText:(NSString *)text
 {
 	if (!text)
 		return;
 	
-	text->retain();
-	
 	// Set the avatar
-	dispatch_async_cpp(this, mainQueue, ^{
+	dispatch_async(_mainQueue, ^{
 		
 		// Hold the text
-		ptext->release();
-		ptext = text;
+		_profileText = text;
 		
 		// Store the text
-		[config setProfileText:@(text->content().c_str())];
+		[_config setProfileText:text];
 		
 		// Give this text to buddy list
-		size_t i, cnt = cnt = buddies.size();
-		
+		size_t		i, cnt = cnt = _buddies.size();
+		TCString	*ptext = new TCString([_profileText UTF8String]);
+
 		for (i = 0; i < cnt; i++)
 		{
-			TCBuddy	*buddy = buddies[i];
+			TCBuddy	*buddy = _buddies[i];
 			
 			buddy->sendProfileText(ptext);
 		}
 		
 		// Notify
-		_notify(tcctrl_notify_profile_text, "core_ctrl_note_profile_name", ptext);
+		[self _notify:tcctrl_notify_profile_text info:@"core_ctrl_note_profile_name" context:ptext];
+		
+		ptext->release();
 	});
 }
 
-TCString * TCController::profileText()
+- (NSString *)profileText
 {
-	__block TCString *result = NULL;
+	__block NSString *result = NULL;
 	
-	dispatch_sync_cpp(this, mainQueue, ^{
-		
-		ptext->retain();
-		
-		result = ptext;
+	dispatch_sync(_mainQueue, ^{
+		result = _profileText;
 	});
 	
 	return result;
 }
 
-
-
-/*
-** TCController - Buddies
-*/
-#pragma mark - TCController - Buddies
-
-void TCController::addBuddy(const std::string &name, const std::string &address)
+// -- Buddies --
+- (void)addBuddy:(NSString *)name address:(NSString *)address
 {
-	addBuddy(name, address, "");
+	[self addBuddy:name address:address comment:@""];
 }
 
-void TCController::addBuddy(const std::string &name, const std::string &address, const std::string &comment)
+- (void)addBuddy:(NSString *)name address:(NSString *)address comment:(NSString *)comment
 {
-	TCBuddy		*buddy = new TCBuddy(config, name, address, comment);
-	std::string	*cname = new std::string(name.c_str());
-	std::string	*caddress = new std::string(address.c_str());
-	std::string	*ccomment = new std::string(comment.c_str());
+	if (!address)
+		return;
 	
-    dispatch_async_cpp(this, mainQueue, ^{
+	if (!name)
+		name = @"";
+	
+	if (!comment)
+		comment = @"";
+	
+	TCBuddy *buddy = new TCBuddy(_config, [name UTF8String], [address UTF8String], [comment UTF8String]);
+	
+    dispatch_async(_mainQueue, ^{
         
 		// Check blocked status
-		_checkBlocked(buddy);
+		[self _checkBlocked:buddy];
 		
         // Add to the buddy list
-        buddies.push_back(buddy);
-				
+        _buddies.push_back(buddy);
+		
 		// Notify
-		_notify(tcctrl_notify_buddy_new, "core_ctrl_note_new_buddy", buddy);
+		[self _notify:tcctrl_notify_buddy_new info:@"core_ctrl_note_new_buddy" context:buddy];
 		
         // Start it
         buddy->start();
 		
 		// Save to config
-		[config addBuddy:@(caddress->c_str()) alias:@(cname->c_str()) notes:@(ccomment->c_str())];
-		
-		// Clean
-		delete cname;
-		delete caddress;
-		delete ccomment;
+		[_config addBuddy:address alias:name notes:comment];
     });
 }
 
-void TCController::removeBuddy(const std::string &address)
+- (void)removeBuddy:(NSString *)address
 {
-	std::string *cpy = new std::string(address);
-	
-	dispatch_async_cpp(this, mainQueue, ^{
+	dispatch_async(_mainQueue, ^{
 		
-		size_t	i, cnt = buddies.size();
+		size_t	i, cnt = _buddies.size();
 		
 		// Search the buddy
 		for (i = 0; i < cnt; i++)
 		{
-			if (buddies[i]->address().content().compare(*cpy) == 0)
+			if (_buddies[i]->address().content().compare([address UTF8String]) == 0)
 			{
 				// Stop and release
-				TCBuddy	*buddy = buddies[i];
+				TCBuddy	*buddy = _buddies[i];
 				
 				buddy->stop();
 				buddy->release();
 				
-				buddies.erase(buddies.begin() + (ptrdiff_t)i);
+				_buddies.erase(_buddies.begin() + (ptrdiff_t)i);
 				
 				// Save to config
-				[config removeBuddy:@(cpy->c_str())];
+				[_config removeBuddy:address];
 				
 				break;
 			}
 		}
-				
-		delete cpy;
 	});
 }
 
-TCBuddy * TCController::getBuddyAddress(const std::string &address)
-{    
-	std::string		*addr = new std::string(address);
+- (TCBuddy *)buddyWithAddress:(NSString *)address
+{
+	if (!address)
+		return NULL;
+	
     __block TCBuddy *result = NULL;
 	
-	dispatch_sync_cpp(this, mainQueue, ^{
+	dispatch_sync(_mainQueue, ^{
         
-        size_t i, cnt = cnt = buddies.size();
+        size_t i, cnt = cnt = _buddies.size();
 		
 		for (i = 0; i < cnt; i++)
 		{
-			TCBuddy	*buddy = buddies[i];
+			TCBuddy	*buddy = _buddies[i];
             
-            if (buddy->address().content().compare(*addr) == 0)
+            if (buddy->address().content().compare([address UTF8String]) == 0)
             {
                 result = buddy;
 				result->retain();
@@ -644,27 +658,24 @@ TCBuddy * TCController::getBuddyAddress(const std::string &address)
                 break;
             }
         }
-		
-		delete addr;
     });
 	
     return result;
 }
 
-TCBuddy * TCController::getBuddyRandom(const std::string &random)
+- (TCBuddy *)buddyWithRandom:(NSString *)random
 {
-	std::string		*ran = new std::string(random);
     __block TCBuddy *result = NULL;
 	
-	dispatch_sync_cpp(this, mainQueue, ^{
+	dispatch_sync(_mainQueue, ^{
         
-        size_t i, cnt = cnt = buddies.size();
+        size_t i, cnt = cnt = _buddies.size();
 		
 		for (i = 0; i < cnt; i++)
 		{
-			TCBuddy	*buddy = buddies[i];
+			TCBuddy	*buddy = _buddies[i];
             
-            if (buddy->brandom().content().compare(*ran) == 0)
+            if (buddy->brandom().content().compare([random UTF8String]) == 0)
             {
                 result = buddy;
 				result->retain();
@@ -672,39 +683,27 @@ TCBuddy * TCController::getBuddyRandom(const std::string &random)
                 break;
             }
         }
-		
-		delete ran;
     });
     
     return result;
 }
 
-
-
-/*
-** TCController - Blocked Buddies 
-*/
-#pragma mark - TCController - Blocked Buddies
-
-bool TCController::addBlockedBuddy(const std::string &address)
+// -- Blocked Buddies --
+- (BOOL)addBlockedBuddy:(NSString *)address
 {
-	__block bool	result = false;
-	std::string		*addr = new std::string(address);
-
-	dispatch_sync_cpp(this, mainQueue, ^{
+	__block BOOL result = false;
+	
+	dispatch_sync(_mainQueue, ^{
 		
 		// Add the address to the configuration
-		if ([config addBlockedBuddy:@(addr->c_str())] == YES)
-			result = true;
-		
-		// Clean
-		delete addr;
+		if ([_config addBlockedBuddy:address] == YES)
+			result = YES;
 	});
 	
 	// Mark the buddy as blocked
 	if (result)
 	{
-		TCBuddy * buddy = getBuddyAddress(address);
+		TCBuddy * buddy = [self buddyWithAddress:address];
 		
 		if (buddy)
 		{
@@ -712,29 +711,25 @@ bool TCController::addBlockedBuddy(const std::string &address)
 			buddy->release();
 		}
 	}
-		
+	
 	return result;
 }
 
-bool TCController::removeBlockedBuddy(const std::string &address)
+- (BOOL)removeBlockedBuddy:(NSString *)address
 {
-	__block bool	result = false;
-	std::string		*addr = new std::string(address);
-
-	dispatch_sync_cpp(this, mainQueue, ^{
+	__block BOOL result = false;
+	
+	dispatch_sync(_mainQueue, ^{
 		
 		// Remove the address from the configuration
-		if ([config removeBlockedBuddy:@(addr->c_str())] == YES)
-			result = true;
-		
-		// Clean
-		delete addr;
+		if ([_config removeBlockedBuddy:address] == YES)
+			result = YES;
 	});
 	
 	// Mark the buddy as un-blocked
 	if (result)
 	{
-		TCBuddy * buddy = getBuddyAddress(address);
+		TCBuddy * buddy = [self buddyWithAddress:address];
 		
 		if (buddy)
 		{
@@ -746,42 +741,34 @@ bool TCController::removeBlockedBuddy(const std::string &address)
 	return result;
 }
 
-
-
-/*
-** TCController - TCControlClient
-*/
-#pragma mark - TCController - TCControlClient
-
-void TCController::cc_error(TCControlClient *client, TCInfo *serr)
+// -- TCControlClient --
+- (void)cc_error:(TCControlClient *)client info:(TCInfo *)info
 {
-	if (!client || !serr)
+	if (!client || !info)
 		return;
 	
 	// Give the error
-	serr->retain();
+	info->retain();
 	
-	dispatch_async_cpp(this, mainQueue, ^{
-		_send_event(serr);
-		
-		serr->release();
+	dispatch_async(_mainQueue, ^{
+		[self _sendEvent:info];
+		info->release();
 	});
-	
 	
 	// Remove the client
 	client->retain();
-
-	dispatch_async_cpp(this, socketQueue, ^{
+	
+	dispatch_async(_socketQueue, ^{
 		
 		std::vector<TCControlClient *>::iterator it;
 		
-		for (it = clients.begin(); it != clients.end(); it++)
+		for (it = _clients.begin(); it != _clients.end(); it++)
 		{
 			TCControlClient *item = *it;
 			
 			if (item == client)
 			{
-				clients.erase(it);
+				_clients.erase(it);
 				
 				item->stop();
 				item->release();
@@ -795,47 +782,40 @@ void TCController::cc_error(TCControlClient *client, TCInfo *serr)
 	});
 }
 
-void TCController::cc_notify(TCControlClient *client, TCInfo *info)
-{	
+- (void)cc_notify:(TCControlClient *)client info:(TCInfo *)info
+{
 	if (!client || !info)
 		return;
 	
 	info->retain();
 	
-	dispatch_async_cpp(this, mainQueue, ^{
-		_send_event(info);
-		
+	dispatch_async(_mainQueue, ^{
+		[self _sendEvent:info];
 		info->release();
 	});
 }
 
-
-
-/*
-** TCController - Tools
-*/
-#pragma mark - TCController - Tools
-
-void TCController::_addClient(int csock)
+// -- Helpers --
+- (void)_addClient:(int)csock
 {
 	// > socketQueue <
 	
-	TCControlClient *client = new TCControlClient(config, csock);
+	TCControlClient *client = new TCControlClient(_config, csock);
 	
-	clients.push_back(client);
+	_clients.push_back(client);
 	
-	client->start(this);
+	client->start(self);
 }
 
-void TCController::_checkBlocked(TCBuddy *buddy)
+- (void)_checkBlocked:(TCBuddy *)buddy
 {
 	// > mainQueue <
 	
-	if (!config)
+	if (!_config)
 		return;
 	
 	// XXX not thread safe
-	NSArray	*blocked = [config blockedBuddies];
+	NSArray	*blocked = [_config blockedBuddies];
 	size_t	i, cnt = [blocked count];
 	
 	buddy->setBlocked(false);
@@ -855,79 +835,76 @@ void TCController::_checkBlocked(TCBuddy *buddy)
 }
 
 
-
-
-/*
-** TCController - Helpers
-*/
-#pragma mark - TCController - Helpers
-
-void TCController::_error(tcctrl_info code, const std::string &info, bool fatal)
+- (void)_error:(tcctrl_info)code info:(NSString *)info fatal:(BOOL)fatal
 {
 	// > mainQueue <
 	
-	TCInfo *err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String]);
+	TCInfo *err = new TCInfo(tcinfo_error, code, [[_config localized:info] UTF8String]);
 	
-	_send_event(err);
+	[self _sendEvent:err];
 	
 	err->release();
 	
 	if (fatal)
-		stop();
+		[self stop];
 }
 
-void TCController::_error(tcctrl_info code, const std::string &info, TCObject *ctx, bool fatal)
+- (void)_error:(tcctrl_info)code info:(NSString *)info context:(TCObject *)ctx fatal:(BOOL)fatal
 {
 	// > mainQueue <
 	
-	TCInfo *err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String], ctx);
+	TCInfo *err = new TCInfo(tcinfo_error, code, [[_config localized:info] UTF8String], ctx);
 	
-	_send_event(err);
+	[self _sendEvent:err];
 	
 	err->release();
 	
 	if (fatal)
-		stop();
+		[self stop];
 }
 
-void TCController::_notify(tcctrl_info notice, const std::string &info)
+- (void)_notify:(tcctrl_info)notice info:(NSString *)info
 {
 	// > mainQueue <
 	
-	TCInfo *ifo = new TCInfo(tcinfo_info, notice, [[config localized:@(info.c_str())] UTF8String]);
+	TCInfo *ifo = new TCInfo(tcinfo_info, notice, [[_config localized:info] UTF8String]);
 	
-	_send_event(ifo);
+	[self _sendEvent:ifo];
+
+	ifo->release();
+}
+
+- (void)_notify:(tcctrl_info)notice info:(NSString *)info context:(TCObject *)ctx
+{
+	// > mainQueue <
+	
+	TCInfo *ifo = new TCInfo(tcinfo_info, notice, [[_config localized:info] UTF8String], ctx);
+	
+	[self _sendEvent:ifo];
 	
 	ifo->release();
 }
 
-void TCController::_notify(tcctrl_info notice, const std::string &info, TCObject *ctx)
-{
-	// > mainQueue <
-	
-	TCInfo *ifo = new TCInfo(tcinfo_info, notice, [[config localized:@(info.c_str())] UTF8String], ctx);
-	
-	_send_event(ifo);
-	
-	ifo->release();
-}
-
-void TCController::_send_event(TCInfo *info)
+- (void)_sendEvent:(TCInfo *)info
 {
 	// > mainQueue <
 	
 	if (!info)
 		return;
 	
-	if (nQueue && nBlock)
+	id <TCControllerDelegate> delegate = self.delegate;
+	
+	if (delegate)
 	{
 		info->retain();
 		
-		dispatch_async_cpp(this, nQueue, ^{
+		dispatch_async(_delegateQueue, ^{
 			
-			nBlock(this, info);
+			[delegate torchatController:self information:info];
 			
 			info->release();
 		});
 	}
 }
+
+@end

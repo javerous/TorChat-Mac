@@ -21,17 +21,9 @@
  */
 
 
+#import "TCInfo.h"
 
-#ifndef _TCController_H_
-# define _TCController_H_
-
-# include <dispatch/dispatch.h>
-# include <vector>
-
-# include "TCInfo.h"
-# include "TCObject.h"
-
-# import "TCConfig.h"
+#import "TCConfig.h"
 
 
 
@@ -40,11 +32,11 @@
 */
 #pragma mark - Forward
 
+@class TCController;
+@class TCImage;
+
 class TCBuddy;
 class TCControlClient;
-class TCController;
-@class TCImage;
-class TCString;
 
 
 
@@ -111,8 +103,13 @@ typedef enum
 	tcctrl_error_client_cmd_filestopreceiving,
 } tcctrl_info;
 
-// == Controller Notify Block ==
-typedef void (^tcctrl_event)(TCController *controller, const TCInfo *info);
+// -- Delegate --
+@protocol TCControllerDelegate <NSObject>
+
+- (void)torchatController:(TCController *)controller information:(const TCInfo *)info;
+
+@end
+
 
 
 
@@ -121,101 +118,46 @@ typedef void (^tcctrl_event)(TCController *controller, const TCInfo *info);
 */
 #pragma mark - TCController
 
-class TCController : public TCObject
-{
-public:
-	// -- Instance --
-	TCController(id <TCConfig> config);
-	~TCController();
-	
-	// -- Runing --
-	void					start();
-	void					stop();
-	
-	// -- Delegate --
-	void					setDelegate(dispatch_queue_t queue, tcctrl_event event);
-	
-	// -- Status --
-	void					setStatus(tccontroller_status status);
-	tccontroller_status		status();
-	
-	// -- Profile --
-	void					setProfileAvatar(TCImage *avatar);
-	TCImage *				profileAvatar();
-	
-	void					setProfileName(TCString *name);
-	TCString *				profileName();
-	
-	void					setProfileText(TCString *text);
-	TCString *				profileText();
-	
-	
-	// -- Buddies --
-	void					addBuddy(const std::string &name, const std::string &address);
-	void					addBuddy(const std::string &name, const std::string &address, const std::string &comment);
-	void					removeBuddy(const std::string &address);
-    TCBuddy *				getBuddyAddress(const std::string &address);
-	TCBuddy *				getBuddyRandom(const std::string &random);
-	
-	// -- Blocked Buddies --
-	bool					addBlockedBuddy(const std::string &address);
-	bool					removeBlockedBuddy(const std::string &address);
-	
-	// -- TCControlClient --
-	void					cc_error(TCControlClient *client, TCInfo *info);
-	void					cc_notify(TCControlClient *client, TCInfo *info);
+@interface TCController : NSObject
 
-private:
-	
-	// -- Tools --
-	void					_addClient(int sock);
-	void					_checkBlocked(TCBuddy *buddy);
-	
-	// -- Helpers --
-	void					_error(tcctrl_info code, const std::string &info, bool fatal);
-	void					_error(tcctrl_info code, const std::string &info, TCObject *ctx, bool fatal);
-	
-	void					_notify(tcctrl_info notice, const std::string &info);
-	void					_notify(tcctrl_info notice, const std::string &info, TCObject *ctx);
-	
-	void					_send_event(TCInfo *info);
+// -- Properties --
+@property (weak) id <TCControllerDelegate> delegate;
+
+// -- Instance --
+- (id)initWithConfiguration:(id <TCConfig>)config;
+
+// -- Life --
+- (void)start;
+- (void)stop;
+
+// -- Status --
+- (void)setStatus:(tccontroller_status)status;
+- (tccontroller_status)status;
+
+// -- Profile --
+- (void)setProfileAvatar:(TCImage *)avatar;
+- (TCImage *)profileAvatar;
 
 
-	
-	// -- Vars --
-	// > Main Queue
-	dispatch_queue_t		mainQueue;
-	
-	// > Timer
-	dispatch_source_t		timer;
-	
-	// > Accept Socket
-	dispatch_queue_t		socketQueue;
-	dispatch_source_t		socketAccept;
-	int						sock;
-	
-	// > Buddies
-	bool					buddiesLoaded;
-	std::vector<TCBuddy *>	buddies;
-	
-	// > Config
-	id <TCConfig>			config;
-	
-	// > Clients
-	std::vector<TCControlClient *> clients;
-	
-	// > Status
-	bool					running;
-	tccontroller_status		mstatus;
-	
-	// > Delegate
-	dispatch_queue_t		nQueue;
-	tcctrl_event			nBlock;
+- (void)setProfileName:(NSString *)name;
+- (NSString *)profileName;
 
-	// > Profile
-	TCImage					*pavatar;
-	TCString				*pname;
-	TCString				*ptext;
-};
+- (void)setProfileText:(NSString *)text;
+- (NSString *)profileText;
 
-#endif
+// -- Buddies --
+- (void)addBuddy:(NSString *)name address:(NSString *)address;
+- (void)addBuddy:(NSString *)name address:(NSString *)address comment:(NSString *)comment;
+- (void)removeBuddy:(NSString *)address;
+- (TCBuddy *)buddyWithAddress:(NSString *)address;
+- (TCBuddy *)buddyWithRandom:(NSString *)random;
+
+// -- Blocked Buddies --
+- (BOOL)addBlockedBuddy:(NSString *)address;
+- (BOOL)removeBlockedBuddy:(NSString *)address;
+
+// -- TCControlClient --
+- (void)cc_error:(TCControlClient *)client info:(TCInfo *)info;
+- (void)cc_notify:(TCControlClient *)client info:(TCInfo *)info;
+
+@end
