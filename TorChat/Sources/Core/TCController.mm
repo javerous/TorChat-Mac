@@ -65,7 +65,7 @@
 	id <TCConfig>			_config;
 	
 	// > Clients
-	std::vector<TCControlClient *> _clients;
+	NSMutableArray			*_clients;
 	
 	// > Status
 	bool					_running;
@@ -134,6 +134,8 @@
 		_mainQueue = dispatch_queue_create("com.torchat.core.controller.main", DISPATCH_QUEUE_SERIAL);
 		_socketQueue = dispatch_queue_create("com.torchat.core.controller.socket", DISPATCH_QUEUE_SERIAL);
 
+		// Containers.
+		_clients = [[NSMutableArray alloc] init];
 	}
 	
 	return self;
@@ -144,18 +146,11 @@
 	TCDebugLog("TCController Destructor");
 	
 	// Close client
-	size_t i, cnt = _clients.size();
-	
-	for (i = 0; i < cnt; i++)
-	{
-		_clients[i]->stop();
-		_clients[i]->release();
-	}
-	
-	_clients.clear();
-	
+	for (TCControlClient *client in _clients)
+		[client stop];
+
 	// Stop buddies
-	cnt = _buddies.size();
+	size_t i, cnt = _buddies.size();
 	
 	for (i = 0; i < cnt; i++)
 	{
@@ -370,17 +365,13 @@
 		_socketAccept = nil;
 		
 		// Stop & release clients
-		size_t i, cnt = _clients.size();
+		for (TCControlClient *client in _clients)
+			[client stop];
 		
-		for (i = 0; i < cnt; i++)
-		{
-			_clients[i]->stop();
-			_clients[i]->release();
-		}
-		_clients.clear();
+		[_clients removeAllObjects];
 		
 		// Stop buddies
-		cnt = _buddies.size();
+		size_t i, cnt = _buddies.size();
 		
 		for (i = 0; i < cnt; i++)
 			_buddies[i]->stop();
@@ -744,6 +735,7 @@
 // -- TCControlClient --
 - (void)cc_error:(TCControlClient *)client info:(TCInfo *)info
 {
+#warning Why not a delegate ?
 	if (!client || !info)
 		return;
 	
@@ -756,34 +748,29 @@
 	});
 	
 	// Remove the client
-	client->retain();
-	
 	dispatch_async(_socketQueue, ^{
 		
-		std::vector<TCControlClient *>::iterator it;
+		NSUInteger i, cnt = [_clients count];
 		
-		for (it = _clients.begin(); it != _clients.end(); it++)
+		for (i = 0; i < cnt; i++)
 		{
-			TCControlClient *item = *it;
+			TCControlClient *item = _clients[i];
 			
 			if (item == client)
 			{
-				_clients.erase(it);
+				[_clients removeObjectAtIndex:i];
 				
-				item->stop();
-				item->release();
-				
+				[item stop];
 				break;
 			}
 		}
-		
-		// Realease it
-		client->release();
 	});
 }
 
 - (void)cc_notify:(TCControlClient *)client info:(TCInfo *)info
 {
+#warning Why not a delegate ?
+
 	if (!client || !info)
 		return;
 	
@@ -800,11 +787,11 @@
 {
 	// > socketQueue <
 	
-	TCControlClient *client = new TCControlClient(_config, csock);
+	TCControlClient *client = [[TCControlClient alloc] initWithConfiguration:_config andSocket:csock];
 	
-	_clients.push_back(client);
+	[_clients addObject:client];
 	
-	client->start(self);
+	[client startWithController:self];
 }
 
 - (void)_checkBlocked:(TCBuddy *)buddy
