@@ -53,7 +53,7 @@
 
 @interface TCBuddiesController ()
 {
-	TCConfig			*config;
+	id <TCConfig>		_configuration;
 	TCController		*control;
 	
 	dispatch_queue_t	mainQueue;
@@ -134,7 +134,6 @@
 	TCDebugLog("TCBuddieController dealloc");
 		
 	control->release();
-	config->release();
 		
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -157,12 +156,12 @@
 */
 #pragma mark - TCBuddiesController - Running
 
-- (void)startWithConfig:(TCConfig *)aConfig
+- (void)startWithConfiguration:(id <TCConfig>)configuration
 {
 	TCImage		*tavatar;
 	NSImage		*avatar;
 	
-	if (!aConfig)
+	if (!configuration)
 	{
 		NSBeep();
 		[NSApp terminate:self];
@@ -175,15 +174,14 @@
 	running = YES;
 	
 	// Hold the config
-	aConfig->retain();
-	config = aConfig;
+	_configuration = configuration;
 	
 	// Load tor
-	if (config->get_mode() == tc_config_basic && [[TCTorManager sharedManager] isRunning] == NO)
-		[[TCTorManager sharedManager] startWithConfig:config];
+	if ([_configuration mode] == tc_config_basic && [[TCTorManager sharedManager] isRunning] == NO)
+		[[TCTorManager sharedManager] startWithConfiguration:_configuration];
 	
 	// Build controller
-	control = new TCController(config);
+	control = new TCController(_configuration);
 	
 	
 	// -- Init window content --
@@ -257,13 +255,6 @@
 		control->release();
 		
 		control = NULL;
-	}
-	
-	// Clean config
-	if (config)
-	{
-		config->release();
-		config = NULL;
 	}
 	
 	// Set status to offline
@@ -645,11 +636,11 @@
 	switch (tag)
 	{
 		case 0:
-			config->set_mode_title(tc_config_title_name);
+			[_configuration setModeTitle:tc_config_title_name];
 			break;
 			
 		case 1:
-			config->set_mode_title(tc_config_title_address);
+			[_configuration setModeTitle:tc_config_title_address];
 			break;
 			
 		case 3:
@@ -890,14 +881,14 @@
 {	
 	NSString *content = @"-";
 	
-	if (config)
+	if (_configuration)
 	{
 		// Check the title to show
-		switch (config->get_mode_title())
+		switch ([_configuration modeTitle])
 		{
 			case tc_config_title_address:
 			{
-				content = [NSString stringWithUTF8String:config->get_self_address().c_str()];
+				content = [_configuration selfAddress];
 				
 				[[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:0]] setState:NSOffState];
 				[[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:1]] setState:NSOnState];

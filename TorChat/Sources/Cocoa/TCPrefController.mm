@@ -65,7 +65,7 @@ NSString *	TCStringWithInt(int value);
 
 @interface TCPrefView ()
 
-@property (assign, nonatomic) TCConfig *config;
+@property (strong, nonatomic) id <TCConfig> config;
 
 - (void)loadConfig;
 - (void)saveConfig;
@@ -151,8 +151,8 @@ NSString *	TCStringWithInt(int value);
 
 - (void)loadViewIdentifier:(NSString *)identifier animated:(BOOL)animated
 {
-	TCPrefView	*view = nil;
-	TCConfig	*config = [[TCMainController sharedController] config];
+	TCPrefView		*view = nil;
+	id <TCConfig>	config = [[TCMainController sharedController] config];
 
 	if ([identifier isEqualToString:@"general"])
 		view = _generalView;
@@ -232,7 +232,7 @@ NSString *	TCStringWithInt(int value);
 
 - (void)windowWillClose:(NSNotification *)notification
 {
-	TCConfig *config = [[TCMainController sharedController] config];
+	id <TCConfig> config = [[TCMainController sharedController] config];
 
 	currentView.config = config;
 	
@@ -249,39 +249,6 @@ NSString *	TCStringWithInt(int value);
 #pragma mark - TCPrefView
 
 @implementation TCPrefView
-
-
-/*
-** TCPrefView - Properties
-*/
-#pragma mark - TCPrefView - Properties
-
-@synthesize config;
-
-- (void)setConfig:(TCConfig *)aconfig
-{
-	if (aconfig)
-		aconfig->retain();
-	
-	if (config)
-		config->release();
-	
-	config = aconfig;
-}
-
-
-
-/*
-** TCPrefView - Instance
-*/
-#pragma mark - TCPrefView - Instance
-
-- (void)dealloc
-{
-    if (config)
-		config->release();
-}
-
 
 
 /*
@@ -335,7 +302,7 @@ NSString *	TCStringWithInt(int value);
 		{
 			[_downloadField setStringValue:[[url path] lastPathComponent]];
 			
-			self.config->set_download_folder([[url path] UTF8String]);
+			[self.config setDownloadFolder:[url path]];
 		}
 		else
 			NSBeep();
@@ -354,19 +321,19 @@ NSString *	TCStringWithInt(int value);
 	if (!self.config)
 		return;
 		
-	[_downloadField setStringValue:[TCStringWithCPPString(self.config->get_download_folder()) lastPathComponent]];
+	[_downloadField setStringValue:[[self.config downloadFolder] lastPathComponent]];
 	
-	[[_clientNameField cell] setPlaceholderString:TCStringWithCPPString(self.config->get_client_name(tc_config_get_default))];
-	[[_clientVersionField cell] setPlaceholderString:TCStringWithCPPString(self.config->get_client_version(tc_config_get_default))];
+	[[_clientNameField cell] setPlaceholderString:[self.config clientName:tc_config_get_default]];
+	[[_clientVersionField cell] setPlaceholderString:[self.config clientVersion:tc_config_get_default]];
 
-	[_clientNameField setStringValue:TCStringWithCPPString(self.config->get_client_name(tc_config_get_defined))];
-	[_clientVersionField setStringValue:TCStringWithCPPString(self.config->get_client_version(tc_config_get_defined))];
+	[_clientNameField setStringValue:[self.config clientName:tc_config_get_defined]];
+	[_clientVersionField setStringValue:[self.config clientVersion:tc_config_get_defined]];
 }
 
 - (void)saveConfig
 {
-	self.config->set_client_name(TCCPPStringWithString([_clientNameField stringValue]));
-	self.config->set_client_version(TCCPPStringWithString([_clientVersionField stringValue]));
+	[self.config setClientName:[_clientNameField stringValue]];
+	[self.config setClientVersion:[_clientVersionField stringValue]];
 }
 
 @end
@@ -405,7 +372,7 @@ NSString *	TCStringWithInt(int value);
 	if (!self.config)
 		return;
 		
-	mode = self.config->get_mode();
+	mode = [self.config mode];
 	
 	// Set mode
 	if (mode == tc_config_basic)
@@ -424,10 +391,10 @@ NSString *	TCStringWithInt(int value);
 	}
 	
 	// Set value field
-	[_imAddressField setStringValue:TCStringWithCPPString(self.config->get_self_address())];
-	[_imPortField setStringValue:TCStringWithInt(self.config->get_client_port())];
-	[_torAddressField setStringValue:TCStringWithCPPString(self.config->get_tor_address())];
-	[_torPortField setStringValue:TCStringWithInt(self.config->get_tor_port())];
+	[_imAddressField setStringValue:[self.config selfAddress]];
+	[_imPortField setStringValue:[@([self.config clientPort]) description]];
+	[_torAddressField setStringValue:[self.config torAddress]];
+	[_torPortField setStringValue:[@([self.config torPort]) description]];
 }
 
 - (void)saveConfig
@@ -435,19 +402,19 @@ NSString *	TCStringWithInt(int value);
 	 if (!self.config)
 		 return;
 	 
-	if (self.config->get_mode() == tc_config_advanced)
+	if ([self.config mode] == tc_config_advanced)
 	{
 		// Set config value
-		self.config->set_self_address(TCCPPStringWithString([_imAddressField stringValue]));
-		self.config->set_client_port((uint16_t)[[_imPortField stringValue] intValue]);
-		self.config->set_tor_address(TCCPPStringWithString([_torAddressField stringValue]));
-		self.config->set_tor_port((uint16_t)[[_torPortField stringValue] intValue]);
+		[self.config setSelfAddress:[_imAddressField stringValue]];
+		[self.config setClientPort:(uint16_t)[[_imPortField stringValue] intValue]];
+		[self.config setTorAddress:[_torAddressField stringValue]];
+		[self.config setTorPort:(uint16_t)[[_torPortField stringValue] intValue]];
 		
 		// Reload config
 		if (changes)
-		{		
+		{
 			[[TCBuddiesController sharedController] stop];
-			[[TCBuddiesController sharedController] startWithConfig:self.config];
+			[[TCBuddiesController sharedController] startWithConfiguration:self.config];
 			
 			changes = NO;
 		}
@@ -541,7 +508,7 @@ NSString *	TCStringWithInt(int value);
 	if (!self.config)
 		return;
 	
-	const tc_sarray	&blocked = self.config->blocked_buddies();
+	NSArray			*blocked = [self.config blockedBuddies];
 	NSIndexSet		*set = [_tableView selectedRowIndexes];
 	NSMutableArray	*removes = [NSMutableArray arrayWithCapacity:[set count]];
 	NSUInteger		index = [set firstIndex];
@@ -549,14 +516,8 @@ NSString *	TCStringWithInt(int value);
 	// Resolve indexes
 	while (index != NSNotFound)
 	{
-		const char	*caddress = blocked.at(index).c_str();
-		NSString	*address;
-		
-		if (!caddress)
-			continue;
-		
 		// Add to address to remove
-		address = [[NSString alloc] initWithUTF8String:caddress];
+		NSString *address = blocked[index];
 		
 		[removes addObject:address];
 				
@@ -596,7 +557,7 @@ NSString *	TCStringWithInt(int value);
 	if (!self.config)
 		return 0;
 	
-	return (NSInteger)(self.config->blocked_buddies().size());
+	return (NSInteger)[[self.config blockedBuddies] count];
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
@@ -604,12 +565,12 @@ NSString *	TCStringWithInt(int value);
 	if (!self.config)
 		return nil;
 	
-	const tc_sarray &blocked = self.config->blocked_buddies();
+	NSArray *blocked = [self.config blockedBuddies];
 	
-	if (rowIndex < 0 || rowIndex >= blocked.size())
+	if (rowIndex < 0 || rowIndex >= [blocked count])
 		return nil;
 	
-	return [NSString stringWithUTF8String:blocked.at((size_t)rowIndex).c_str()];
+	return blocked[(NSUInteger)rowIndex];
 }
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification

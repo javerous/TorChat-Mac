@@ -31,6 +31,8 @@
 # include "TCInfo.h"
 # include "TCObject.h"
 
+# import "TCConfig.h"
+
 
 
 /*
@@ -39,7 +41,6 @@
 #pragma mark - Forward
 
 class TCBuddy;
-class TCConfig;
 class TCControlClient;
 class TCController;
 @class TCImage;
@@ -124,7 +125,7 @@ class TCController : public TCObject
 {
 public:
 	// -- Instance --
-	TCController(TCConfig *config);
+	TCController(id <TCConfig> config);
 	~TCController();
 	
 	// -- Runing --
@@ -198,7 +199,7 @@ private:
 	std::vector<TCBuddy *>	buddies;
 	
 	// > Config
-	TCConfig				*config;
+	id <TCConfig>			config;
 	
 	// > Clients
 	std::vector<TCControlClient *> clients;

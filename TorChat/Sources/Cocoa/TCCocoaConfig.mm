@@ -21,17 +21,19 @@
  */
 
 
+#import "TCCocoaConfig.h"
 
 #import "TCStringExtension.h"
-
-#include "TCCocoaConfig.h"
+#import "TCImage.h"
 
 
 
 /*
-** Config Keys
+** Defines
 */
-#pragma mark - Config Keys
+#pragma mark - Defines
+
+// -- Config Keys --
 
 #define TCCONF_KEY_TOR_ADDRESS		@"tor_address"
 #define TCCONF_KEY_TOR_PORT			@"tor_socks_port"
@@ -59,119 +61,159 @@
 #define TCCONF_KEY_UI_TITLE			@"title"
 
 
+/*
+** TCCocoaConfig - Private
+*/
+#pragma mark - TCCocoaConfig - Private
+
+@interface TCCocoaConfig ()
+{
+	// Vars
+	NSString			*_fpath;
+	NSMutableDictionary	*_fcontent;
+	
+#if defined(PROXY_ENABLED) && PROXY_ENABLED
+	id <TCConfigProxy>	_proxy;
+#endif
+}
+
+- (NSMutableDictionary *)loadConfig:(NSData *)data;
+- (void)saveConfig;
+
+@end
+
+
+
+/*
+** TCCocoaConfig
+*/
+#pragma mark - TCCocoaConfig
+
+@implementation TCCocoaConfig
+
 
 /*
 ** TCCocoaConfig - Instance
 */
 #pragma mark - TCCocoaConfig - Instance
 
-TCCocoaConfig::TCCocoaConfig(NSString *filepath)
+- (id)initWithFile:(NSString *)filepath
 {
-	if (!filepath)
-		throw "conf_err_no_name";
+	self = [super init];
 	
-	NSFileManager	*mng = [NSFileManager defaultManager];
-	NSString		*npath;
-	NSData			*data = nil;
-	
-	// Resolve path
-	npath = [filepath realPath];
-	
-	if (npath)
-		filepath = npath;
-		
-	if (!filepath)
+	if (self)
 	{
-		throw "conf_err_cant_open";
-		return;
+		if (!filepath)
+			return nil;
+		
+		//throw "conf_err_no_name";
+#warning FIXME: remove localized string.
+		
+		NSFileManager	*mng = [NSFileManager defaultManager];
+		NSString		*npath;
+		NSData			*data = nil;
+		
+		// Resolve path
+		npath = [filepath realPath];
+		
+		if (npath)
+			filepath = npath;
+		
+		if (!filepath)
+		{
+			//throw "conf_err_cant_open";
+#warning FIXME: remove localized string.
+
+			return nil;
+		}
+		
+#if defined(PROXY_ENABLED) && PROXY_ENABLED
+		_proxy = NULL;
+#endif
+		
+		// Hold path
+		_fpath = filepath;
+		
+		// Load file
+		if ([mng fileExistsAtPath:_fpath])
+		{
+			// Load config data
+			data = [NSData dataWithContentsOfFile:_fpath];
+			
+			if (!data)
+				return nil;
+				//throw "conf_err_cant_open";
+#warning FIXME: remove localized string.
+
+		}
+		
+		// Load config
+		_fcontent = [self loadConfig:data];
+		
+		if (!_fcontent)
+			return nil;
 	}
 	
+	return self;
+}
+
 #if defined(PROXY_ENABLED) && PROXY_ENABLED
-	proxy = NULL;
-#endif
+
+- (id)initWithFileProxy:(id <TCConfigProxy>)proxy
+{
+	self = [super init];
 	
-	// Hold path
-	fpath = filepath;
-	
-	// Load file
-	if ([mng fileExistsAtPath:fpath])
+	if (self)
 	{
-		// Load config data
-		data = [NSData dataWithContentsOfFile:fpath];
+		NSData *data = nil;
 		
-		if (!data)
-			throw "conf_err_cant_open";
+		// Set path
+		_fpath = NULL;
+		
+		// Hold proxy
+		_proxy = proxy;
+		
+		// Load data
+		data = [proxy configContent];
+		
+		// Load config
+		_fcontent = [self loadConfig:data];
+		
+		if (!_fcontent)
+			return nil;
 	}
 	
-	// Load config
-	_loadConfig(data);
-}
-
-#if defined(PROXY_ENABLED) && PROXY_ENABLED
-
-TCCocoaConfig::TCCocoaConfig(id <TCConfigProxy> _proxy)
-{
-	NSData *data = nil;
-
-	// Set path
-	fpath = NULL;
-	
-	// Hold proxy
-	proxy = [_proxy retain];
-	
-	// Load data
-	data = [proxy configContent];
-	
-	// Load config
-	_loadConfig(data);
+	return self;
 }
 
 #endif
 
-TCCocoaConfig::~TCCocoaConfig()
+
+// -- Tor --
+- (NSString *)torAddress
 {
-	fcontent = nil;
-	fpath = nil;
-
-#if defined(PROXY_ENABLED) && PROXY_ENABLED
-	proxy = nil;
-#endif
-}
-
-
-
-/*
-** TCCocoaConfig - Tor
-*/
-#pragma mark - TCCocoaConfig - Tor
-
-std::string TCCocoaConfig::get_tor_address() const
-{
-	NSString	*value = [fcontent objectForKey:TCCONF_KEY_TOR_ADDRESS];
-	const char	*c_value = [value UTF8String];
-	
-	if (c_value)
-		return c_value;
-	else
-		return "localhost";
-}
-
-void TCCocoaConfig::set_tor_address(const std::string &address)
-{
-	NSString *value = [NSString stringWithUTF8String:address.c_str()];
+	NSString *value = [_fcontent objectForKey:TCCONF_KEY_TOR_ADDRESS];
 	
 	if (value)
-	{
-		[fcontent setObject:value forKey:TCCONF_KEY_TOR_ADDRESS];
-		
-		// Save
-		_saveConfig();
-	}
+		return value;
+	else
+		return @"localhost";
 }
 
-uint16_t TCCocoaConfig::get_tor_port() const
+- (void)setTorAddress:(NSString *)address
 {
-	NSNumber *value = [fcontent objectForKey:TCCONF_KEY_TOR_PORT];
+	if (!address)
+		return;
+	
+	[_fcontent setObject:address forKey:TCCONF_KEY_TOR_ADDRESS];
+		
+	// Save
+	[self saveConfig];
+}
+
+- (uint16_t)torPort
+{
+	NSNumber *value = [_fcontent objectForKey:TCCONF_KEY_TOR_PORT];
 	
 	if (value)
 		return [value unsignedShortValue];
@@ -179,100 +221,83 @@ uint16_t TCCocoaConfig::get_tor_port() const
 		return 9050;
 }
 
-void TCCocoaConfig::set_tor_port(uint16_t port)
+- (void)setTorPort:(uint16_t)port
 {
-	NSNumber *value = [NSNumber numberWithUnsignedShort:port];
-	
-	[fcontent setObject:value forKey:TCCONF_KEY_TOR_PORT];
+	[_fcontent setObject:@(port) forKey:TCCONF_KEY_TOR_PORT];
 	
 	// Save
-	_saveConfig();
+	[self saveConfig];
 }
 
-std::string TCCocoaConfig::get_tor_path() const
+- (NSString *)torPath
 {
-	NSString	*value = [fcontent objectForKey:TCCONF_KEY_TOR_PATH];
-	const char	*c_value = [value UTF8String];
-	
-	if (c_value)
-		return c_value;
-	else
-		return "<tor>";
-}
-
-void TCCocoaConfig::set_tor_path(const std::string &path)
-{
-	NSString *value = [NSString stringWithUTF8String:path.c_str()];
+	NSString *value = [_fcontent objectForKey:TCCONF_KEY_TOR_PATH];
 	
 	if (value)
-	{
-		[fcontent setObject:value forKey:TCCONF_KEY_TOR_PATH];
-		
-		// Save
-		_saveConfig();
-	}
-}
-
-std::string TCCocoaConfig::get_tor_data_path() const
-{
-	NSString	*value = [fcontent objectForKey:TCCONF_KEY_TOR_DATA_PATH];
-	const char	*c_value = [value UTF8String];
-	
-	if (c_value)
-		return c_value;
+		return value;
 	else
-		return "tordata";
-	
-	return "";
+		return @"<tor>";
 }
 
-void TCCocoaConfig::set_tor_data_path(const std::string &path)
+- (void)setTorPath:(NSString *)path
 {
-	NSString *value = [NSString stringWithUTF8String:path.c_str()];
+	if (!path)
+		return;
+	
+	[_fcontent setObject:path forKey:TCCONF_KEY_TOR_PATH];
+		
+	// Save
+	[self saveConfig];
+}
+
+- (NSString *)torDataPath
+{
+	NSString *value = [_fcontent objectForKey:TCCONF_KEY_TOR_DATA_PATH];
 	
 	if (value)
-	{
-		[fcontent setObject:value forKey:TCCONF_KEY_TOR_DATA_PATH];
-		
-		// Save
-		_saveConfig();
-	}
-}
-
-
-
-/*
-** TCCocoaConfig - TorChat
-*/
-#pragma mark - TCCocoaConfig - TorChat
-
-std::string TCCocoaConfig::get_self_address() const
-{
-	NSString	*value = [fcontent objectForKey:TCCONF_KEY_IM_ADDRESS];
-	const char	*c_value = [value UTF8String];
-	
-	if (c_value)
-		return c_value;
+		return value;
 	else
-		return "xxx";
+		return @"tordata";
+	
+	return @"";
 }
 
-void TCCocoaConfig::set_self_address(const std::string &address)
+- (void)setTorDataPath:(NSString *)path
 {
-	NSString *value = [NSString stringWithUTF8String:address.c_str()];
+	if (!path)
+		return;
+	
+	[_fcontent setObject:path forKey:TCCONF_KEY_TOR_DATA_PATH];
+		
+	// Save
+	[self saveConfig];
+}
+
+// -- TorChat --
+- (NSString *)selfAddress
+{
+	NSString *value = [_fcontent objectForKey:TCCONF_KEY_IM_ADDRESS];
 	
 	if (value)
-	{
-		[fcontent setObject:value forKey:TCCONF_KEY_IM_ADDRESS];
-		
-		// Save
-		_saveConfig();
-	}
+		return value;
+	else
+		return @"xxx";
 }
 
-uint16_t TCCocoaConfig::get_client_port() const
+- (void)setSelfAddress:(NSString *)address
 {
-	NSNumber *value = [fcontent objectForKey:TCCONF_KEY_IM_PORT];
+	if (!address)
+		return;
+	
+	[_fcontent setObject:address forKey:TCCONF_KEY_IM_ADDRESS];
+	
+	// Save
+	[self saveConfig];
+}
+
+- (uint16_t)clientPort
+{
+	NSNumber *value = [_fcontent objectForKey:TCCONF_KEY_IM_PORT];
 	
 	if (value)
 		return [value unsignedShortValue];
@@ -280,51 +305,39 @@ uint16_t TCCocoaConfig::get_client_port() const
 		return 11009;
 }
 
-void TCCocoaConfig::set_client_port(uint16_t port)
+- (void)setClientPort:(uint16_t)port
 {
-	NSNumber *value = [NSNumber numberWithUnsignedShort:port];
-	
-	[fcontent setObject:value forKey:TCCONF_KEY_IM_PORT];
+	[_fcontent setObject:@(port) forKey:TCCONF_KEY_IM_PORT];
 	
 	// Save
-	_saveConfig();
+	[self saveConfig];
 }
 
-
-std::string TCCocoaConfig::get_download_folder() const
+- (NSString *)downloadFolder
 {
-	NSString	*value = [fcontent objectForKey:TCCONF_KEY_DOWN_FOLDER];
-	const char	*c_value = [value UTF8String];
-	
-	if (c_value)
-		return c_value;
-	else
-		return localized("conf_download");
-}
-
-void TCCocoaConfig::set_download_folder(const std::string & folder)
-{
-	NSString *value = [NSString stringWithUTF8String:folder.c_str()];
+	NSString *value = [_fcontent objectForKey:TCCONF_KEY_DOWN_FOLDER];
 	
 	if (value)
-	{
-		[fcontent setObject:value forKey:TCCONF_KEY_DOWN_FOLDER];
-		
-		// Save
-		_saveConfig();
-	}
+		return value;
+	else
+		return [self localized:@"conf_download"];
 }
 
-
-
-/*
-** TCCocoaConfig - Mode
-*/
-#pragma mark - TCCocoaConfig - Mode
-
-tc_config_mode TCCocoaConfig::get_mode() const
+- (void)setDownloadFolder:(NSString *)folder
 {
-	NSNumber *value = [fcontent objectForKey:TCCONF_KEY_MODE];
+		if (!folder)
+			return;
+
+	[_fcontent setObject:folder forKey:TCCONF_KEY_DOWN_FOLDER];
+		
+	// Save
+	[self saveConfig];
+}
+
+// -- Mode --
+- (tc_config_mode)mode
+{
+	NSNumber *value = [_fcontent objectForKey:TCCONF_KEY_MODE];
 	
 	if (value)
 	{
@@ -341,74 +354,61 @@ tc_config_mode TCCocoaConfig::get_mode() const
 		return tc_config_advanced;
 }
 
-void TCCocoaConfig::set_mode(tc_config_mode mode)
+- (void)setMode:(tc_config_mode)mode
 {
-	NSNumber *value = [NSNumber numberWithUnsignedShort:mode];
-	
-	[fcontent setObject:value forKey:TCCONF_KEY_MODE];
+	[_fcontent setObject:@(mode) forKey:TCCONF_KEY_MODE];
 	
 	// Save
-	_saveConfig();
+	[self saveConfig];
 }
 
-
-
-/*
-** TCCocoaConfig - Profile
-*/
-#pragma mark - TCCocoaConfig - Profile
-
-std::string TCCocoaConfig::get_profile_name()
+// -- Profile --
+- (NSString *)profileName
 {
-	NSString	*value = [fcontent objectForKey:TCCONF_KEY_PROFILE_NAME];
-	const char	*c_value = [value UTF8String];
-	
-	if (c_value)
-		return c_value;
-	else
-		return "-";
-}
-
-void TCCocoaConfig::set_profile_name(const std::string & name)
-{
-	NSString *value = [NSString stringWithUTF8String:name.c_str()];
+	NSString *value = [_fcontent objectForKey:TCCONF_KEY_PROFILE_NAME];
 	
 	if (value)
-	{
-		[fcontent setObject:value forKey:TCCONF_KEY_PROFILE_NAME];
-		
-		// Save
-		_saveConfig();
-	}
-}
-
-std::string TCCocoaConfig::get_profile_text()
-{
-	NSString	*value = [fcontent objectForKey:TCCONF_KEY_PROFILE_TEXT];
-	const char	*c_value = [value UTF8String];
-	
-	if (c_value)
-		return c_value;
+		return value;
 	else
-		return "";
+		return @"-";
 }
 
-void TCCocoaConfig::set_profile_text(const std::string & text)
+- (void)setProfileName:(NSString *)name
 {
-	NSString *value = [NSString stringWithUTF8String:text.c_str()];
+	if (!name)
+		return;
+	
+	[_fcontent setObject:name forKey:TCCONF_KEY_PROFILE_NAME];
+		
+	// Save
+	[self saveConfig];
+}
+
+- (NSString *)profileText
+{
+	NSString *value = [_fcontent objectForKey:TCCONF_KEY_PROFILE_TEXT];
 	
 	if (value)
-	{
-		[fcontent setObject:value forKey:TCCONF_KEY_PROFILE_TEXT];
-		
-		// Save
-		_saveConfig();
-	}
+		return value;
+	else
+		return @"";
 }
 
-TCImage * TCCocoaConfig::get_profile_avatar()
+- (void)setProfileText:(NSString *)text
 {
-	NSDictionary	*avatar = [fcontent objectForKey:TCCONF_KEY_PROFILE_AVATAR];
+	if (!text)
+		return;
+	
+	[_fcontent setObject:text forKey:TCCONF_KEY_PROFILE_TEXT];
+		
+	// Save
+	[self saveConfig];
+
+}
+
+- (TCImage *)profileAvatar
+{
+	NSDictionary	*avatar = [_fcontent objectForKey:TCCONF_KEY_PROFILE_AVATAR];
 	NSNumber		*width = [avatar objectForKey:@"width"];
 	NSNumber		*height = [avatar objectForKey:@"width"];
 	NSData			*bitmap = [avatar objectForKey:@"bitmap"];
@@ -423,24 +423,24 @@ TCImage * TCCocoaConfig::get_profile_avatar()
 	
 	[image setBitmap:bitmap];
 	[image setBitmapAlpha:bitmapAlpha];
-
+	
 	return image;
 }
 
-void TCCocoaConfig::set_profile_avatar(const TCImage *picture)
+- (void)setProfileAvatar:(TCImage *)picture
 {
 	if ([picture width] == 0 || [picture height] == 0 || [picture bitmap] == nil)
 	{
-		[fcontent removeObjectForKey:TCCONF_KEY_PROFILE_AVATAR];
+		[_fcontent removeObjectForKey:TCCONF_KEY_PROFILE_AVATAR];
 		
 		// Save
-		_saveConfig();
+		[self saveConfig];
 		
 		return;
 	}
 	
 	NSMutableDictionary *avatar = [[NSMutableDictionary alloc] initWithCapacity:4];
-
+	
 	[avatar setObject:@([picture width]) forKey:@"width"];
 	[avatar setObject:@([picture height]) forKey:@"height"];
 	
@@ -450,433 +450,251 @@ void TCCocoaConfig::set_profile_avatar(const TCImage *picture)
 	if ([picture bitmapAlpha])
 		[avatar setObject:[picture bitmapAlpha] forKey:@"bitmap_alpha"];
 	
-	[fcontent setObject:avatar forKey:TCCONF_KEY_PROFILE_AVATAR];
-
+	[_fcontent setObject:avatar forKey:TCCONF_KEY_PROFILE_AVATAR];
+	
 	// Save
-	_saveConfig();
+	[self saveConfig];
 }
 
-
-
-/*
-** TCCocoaConfig - Buddies
-*/
-#pragma mark - TCCocoaConfig - Buddies
-
-const tc_darray & TCCocoaConfig::buddies()
+// -- Buddies --
+- (NSArray *)buddies
 {
-	return _bcache;
+	return [[_fcontent objectForKey:TCCONF_KEY_BUDDIES] copy];
 }
 
-void TCCocoaConfig::add_buddy(const std::string &address, const std::string &alias, const std::string &notes)
+- (void)addBuddy:(NSString *)address alias:(NSString *)alias notes:(NSString *)notes
 {
-	// Build cocoa version
-	NSString			*oaddress = [NSString stringWithUTF8String:address.c_str()];
-	NSString			*oalias = [NSString stringWithUTF8String:alias.c_str()];
-	NSString			*onotes = [NSString stringWithUTF8String:notes.c_str()];
-	NSMutableDictionary	*obuddy = [[NSMutableDictionary alloc] init];
+	if (!address)
+		return;
 	
-	[obuddy setObject:oalias forKey:@TCConfigBuddyAlias];
-	[obuddy setObject:oaddress forKey:@TCConfigBuddyAddress];
-	[obuddy setObject:onotes forKey:@TCConfigBuddyNotes];
-	[obuddy setObject:@"" forKey:@TCConfigBuddyLastName];
+	if (!alias)
+		alias = @"";
 	
-	[[fcontent objectForKey:TCCONF_KEY_BUDDIES] addObject:obuddy];
+	if (!notes)
+		notes = @"";
 	
-	
-	// Buil C++ version
-	tc_dictionary entry;
-	
-	entry[TCConfigBuddyAlias] = alias;
-	entry[TCConfigBuddyAddress] = address;
-	entry[TCConfigBuddyNotes] = notes;
-	entry[TCConfigBuddyLastName] = "";
-	
-	_bcache.push_back(entry);
-	
-	
+	NSDictionary *buddy = @{ TCConfigBuddyAddress : address, TCConfigBuddyAlias : alias, TCConfigBuddyNotes : notes, TCConfigBuddyLastName : @"" };
+
+	[[_fcontent objectForKey:TCCONF_KEY_BUDDIES] addObject:buddy];
+		
 	// Save & Release
-	_saveConfig();
+	[self saveConfig];
 }
 
-bool TCCocoaConfig::remove_buddy(const std::string &address)
+- (BOOL)removeBuddy:(NSString *)address
 {
-	BOOL oc_found = NO;
-	BOOL cpp_found = NO;
+	BOOL found = NO;
+	
+	if (!address)
+		return NO;
 	
 	// Remove from Cocoa version
-	NSMutableArray	*array = [fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
 	NSUInteger		i, cnt = [array count];
-	NSString		*oaddress = [NSString stringWithUTF8String:address.c_str()];
 	
 	for (i = 0; i < cnt; i++)
 	{
 		NSDictionary *buddy = [array objectAtIndex:i];
 		
-		if ([[buddy objectForKey:@TCConfigBuddyAddress] isEqualToString:oaddress])
+		if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
 		{
 			[array removeObjectAtIndex:i];
-			oc_found = YES;
+			found = YES;
 			break;
 		}
 	}
-	
-	
-	// Remove from C++ version
-	cnt = _bcache.size();
-	
-	for (i = 0; i < cnt; i++)
-	{
-		tc_dictionary &buddy = _bcache[i];
-		
-		if (buddy[TCConfigBuddyAddress].compare(address) == 0)
-		{
-			_bcache.erase(_bcache.begin() + (ptrdiff_t)i);
-			cpp_found = YES;
-			break;
-		}
-	}
-	
 	
 	// Save
-	_saveConfig();
-
-	return oc_found && cpp_found;
+	[self saveConfig];
+	
+	return found;
 }
 
-void TCCocoaConfig::set_buddy_alias(const std::string &address, const std::string &alias)
+- (void)setBuddy:(NSString *)address alias:(NSString *)alias
 {
+	if (!address)
+		return;
+	
+	if (!alias)
+		alias = @"";
+	
 	// Change from Cocoa version
-	NSMutableArray	*array = [fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
 	NSUInteger		i, cnt = [array count];
-	NSString		*oaddress = [NSString stringWithUTF8String:address.c_str()];
 	
 	for (i = 0; i < cnt; i++)
 	{
 		NSMutableDictionary *buddy = [array objectAtIndex:i];
 		
-		if ([[buddy objectForKey:@TCConfigBuddyAddress] isEqualToString:oaddress])
+		if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
 		{
-			[buddy setObject:[NSString stringWithUTF8String:alias.c_str()] forKey:@TCConfigBuddyAlias];
-			break;
-		}
-	}
-	
-	
-	// Change from C++ version
-	cnt = _bcache.size();
-	
-	for (i = 0; i < cnt; i++)
-	{
-		tc_dictionary &buddy = _bcache[i];
-		
-		if (buddy[TCConfigBuddyAddress].compare(address) == 0)
-		{
-			buddy[TCConfigBuddyAlias] = alias;
+			[buddy setObject:alias forKey:TCConfigBuddyAlias];
 			break;
 		}
 	}
 	
 	// Save
-	_saveConfig();
+	[self saveConfig];
 }
 
-void TCCocoaConfig::set_buddy_notes(const std::string &address, const std::string &notes)
+- (void)setBuddy:(NSString *)address notes:(NSString *)notes
 {
+	if (!address)
+		return;
+	
+	if (!notes)
+		notes = @"";
+	
 	// Change from Cocoa version
-	NSMutableArray	*array = [fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
 	NSUInteger		i, cnt = [array count];
-	NSString		*oaddress = [NSString stringWithUTF8String:address.c_str()];
 	
 	for (i = 0; i < cnt; i++)
 	{
 		NSMutableDictionary *buddy = [array objectAtIndex:i];
 		
-		if ([[buddy objectForKey:@TCConfigBuddyAddress] isEqualToString:oaddress])
+		if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
 		{
-			[buddy setObject:[NSString stringWithUTF8String:notes.c_str()] forKey:@TCConfigBuddyNotes];
-			break;
-		}
-	}
-	
-	
-	// Change from C++ version
-	cnt = _bcache.size();
-	
-	for (i = 0; i < cnt; i++)
-	{
-		tc_dictionary &buddy = _bcache[i];
-		
-		if (buddy[TCConfigBuddyAddress].compare(address) == 0)
-		{
-			buddy[TCConfigBuddyNotes] = notes;
+			[buddy setObject:notes forKey:TCConfigBuddyNotes];
 			break;
 		}
 	}
 	
 	// Save
-	_saveConfig();
+	[self saveConfig];
 }
 
-void TCCocoaConfig::set_buddy_last_profile_name(const std::string &address, const std::string &lname)
+- (void)setBuddy:(NSString *)address lastProfileName:(NSString *)lastName
 {
+	if (!address)
+		return;
+	
+	if (!lastName)
+		lastName = @"";
+	
 	// Change from Cocoa version
-	NSMutableArray	*array = [fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
 	NSUInteger		i, cnt = [array count];
-	NSString		*oaddress = [NSString stringWithUTF8String:address.c_str()];
 	
 	for (i = 0; i < cnt; i++)
 	{
 		NSMutableDictionary *buddy = [array objectAtIndex:i];
 		
-		if ([[buddy objectForKey:@TCConfigBuddyAddress] isEqualToString:oaddress])
+		if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
 		{
-			[buddy setObject:[NSString stringWithUTF8String:lname.c_str()] forKey:@TCConfigBuddyLastName];
-			break;
-		}
-	}
-	
-	
-	// Change from C++ version
-	cnt = _bcache.size();
-	
-	for (i = 0; i < cnt; i++)
-	{
-		tc_dictionary &buddy = _bcache[i];
-		
-		if (buddy[TCConfigBuddyAddress].compare(address) == 0)
-		{
-			buddy[TCConfigBuddyLastName] = lname;
+			[buddy setObject:lastName forKey:TCConfigBuddyLastName];
 			break;
 		}
 	}
 	
 	// Save
-	_saveConfig();
+	[self saveConfig];
 }
 
-std::string TCCocoaConfig::get_buddy_alias(const std::string &address) const
+- (NSString *)getBuddyAlias:(NSString *)address
 {
-	size_t i, cnt = _bcache.size();
-
-	for (i = 0; i < cnt; i++)
-	{
-		const tc_dictionary &buddy = _bcache.at(i);
-		
-		if (buddy.at(TCConfigBuddyAddress).compare(address) == 0)
-			return buddy.at(TCConfigBuddyAlias);
-	}
-
-	return "";
-}
-
-std::string TCCocoaConfig::get_buddy_notes(const std::string &address) const
-{
-	size_t i, cnt = _bcache.size();
+	if (!address)
+		return @"";
 	
-	for (i = 0; i < cnt; i++)
+	NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+
+	for (NSDictionary *buddy in buddies)
 	{
-		const tc_dictionary &buddy = _bcache.at(i);
-		
-		if (buddy.at(TCConfigBuddyAddress).compare(address) == 0)
-			return buddy.at(TCConfigBuddyNotes);
+		if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
+			return buddy[TCConfigBuddyAlias];
 	}
 	
-	return "";
+	return @"";
 }
 
-std::string TCCocoaConfig::get_buddy_last_profile_name(const std::string &address) const
+- (NSString *)getBuddyNotes:(NSString *)address
 {
-	size_t i, cnt = _bcache.size();
+	if (!address)
+		return @"";
 	
-	for (i = 0; i < cnt; i++)
+	NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	
+	for (NSDictionary *buddy in buddies)
 	{
-		const tc_dictionary &buddy = _bcache.at(i);
-		
-		if (buddy.at(TCConfigBuddyAddress).compare(address) == 0)
-			return buddy.at(TCConfigBuddyLastName);
+		if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
+			return buddy[TCConfigBuddyNotes];
 	}
 	
-	return "";
+	return @"";
 }
 
-
-
-/*
-** TCCocoaConfig - Blocked
-*/
-#pragma mark - TCCocoaConfig - Blocked
-
-const tc_sarray & TCCocoaConfig::blocked_buddies()
+- (NSString *)getBuddyLastProfileName:(NSString *)address
 {
-	return _bbcache;
+	if (!address)
+		return @"";
+	
+	NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	
+	for (NSDictionary *buddy in buddies)
+	{
+		if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
+			return buddy[TCConfigBuddyLastName];
+	}
+	
+	return @"";
 }
 
-bool TCCocoaConfig::add_blocked_buddy(const std::string &address)
+// -- Blocked --
+- (NSArray *)blockedBuddies
+{
+	return [[_fcontent objectForKey:TCCONF_KEY_BLOCKED] copy];
+}
+
+- (BOOL)addBlockedBuddy:(NSString *)address
 {
 	// Add to cocoa version
-	NSString		*oaddress = [NSString stringWithUTF8String:address.c_str()];
-	NSMutableArray	*list = [fcontent objectForKey:TCCONF_KEY_BLOCKED];
+	NSMutableArray	*list = [_fcontent objectForKey:TCCONF_KEY_BLOCKED];
 	
-	if ([list indexOfObject:oaddress] != NSNotFound)
-		return false;
+	if ([list indexOfObject:address] != NSNotFound)
+		return NO;
 	
-	[list addObject:oaddress];
+	[list addObject:address];
 	
-	// Add to C++ version	
-	_bbcache.push_back(address);
 	
 	// Save & Release
-	_saveConfig();
+	[self saveConfig];
 	
-	return true;
+	return YES;
 }
 
-bool TCCocoaConfig::remove_blocked_buddy(const std::string &address)
+- (BOOL)removeBlockedBuddy:(NSString *)address
 {
-	BOOL oc_found = NO;
-	BOOL cpp_found = NO;
+	BOOL found = NO;
+	
+	if (!address)
+		return NO;
 	
 	// Remove from Cocoa version
-	NSMutableArray	*array = [fcontent objectForKey:TCCONF_KEY_BLOCKED];
+	NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BLOCKED];
 	NSUInteger		i, cnt = [array count];
-	NSString		*oaddress = [NSString stringWithUTF8String:address.c_str()];
 	
 	for (i = 0; i < cnt; i++)
 	{
 		NSString *buddy = [array objectAtIndex:i];
 		
-		if ([buddy isEqualToString:oaddress])
+		if ([buddy isEqualToString:address])
 		{
 			[array removeObjectAtIndex:i];
-			oc_found = YES;
+			found = YES;
 			break;
 		}
 	}
-	
-	
-	// Remove from C++ version
-	cnt = _bbcache.size();
-	
-	for (i = 0; i < cnt; i++)
-	{
-		std::string &buddy = _bbcache[i];
-		
-		if (buddy.compare(address) == 0)
-		{
-			_bbcache.erase(_bbcache.begin() + (ptrdiff_t)i);
-			cpp_found = YES;
-			break;
-		}
-	}
-	
-	
+
 	// Save
-	_saveConfig();
+	[self saveConfig];
 	
-	return oc_found && cpp_found;
+	return found;
 }
 
-
-
-/*
-** TCCocoaConfig - Tools
-*/
-#pragma mark - TCCocoaConfig - Tools
-
-std::string TCCocoaConfig::real_path(const std::string &path) const
+// -- UI --
+- (tc_config_title)modeTitle
 {
-	if (path.size() == 0)
-		return "";
-	
-	if (path.compare("<tor>") == 0)
-	{
-		NSBundle	*bundle = [NSBundle mainBundle];
-		NSString	*opath = [bundle pathForResource:@"tor" ofType:@""];
-		const char	*cpath = [opath UTF8String];
-		
-		if (cpath)
-			return cpath;
-		else
-			return "cant_find_tor";
-	}
-	else if (path[0] == '~')
-	{
-		NSString *pth = [[NSString stringWithUTF8String:path.c_str()] stringByExpandingTildeInPath];
-		
-		return [pth UTF8String];
-	}
-	else if (path[0] == '/')
-	{
-		return path;
-	}
-	else
-	{
-		NSString	*component = [NSString stringWithUTF8String:path.c_str()];
-		NSString	*opath = nil;
-		
-#if defined(PROXY_ENABLED) && PROXY_ENABLED
-
-		// Build path relative to desktop directory
-		if (!opath)
-			opath = [[@"~/Desktop" stringByExpandingTildeInPath] stringByAppendingPathComponent:component];
-#endif
-		
-		// Build path relative to configuration directory
-		if (!opath)
-			opath = [[fpath stringByDeletingLastPathComponent] stringByAppendingPathComponent:component];
-		
-		// Build path relative to temporary directory
-		if (!opath)
-			opath = [@"/tmp" stringByAppendingPathComponent:component];
-
-		return [opath UTF8String];
-	}
-}
-
-
-
-/*
-** TCCocoaConfig - Localization
-*/
-#pragma mark - TCCocoaConfig - Localization
-
-std::string TCCocoaConfig::localized(const std::string &key) const
-{
-	const char	*ckey = key.c_str();
-	NSString	*okey = [[NSString alloc] initWithUTF8String:ckey];
-	std::string	result;
-	NSString	*local = nil;
-	const char	*clocal = NULL;
-	
-	if (!okey)
-		return result;
-	
-	local = NSLocalizedString(okey, @"");
-	
-	if (!local)
-		return result;
-		
-	clocal = [local UTF8String];
-	
-	if (!clocal)
-		return result;
-	
-	result = clocal;
-	
-	return result;
-}
-
-
-
-/*
-** TCCocoaConfig - UI
-*/
-#pragma mark - TCCocoaConfig - UI
-
-tc_config_title TCCocoaConfig::get_mode_title() const
-{
-	NSNumber *value = [fcontent objectForKey:TCCONF_KEY_UI_TITLE];
+	NSNumber *value = [_fcontent objectForKey:TCCONF_KEY_UI_TITLE];
 	
 	if (!value)
 		return tc_config_title_address;
@@ -884,126 +702,172 @@ tc_config_title TCCocoaConfig::get_mode_title() const
 	return (tc_config_title)[value unsignedShortValue];
 }
 
-void TCCocoaConfig::set_mode_title(tc_config_title mode)
+- (void)setModeTitle:(tc_config_title)mode
 {
-	NSNumber *value = [NSNumber numberWithUnsignedShort:mode];
-	
-	[fcontent setObject:value forKey:TCCONF_KEY_UI_TITLE];
+	[_fcontent setObject:@(mode) forKey:TCCONF_KEY_UI_TITLE];
 	
 	// Save
-	_saveConfig();
+	[self saveConfig];
 }
 
-
-std::string TCCocoaConfig::get_client_version(tc_config_get get) const
-{	
-	switch (get)
-	{
-		case tc_config_get_default:
-		{
-			NSBundle	*bundle = [NSBundle mainBundle];
-			NSString	*version = [bundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-			const char	*cversion = [version UTF8String];
-			
-			if (cversion)
-				return cversion;
-			
-			return "";
-		}
-			
-		case tc_config_get_defined:
-		{
-			NSString	*value = [fcontent objectForKey:TCCONF_KEY_CLIENT_VERSION];
-			const char	*c_value = [value UTF8String];
-			
-			if (c_value)
-				return c_value;
-
-			return "";
-		}
-			
-		case tc_config_get_real:
-		{
-			std::string value = get_client_version(tc_config_get_defined);
-			
-			if (value.size() == 0)
-				value = get_client_version(tc_config_get_default);
-			
-			return value;
-		}
-	}
-
-	return "";
-}
-
-void TCCocoaConfig::set_client_version(const std::string &version)
-{
-	NSString *value = [NSString stringWithUTF8String:version.c_str()];
-	
-	if (value)
-	{
-		[fcontent setObject:value forKey:TCCONF_KEY_CLIENT_VERSION];
-		
-		// Save
-		_saveConfig();
-	}
-}
-
-std::string TCCocoaConfig::get_client_name(tc_config_get get) const
+// -- Client --
+- (NSString *)clientVersion:(tc_config_get)get
 {
 	switch (get)
 	{
 		case tc_config_get_default:
 		{
-			return "TorChat for Mac";
+			NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+			
+			if (version)
+				return version;
+			
+			return @"";
 		}
 			
 		case tc_config_get_defined:
 		{
-			NSString	*value = [fcontent objectForKey:TCCONF_KEY_CLIENT_NAME];
-			const char	*c_value = [value UTF8String];
+			NSString *value = [_fcontent objectForKey:TCCONF_KEY_CLIENT_VERSION];
 			
-			if (c_value)
-				return c_value;
+			if (value)
+				return value;
 			
-			return "";
+			return @"";
 		}
 			
 		case tc_config_get_real:
 		{
-			std::string value = get_client_name(tc_config_get_defined);
+			NSString *value = [self clientVersion:tc_config_get_defined];
 			
-			if (value.size() == 0)
-				value = get_client_name(tc_config_get_default);
+			if ([value length] == 0)
+				value = [self clientVersion:tc_config_get_default];
 			
 			return value;
 		}
 	}
 	
-	return "";
+	return @"";
 }
 
-void TCCocoaConfig::set_client_name(const std::string &name)
+- (void)setClientVersion:(NSString *)version
 {
-	NSString *value = [NSString stringWithUTF8String:name.c_str()];
-	
-	if (value)
-	{
-		[fcontent setObject:value forKey:TCCONF_KEY_CLIENT_NAME];
+	if (!version)
+		return;
+
+	[_fcontent setObject:version forKey:TCCONF_KEY_CLIENT_VERSION];
 		
-		// Save
-		_saveConfig();
+	// Save
+	[self saveConfig];
+}
+
+- (NSString *)clientName:(tc_config_get)get
+{
+	switch (get)
+	{
+		case tc_config_get_default:
+		{
+			return @"TorChat for Mac";
+		}
+			
+		case tc_config_get_defined:
+		{
+			NSString *value = [_fcontent objectForKey:TCCONF_KEY_CLIENT_NAME];
+			
+			if (value)
+				return value;
+			
+			return @"";
+		}
+			
+		case tc_config_get_real:
+		{
+			NSString *value = [self clientName:tc_config_get_defined];
+			
+			if ([value length] == 0)
+				value = [self clientName:tc_config_get_default];
+			
+			return value;
+		}
+	}
+	
+	return @"";
+}
+
+- (void)setClientName:(NSString *)name
+{
+	if (!name)
+		return;
+	
+	[_fcontent setObject:name forKey:TCCONF_KEY_CLIENT_NAME];
+		
+	// Save
+	[self saveConfig];
+}
+
+// -- Tools --
+- (NSString *)realPath:(NSString *)path
+{
+	if ([path length] == 0)
+		return @"";
+	
+	if ([path isEqualToString:@"<tor>"])
+	{
+		NSString *rpath = [[NSBundle mainBundle] pathForResource:@"tor" ofType:@""];
+		
+		if (rpath)
+			return rpath;
+		else
+			return @"cant_find_tor";
+	}
+	else if ([path characterAtIndex:0] == '~')
+	{
+		return [path stringByExpandingTildeInPath];
+	}
+	else if ([path characterAtIndex:0] == '/')
+	{
+		return path;
+	}
+	else
+	{
+		NSString *rpath = nil;
+		
+#if defined(PROXY_ENABLED) && PROXY_ENABLED
+		
+		// Build path relative to desktop directory
+		if (!rpath)
+			rpath = [[@"~/Desktop" stringByExpandingTildeInPath] stringByAppendingPathComponent:path];
+#endif
+		
+		// Build path relative to configuration directory
+		if (!rpath)
+			rpath = [[_fpath stringByDeletingLastPathComponent] stringByAppendingPathComponent:path];
+		
+		// Build path relative to temporary directory
+		if (!rpath)
+			rpath = [@"/tmp" stringByAppendingPathComponent:path];
+		
+		return rpath;
 	}
 }
 
+// -- Localization --
+- (NSString *)localized:(NSString *)key
+{
+	NSString *local = nil;
+	
+	if (!key)
+		return @"";
+	
+	local = NSLocalizedString(key, @"");
+	
+	if (!local)
+		return @"";
+	
+	return local;
+}
 
-
-/*
-** TCCocoaConfig - Private
-*/
-#pragma mark - TCCocoaConfig - Private
-
-void TCCocoaConfig::_loadConfig(NSData *data)
+// -- Helpers --
+- (NSMutableDictionary *)loadConfig:(NSData *)data
 {
 	NSMutableDictionary	*content;
 	
@@ -1015,67 +879,23 @@ void TCCocoaConfig::_loadConfig(NSData *data)
 	
 	// Check content
 	if (!content)
-		throw "conf_err_parse";
+		return nil;
+	
+	//throw "conf_err_parse";
+#warning FIXME: remove localized string.
 	
 	if ([content isKindOfClass:[NSDictionary class]] == NO)
-		throw "conf_err_content";
-	
-	// Hold content
-	fcontent = content;
-	
-	// Build buddies cache
-	NSArray			*buddies = [fcontent objectForKey:TCCONF_KEY_BUDDIES];
-	NSMutableArray	*nbuddies = [[NSMutableArray alloc] init];
-	
-	for (NSDictionary *buddy in buddies)
-	{
-		NSMutableDictionary *nbuddy = [[NSMutableDictionary alloc] initWithDictionary:buddy];
-		NSString			*alias = [nbuddy objectForKey:@TCConfigBuddyAlias];
-		NSString			*address = [nbuddy objectForKey:@TCConfigBuddyAddress];
-		NSString			*notes = [nbuddy objectForKey:@TCConfigBuddyNotes];
-		NSString			*lname = [nbuddy objectForKey:@TCConfigBuddyLastName];
-		
-		// Add it to NSMutableArray cache
-		[nbuddies addObject:nbuddy];
-		
-		// Add it to tc_array cache
-		tc_dictionary entry;
-		
-		entry[TCConfigBuddyAlias] = (alias ? [alias UTF8String] : "-");
-		entry[TCConfigBuddyAddress] = (address ? [address UTF8String] : "-");
-		entry[TCConfigBuddyNotes] = (notes ? [notes UTF8String] : "-");
-		entry[TCConfigBuddyLastName] = (lname ? [lname UTF8String] : "");
+		return nil;
 
-		_bcache.push_back(entry);
-	}
-	
-	[fcontent setObject:nbuddies forKey:TCCONF_KEY_BUDDIES];
-	
-	
-	// Build blocked cache
-	NSArray			*blocked = [fcontent objectForKey:TCCONF_KEY_BLOCKED];
-	NSMutableArray	*nblocked = [[NSMutableArray alloc] init];
-	
-	for (NSString *buddy in blocked)
-	{
-		const char *cbuddy = [buddy UTF8String];
-		
-		if (!cbuddy)
-			continue;
-		
-		// Add it to NSMutableArray cache
-		[nblocked addObject:buddy];
-		
-		// Add it to tc_array cache
-		_bbcache.push_back(cbuddy);
-	}
-	
-	[fcontent setObject:nblocked forKey:TCCONF_KEY_BLOCKED];
+	//throw "conf_err_content";
+#warning FIXME: remove localized string.
+
+	return content;
 }
 
-void TCCocoaConfig::_saveConfig()
+- (void)saveConfig
 {
-	NSData *data = [NSPropertyListSerialization dataWithPropertyList:fcontent format:NSPropertyListXMLFormat_v1_0 options:0 error:nil];
+	NSData *data = [NSPropertyListSerialization dataWithPropertyList:_fcontent format:NSPropertyListXMLFormat_v1_0 options:0 error:nil];
 	
 	if (!data)
 		return;
@@ -1101,6 +921,8 @@ void TCCocoaConfig::_saveConfig()
 #endif
 	
 	// Save by using file
-	if (fpath)
-		[data writeToFile:fpath atomically:YES];
+	if (_fpath)
+		[data writeToFile:_fpath atomically:YES];
 }
+
+@end

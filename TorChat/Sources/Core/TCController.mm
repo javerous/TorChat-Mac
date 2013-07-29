@@ -47,17 +47,16 @@
 
 
 
+
 /*
 ** TCController - Instance
 */
 #pragma mark - TCController - Instance
 
-TCController::TCController(TCConfig *_config) :
-	config(_config),
+TCController::TCController(id <TCConfig> _config) :
 	running(false)
 {
-	// Retain config
-	_config->retain();
+	config = _config;
 	
 	// Init vars
 	mstatus = tccontroller_available;
@@ -72,14 +71,14 @@ TCController::TCController(TCConfig *_config) :
 	timer = 0;
 	
 	// Get profile avatar
-	pavatar = config->get_profile_avatar();
+	pavatar = [config profileAvatar];
 	
 	if (!pavatar)
 		pavatar = [[TCImage alloc] initWithWidth:64 andHeight:64];
 	
 	// Get profile name & text
-	pname = new TCString(config->get_profile_name());
-	ptext = new TCString(config->get_profile_text());
+	pname = new TCString([[config profileName] UTF8String]);
+	ptext = new TCString([[config profileText] UTF8String]);
 	
 	// Alloc queue
 	mainQueue = dispatch_queue_create("com.torchat.core.controller.main", DISPATCH_QUEUE_SERIAL);
@@ -117,7 +116,7 @@ TCController::~TCController()
 	nQueue = nil;
 	
 	// Release config
-	config->release();
+	config = nil;
 }
 
 
@@ -136,16 +135,16 @@ void TCController::start()
 		
 		if (!buddiesLoaded)
 		{
-			const tc_darray	&sbuddies = config->buddies();
-			size_t			i, cnt;
+			NSArray *sbuddies = [config buddies];
+			size_t	i, cnt;
 			
 			//  -- Parse buddies --
-			cnt = sbuddies.size();
+			cnt = [sbuddies count];
 			
 			for (i = 0; i < cnt; i++)
 			{
-				tc_dictionary	item = sbuddies[i];
-				TCBuddy			*buddy = new TCBuddy(config, item[TCConfigBuddyAlias], item[TCConfigBuddyAddress], item[TCConfigBuddyNotes]);
+				NSDictionary	*item = sbuddies[i];
+				TCBuddy			*buddy = new TCBuddy(config, [item[TCConfigBuddyAlias] UTF8String], [item[TCConfigBuddyAddress] UTF8String], [item[TCConfigBuddyNotes] UTF8String]);
 				
 				// Check blocked status
 				_checkBlocked(buddy);
@@ -159,7 +158,7 @@ void TCController::start()
 			
 			// -- Check that we are on the buddy list --
 			bool				found = false;
-			const std::string	&self = config->get_self_address();
+			const std::string	self_address = [[config selfAddress] UTF8String];
 			
 			cnt = buddies.size();
 			
@@ -167,7 +166,7 @@ void TCController::start()
 			{
 				TCBuddy	*buddy = buddies[i];
 				
-				if (buddy->address().content().compare(self) == 0)
+				if (buddy->address().content().compare(self_address) == 0)
 				{
 					found = true;
 					break;
@@ -175,7 +174,7 @@ void TCController::start()
 			}
 			
 			if (!found)
-				addBuddy(config->localized("core_ctrl_myself"), self);
+				addBuddy([[config localized:@"core_ctrl_myself"] UTF8String], self_address);
 			
 			// -- Buddy are loaded --
 			buddiesLoaded = true;
@@ -187,7 +186,7 @@ void TCController::start()
 				
 		// > Configure the port and address
 		my_addr.sin_family = AF_INET;
-		my_addr.sin_port = htons(config->get_client_port());
+		my_addr.sin_port = htons([config clientPort]);
 		my_addr.sin_addr.s_addr = INADDR_ANY;
 		memset(&(my_addr.sin_zero), '\0', 8);
 				
@@ -427,7 +426,7 @@ void TCController::setProfileAvatar(TCImage *image)
 		pavatar = image;
 		
 		// Store avatar
-		config->set_profile_avatar(pavatar);
+		[config setProfileAvatar:pavatar];
 		
 		// Give this avatar to buddy list
 		size_t i, cnt = cnt = buddies.size();
@@ -472,7 +471,7 @@ void TCController::setProfileName(TCString *name)
 		pname = name;
 		
 		// Store the name
-		config->set_profile_name(name->content());
+		[config setProfileName:@(name->content().c_str())];
 		
 		// Give this name to buddy list
 		size_t i, cnt = cnt = buddies.size();
@@ -518,7 +517,7 @@ void TCController::setProfileText(TCString *text)
 		ptext = text;
 		
 		// Store the text
-		config->set_profile_text(text->content());
+		[config setProfileText:@(text->content().c_str())];
 		
 		// Give this text to buddy list
 		size_t i, cnt = cnt = buddies.size();
@@ -583,7 +582,7 @@ void TCController::addBuddy(const std::string &name, const std::string &address,
         buddy->start();
 		
 		// Save to config
-		config->add_buddy(*caddress, *cname, *ccomment);
+		[config addBuddy:@(caddress->c_str()) alias:@(cname->c_str()) notes:@(ccomment->c_str())];
 		
 		// Clean
 		delete cname;
@@ -614,7 +613,7 @@ void TCController::removeBuddy(const std::string &address)
 				buddies.erase(buddies.begin() + (ptrdiff_t)i);
 				
 				// Save to config
-				config->remove_buddy(*cpy);
+				[config removeBuddy:@(cpy->c_str())];
 				
 				break;
 			}
@@ -695,8 +694,9 @@ bool TCController::addBlockedBuddy(const std::string &address)
 	dispatch_sync_cpp(this, mainQueue, ^{
 		
 		// Add the address to the configuration
-		if (config->add_blocked_buddy(*addr) == true)
-			result = true;		
+		if ([config addBlockedBuddy:@(addr->c_str())] == YES)
+			result = true;
+		
 		// Clean
 		delete addr;
 	});
@@ -724,7 +724,7 @@ bool TCController::removeBlockedBuddy(const std::string &address)
 	dispatch_sync_cpp(this, mainQueue, ^{
 		
 		// Remove the address from the configuration
-		if (config->remove_blocked_buddy(*addr) == true)
+		if ([config removeBlockedBuddy:@(addr->c_str())] == YES)
 			result = true;
 		
 		// Clean
@@ -835,15 +835,15 @@ void TCController::_checkBlocked(TCBuddy *buddy)
 		return;
 	
 	// XXX not thread safe
-	const tc_sarray &blocked = config->blocked_buddies();
-	size_t			i, cnt = blocked.size();
+	NSArray	*blocked = [config blockedBuddies];
+	size_t	i, cnt = [blocked count];
 	
 	buddy->setBlocked(false);
 	
 	// Search
 	for (i = 0; i < cnt; i++)
 	{
-		const std::string &address = blocked.at(i);
+		const std::string address = [blocked[i] UTF8String];
 		
 		if (address.compare(buddy->address().content()) == 0)
 		{
@@ -866,7 +866,7 @@ void TCController::_error(tcctrl_info code, const std::string &info, bool fatal)
 {
 	// > mainQueue <
 	
-	TCInfo *err = new TCInfo(tcinfo_error, code, config->localized(info));
+	TCInfo *err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String]);
 	
 	_send_event(err);
 	
@@ -880,7 +880,7 @@ void TCController::_error(tcctrl_info code, const std::string &info, TCObject *c
 {
 	// > mainQueue <
 	
-	TCInfo *err = new TCInfo(tcinfo_error, code, config->localized(info), ctx);
+	TCInfo *err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String], ctx);
 	
 	_send_event(err);
 	
@@ -894,7 +894,7 @@ void TCController::_notify(tcctrl_info notice, const std::string &info)
 {
 	// > mainQueue <
 	
-	TCInfo *ifo = new TCInfo(tcinfo_info, notice, config->localized(info));
+	TCInfo *ifo = new TCInfo(tcinfo_info, notice, [[config localized:@(info.c_str())] UTF8String]);
 	
 	_send_event(ifo);
 	
@@ -905,7 +905,7 @@ void TCController::_notify(tcctrl_info notice, const std::string &info, TCObject
 {
 	// > mainQueue <
 	
-	TCInfo *ifo = new TCInfo(tcinfo_info, notice, config->localized(info), ctx);
+	TCInfo *ifo = new TCInfo(tcinfo_info, notice, [[config localized:@(info.c_str())] UTF8String], ctx);
 	
 	_send_event(ifo);
 	

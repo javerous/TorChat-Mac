@@ -37,6 +37,7 @@
 
 #import "TCParser.h"
 
+#import "TCConfig.h"
 
 
 /*
@@ -45,7 +46,6 @@
 #pragma mark - Forward
 
 class TCBuddy;
-class TCConfig;
 
 
 
@@ -59,7 +59,7 @@ class TCControlClient : public TCObject
 {
 public:
 	// -- Instance --
-	TCControlClient(TCConfig *_conf, int sock);
+	TCControlClient(id <TCConfig> conf, int sock);
 	~TCControlClient();
 	
 	// -- Running --
@@ -99,7 +99,7 @@ private:
 	TCController			*ctrl;
 	
 	// > Config
-	TCConfig				*config;
+	id <TCConfig>			config;
 	
 	// > Queue
 	dispatch_queue_t		mainQueue;
