@@ -37,6 +37,7 @@
 # import "TCSocket.h"
 # include "TCObject.h"
 
+#import "TCConfig.h"
 
 
 /*
@@ -45,7 +46,6 @@
 #pragma mark - Forward
 
 class TCBuddy;
-class TCConfig;
 @class TCFileReceive;
 @class TCFileSend;
 class TCString;
@@ -159,7 +159,7 @@ class TCBuddy : public TCObject
 public:
 	
 	// -- Instance --
-	TCBuddy(TCConfig *config, const std::string &alias, const std::string &address, const std::string &notes);
+	TCBuddy(id <TCConfig>_config, const std::string &alias, const std::string &address, const std::string &notes);
 	~TCBuddy();
 	
 	// -- Run --
@@ -291,7 +291,7 @@ private:
 	
 	// -- Vars --
 	// > Config
-	TCConfig					*config;
+	id <TCConfig>				config;
 	
 	// > Status
 	int							socksstate;
