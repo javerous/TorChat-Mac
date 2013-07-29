@@ -114,10 +114,9 @@ static char gMainQueueContext;
 */
 #pragma mark - TCBuddy - Instance
 
-TCBuddy::TCBuddy(TCConfig *_config, const std::string &_alias, const std::string &_address, const std::string &_notes)
+TCBuddy::TCBuddy(id <TCConfig>_config, const std::string &_alias, const std::string &_address, const std::string &_notes)
 {	
 	// Retain config
-	_config->retain();
 	config = _config;
 	
 	// Retain property
@@ -197,7 +196,7 @@ TCBuddy::~TCBuddy()
 	}
 	
 	// Release config
-	config->release();
+	config = nil;
 	
 	// Release property
 	malias->release();
@@ -246,14 +245,14 @@ void TCBuddy::start()
 		
 		memset(&hints, 0, sizeof(hints));
 		
-		snprintf(sport, sizeof(sport), "%i", config->get_tor_port());
+		snprintf(sport, sizeof(sport), "%i", [config torPort]);
 		
 		// Configure the resolver
 		hints.ai_family = PF_UNSPEC;
 		hints.ai_socktype = SOCK_STREAM;
 
 		// Try to resolve and connect to the given address
-		error = getaddrinfo(config->get_tor_address().c_str(), sport, &hints, &res0);
+		error = getaddrinfo([[config torAddress] UTF8String], sport, &hints, &res0);
 		if (error)
 		{
 			_error(tcbuddy_error_resolve_tor, "core_bd_err_tor_resolve", true);
@@ -442,7 +441,7 @@ void TCBuddy::setAlias(TCString *alias)
 	dispatch_async_cpp(this, mainQueue, ^{
 		
 		// Set the new name in config
-		config->set_buddy_alias(maddress->content(), alias->content());
+		[config setBuddy:@(maddress->content().c_str()) alias:@(alias->content().c_str())];
 		
 		// Change the name internaly
 		malias->release();
@@ -477,7 +476,7 @@ void TCBuddy::setNotes(TCString *notes)
 	dispatch_async_cpp(this, mainQueue, ^{
 		
 		// Set the new name in config
-		config->set_buddy_notes(maddress->content(), notes->content());
+		[config setBuddy:@(maddress->content().c_str()) notes:@(notes->content().c_str())];
 		
 		// Change the name internaly
 		mnotes->release();
@@ -1009,7 +1008,7 @@ void TCBuddy::socketError(TCSocket *socket, TCInfo *err)
 	// > mainQueue <
 	
 	// Localize the info
-	err->setInfo(config->localized(err->info()));
+	err->setInfo([[config localized:@(err->info().c_str())] UTF8String]);
 	
 	// Fallback error
 	_error(tcbuddy_error_socket, "core_bd_err_socket", err, true);
@@ -1141,7 +1140,7 @@ void TCBuddy::doProfileName(const std::string &name)
 			profileName = aname;
 		
 			// Store profile name
-			config->set_buddy_last_profile_name(maddress->content(), aname->content());
+			[config setBuddy:@(maddress->content().c_str()) lastProfileName:@(aname->content().c_str())];
 		
 			// Notify it
 			_notify(tcbuddy_notify_profile_name, "core_bd_note_new_profile_name", profileName);
@@ -1221,7 +1220,7 @@ void TCBuddy::doFileName(const std::string &uuid, const std::string &fsize, cons
 	
 	
 	// Get the download folder
-	std::string down = config->real_path(config->get_download_folder());
+	std::string down = [[config realPath:[config downloadFolder]] UTF8String];
 	
 	mkdir(down.c_str(), S_IRWXU | (S_IRGRP | S_IXGRP) | (S_IRWXO | S_IXOTH));
 	
@@ -1550,7 +1549,7 @@ TCString * TCBuddy::getLastProfileName()
 	
 	dispatch_sync_cpp(this, mainQueue, ^{
 
-		std::string value = config->get_buddy_last_profile_name(maddress->content());
+		std::string value = [[config getBuddyLastProfileName:@(maddress->content().c_str())] UTF8String];
 		
 		result = new TCString(value);
 	});
@@ -1578,8 +1577,8 @@ TCString * TCBuddy::getFinalName()
 		}
 		else
 		{
-			std::string value = config->get_buddy_last_profile_name(maddress->content());
-		
+			std::string value = [[config getBuddyLastProfileName:@(maddress->content().c_str())] UTF8String];
+			
 			result = new TCString(value);
 		}
 	});
@@ -1600,7 +1599,7 @@ void TCBuddy::_sendPing()
 	
 	std::vector <std::string> items;
 	
-	items.push_back(config->get_self_address());
+	items.push_back([[config selfAddress] UTF8String]);
 	items.push_back(mrandom->content());
 	
 	_sendCommand("ping", items);
@@ -1648,14 +1647,14 @@ void TCBuddy::_sendVersion()
 {
 	// > mainQueue <
 	
-	_sendCommand("version", config->get_client_version());
+	_sendCommand("version", [[config clientVersion:tc_config_get_real] UTF8String]);
 }
 
 void TCBuddy::_sendClient()
 {
 	// > mainQueue <
 	
-	_sendCommand("client", config->get_client_name());
+	_sendCommand("client",  [[config clientName:tc_config_get_real] UTF8String]);
 }
 
 void TCBuddy::_sendProfileName(TCString *name)
@@ -2051,7 +2050,7 @@ void TCBuddy::_error(tcbuddy_info code, const std::string &info, bool fatal)
 {
 	// > mainQueue <
 	
-	TCInfo *err = new TCInfo(tcinfo_error, code, config->localized(info));
+	TCInfo *err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String]);
 	
 	_send_event(err);
 	
@@ -2066,7 +2065,7 @@ void TCBuddy::_error(tcbuddy_info code, const std::string &info, TCObject *ctx, 
 {
 	// > mainQueue <
 	
-	TCInfo *err = new TCInfo(tcinfo_error, code, config->localized(info), ctx);
+	TCInfo *err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String], ctx);
 	
 	_send_event(err);
 	
@@ -2081,7 +2080,7 @@ void TCBuddy::_error(tcbuddy_info code, const std::string &info, TCInfo *serr, b
 {
 	// > mainQueue <
 	
-	TCInfo *err = new TCInfo(tcinfo_error, code, config->localized(info), serr);
+	TCInfo *err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String], serr);
 	
 	_send_event(err);
 	
@@ -2107,7 +2106,7 @@ void TCBuddy::_notify(tcbuddy_info notice, const std::string &info)
 {
 	// > mainQueue <
 	
-	TCInfo *ifo = new TCInfo(tcinfo_info, notice, config->localized(info));
+	TCInfo *ifo = new TCInfo(tcinfo_info, notice, [[config localized:@(info.c_str())] UTF8String]);
 	
 	_send_event(ifo);
 	
@@ -2118,7 +2117,7 @@ void TCBuddy::_notify(tcbuddy_info notice, const std::string &info, TCObject *ct
 {
 	// > mainQueue <
 	
-	TCInfo *ifo = new TCInfo(tcinfo_info, notice, config->localized(info), ctx);
+	TCInfo *ifo = new TCInfo(tcinfo_info, notice, [[config localized:@(info.c_str())] UTF8String], ctx);
 	
 	_send_event(ifo);
 	

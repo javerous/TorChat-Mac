@@ -36,7 +36,7 @@
 @class TCPanel_Advanced;
 @class TCPanel_Basic;
 
-class TCCocoaConfig;
+@class TCCocoaConfig;
 
 
 
@@ -68,7 +68,7 @@ class TCCocoaConfig;
 - (NSString *)panelTitle;
 - (NSView *)panelView;
 
-- (void *)content;
+- (id)content;
 
 @end
 

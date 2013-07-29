@@ -26,6 +26,7 @@
 
 #import "TCCocoaBuddy.h"
 
+#import "TCConfig.h"
 
 
 /*
@@ -33,7 +34,6 @@
 */
 #pragma mark - Forward
 
-class TCConfig;
 class TCController;
 
 @class TCDropButton;
@@ -107,7 +107,7 @@ class TCController;
 
 // -- Running --
 - (void)stop;
-- (void)startWithConfig:(TCConfig *)config;
+- (void)startWithConfiguration:(id <TCConfig>)configuration;
 
 // -- Blocked Buddies --
 - (BOOL)addBlockedBuddy:(NSString *)address;

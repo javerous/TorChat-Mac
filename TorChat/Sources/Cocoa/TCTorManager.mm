@@ -70,7 +70,6 @@ void catch_signal(int sig);
 	dispatch_source_t	testTimer;
 }
 
-- (NSString *)stringWithCPPString:(const std::string &)str;
 - (void)postNotification:(NSString *)notice;
 
 @end
@@ -173,14 +172,11 @@ void catch_signal(int sig);
 */
 #pragma mark - TCTorManager - Running
 
-- (void)startWithConfig:(TCConfig *)config
+- (void)startWithConfiguration:(id <TCConfig>)configuration
 {
-	if (!config)
+	if (!configuration)
 		return;
 
-	// Retain config
-	config->retain();
-	
 	// Stop current session if running
 	[self stop];
 	
@@ -188,30 +184,26 @@ void catch_signal(int sig);
 	dispatch_async(mainQueue, ^{
 		
 		if (_running)
-		{
-			config->release();
 			return;
-		}
 		
 		// Set the default value
-		config->set_tor_address("localhost");
-		config->set_tor_port(60600);
-		config->set_client_port(60601);
-		config->set_mode(tc_config_basic);
+		[configuration setTorAddress:@"localhost"];
+		[configuration setTorPort:60600];
+		[configuration setClientPort:60601];
+		[configuration setMode:tc_config_basic];
 		
 		// Convert configuration
-		NSString		*data_path = [self stringWithCPPString:config->real_path(config->get_tor_data_path())];
-		NSString		*hidden_path = [self stringWithCPPString:(config->real_path(config->get_tor_data_path()) + "/hidden/")];
-		NSString		*tor_path = [self stringWithCPPString:config->real_path(config->get_tor_path())];
+		NSString	*data_path = [configuration realPath:[configuration torDataPath]];
+		NSString	*hidden_path = [configuration realPath:[[configuration torDataPath] stringByAppendingPathComponent:@"hidden"]];
+		NSString	*tor_path = [configuration realPath:[configuration torPath]];
 		
 		// Check conversion
 		if (!data_path || !hidden_path || !tor_path)
 		{
 			[[TCLogsController sharedController] addGlobalLogEntry:@"tor_err_build_path"];
 			  
-			config->release();
 			[self postNotification:TCTorManagerStatusChanged];
-			  
+			
 			return;
 		}
 		
@@ -347,7 +339,6 @@ void catch_signal(int sig);
 		{
 			[[TCLogsController sharedController] addGlobalLogEntry:@"tor_err_launch"];
 			
-			config->release();
 			[self postNotification:TCTorManagerStatusChanged];
 			return;
 		}
@@ -355,15 +346,15 @@ void catch_signal(int sig);
 		torPid = [_task processIdentifier];
 		
 		// Check the existence of the hostname file
-		std::string htname = config->real_path(config->get_tor_data_path()) + "/hidden/hostname";
-		char		*cstname = strdup(htname.c_str());
+		NSString *htname = [configuration realPath:[[configuration torDataPath] stringByAppendingPathComponent:@"hidden/hostname"]];
 		
 		testTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, mainQueue);
 		
 		dispatch_source_set_timer(testTimer, DISPATCH_TIME_NOW, 1000000000L, 0);
 		
 		dispatch_source_set_event_handler(testTimer, ^{
-			FILE *f = fopen(cstname, "r");
+			
+			FILE *f = fopen([htname UTF8String], "r");
 			
 			if (f)
 			{
@@ -391,7 +382,7 @@ void catch_signal(int sig);
 						_hidden = [[NSString alloc] initWithUTF8String:buffer];
 						
 						// Set the address in the config
-						config->set_self_address(buffer);
+						[configuration setSelfAddress:_hidden];
 						
 						// Cancel ourself
 						dispatch_source_cancel(testTimer);
@@ -408,18 +399,8 @@ void catch_signal(int sig);
 			}
 		});
 		
-		// Clean items on cancel
-		dispatch_source_set_cancel_handler(testTimer, ^{
-			config->release();
-			free(cstname);
-		});
-
 		// Start timer
-		config->retain();
 		dispatch_resume(testTimer);
-
-		// Release config
-		config->release();
 	});
 }
 
@@ -511,16 +492,6 @@ void catch_signal(int sig);
 ** TCTorManager - Tools
 */
 #pragma mark - TCTorManager - Tools
-
-- (NSString *)stringWithCPPString:(const std::string &)str
-{
-	const char *cstr = str.c_str();
-	
-	if (!cstr)
-		return nil;
-	
-	return [NSString stringWithUTF8String:cstr];
-}
 
 - (void)postNotification:(NSString *)notice
 {

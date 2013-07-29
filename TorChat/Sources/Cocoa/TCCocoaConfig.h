@@ -21,7 +21,32 @@
  */
 
 
+#import "TCConfig.h"
 
+#if defined(PROXY_ENABLED) && PROXY_ENABLED
+# import "TCConfigProxy.h"
+#endif
+
+
+
+/*
+** TCCocoaConfig
+*/
+#pragma mark - TCCocoaConfig
+
+@interface TCCocoaConfig : NSObject <TCConfig>
+
+// -- Instance --
+- (id)initWithFile:(NSString *)filepath;
+
+#if defined(PROXY_ENABLED) && PROXY_ENABLED
+- (id)initWithFileProxy:(id <TCConfigProxy>)proxy;
+#endif
+
+@end
+
+
+#if 0
 #ifndef _TCCOCOACONFIG_H_
 # define _TCCOCOACONFIG_H_
 
@@ -29,9 +54,7 @@
 
 # include "TCConfig.h"
 
-# if defined(PROXY_ENABLED) && PROXY_ENABLED
-#  import "TCConfigProxy.h"
-# endif
+
 
 
 
@@ -125,19 +148,10 @@ public:
 	std::string		localized(const std::string &key) const;
 
 private:
-	void			_loadConfig(NSData *data);
-	void			_saveConfig();
-	
-	// Vars
-	tc_darray			_bcache;
-	tc_sarray			_bbcache;
-	
-	NSString			*fpath;
-	NSMutableDictionary	*fcontent;
-	
-#if defined(PROXY_ENABLED) && PROXY_ENABLED
-	id <TCConfigProxy>	proxy;
-#endif
+
 };
 
 #endif
+
+#endif
+

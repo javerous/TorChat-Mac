@@ -24,14 +24,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-
-
-/*
-** Forward
-*/
-#pragma mark - Forward
-
-class TCConfig;
+#import "TCConfig.h"
 
 
 
@@ -49,6 +42,6 @@ class TCConfig;
 - (void)start;
 
 // -- Accessor --
-- (TCConfig *)config;
+- (id <TCConfig>)config;
 
 @end

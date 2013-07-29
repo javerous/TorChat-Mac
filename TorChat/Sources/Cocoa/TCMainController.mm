@@ -42,7 +42,7 @@
 
 @interface TCMainController ()
 {
-	TCConfig	*_config;
+	id <TCConfig> _configuration;
 
 }
 
@@ -86,12 +86,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-	if (_config)
-		_config->release();
-}
-
 
 
 /*
@@ -103,7 +97,7 @@
 {
 	static BOOL		running = NO;
 
-	TCCocoaConfig	*conf = NULL;
+	TCCocoaConfig	*conf = nil;
 
 	// Can't have more than one instance of this controller
 	if (running)
@@ -175,20 +169,12 @@
 		// > Try to open the file
 		if (path)
 		{
-			try
+			conf = [[TCCocoaConfig alloc] initWithFile:path];
+			
+			if (!conf)
 			{
-				conf = new TCCocoaConfig(path);
-			}
-			catch (const char *err)
-			{
-				NSString *oerr = [NSString stringWithUTF8String:err];
-				
-				[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_read_file", NSLocalizedString(oerr, @"")];
-				
-				if (conf)
-					delete conf;
-				
-				conf = NULL;
+				[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_read_file"];
+#warning FIXME: fix 'ac_err_read_file' to remove arg.
 			}
 		}
 	}
@@ -199,10 +185,10 @@
 	else
 	{
 		// > Hold the config
-		_config = conf;
+		_configuration = conf;
 		
 		// > Start buddy controller
-		[[TCBuddiesController sharedController] startWithConfig:conf];
+		[[TCBuddiesController sharedController] startWithConfiguration:conf];
 	}
 }
 
@@ -211,10 +197,10 @@
 	TCCocoaConfig *conf = static_cast<TCCocoaConfig *>([content pointerValue]);
 	
 	// Hold the config
-	_config = conf;
+	_configuration = conf;
 	
 	// Start buddy controller
-	[[TCBuddiesController sharedController] startWithConfig:conf];
+	[[TCBuddiesController sharedController] startWithConfiguration:conf];
 }
 
 
@@ -224,9 +210,9 @@
 */
 #pragma mark - TCMainController - Accessor
 
-- (TCConfig *)config
+- (id <TCConfig>)config
 {
-	return _config;
+	return _configuration;
 }
 
 @end

@@ -21,28 +21,24 @@
  */
 
 
-
-#ifndef _TCCONFIG_H_
-# define _TCCONFIG_H_
-
-# include <string>
-# include <map>
-# include <vector>
-
-# include "TCObject.h"
-# import "TCImage.h"
-
-
 /*
 ** Defines
 */
 #pragma mark - Defines
 
-# define TCConfigBuddyAddress	"address"
-# define TCConfigBuddyAlias		"alias"
-# define TCConfigBuddyNotes		"notes"
-# define TCConfigBuddyLastName	"lname"
+#define TCConfigBuddyAddress	@"address"
+#define TCConfigBuddyAlias		@"alias"
+#define TCConfigBuddyNotes		@"notes"
 
+#define TCConfigBuddyLastName	@"lname"
+
+
+/*
+** Forward
+*/
+#pragma mark - Forward
+
+@class TCImage;
 
 
 
@@ -50,10 +46,6 @@
 ** Types
 */
 #pragma mark - Types
-
-typedef std::map<std::string, std::string>	tc_dictionary;
-typedef std::vector< tc_dictionary >		tc_darray;
-typedef std::vector< std::string >			tc_sarray;
 
 typedef enum
 {
@@ -81,81 +73,78 @@ typedef enum
 */
 #pragma mark - TCConfig
 
-class TCConfig: public TCObject
-{
-public:
-	
-	// -- Tor --
-	virtual std::string 	get_tor_address() const = 0;
-	virtual void			set_tor_address(const std::string &address) = 0;
-	
-	virtual uint16_t		get_tor_port() const = 0;
-	virtual void			set_tor_port(uint16_t port) = 0;
-	
-	virtual	std::string 	get_tor_path() const = 0;
-	virtual void			set_tor_path(const std::string &path) = 0;
-	
-	virtual	std::string 	get_tor_data_path() const = 0;
-	virtual void			set_tor_data_path(const std::string &path) = 0;
-	
-	// -- TorChat --
-	virtual	std::string 	get_self_address() const = 0;
-	virtual void			set_self_address(const std::string &address) = 0;
-	
-	virtual	uint16_t		get_client_port() const = 0;
-	virtual void			set_client_port(uint16_t port) = 0;
-	
-	virtual	std::string 	get_download_folder() const = 0;
-	virtual void			set_download_folder(const std::string & folder) = 0;
-	
-	// -- Mode --
-	virtual	tc_config_mode	get_mode() const = 0;
-	virtual void			set_mode(tc_config_mode mode) = 0;
-	
-	// -- Profile --
-	virtual	std::string		get_profile_name() = 0;
-	virtual void			set_profile_name(const std::string & name) = 0;
-	
-	virtual	std::string		get_profile_text() = 0;
-	virtual void			set_profile_text(const std::string & text) = 0;
-	
-	virtual	TCImage *		get_profile_avatar() = 0;
-	virtual void			set_profile_avatar(const TCImage * picture) = 0;
-	
-	// -- Buddies --
-	virtual const tc_darray &buddies() = 0;
-	virtual void			add_buddy(const std::string &address, const std::string &alias, const std::string &notes) = 0;
-	virtual bool			remove_buddy(const std::string &address) = 0;
-	
-	virtual void			set_buddy_alias(const std::string &address, const std::string &alias) = 0;
-	virtual void			set_buddy_notes(const std::string &address, const std::string &notes) = 0;
-	virtual void			set_buddy_last_profile_name(const std::string &address, const std::string &lname) = 0;
-	
-	virtual std::string		get_buddy_alias(const std::string &address) const = 0;
-	virtual std::string		get_buddy_notes(const std::string &address) const = 0;
-	virtual std::string		get_buddy_last_profile_name(const std::string &address) const = 0;
-	
-	// -- Blocked --
-	virtual const tc_sarray &blocked_buddies() = 0;
-	virtual bool			add_blocked_buddy(const std::string &address) = 0;
-	virtual bool			remove_blocked_buddy(const std::string &address) = 0;
-	
-	// -- UI --
-	virtual tc_config_title	get_mode_title() const = 0;
-	virtual void			set_mode_title(tc_config_title mode) = 0;
-	
-	// -- Client --
-	virtual  std::string	get_client_version(tc_config_get get = tc_config_get_real) const = 0;
-	virtual  void			set_client_version(const std::string &version) = 0;
-	
-	virtual  std::string	get_client_name(tc_config_get get = tc_config_get_real) const = 0;
-	virtual  void			set_client_name(const std::string &name) = 0;
+@protocol TCConfig <NSObject>
 
-	// -- Tools --
-	virtual std::string		real_path(const std::string &path) const = 0;
-	
-	// -- Localization --
-	virtual std::string		localized(const std::string &key) const = 0;
-};
+// -- Tor --
+- (NSString *)torAddress;
+- (void)setTorAddress:(NSString *)address;
 
-#endif
+- (uint16_t)torPort;
+- (void)setTorPort:(uint16_t) port;
+
+- (NSString *)torPath;
+- (void)setTorPath:(NSString *)path;
+
+- (NSString *)torDataPath;
+- (void)setTorDataPath:(NSString *)path;
+
+// -- TorChat --
+- (NSString *)selfAddress;
+- (void)setSelfAddress:(NSString *)address;
+
+- (uint16_t)clientPort;
+- (void)setClientPort:(uint16_t)port;
+
+- (NSString *)downloadFolder;
+- (void)setDownloadFolder:(NSString *)folder;
+
+// -- Mode --
+- (tc_config_mode)mode;
+- (void)setMode:(tc_config_mode)mode;
+
+// -- Profile --
+- (NSString *)profileName;
+- (void)setProfileName:(NSString *)name;
+
+- (NSString *)profileText;
+- (void)setProfileText:(NSString *)text;
+
+- (TCImage *)profileAvatar;
+- (void)setProfileAvatar:(TCImage *)picture;
+
+// -- Buddies --
+- (NSArray *)buddies; // Array of dictionary.
+- (void)addBuddy:(NSString *)address alias:(NSString *)alias notes:(NSString *)notes;
+- (BOOL)removeBuddy:(NSString *)address;
+
+- (void)setBuddy:(NSString *)address alias:(NSString *)alias;
+- (void)setBuddy:(NSString *)address notes:(NSString *)notes;
+- (void)setBuddy:(NSString *)address lastProfileName:(NSString *)lastName;
+
+- (NSString *)getBuddyAlias:(NSString *)address;
+- (NSString *)getBuddyNotes:(NSString *)address;
+- (NSString *)getBuddyLastProfileName:(NSString *)address;
+
+// -- Blocked --
+- (NSArray *)blockedBuddies;
+- (BOOL)addBlockedBuddy:(NSString *)address;
+- (BOOL)removeBlockedBuddy:(NSString *)address;
+
+// -- UI --
+- (tc_config_title)modeTitle;
+- (void)setModeTitle:(tc_config_title)mode;
+
+// -- Client --
+- (NSString *)clientVersion:(tc_config_get)get;
+- (void)setClientVersion:(NSString *)version;
+
+- (NSString *)clientName:(tc_config_get)get;
+- (void)setClientName:(NSString *)name;
+
+// -- Tools --
+- (NSString *)realPath:(NSString *)path;
+
+// -- Localization --
+- (NSString *)localized:(NSString *)key;
+
+@end
