@@ -35,8 +35,9 @@
 @class TCController;
 @class TCImage;
 
+@class TCControlClient;
+
 class TCBuddy;
-class TCControlClient;
 
 
 
@@ -121,7 +122,7 @@ typedef enum
 @interface TCController : NSObject
 
 // -- Properties --
-@property (weak) id <TCControllerDelegate> delegate;
+@property (weak, atomic) id <TCControllerDelegate> delegate;
 
 // -- Instance --
 - (id)initWithConfiguration:(id <TCConfig>)config;
