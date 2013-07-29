@@ -20,17 +20,69 @@
  *
  */
 
+#import "TCControlClient.h"
+
+#import "TCController.h"
+
+#import "TCParser.h"
+#import "TCSocket.h"
+
+#import "TCObject.h"
+#import "TCInfo.h"
+#import "TCBuddy.h"
+#import "TCString.h"
 
 
-#include <errno.h>
+/*
+** TCControlClient - Private
+*/
+#pragma mark - TCControlClient - Private
 
-#include "TCControlClient.h"
+@interface TCControlClient () <TCParserDelegate, TCParserCommand, TCSocketDelegate>
+{
+	// -- Vars --
+	// > Running
+	BOOL					_running;
+    
+	// > Socket
+	int						_sockd;
+	TCSocket				*_sock;
+	
+	// > Parser
+	TCParser				*_parser;
+	
+	// > Controller
+	__weak TCController		*_ctrl;
+	
+	// > Config
+	id <TCConfig>			_config;
+	
+	// > Queue
+	dispatch_queue_t		_localQueue;
+	
+	NSString				*_last_ping_address;
+}
 
-#include "TCTools.h"
-#include "TCBuddy.h"
-#include "TCConfig.h"
-#include "TCString.h"
+// -- Helpers --
+- (void)_error:(tcctrl_info)code info:(NSString *)info fatal:(BOOL)fatal;
+- (void)_error:(tcctrl_info)code info:(NSString *)info contextObj:(TCObject *)ctx fatal:(BOOL)fatal;
+- (void)_error:(tcctrl_info)code info:(NSString *)info contextInfo:(TCInfo *)serr fatal:(BOOL)fatal;
 
+- (void)_notify:(tcctrl_info)notice info:(NSString *)info;
+
+- (BOOL)_isBlocked:(NSString *)address;
+
+@end
+
+
+
+
+/*
+** TCControlClient
+*/
+#pragma mark - TCControlClient
+
+@implementation TCControlClient
 
 
 /*
@@ -38,89 +90,96 @@
 */
 #pragma mark - TCControlClient - Instance
 
-TCControlClient::TCControlClient(id <TCConfig> _conf, int _sock)
+- (id)initWithConfiguration:(id <TCConfig>)configuration andSocket:(int)sock
 {
-	// Hold config
-	config = _conf;
+	self = [super init];
 	
-	_ctrl = nil;
+	if (self)
+	{
+		// Hold config
+		_config = configuration;
+		
+		// Build queue
+		_localQueue = dispatch_queue_create("com.torchat.core.controllclient.local", DISPATCH_QUEUE_SERIAL);
+		
+		// Init vars
+		_running = false;
+		
+		// Hold socket
+		_sockd = sock;
+		_sock = NULL;
+		
+		// Create parser.
+		_parser = [[TCParser alloc] initWithParsingResult:self];
+		
+		[_parser setDelegate:self];
+	}
 	
-	// Build queue
-	mainQueue = dispatch_queue_create("com.torchat.core.controllclient.main", DISPATCH_QUEUE_SERIAL);
-
-	// Init vars
-	running = false;
-	
-	// Hold socket
-	sockd = _sock;
-	sock = NULL;
+	return self;
 }
 
-TCControlClient::~TCControlClient()
+- (void)dealloc
 {
 	TCDebugLog("TCControlClient Destructor");
 	
 	_ctrl = nil;
-	config = nil;
+	_config = nil;
 	
-	if (sock)
-		[sock stop];
+	if (_sock)
+		[_sock stop];
 }
 
 
-
 /*
-** TCControlClient - Running
+** TCControlClient - Life
 */
-#pragma mark - TCControlClient - Running
+#pragma mark - TCControlClient - Life
 
-
-void TCControlClient::start(TCController *controller)
+- (void)startWithController:(TCController *)controller
 {
 	if (!controller)
 		return;
 	
-	dispatch_async_cpp(this, mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
-		if (!running && sockd > 0)
+		if (!_running && _sockd > 0)
 		{
 			_ctrl = controller;
-			running = true;
+			_running = YES;
 			
 			// Build a socket
-			sock = [[TCSocket alloc] initWithSocket:sockd];
-			
-#warning FIXME: use self once switched to OC.
-			//sock->setDelegate(mainQueue, this);
-			[sock scheduleOperation:tcsocket_op_line withSize:1 andTag:0];
+			_sock = [[TCSocket alloc] initWithSocket:_sockd];
+
+			[_sock setDelegate:self];
+			[_sock scheduleOperation:tcsocket_op_line withSize:1 andTag:0];
 			
 			// Notify
-			_notify(tcctrl_notify_client_started, "core_cctrl_note_started");
+			[self _notify:tcctrl_notify_client_started info:@"core_cctrl_note_started"];
 		}
 	});
 }
 
-void TCControlClient::stop()
+- (void)stop
 {
-	dispatch_async_cpp(this, mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
-		if (!running)
+		if (!_running)
 			return;
 		
-		running = false;
+		_running = false;
 		
 		// Clean socket
-		if (sock)
+		if (_sock)
 		{
-			[sock stop];
-			sock = nil;
+			[_sock stop];
+			_sock = nil;
 		}
 		
 		// Clean socket descriptor
-		sockd = -1;
-
+		_sockd = -1;
+		
 		// Notify
-		_notify(tcctrl_notify_client_stoped, "core_cctrl_note_stoped");
+		[self _notify:tcctrl_notify_client_stoped info:@"core_cctrl_note_stoped"];
 		
 		// Remove ref to controller.
 		_ctrl = nil;
@@ -130,51 +189,53 @@ void TCControlClient::stop()
 
 
 /*
-** TCControlClient(TCParser) - Overwrite
+** TCControlClient - TCParserDelegate & TCParserCommand
 */
-#pragma mark - TCControlClient(TCParser) - Overwrite
+#pragma mark - TCControlClient - TCParserDelegate & TCParserCommand
 
-// == Handle Ping ==
-void TCControlClient::doPing(const std::string &caddress, const std::string &crandom)
+- (void)parser:(TCParser *)parser parsedPingWithAddress:(NSString *)address random:(NSString *)random
 {
+	// > mainQueue (same as parser caller) <
+	
 	TCBuddy *abuddy = NULL;
-
+	
 	// Reschedule a line read
-	[sock scheduleOperation:tcsocket_op_line withSize:1 andTag:0];
+	[_sock scheduleOperation:tcsocket_op_line withSize:1 andTag:0];
 	
 	// Check blocked list
 	TCController *ctrl = _ctrl;
 	
-	abuddy = [ctrl buddyWithAddress:@(caddress.c_str())];
+	abuddy = [ctrl buddyWithAddress:address];
 	
 	if (abuddy)
 	{
 		bool blocked = abuddy->blocked();
-
+		
 		abuddy->release();
 		
 		if (blocked)
 			return;
 	}
-
+	
 	// first a little security check to detect mass pings
 	// with faked host names over the same connection
 	
-	if (last_ping_address.size() != 0)
+	if ([_last_ping_address length] != 0)
 	{
-		if (caddress.compare(last_ping_address) != 0)
+		if ([address isEqualToString:_last_ping_address] == NO)
 		{
 			// DEBUG
-			fprintf(stderr, "(1) Possible Attack: in-connection sent fake address '%s'\n", caddress.c_str());
-			fprintf(stderr, "(1) Will disconnect incoming connection from fake '%s'\n", caddress.c_str());
+			fprintf(stderr, "(1) Possible Attack: in-connection sent fake address '%s'\n", [address UTF8String]);
+			fprintf(stderr, "(1) Will disconnect incoming connection from fake '%s'\n", [address UTF8String]);
 			
 			// Notify
-			_error(tcctrl_error_client_cmd_ping, "core_cctrl_err_fake_ping", true);
+			[self _error:tcctrl_error_client_cmd_ping info:@"core_cctrl_err_fake_ping" fatal:YES];
+			
 			return;
 		}
 	}
 	else
-		last_ping_address = caddress;
+		_last_ping_address = address;
 	
 	
 	// another check for faked pings: we search all our already
@@ -182,25 +243,26 @@ void TCControlClient::doPing(const std::string &caddress, const std::string &cra
 	// but another incoming connection then this one must be a fake.
 	
 	if (ctrl)
-		abuddy = [ctrl buddyWithAddress:@(caddress.c_str())];
+		abuddy = [ctrl buddyWithAddress:address];
 	
 	if (abuddy && abuddy->isPonged())
 	{
-		_error(tcctrl_error_client_cmd_ping, "core_cctrl_err_already_pinged", true);
+		[self _error:tcctrl_error_client_cmd_ping info:@"core_cctrl_err_already_pinged" fatal:YES];
+
 		abuddy->release();
 		
 		return;
 	}
 	
 	
-	
 	// if someone is pinging us with our own address and the
-	// random value is not from us, then someone is definitely 
+	// random value is not from us, then someone is definitely
 	// trying to fake and we can close.
 	
-	if (caddress.compare([[config selfAddress] UTF8String]) == 0 && abuddy && abuddy->brandom().content().compare(crandom) != 0)
+	if ([address isEqualToString:[_config selfAddress]] && abuddy && abuddy->brandom().content().compare([random UTF8String]) != 0)
 	{
-		_error(tcctrl_error_client_cmd_ping, "core_cctrl_err_masquerade", true);
+		[self _error:tcctrl_error_client_cmd_ping info:@"core_cctrl_err_masquerade" fatal:YES];
+
 		abuddy->release();
 		
 		return;
@@ -211,13 +273,13 @@ void TCControlClient::doPing(const std::string &caddress, const std::string &cra
 	if (!abuddy)
 	{
 		if (ctrl)
-			[ctrl addBuddy:[config localized:@"core_cctrl_new_buddy"] address:@(caddress.c_str())];
+			[ctrl addBuddy:[_config localized:@"core_cctrl_new_buddy"] address:address];
 		
-		abuddy = [ctrl buddyWithAddress:@(caddress.c_str())];
+		abuddy = [ctrl buddyWithAddress:address];
 		
 		if (!abuddy)
 		{
-			_error(tcctrl_error_client_cmd_ping, "core_cctrl_err_add_buddy", true);
+			[self _error:tcctrl_error_client_cmd_ping info:@"core_cctrl_err_add_buddy" fatal:YES];
 			return;
 		}
 	}
@@ -226,10 +288,10 @@ void TCControlClient::doPing(const std::string &caddress, const std::string &cra
 	// ping messages must be answered with pong messages
 	// the pong must contain the same random string as the ping.
 	TCImage		*avatar = [ctrl profileAvatar];
-	TCString	*trandom = new TCString(crandom);
+	TCString	*trandom = new TCString([random UTF8String]);
 	TCString	*pname = new TCString([[ctrl profileName] UTF8String]);
 	TCString	*ptext = new TCString([[ctrl profileText] UTF8String]);
-
+	
 	abuddy->startHandshake(trandom, [ctrl status], avatar, pname, ptext);
 	
 	// Release
@@ -239,14 +301,13 @@ void TCControlClient::doPing(const std::string &caddress, const std::string &cra
 	ptext->release();
 }
 
-// == Handle Pong ==
-void TCControlClient::doPong(const std::string &crandom)
+- (void)parser:(TCParser *)parser parsedPongWithRandom:(NSString *)random
 {
 	TCBuddy			*buddy = NULL;
 	TCController	*ctrl = _ctrl;
 	
 	if (ctrl)
-		buddy = [ctrl buddyWithRandom:@(crandom.c_str())];
+		buddy = [ctrl buddyWithRandom:random];
 	
 	if (buddy)
 	{
@@ -259,33 +320,32 @@ void TCControlClient::doPong(const std::string &crandom)
 			buddy = NULL;
 			
 			// Stop socket
-			[sock stop];
-			sock = nil;
+			[_sock stop];
+			_sock = nil;
 		}
 		else
 		{
 			// Give the baby to buddy
-			buddy->setInputConnection(sock);
+			buddy->setInputConnection(_sock);
 			
 			// Release buddy (getBuddyRandom retained it)
 			buddy->release();
 			buddy = NULL;
 			
 			// Unhandle socket
-			sock = nil;
+			_sock = nil;
 		}
 	}
 	else
-		_error(tcctrl_error_client_cmd_pong, "core_cctrl_err_pong", true);
+		[self _error:tcctrl_error_client_cmd_pong info:@"core_cctrl_err_pong" fatal:YES];
 }
 
-// == Parsing Error ==
-void TCControlClient::parserError(tcrec_error err, const std::string &info)
-{	
+- (void)parser:(TCParser *)parser errorWithCode:(tcrec_error)error andInformation:(NSString *)information
+{
 	tcctrl_info nerr = tcctrl_error_client_unknown_command;
 	
 	// Convert parser error to controller errors
-	switch (err)
+	switch (error)
 	{
 		case tcrec_unknown_command:
 			nerr = tcctrl_error_client_unknown_command;
@@ -346,7 +406,7 @@ void TCControlClient::parserError(tcrec_error err, const std::string &info)
 		case tcrec_cmd_filedata:
 			nerr = tcctrl_error_client_cmd_filedata;
 			break;
-
+			
 		case tcrec_cmd_filedataok:
 			nerr = tcctrl_error_client_cmd_filedataok;
 			break;
@@ -365,132 +425,122 @@ void TCControlClient::parserError(tcrec_error err, const std::string &info)
 	}
 	
 	// Parse error is fatal
-	_error(nerr, info, true);
+	[self _error:nerr info:information fatal:YES];
 }
 
 
 
 /*
-** TCSocket - Delegate
+** TCControlClient - TCSocketDelegate
 */
-#pragma mark - TCSocket - Delegate
+#pragma mark - TCControlClient - TCSocketDelegate
 
-void TCControlClient::socketOperationAvailable(TCSocket *socket, tcsocket_operation operation, int tag, void *content, size_t size)
+- (void)socket:(TCSocket *)socket operationAvailable:(tcsocket_operation)operation tag:(NSUInteger)tag content:(id)content
 {
-#warning FIXME: use TCSocketDelegate once switched to OC.
 	if (operation == tcsocket_op_line)
 	{
-		std::vector <std::string *> *vect = static_cast< std::vector <std::string *> * > (content);
-		size_t						i, cnt = vect->size();
-				
-		for (i = 0; i < cnt; i++)
+		NSArray *lines = content;
+		
+		for (NSData *line in lines)
 		{
-			std::string *line = vect->at(i);
-			
-			dispatch_async_cpp(this, mainQueue, ^{
-				
-				// Parse the line
-#warning FIXME
-				//parseLine(*line);
-				
-				// Free memory
-				delete line;
+			dispatch_async(_localQueue, ^{
+				[_parser parseLine:line];
 			});
 		}
-		
-		// Clean
-		delete vect;
 	}
 }
 
-void TCControlClient::socketError(TCSocket *socket, TCInfo *err)
+- (void)socket:(TCSocket *)socket error:(TCInfo *)error
 {
-#warning FIXME: use TCSocketDelegate once switched to OC.
-
 	// Localize the info
-	err->setInfo([[config localized:@(err->info().c_str())] UTF8String]);
+	error->setInfo([[_config localized:@(error->info().c_str())] UTF8String]);
 	
 	// Fallback Error
-	_error(tcctrl_error_socket, "core_cctrl_err_socket", err, true);
+	[self _error:tcctrl_error_socket info:@"core_cctrl_err_socket" contextInfo:error fatal:YES];
 }
 
 
 
 /*
-** TCSocket - Helpers
+** TCControlClient - Helpers
 */
-#pragma mark - TCSocket - Helpers
+#pragma mark - TCControlClient - Helpers
 
-void TCControlClient::_error(tcctrl_info code, const std::string &info, bool fatal)
+- (void)_error:(tcctrl_info)code info:(NSString *)info fatal:(BOOL)fatal
 {
+	// > localQueue <
+
 	TCController	*ctrl = _ctrl;
-	TCInfo			*err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String]);
+	TCInfo			*err = new TCInfo(tcinfo_error, code, [[_config localized:info] UTF8String]);
 	
+#warning Use delegate for this, no ?
 	if (ctrl)
-		[ctrl cc_error:this info:err];
+		[ctrl cc_error:self info:err];
 	
 	err->release();
 	
 	if (fatal)
-		stop();
+		[self stop];
 }
 
-void TCControlClient::_error(tcctrl_info code, const std::string &info, TCObject *ctx, bool fatal)
+- (void)_error:(tcctrl_info)code info:(NSString *)info contextObj:(TCObject *)ctx fatal:(BOOL)fatal
 {
+	// > localQueue <
+
 	TCController	*ctrl = _ctrl;
-	TCInfo			*err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String], ctx);
+	TCInfo			*err = new TCInfo(tcinfo_error, code, [[_config localized:info] UTF8String], ctx);
 	
+#warning Use delegate for this, no ?
 	if (ctrl)
-		[ctrl cc_error:this info:err];
+		[ctrl cc_error:self info:err];
 	
 	err->release();
 	
 	if (fatal)
-		stop();
+		[self stop];
 }
 
-void TCControlClient::_error(tcctrl_info code, const std::string &info, TCInfo *serr, bool fatal)
+- (void)_error:(tcctrl_info)code info:(NSString *)info contextInfo:(TCInfo *)serr fatal:(BOOL)fatal
 {
+	// > localQueue <
+
 	TCController	*ctrl = _ctrl;
-	TCInfo			*err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String], serr);
+	TCInfo			*err = new TCInfo(tcinfo_error, code, [[_config localized:info] UTF8String], serr);
 	
+#warning Use delegate for this, no ?
 	if (ctrl)
-		[ctrl cc_error:this info:err];
+		[ctrl cc_error:self info:err];
 	
 	err->release();
 	
 	if (fatal)
-		stop();
+		[self stop];
 }
 
-void TCControlClient::_notify(tcctrl_info notice, const std::string &info)
+- (void)_notify:(tcctrl_info)notice info:(NSString *)info
 {
-	TCController	*ctrl = _ctrl;
-	TCInfo			*ifo = new TCInfo(tcinfo_info, notice, [[config localized:@(info.c_str())] UTF8String]);
+	// > localQueue <
 	
+	TCController	*ctrl = _ctrl;
+	TCInfo			*ifo = new TCInfo(tcinfo_info, notice, [[_config localized:info] UTF8String]);
+	
+#warning Use delegate for this, no ?
 	if (ctrl)
-		[ctrl cc_notify:this info:ifo];
+		[ctrl cc_notify:self info:ifo];
 	
 	ifo->release();
 }
 
-
-bool TCControlClient::_isBlocked(const std::string &address)
+- (BOOL)_isBlocked:(NSString *)address
 {
-	if (!config)
+	// > localQueue <
+	
+	if (!_config)
 		return false;
 	
-	// XXX not thread safe
-	NSArray	*blocked = [config blockedBuddies];
-	size_t	i, cnt = [blocked count];
-	
-	for (i = 0; i < cnt; i++)
-	{
-		const std::string item = [blocked[i] UTF8String];
-		
-		if (item.compare(address) == 0)
-			return true;
-	}
-	
-	return false;
+	NSArray	*blocked = [_config blockedBuddies];
+
+	return ([blocked indexOfObject:address] != NSNotFound);
 }
+
+@end
