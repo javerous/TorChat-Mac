@@ -31,13 +31,13 @@
 # include <vector>
 # include <map>
 
-# include "TCController.h"
+# import "TCController.h"
 # include "TCInfo.h"
 
 # import "TCSocket.h"
 # include "TCObject.h"
 
-#import "TCConfig.h"
+# import "TCConfig.h"
 
 
 /*
