@@ -20,14 +20,37 @@
  *
  */
 
-
-
 #include <sys/stat.h>
 
-#include "TCFileReceive.h"
+#import "TCFileReceive.h"
 
-#include "TCTools.h"
+#import "TCTools.h"
 
+
+
+/*
+** TCFileReceive - Private
+*/
+#pragma mark - TCFileReceive - Private
+
+@interface TCFileReceive ()
+{
+	FILE		*_file;
+	uint64_t	_nextStart;
+
+}
+
+
+@end
+
+
+
+/*
+** TCFileReceive
+*/
+#pragma mark - TCFileReceive
+
+@implementation TCFileReceive
 
 
 /*
@@ -35,83 +58,79 @@
 */
 #pragma mark - TCFileReceive - Instance
 
-TCFileReceive::TCFileReceive(const std::string & uuid, const std::string & folder, const std::string & fileName, uint64_t fileSize, uint64_t blockSize)
+- (id)initWithUUID:(NSString *)uuid folder:(NSString *)folder fileName:(NSString *)fileName fileSize:(uint64_t)fileSize blockSiz:(uint64_t)blockSize
 {
-	std::string	fullpath = folder + "/" + fileName;
-	struct stat	st;
+	if (!uuid || !folder || !fileName)
+		return nil;
 	
-	// Init vars
-	nextStart = 0;
-	_uuid = uuid;
-	_fsize = fileSize;
-	_bsize = blockSize;
+	self = [super init];
 	
-	// Check that the file already exist
-	if (stat(fullpath.c_str(), &st) != 0)
+	if (self)
 	{
-		_fpath = fullpath;
-		_fname = fileName;
+		NSString *fullPath = [folder stringByAppendingPathComponent:fileName];
+		struct stat	st;
 		
-		_file = fopen(fullpath.c_str(), "w");
-				
-		if (!_file)
-			throw std::string("core_frec_err_cant_open");
-	}
-	else
-	{
-		std::vector<std::string>	*its = createExplode(fileName, ".");
-		std::string					*name, *ext;
-		char						buffer[512];
-		uint32_t					idx = 1;
+		// Init vars
+		_nextStart = 0;
+		_uuid = uuid;
+		_fileSize = fileSize;
+		_blockSize = blockSize;
 		
-		// Get the extension
-		if (its->size() > 1)
+		// Check that the file already exist
+		if (stat([fullPath UTF8String], &st) != 0)
 		{
-			ext = new std::string(".");
-			ext->append(its->at(its->size() - 1));
+			_filePath = fullPath;
+			_fileName = fileName;
 			
-			its->erase(its->begin() + (long)(its->size() - 1));
+			_file = fopen([fullPath UTF8String], "w");
+			
+			if (!_file)
+				return nil;
+			//throw std::string("core_frec_err_cant_open");
+#warning Remove this localized string.
 		}
 		else
-			ext = new std::string("");
-		
-		// Get the name
-		name = createJoin(*its, ".");
-		
-		// Search for a good name
-		while (1)
 		{
-			snprintf(buffer, sizeof(buffer), "-%u", idx);
-			
-			fullpath = folder + "/" + *name + buffer + *ext;
-						
-			if (stat(fullpath.c_str(), &st) != 0)
+			NSString	*ext = [fileName pathExtension];
+			NSString	*name = [fileName stringByDeletingPathExtension];
+			NSUInteger	idx = 1;
+
+			if (!ext)
+				ext = @"";
+
+			// Search for a good name
+			while (1)
 			{
-				_fpath = fullpath;
-				_fname = *name + buffer + *ext;
-				
-				_file = fopen(fullpath.c_str(), "w");
+				NSString *tempName = [NSString stringWithFormat:@"%@-%lu.%@", name, idx, ext];
+				NSString *tempPath = [folder stringByAppendingPathComponent:tempName];
 								
-				if (!_file)
-					throw std::string("core_frec_err_cant_open");
+				if (stat([tempPath UTF8String], &st) != 0)
+				{
+					_fileName = tempPath;
+					_fileName = tempName;
+					
+					_file = fopen([tempPath UTF8String], "w");
+					
+					if (!_file)
+						return nil;
+					//throw std::string("core_frec_err_cant_open");
+#warning Remove this localized string.
+					break;
+				}
 				
-				break;
+				idx++;
 			}
-			
-			idx++;
 		}
-		
-		// Clean
-		delete its;
-		delete name;
-		delete ext;
 	}
+	
+	return self;
 }
 
-TCFileReceive::~TCFileReceive()
-{	
+- (void)dealloc
+{
 	if (_file)
 		fclose(_file);
+	
 	_file = NULL;
 }
 
@@ -122,41 +141,41 @@ TCFileReceive::~TCFileReceive()
 */
 #pragma mark - TCFileReceive - Tools
 
-bool TCFileReceive::writeChunk(const void *chunk, uint64_t chunksz, const std::string & hash, uint64_t *rOffset)
+- (BOOL)writeChunk:(const void *)bytes chunkSize:(uint64_t)chunkSize hash:(NSString *)hash offset:(uint64_t *)offset
 {
-	if (!rOffset)
-		return false;
+	if (!offset)
+		return NO;
 	
-	uint64_t start = *rOffset;
-	bool	result = true;
+	uint64_t	start = *offset;
+	BOOL		result = YES;
 	
 	// Check that the offset is the one expected
-	if (start > nextStart)
+	if (start > _nextStart)
 	{
-		*rOffset = nextStart;
-		return false;
+		*offset = _nextStart;
+		return NO;
 	}
 	
 	// Check the MD5
-	std::string *md5 = createMD5(chunk, static_cast <size_t>(chunksz));
+	std::string *md5 = createMD5(bytes, (size_t)(chunkSize));
 	
-	if (md5->compare(hash) == 0)
-	{		
+	if (md5->compare([hash UTF8String]) == 0)
+	{
 		// Write content
 		fseek(_file, (long)start, SEEK_SET);
-		fwrite(chunk, static_cast <size_t>(chunksz), 1, _file);
+		fwrite(bytes, (size_t)(chunkSize), 1, _file);
 		fflush(_file);
 		
 		// Update status
-		nextStart = start + chunksz;
+		_nextStart = start + chunkSize;
 		
-		*rOffset = start;
-		result = true;
+		*offset = start;
+		result = YES;
 	}
 	else
 	{
-		*rOffset = start;
-		result = false;
+		*offset = start;
+		result = NO;
 	}
 	
 	// Clean
@@ -166,17 +185,19 @@ bool TCFileReceive::writeChunk(const void *chunk, uint64_t chunksz, const std::s
 	return result;
 }
 
-bool TCFileReceive::isFinished()
-{	
-	return (nextStart >= _fsize);
+- (BOOL)isFinished
+{
+	return (_nextStart >= _fileSize);
 }
 
-uint64_t TCFileReceive::receivedSize()
+- (uint64_t)receivedSize
 {
-	uint64_t result = nextStart;
+	uint64_t result = _nextStart;
 	
-	if (result >= _fsize)
-		result = _fsize;
+	if (result >= _fileSize)
+		result = _fileSize;
 	
 	return result;
 }
+
+@end
