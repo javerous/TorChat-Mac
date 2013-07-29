@@ -21,22 +21,6 @@
  */
 
 
-
-#ifndef _TCCONTROLCLIENT_H_
-# define _TCCONTROLCLIENT_H_
-
-# include <vector>
-# include <string>
-
-# include <dispatch/dispatch.h>
-
-# include "TCBuffer.h"
-# include "TCController.h"
-# import "TCSocket.h"
-# include "TCObject.h"
-
-#import "TCParser.h"
-
 #import "TCConfig.h"
 
 
@@ -45,7 +29,7 @@
 */
 #pragma mark - Forward
 
-class TCBuddy;
+@class TCController;
 
 
 
@@ -54,58 +38,13 @@ class TCBuddy;
 */
 #pragma mark - TCControlClient
 
-// == Class ==
-class TCControlClient : public TCObject
-{
-public:
-	// -- Instance --
-	TCControlClient(id <TCConfig> conf, int sock);
-	~TCControlClient();
-	
-	// -- Running --
-	void start(TCController *controller);
-	void stop();
-	
-private:
-	// -- TCParser Command --
-	virtual void	doPing(const std::string &address, const std::string &random);
-	virtual void	doPong(const std::string &random);
-	
-	virtual void	parserError(tcrec_error err, const std::string &info);
-	
-	// -- Socket delegate --
-	virtual void socketOperationAvailable(TCSocket *socket, tcsocket_operation operation, int tag, void *content, size_t size);
-	virtual void socketError(TCSocket *socket, TCInfo *err);
-	
-	// -- Helper --
-	void	_error(tcctrl_info code, const std::string &info, bool fatal);
-	void	_error(tcctrl_info code, const std::string &info, TCObject *ctx, bool fatal);
-	void	_error(tcctrl_info code, const std::string &info, TCInfo *serr, bool fatal);
-	
-	void	_notify(tcctrl_info notice, const std::string &info);
-	
-	bool	_isBlocked(const std::string &address);
+@interface TCControlClient : NSObject
 
-	
-	// -- Vars --
-	// > Running
-	bool					running;
-    
-	// > Socket
-	int						sockd;
-	TCSocket				*sock;
-	
-	// > Controller
-	__weak TCController		*_ctrl;
-	
-	// > Config
-	id <TCConfig>			config;
-	
-	// > Queue
-	dispatch_queue_t		mainQueue;
-	
-	std::string				last_ping_address;
-	
-};
+// -- Instance --
+- (id)initWithConfiguration:(id <TCConfig>)configuration andSocket:(int)sock;
 
-#endif
+// -- Life --
+- (void)startWithController:(TCController *)controller;
+- (void)stop;
+
+@end

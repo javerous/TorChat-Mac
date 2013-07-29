@@ -25,7 +25,6 @@
 #import "TCParser.h"
 
 #import "TCTools.h"
-#import "TCInfo.h"
 
 #import "NSData+TCTools.h"
 #import "NSArray+TCTools.h"
@@ -59,7 +58,7 @@
 */
 #pragma mark - TCParser - Instance
 
-- (id)initWithParsedCommand:(id <TCParserCommand>)receiver
+- (id)initWithParsingResult:(id <TCParserCommand>)receiver
 {
 	self = [super init];
 	
@@ -165,7 +164,7 @@
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
 	
-	if ([receiver respondsToSelector:@selector(parser:parsedPingWithAddress:)])
+	if ([receiver respondsToSelector:@selector(parser:parsedPingWithAddress:random:)])
 		[receiver parser:self parsedPingWithAddress:address random:random];
 	else
 		[self parserError:tcrec_cmd_ping withString:@"Ping: Not handled"];
@@ -515,13 +514,9 @@
 
 - (void)parserError:(tcrec_error)errorCode withString:(NSString *)string
 {
-	TCInfo *err = new TCInfo(tcinfo_error, errorCode, [string UTF8String]);
-	
 	id <TCParserDelegate> delegate = _delegate;
 	
-	[delegate parser:self information:err];
-	
-	err->release();
+	[delegate parser:self errorWithCode:errorCode andInformation:string];
 }
 
 @end
