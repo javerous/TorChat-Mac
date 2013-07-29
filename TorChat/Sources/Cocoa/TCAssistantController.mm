@@ -144,7 +144,7 @@
 	
 	if (_isLast)
 	{
-		[_respObj performSelector:_respSel withObject:[NSValue valueWithPointer:[_currentPanel content]]];
+		[_respObj performSelector:_respSel withObject:[_currentPanel content]];
 
 		[_mainWindow orderOut:sender];
 	}
@@ -286,7 +286,7 @@
 	return self;
 }
 
-- (void *)content
+- (id)content
 {
 	return config;
 }
@@ -327,29 +327,16 @@
 	{
 		NSArray			*urls = [openDlg URLs];
 		NSURL			*url = [urls objectAtIndex:0];
-		TCCocoaConfig	*aconfig = NULL;
+		TCCocoaConfig	*aconfig = [[TCCocoaConfig alloc] initWithFile:[url path]];
 		
-		// Try to build a config with the file
-		try
+		if (!aconfig)
 		{
-			aconfig = new TCCocoaConfig([url path]);
-		}
-		catch (const char *err)
-		{
-			NSString *oerr = [NSString stringWithUTF8String:err];
-			
 			// Log error
-			[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_read_file", NSLocalizedString(oerr, @"")];
-			
-			if (aconfig)
-				delete aconfig;
+			[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_read_file"];
+#warning fix 'ac_err_read_file': no more args.
 			
 			return;
 		}
-		
-		// Remove current config
-		if (config)
-			delete config;
 		
 		// Update status
 		config = aconfig;
@@ -402,9 +389,9 @@
 	return self;
 }
 
-- (void *)content
+- (id)content
 {
-	return NULL;
+	return nil;
 }
 
 - (IBAction)selectChange:(id)sender
@@ -459,62 +446,34 @@
 	return self;
 }
 
-- (void *)content
+- (id)content
 {
 	NSBundle		*bundle = [NSBundle mainBundle];
 	NSString		*path = nil;
-	TCCocoaConfig	*aconfig = NULL;
+	TCCocoaConfig	*aconfig = nil;
 	
 	// Configuration
 	path = [[[bundle bundlePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"];
 		
-	// Try to build a config with the file
-	try
-	{
-		aconfig = new TCCocoaConfig(path);
-	}
-	catch (const char *err)
+	aconfig = [[TCCocoaConfig alloc] init];
+	
+	if (aconfig)
 	{
 		// Log error
-		NSString *oerr = [NSString stringWithUTF8String:err];
-		
-		[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_write_file", NSLocalizedString(oerr, "")];
-		
-		if (aconfig)
-			delete aconfig;
-		
-		return NULL;
+		[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_write_file"];
+#warning FIXME: fix 'ac_err_write_file' to not get args.
+
+		return nil;
 	}
-	
 	
 	// Set up the config with the fields
-	const char	*c_tor_address = [[torAddressField stringValue] UTF8String];
-	if (c_tor_address)
-	{
-		std::string	tor_address(c_tor_address);
-		
-		aconfig->set_tor_address(tor_address);
-	}
-	
-	const char	*c_im_address = [[imAddressField stringValue] UTF8String];
-	if (c_im_address)
-	{
-		std::string	im_address(c_im_address);
-		
-		aconfig->set_self_address(im_address);
-	}
-	
-	const char	*c_down_folder = [[imDownloadField stringValue] UTF8String];
-	if (c_down_folder)
-	{
-		std::string	down_folder(c_down_folder);
+	[aconfig setTorAddress:[torAddressField stringValue]];
+	[aconfig setSelfAddress:[imAddressField stringValue]];
+	[aconfig setDownloadFolder:[imDownloadField stringValue]];
 
-		aconfig->set_download_folder(down_folder);
-	}
-
-	aconfig->set_tor_port((uint16_t)[torPortField intValue]);
-	aconfig->set_client_port((uint16_t)[imInPortField intValue]);
-	aconfig->set_mode(tc_config_advanced);
+	[aconfig setTorPort:(uint16_t)[torPortField intValue]];
+	[aconfig setClientPort:(uint16_t)[imInPortField intValue]];
+	[aconfig setMode:tc_config_advanced];
 	
 	// Return the config
 	return aconfig;
@@ -583,8 +542,8 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(torChanged:) name:TCTorManagerStatusChanged object:nil];
 
 	// Get the default tor config path
-	NSString		*bpath = [[NSBundle mainBundle] bundlePath];
-	NSString		*pth = [[bpath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"];
+	NSString *bpath = [[NSBundle mainBundle] bundlePath];
+	NSString *pth = [[bpath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"];
 	
 	if (!pth)
 	{
@@ -593,26 +552,21 @@
 	}
 	
 	// Try to build a new config file
-	try
+	cconfig = [[TCCocoaConfig alloc] initWithFile:pth];
+	
+	if (!cconfig)
 	{
-		cconfig = new TCCocoaConfig(pth);
-	}
-	catch (const char *err)
-	{
-		NSString *oerr = [NSString stringWithUTF8String:err];
-		
 		[imAddressField setStringValue:NSLocalizedString(@"ac_err_config", @"")];
-		[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_write_file", NSLocalizedString(oerr, @"")];
-		
-		if (cconfig)
-			delete cconfig;
-		cconfig = NULL;
+		[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_write_file"];
+#warning FIXME: fix 'ac_err_write_file' to remoive args.
+
+		cconfig = nil;
 		
 		return;
 	}
 	
 	// Start manager
-	[[TCTorManager sharedManager] startWithConfig:cconfig];
+	[[TCTorManager sharedManager] startWithConfiguration:cconfig];
 }
 
 - (void)torChanged:(NSNotification *)notice
@@ -650,7 +604,7 @@
 	return self;
 }
 
-- (void *)content
+- (id)content
 {
 	return cconfig;
 }
@@ -670,11 +624,11 @@
 	
 	if ([openDlg runModal] == NSOKButton)
 	{
-		NSArray		*urls = [openDlg URLs];
-		NSURL		*url = [urls objectAtIndex:0];
+		NSArray	*urls = [openDlg URLs];
+		NSURL	*url = [urls objectAtIndex:0];
 		
 		[imDownloadField setStringValue:[url path]];
-		cconfig->set_download_folder([[url path] UTF8String]);
+		[cconfig setDownloadFolder:[url path]];
 	}
 }
 

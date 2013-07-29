@@ -24,14 +24,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-
-
-/*
-** Forward
-*/
-#pragma mark - Forward
-
-class TCConfig;
+#import "TCConfig.h"
 
 
 
@@ -57,7 +50,7 @@ class TCConfig;
 + (TCTorManager *)sharedManager;
 
 // -- Running --
-- (void)startWithConfig:(TCConfig *)config;
+- (void)startWithConfiguration:(id <TCConfig>)configuration;
 - (void)stop;
 
 - (BOOL)isRunning;

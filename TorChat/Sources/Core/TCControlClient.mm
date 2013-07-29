@@ -38,10 +38,9 @@
 */
 #pragma mark - TCControlClient - Instance
 
-TCControlClient::TCControlClient(TCConfig *_conf, int _sock)
+TCControlClient::TCControlClient(id <TCConfig> _conf, int _sock)
 {
 	// Hold config
-	_conf->retain();
 	config = _conf;
 	
 	ctrl = NULL;
@@ -65,7 +64,7 @@ TCControlClient::~TCControlClient()
 	if (ctrl)
 		ctrl->release();
 	
-	config->release();
+	config = nil;
 	
 	if (sock)
 		[sock stop];
@@ -205,7 +204,7 @@ void TCControlClient::doPing(const std::string &caddress, const std::string &cra
 	// random value is not from us, then someone is definitely 
 	// trying to fake and we can close.
 	
-	if (caddress.compare(config->get_self_address()) == 0 && abuddy && abuddy->brandom().content().compare(crandom) != 0)
+	if (caddress.compare([[config selfAddress] UTF8String]) == 0 && abuddy && abuddy->brandom().content().compare(crandom) != 0)
 	{
 		_error(tcctrl_error_client_cmd_ping, "core_cctrl_err_masquerade", true);
 		abuddy->release();
@@ -218,7 +217,7 @@ void TCControlClient::doPing(const std::string &caddress, const std::string &cra
 	if (!abuddy)
 	{
 		if (ctrl)
-			ctrl->addBuddy(config->localized("core_cctrl_new_buddy"), caddress);
+			ctrl->addBuddy([[config localized:@"core_cctrl_new_buddy"] UTF8String], caddress);
 		
 		abuddy = ctrl->getBuddyAddress(caddress);
 		
@@ -414,7 +413,7 @@ void TCControlClient::socketError(TCSocket *socket, TCInfo *err)
 #warning FIXME: use TCSocketDelegate once switched to OC.
 
 	// Localize the info
-	err->setInfo(config->localized(err->info()));
+	err->setInfo([[config localized:@(err->info().c_str())] UTF8String]);
 	
 	// Fallback Error
 	_error(tcctrl_error_socket, "core_cctrl_err_socket", err, true);
@@ -429,7 +428,7 @@ void TCControlClient::socketError(TCSocket *socket, TCInfo *err)
 
 void TCControlClient::_error(tcctrl_info code, const std::string &info, bool fatal)
 {
-	TCInfo *err = new TCInfo(tcinfo_error, code, config->localized(info));
+	TCInfo *err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String]);
 	
 	if (ctrl)
 		ctrl->cc_error(this, err);
@@ -442,7 +441,7 @@ void TCControlClient::_error(tcctrl_info code, const std::string &info, bool fat
 
 void TCControlClient::_error(tcctrl_info code, const std::string &info, TCObject *ctx, bool fatal)
 {
-	TCInfo *err = new TCInfo(tcinfo_error, code, config->localized(info), ctx);
+	TCInfo *err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String], ctx);
 	
 	if (ctrl)
 		ctrl->cc_error(this, err);
@@ -455,7 +454,7 @@ void TCControlClient::_error(tcctrl_info code, const std::string &info, TCObject
 
 void TCControlClient::_error(tcctrl_info code, const std::string &info, TCInfo *serr, bool fatal)
 {
-	TCInfo *err = new TCInfo(tcinfo_error, code, config->localized(info), serr);
+	TCInfo *err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String], serr);
 	
 	if (ctrl)
 		ctrl->cc_error(this, err);
@@ -468,7 +467,7 @@ void TCControlClient::_error(tcctrl_info code, const std::string &info, TCInfo *
 
 void TCControlClient::_notify(tcctrl_info notice, const std::string &info)
 {
-	TCInfo *ifo = new TCInfo(tcinfo_info, notice, config->localized(info));
+	TCInfo *ifo = new TCInfo(tcinfo_info, notice, [[config localized:@(info.c_str())] UTF8String]);
 	
 	if (ctrl)
 		ctrl->cc_notify(this, ifo);
@@ -483,12 +482,12 @@ bool TCControlClient::_isBlocked(const std::string &address)
 		return false;
 	
 	// XXX not thread safe
-	const tc_sarray &blocked = config->blocked_buddies();
-	size_t			i, cnt = blocked.size();
+	NSArray	*blocked = [config blockedBuddies];
+	size_t	i, cnt = [blocked count];
 	
 	for (i = 0; i < cnt; i++)
 	{
-		const std::string &item = blocked.at(i);
+		const std::string item = [blocked[i] UTF8String];
 		
 		if (item.compare(address) == 0)
 			return true;
