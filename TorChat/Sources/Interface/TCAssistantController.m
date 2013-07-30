@@ -505,8 +505,8 @@
 
 @interface TCPanel_Basic ()
 {
-	TCCocoaConfig			*cconfig;
-	id <TCAssistantProxy>	aproxy;
+	TCCocoaConfig			*_config;
+	id <TCAssistantProxy>	_proxy;
 }
 
 @end
@@ -528,10 +528,10 @@
 	[proxy setDisableContinue:YES]; // Wait for tor
 	
 	// Retain proxy
-	aproxy = proxy;
+	_proxy = proxy;
 	
 	// If we already a config, stop here
-	if (cconfig)
+	if (_config)
 		return;
 	
 	// Obserse tor status changes
@@ -548,9 +548,9 @@
 	}
 	
 	// Try to build a new config file
-	cconfig = [[TCCocoaConfig alloc] initWithFile:pth];
+	_config = [[TCCocoaConfig alloc] initWithFile:pth];
 	
-	if (!cconfig)
+	if (!_config)
 	{
 		[imAddressField setStringValue:NSLocalizedString(@"ac_err_config", @"")];
 		[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_write_file", pth];
@@ -558,7 +558,7 @@
 	}
 	
 	// Start manager
-	[[TCTorManager sharedManager] startWithConfiguration:cconfig];
+	[[TCTorManager sharedManager] startWithConfiguration:_config];
 }
 
 - (void)torChanged:(NSNotification *)notice
@@ -569,12 +569,12 @@
 		
 	if ([running boolValue])
 	{
-		[aproxy setDisableContinue:NO];
+		[_proxy setDisableContinue:NO];
 		[imAddressField setStringValue:host];
 	}
 	else
 	{
-		[aproxy setDisableContinue:YES];
+		[_proxy setDisableContinue:YES];
 		
 		// Log the error
 		[[TCLogsController sharedController] addGlobalAlertLog:@"tor_err_launch"];
@@ -598,12 +598,12 @@
 
 - (id)content
 {
-	return cconfig;
+	return _config;
 }
 
 - (IBAction)selectFolder:(id)sender
 {
-	if (!cconfig)
+	if (!_config)
 		return;
 	
 	NSOpenPanel	*openDlg = [NSOpenPanel openPanel];
@@ -620,7 +620,7 @@
 		NSURL	*url = [urls objectAtIndex:0];
 		
 		[imDownloadField setStringValue:[url path]];
-		[cconfig setDownloadFolder:[url path]];
+		[_config setDownloadFolder:[url path]];
 	}
 }
 

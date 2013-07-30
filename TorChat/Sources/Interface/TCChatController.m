@@ -56,11 +56,11 @@
 
 @interface TCChatController ()
 {	
-	NSMutableArray			*windows;
-	TCChatWindowController	*currentWindow;
+	NSMutableArray			*_windows;
+	TCChatWindowController	*_currentWindow;
 	
-	NSMutableDictionary		*identifiers;
-	dispatch_queue_t		mainQueue;
+	NSMutableDictionary		*_identifiers;
+	dispatch_queue_t		_localQueue;
 }
 
 // -- Window --
@@ -159,11 +159,11 @@
 	if (self)
 	{
 		// Create dispatch queue
-		mainQueue = dispatch_queue_create("com.torchat.cocoa.chatcontroller.main", DISPATCH_QUEUE_SERIAL);
+		_localQueue = dispatch_queue_create("com.torchat.cocoa.chatcontroller.local", DISPATCH_QUEUE_SERIAL);
 		
 		// Containers
-		windows = [[NSMutableArray alloc] init];
-		identifiers = [[NSMutableDictionary alloc] init];
+		_windows = [[NSMutableArray alloc] init];
+		_identifiers = [[NSMutableDictionary alloc] init];
 	}
 
 	return self;
@@ -178,48 +178,48 @@
 
 - (void)closedWindowController:(TCChatWindowController *)controller
 {
-	dispatch_async(mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		NSMutableArray *items = [NSMutableArray array];
 		
 		// Remove from array
-		[windows removeObject:controller];
+		[_windows removeObject:controller];
 		
 		// Clean cache association
-		for (NSString *identifier in identifiers)
+		for (NSString *identifier in _identifiers)
 		{
-			if ([identifiers objectForKey:identifier] == controller)
+			if ([_identifiers objectForKey:identifier] == controller)
 				[items addObject:identifier];
 		}
 		
-		[identifiers removeObjectsForKeys:items];
+		[_identifiers removeObjectsForKeys:items];
 		
 		// Remove from current
-		if (currentWindow == controller)
-			currentWindow = nil;
+		if (_currentWindow == controller)
+			_currentWindow = nil;
 	});
 }
 
 - (void)showedWindowController:(TCChatWindowController *)controller
 {
-	dispatch_async(mainQueue, ^{
-		currentWindow = controller;
+	dispatch_async(_localQueue, ^{
+		_currentWindow = controller;
 	});
 }
 
 - (void)popChatContent:(NSDictionary *)content withIdentifier:(NSString *)identifier fromFrame:(NSRect)frame
 {
-	dispatch_async(mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		TCChatWindowController	*ctrl = [TCChatWindowController chatWindowController];
 		
 		// Store the controller
-		[windows addObject:ctrl];
+		[_windows addObject:ctrl];
 
-		currentWindow = ctrl;
+		_currentWindow = ctrl;
 		
 		// Cache the controller for this identifier
-		[identifiers setObject:ctrl forKey:identifier];
+		[_identifiers setObject:ctrl forKey:identifier];
 		
 		// Do the drop in the window controller
 		[ctrl popChatContent:content withIdentifier:identifier fromFrame:frame];
@@ -231,9 +231,9 @@
 	if (!identifier || !controller)
 		return;
 
-	dispatch_async(mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 
-		TCChatWindowController *current = [identifiers objectForKey:identifier];
+		TCChatWindowController *current = [_identifiers objectForKey:identifier];
 		
 		if (!current)
 			return;
@@ -242,7 +242,7 @@
 		[current moveIdentifier:identifier toWindowController:controller atIndex:index];
 		
 		// Update cache
-		[identifiers setObject:controller forKey:identifier];
+		[_identifiers setObject:controller forKey:identifier];
 	});
 }
 
@@ -259,23 +259,23 @@
 		return;
 			
 	// Start the chat
-	dispatch_async(mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
-		TCChatWindowController *ctrl = [identifiers objectForKey:identifier];
+		TCChatWindowController *ctrl = [_identifiers objectForKey:identifier];
 		
 		// If we have already a window, don't need to do anything
 		if (ctrl)
 			return;
 		
-		if (currentWindow)
-			ctrl = currentWindow;
-		else if ([windows count] > 0)
-			ctrl = [windows lastObject];
+		if (_currentWindow)
+			ctrl = _currentWindow;
+		else if ([_windows count] > 0)
+			ctrl = [_windows lastObject];
 		else
 		{
 			ctrl = [TCChatWindowController chatWindowController];
 			
-			[windows addObject:ctrl];
+			[_windows addObject:ctrl];
 			
 			[ctrl showChats]; // We want this behaviour ?
 		}
@@ -283,10 +283,10 @@
 		if (ctrl)
 		{
 			// Hold current window controller
-			currentWindow = ctrl;
+			_currentWindow = ctrl;
 			
 			// Cache the controller for this identifier
-			[identifiers setObject:ctrl forKey:identifier];
+			[_identifiers setObject:ctrl forKey:identifier];
 			
 			// Start the chat in the controller
 			[ctrl startChatWithIdentifier:identifier name:name localAvatar:lavatar remoteAvatar:ravatar delegate:delegate];
@@ -296,9 +296,9 @@
 
 - (void)selectChatWithIdentifier:(NSString *)identifier
 {
-	dispatch_async(mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
-		TCChatWindowController *ctrl = [identifiers objectForKey:identifier];
+		TCChatWindowController *ctrl = [_identifiers objectForKey:identifier];
 		
 		if (!ctrl)
 			return;
@@ -313,16 +313,16 @@
 
 - (void)stopChatWithIdentifier:(NSString *)identifier
 {
-	dispatch_async(mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
-		TCChatWindowController *ctrl = [identifiers objectForKey:identifier];
+		TCChatWindowController *ctrl = [_identifiers objectForKey:identifier];
 
 		if (!ctrl)
 			return;
 		
 		[ctrl stopChatWithIdentifier:identifier];
 		
-		[identifiers removeObjectForKey:identifier];
+		[_identifiers removeObjectForKey:identifier];
 	});
 }
 
@@ -335,9 +335,9 @@
 
 - (void)receiveMessage:(NSString *)message forIdentifier:(NSString *)identifier
 {
-	dispatch_async(mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 	
-		TCChatWindowController	*ctrl = [identifiers objectForKey:identifier];
+		TCChatWindowController	*ctrl = [_identifiers objectForKey:identifier];
 		
 		if (!ctrl)
 			return;
@@ -348,9 +348,9 @@
 
 - (void)receiveError:(NSString *)error forIdentifier:(NSString *)identifier
 {
-	dispatch_async(mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
-		TCChatWindowController	*ctrl = [identifiers objectForKey:identifier];
+		TCChatWindowController	*ctrl = [_identifiers objectForKey:identifier];
 		
 		if (!ctrl)
 			return;
@@ -361,9 +361,9 @@
 
 - (void)receiveStatus:(NSString *)status forIdentifier:(NSString *)identifier
 {
-	dispatch_async(mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
-		TCChatWindowController	*ctrl = [identifiers objectForKey:identifier];
+		TCChatWindowController	*ctrl = [_identifiers objectForKey:identifier];
 		
 		if (!ctrl)
 			return;
@@ -374,9 +374,9 @@
 
 - (void)setLocalAvatar:(NSImage *)image forIdentifier:(NSString *)identifier
 {
-	dispatch_async(mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
-		TCChatWindowController	*ctrl = [identifiers objectForKey:identifier];
+		TCChatWindowController	*ctrl = [_identifiers objectForKey:identifier];
 		
 		if (!ctrl)
 			return;
@@ -387,9 +387,9 @@
 
 - (void)setRemoteAvatar:(NSImage *)image forIdentifier:(NSString *)identifier
 {
-	dispatch_async(mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
-		TCChatWindowController	*ctrl = [identifiers objectForKey:identifier];
+		TCChatWindowController	*ctrl = [_identifiers objectForKey:identifier];
 		
 		if (!ctrl)
 			return;

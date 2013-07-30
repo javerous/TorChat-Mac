@@ -41,7 +41,7 @@
 #pragma mark - Global
 
 static char gQueueIdentityKey;
-static char gMainQueueContext;
+static char gLocalQueueContext;
 
 
 
@@ -52,20 +52,20 @@ static char gMainQueueContext;
 
 @interface TCCocoaBuddy () <TCBuddyDelegate>
 {
-	TCBuddy						*buddy;
+	TCBuddy						*_buddy;
 	
-	dispatch_queue_t			mainQueue;
-	dispatch_queue_t			noticeQueue;
+	dispatch_queue_t			_localQueue;
+	dispatch_queue_t			_noticeQueue;
 	
-	tcbuddy_status				status;
-	NSImage						*profileAvatar;
-	NSString					*profileName;
-	NSString					*profileText;
+	tcbuddy_status				_status;
+	NSImage						*_profileAvatar;
+	NSString					*_profileName;
+	NSString					*_profileText;
 	
-	NSString					*peerVersion;
-	NSString					*peerClient;
+	NSString					*_peerVersion;
+	NSString					*_peerClient;
 	
-	NSImage						*localAvatar;
+	NSImage						*_localAvatar;
 }
 
 - (NSImage *)_profileAvatar;
@@ -87,22 +87,22 @@ static char gMainQueueContext;
 */
 #pragma mark - TCCocoaBuddy - Instance
 
-- (id)initWithBuddy:(TCBuddy *)_buddy
+- (id)initWithBuddy:(TCBuddy *)buddy
 {
 	self = [super init];
 	
     if (self)
 	{
 		// Build a queue
-		mainQueue = dispatch_queue_create("com.torchat.cocoa.buddy.main", DISPATCH_QUEUE_SERIAL);
-		noticeQueue = dispatch_queue_create("com.torchat.cocoa.buddy.notice", DISPATCH_QUEUE_SERIAL);
+		_localQueue = dispatch_queue_create("com.torchat.cocoa.buddy.local", DISPATCH_QUEUE_SERIAL);
+		_noticeQueue = dispatch_queue_create("com.torchat.cocoa.buddy.notice", DISPATCH_QUEUE_SERIAL);
 
-		dispatch_queue_set_specific(mainQueue, &gQueueIdentityKey, &gMainQueueContext, NULL);
+		dispatch_queue_set_specific(_localQueue, &gQueueIdentityKey, &gLocalQueueContext, NULL);
 
 		// Handle the buddy
-		buddy = _buddy;
+		_buddy = buddy;
 		
-		status = tcbuddy_status_offline;
+		_status = tcbuddy_status_offline;
 		
 		// Init the buddy delegate
 		buddy.delegate = self;
@@ -122,7 +122,7 @@ static char gMainQueueContext;
 	[[TCChatController sharedController] stopChatWithIdentifier:[self address]];
 	
 	// Clean delegate
-	buddy.delegate = nil;
+	_buddy.delegate = nil;
 	
 	// Remove notification
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -139,9 +139,8 @@ static char gMainQueueContext;
 {
 	__block tcbuddy_status result;
 	
-	dispatch_sync(mainQueue, ^{
-		
-		result = status;
+	dispatch_sync(_localQueue, ^{
+		result = _status;
 	});
 	
 	return result;
@@ -149,62 +148,62 @@ static char gMainQueueContext;
 
 - (NSString *)address
 {
-	if (!buddy)
+	if (!_buddy)
 		return @"";
 	
-	return [buddy address];
+	return [_buddy address];
 }
 
 - (NSString *)alias
 {
-	if (!buddy)
+	if (!_buddy)
 		return @"";
 	
-	return [buddy alias];
+	return [_buddy alias];
 }
 
 - (BOOL)blocked
 {
-	if (!buddy)
+	if (!_buddy)
 		return NO;
 	
-	return [buddy blocked];
+	return [_buddy blocked];
 }
 
 - (void)setAlias:(NSString *)alias
 {
-	if (!buddy || !alias)
+	if (!_buddy || !alias)
 		return;
 	
-	[buddy setAlias:alias];
+	[_buddy setAlias:alias];
 }
 
 - (NSString *)notes
 {
-	if (!buddy)
+	if (!_buddy)
 		return @"";
 	
-	return [buddy notes];
+	return [_buddy notes];
 }
 
 - (void)setNotes:(NSString *)notes
 {
-	if (!buddy || !notes)
+	if (!_buddy || !notes)
 		return;
 	
-	[buddy setNotes:notes];
+	[_buddy setNotes:notes];
 }
 
 - (NSImage *)localAvatar
 {
-	if (dispatch_get_specific(&gQueueIdentityKey) == &gMainQueueContext)
-		return localAvatar;
+	if (dispatch_get_specific(&gQueueIdentityKey) == &gLocalQueueContext)
+		return _localAvatar;
 	else
 	{
 		__block NSImage *result = nil;
 		
-		dispatch_sync(mainQueue, ^{
-			result = localAvatar;
+		dispatch_sync(_localQueue, ^{
+			result = _localAvatar;
 		});
 		
 		return result;
@@ -214,8 +213,8 @@ static char gMainQueueContext;
 - (void)setLocalAvatar:(NSImage *)avatar
 {
 	// Hold avatar
-	dispatch_async(mainQueue, ^{
-		localAvatar = avatar;
+	dispatch_async(_localQueue, ^{
+		_localAvatar = avatar;
 	});
 	
 	// Refresh chat avatar
@@ -231,13 +230,13 @@ static char gMainQueueContext;
 
 - (NSImage *)profileAvatar
 {
-	if (dispatch_get_specific(&gQueueIdentityKey) == &gMainQueueContext)
+	if (dispatch_get_specific(&gQueueIdentityKey) == &gLocalQueueContext)
 		return [self _profileAvatar];
 	else
 	{
 		__block NSImage *result = nil;
 
-		dispatch_sync(mainQueue, ^{
+		dispatch_sync(_localQueue, ^{
 			result = [self _profileAvatar];
 		});
 		
@@ -247,10 +246,10 @@ static char gMainQueueContext;
 
 - (NSImage *)_profileAvatar
 {
-	// > mainQueue <
+	// > localQueue <
 	
-	if (profileAvatar)
-		return profileAvatar;
+	if (_profileAvatar)
+		return _profileAvatar;
 	else
 	{
 		NSImage *img = [NSImage imageNamed:NSImageNameUser];
@@ -265,8 +264,8 @@ static char gMainQueueContext;
 {
 	__block NSString *result = nil;
 	
-	dispatch_sync(mainQueue, ^{
-		result = profileName;
+	dispatch_sync(_localQueue, ^{
+		result = _profileName;
 	});
 	
 	if (result)
@@ -277,12 +276,12 @@ static char gMainQueueContext;
 
 - (NSString *)lastProfileName
 {
-	return [buddy lastProfileName];
+	return [_buddy lastProfileName];
 }
 
 - (NSString *)profileText
 {
-	NSString *text = [buddy profileText];
+	NSString *text = [_buddy profileText];
 	
 	if (!text)
 		return @"";
@@ -292,7 +291,7 @@ static char gMainQueueContext;
 
 - (NSString *)finalName
 {
-	return [buddy finalName];
+	return [_buddy finalName];
 }
 
 
@@ -306,8 +305,8 @@ static char gMainQueueContext;
 {
 	__block NSString *result = nil;
 	
-	dispatch_sync(mainQueue, ^{
-		result = peerVersion;
+	dispatch_sync(_localQueue, ^{
+		result = _peerVersion;
 	});
 	
 	if (result)
@@ -320,9 +319,8 @@ static char gMainQueueContext;
 {
 	__block NSString *result = nil;
 	
-	dispatch_sync(mainQueue, ^{
-		
-		result = peerClient;
+	dispatch_sync(_localQueue, ^{
+		result = _peerClient;
 	});
 	
 	if (result)
@@ -367,10 +365,10 @@ static char gMainQueueContext;
 	// -> Delegate are retained / released (no weak) XXX It's not true anymore. Fix the things to match this fact.
 	// -> We remove the delegate when we don't wan't anymore an object (release, remove, etc)
 	
-	if (!buddy)
+	if (!_buddy)
 		return;
 	
-	buddy.delegate = nil;
+	_buddy.delegate = nil;
 }
 
 
@@ -382,26 +380,26 @@ static char gMainQueueContext;
 
 - (void)cancelFileUpload:(NSString *)uuid
 {
-	if (!buddy || !uuid)
+	if (!_buddy || !uuid)
 		return;
 	
-	[buddy fileCancelOfUUID:uuid way:tcbuddy_file_send];
+	[_buddy fileCancelOfUUID:uuid way:tcbuddy_file_send];
 }
 
 - (void)cancelFileDownload:(NSString *)uuid
 {
-	if (!buddy || !uuid)
+	if (!_buddy || !uuid)
 		return;
 	
-	[buddy fileCancelOfUUID:uuid way:tcbuddy_file_receive];
+	[_buddy fileCancelOfUUID:uuid way:tcbuddy_file_receive];
 }
 
 - (void)sendFile:(NSString *)fileName
 {
-	if (!buddy || !fileName)
+	if (!_buddy || !fileName)
 		return;
 	
-	[buddy sendFile:fileName];
+	[_buddy sendFile:fileName];
 }
 
 
@@ -413,10 +411,10 @@ static char gMainQueueContext;
 
 - (void)chatSendMessage:(NSString *)message forIdentifier:(NSString *)identifier
 {
-	if (!buddy || !message)
+	if (!_buddy || !message)
 		return;
 	
-	[buddy sendMessage:message];
+	[_buddy sendMessage:message];
 }
 
 
@@ -445,373 +443,375 @@ static char gMainQueueContext;
 	// Add the error in the error manager
 	[[TCLogsController sharedController] addBuddyLogEntryFromAddress:[self address] alias:[self alias] andText:[info render]];
 	
-	// Actions
-	switch ((tcbuddy_info)info.infoCode)
-	{
-		case tcbuddy_notify_connected_tor:
-			break;
-			
-		case tcbuddy_notify_connected_buddy:
-			break;
-			
-		case tcbuddy_notify_disconnected:
+	dispatch_async(_localQueue, ^{
+		
+		// Actions
+		switch ((tcbuddy_info)info.infoCode)
 		{
-			NSDictionary *uinfo;
-			
-			status = tcbuddy_status_offline;
-			
-			// Build notification info
-			uinfo = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:status] forKey:@"status"];
-			
-			dispatch_async(noticeQueue, ^{
-				[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedStatusNotification object:self userInfo:uinfo];
-			});
-			
-			break;
-		}
-			
-		case tcbuddy_notify_identified:
-			break;
-			
-		case tcbuddy_notify_status:
-		{
-			NSNumber		*statusValue = (NSNumber *)info.context;
-			NSDictionary	*uinfo;
-			NSString		*ostatus = @"";
-			
-			// Update status
-			status = (tcbuddy_status)[statusValue intValue];
-			
-			// Build notification info
-			uinfo = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:status] forKey:@"status"];
-			
-			// Send notification
-			dispatch_async(noticeQueue, ^{
+			case tcbuddy_notify_connected_tor:
+				break;
 				
-				[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedStatusNotification object:self userInfo:uinfo];
-			});
-			
-			// Send status to chat window
-			switch (status)
+			case tcbuddy_notify_connected_buddy:
+				break;
+				
+			case tcbuddy_notify_disconnected:
 			{
-				case tcbuddy_status_offline:
-					ostatus = NSLocalizedString(@"bd_status_offline", @"");
-					break;
-					
-				case tcbuddy_status_available:
-					ostatus = NSLocalizedString(@"bd_status_available", @"");
-					break;
-					
-				case tcbuddy_status_away:
-					ostatus = NSLocalizedString(@"bd_status_away", @"");
-					
-					break;
-					
-				case tcbuddy_status_xa:
-					ostatus = NSLocalizedString(@"bd_status_xa", @"");
-					break;
+				NSDictionary *uinfo;
+				
+				_status = tcbuddy_status_offline;
+				
+				// Build notification info
+				uinfo = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:_status] forKey:@"status"];
+				
+				dispatch_async(_noticeQueue, ^{
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedStatusNotification object:self userInfo:uinfo];
+				});
+				
+				break;
 			}
-			
-			[[TCChatController sharedController] receiveStatus:ostatus forIdentifier:[self address]];
-			
-			break;
-		}
-			
-		case tcbuddy_notify_profile_avatar:
-		{
-			NSImage			*avatar = [(TCImage *)info.context imageRepresentation];
-			NSDictionary	*uinfo;
-			
-			// If no avatar, use standard user
-			if ([[avatar representations] count] == 0)
+				
+			case tcbuddy_notify_identified:
+				break;
+				
+			case tcbuddy_notify_status:
 			{
-				avatar = [NSImage imageNamed:NSImageNameUser];
+				NSNumber		*statusValue = (NSNumber *)info.context;
+				NSDictionary	*uinfo;
+				NSString		*ostatus = @"";
 				
-				[avatar setSize:NSMakeSize(64, 64)];
-			}
-			
-			// Build notification info
-			uinfo = [NSDictionary dictionaryWithObject:avatar forKey:@"avatar"];
-			
-			// Hold avatar
-			profileAvatar = avatar;
-			
-			// Notify of the new avatar
-			dispatch_async(noticeQueue, ^{
+				// Update status
+				_status = (tcbuddy_status)[statusValue intValue];
 				
-				[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedAvatarNotification object:self userInfo:uinfo];
-			});
-			
-			// Set the new avatar to the chat window
-			[[TCChatController sharedController] setRemoteAvatar:profileAvatar forIdentifier:[self address]];
-			
-			break;
-		}
-			
-		case tcbuddy_notify_profile_text:
-		{
-			NSString		*text = info.context;
-			NSDictionary	*uinfo = [NSDictionary dictionaryWithObject:text forKey:@"text"];
-			
-			profileText = text;
-			
-			dispatch_async(noticeQueue, ^{
-				[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedTextNotification object:self userInfo:uinfo];
-			});
-			
-			break;
-		}
-			
-		case tcbuddy_notify_profile_name:
-		{
-			NSString		*name = info.context;
-			NSDictionary	*uinfo = [NSDictionary dictionaryWithObject:name forKey:@"name"];
-			
-			profileName = name;
-			
-			dispatch_async(noticeQueue, ^{
-				[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedNameNotification object:self userInfo:uinfo];
-			});
-			
-			break;
-		}
-			
-		case tcbuddy_notify_message:
-		{
-			// Start a chat UI
-			[self startChatAndSelect:NO];
-			
-			// Add the message (on main queue, else the chat can be not started)
-			[[TCChatController sharedController] receiveMessage:info.context forIdentifier:[self address]];
-			
-			break;
-		}
-			
-		case tcbuddy_notify_alias:
-		{
-			NSString        *alias =info.context;
-			NSDictionary    *uinfo = [NSDictionary dictionaryWithObject:alias forKey:@"alias"];
-			
-			dispatch_async(noticeQueue, ^{
-				[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedAliasNotification object:self userInfo:uinfo];
-			});
-			
-			break;
-		}
-			
-		case tcbuddy_notify_notes:
-		{
-			// TCString *notes = dynamic_cast<TCString *>(info->context());
-			
-			break;
-		}
-			
-		case tcbuddy_notify_blocked:
-		{
-			NSNumber		*blocked = info.context;
-			NSDictionary	*uinfo = [NSDictionary dictionaryWithObject:blocked forKey:@"blocked"];
-			
-			dispatch_async(noticeQueue, ^{
-				[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedBlockedNotification object:self userInfo:uinfo];
-			});
-			
-			break;
-		}
-			
-		case tcbuddy_notify_version:
-		{
-			NSString        *version = info.context;
-			NSDictionary    *uinfo = [NSDictionary dictionaryWithObject:version forKey:@"version"];
-			
-			peerVersion = version;
-			
-			dispatch_async(noticeQueue, ^{
-				[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedPeerVersionNotification object:self userInfo:uinfo];
-			});
-			
-			break;
-		}
-			
-		case tcbuddy_notify_client:
-		{
-			NSString        *client = info.context;
-			NSDictionary    *uinfo = [NSDictionary dictionaryWithObject:client forKey:@"client"];
-			
-			peerClient = client;
-			
-			dispatch_async(noticeQueue, ^{
-				[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedPeerClientNotification object:self userInfo:uinfo];
-			});
-			
-			break;
-		}
-			
-		case tcbuddy_notify_file_send_start:
-		{
-			TCFileInfo *finfo = (TCFileInfo *)info.context;
-			
-			if (!finfo)
-				return;
-			
-			// Add the file transfert to the controller
-			[[TCFilesController sharedController] startFileTransfert:[finfo uuid] withFilePath:[finfo filePath] buddyAddress:[aBuddy address] buddyName:[aBuddy finalName] transfertWay:tcfile_upload fileSize:[finfo fileSizeTotal]];
-			
-			break;
-		}
-			
-		case tcbuddy_notify_file_send_running:
-		{
-			TCFileInfo *finfo = (TCFileInfo *)info.context;
-			
-			if (!finfo)
-				return;
-			
-			// Update bytes received
-			[[TCFilesController sharedController] setCompleted:[finfo fileSizeCompleted] forFileTransfert:[finfo uuid] withWay:tcfile_upload];
-			
-			break;
-		}
-			
-		case tcbuddy_notify_file_send_finish:
-		{
-			TCFileInfo *finfo = (TCFileInfo *)info.context;
-			
-			if (!finfo)
-				return;
-			
-			// Update status
-			[[TCFilesController sharedController] setStatus:tcfile_status_finish andTextStatus:NSLocalizedString(@"file_upload_done", @"") forFileTransfert:[finfo uuid] withWay:tcfile_upload];
-			
-			break;
-		}
-			
-		case tcbuddy_notify_file_send_stoped:
-		{
-			TCFileInfo *finfo = (TCFileInfo *)info.context;
-			
-			if (!finfo)
-				return;
-
-			// Update status
-			[[TCFilesController sharedController] setStatus:tcfile_status_stoped andTextStatus:NSLocalizedString(@"file_upload_stoped", @"") forFileTransfert:[finfo uuid] withWay:tcfile_upload];
-			
-			break;
-		}
-			
-		case tcbuddy_notify_file_receive_start:
-		{
-			TCFileInfo *finfo = (TCFileInfo *)info.context;
-			
-			if (!finfo)
-				return;
-
-			// Add the file transfert to the controller
-			[[TCFilesController sharedController] startFileTransfert:[finfo uuid] withFilePath:[finfo filePath] buddyAddress:[aBuddy address] buddyName:[aBuddy finalName] transfertWay:tcfile_download fileSize:[finfo fileSizeTotal]];
-			
-			break;
-		}
-			
-		case tcbuddy_notify_file_receive_running:
-		{
-			TCFileInfo *finfo = (TCFileInfo *)info.context;
-			
-			if (!finfo)
-				return;
+				// Build notification info
+				uinfo = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:_status] forKey:@"status"];
+				
+				// Send notification
+				dispatch_async(_noticeQueue, ^{
+					
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedStatusNotification object:self userInfo:uinfo];
+				});
+				
+				// Send status to chat window
+				switch (_status)
+				{
+					case tcbuddy_status_offline:
+						ostatus = NSLocalizedString(@"bd_status_offline", @"");
+						break;
 						
-			// Update bytes received
-			[[TCFilesController sharedController] setCompleted:[finfo fileSizeCompleted] forFileTransfert:[finfo uuid] withWay:tcfile_download];
-			
-			break;
+					case tcbuddy_status_available:
+						ostatus = NSLocalizedString(@"bd_status_available", @"");
+						break;
+						
+					case tcbuddy_status_away:
+						ostatus = NSLocalizedString(@"bd_status_away", @"");
+						
+						break;
+						
+					case tcbuddy_status_xa:
+						ostatus = NSLocalizedString(@"bd_status_xa", @"");
+						break;
+				}
+				
+				[[TCChatController sharedController] receiveStatus:ostatus forIdentifier:[self address]];
+				
+				break;
+			}
+				
+			case tcbuddy_notify_profile_avatar:
+			{
+				NSImage			*avatar = [(TCImage *)info.context imageRepresentation];
+				NSDictionary	*uinfo;
+				
+				// If no avatar, use standard user
+				if ([[avatar representations] count] == 0)
+				{
+					avatar = [NSImage imageNamed:NSImageNameUser];
+					
+					[avatar setSize:NSMakeSize(64, 64)];
+				}
+				
+				// Build notification info
+				uinfo = [NSDictionary dictionaryWithObject:avatar forKey:@"avatar"];
+				
+				// Hold avatar
+				_profileAvatar = avatar;
+				
+				// Notify of the new avatar
+				dispatch_async(_noticeQueue, ^{
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedAvatarNotification object:self userInfo:uinfo];
+				});
+				
+				// Set the new avatar to the chat window
+				[[TCChatController sharedController] setRemoteAvatar:_profileAvatar forIdentifier:[self address]];
+				
+				break;
+			}
+				
+			case tcbuddy_notify_profile_text:
+			{
+				NSString		*text = info.context;
+				NSDictionary	*uinfo = [NSDictionary dictionaryWithObject:text forKey:@"text"];
+				
+				_profileText = text;
+				
+				dispatch_async(_noticeQueue, ^{
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedTextNotification object:self userInfo:uinfo];
+				});
+				
+				break;
+			}
+				
+			case tcbuddy_notify_profile_name:
+			{
+				NSString		*name = info.context;
+				NSDictionary	*uinfo = [NSDictionary dictionaryWithObject:name forKey:@"name"];
+				
+				_profileName = name;
+				
+				dispatch_async(_noticeQueue, ^{
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedNameNotification object:self userInfo:uinfo];
+				});
+				
+				break;
+			}
+				
+			case tcbuddy_notify_message:
+			{
+				// Start a chat UI
+				[self startChatAndSelect:NO];
+				
+				// Add the message (on main queue, else the chat can be not started)
+				[[TCChatController sharedController] receiveMessage:info.context forIdentifier:[self address]];
+				
+				break;
+			}
+				
+			case tcbuddy_notify_alias:
+			{
+				NSString        *alias =info.context;
+				NSDictionary    *uinfo = [NSDictionary dictionaryWithObject:alias forKey:@"alias"];
+				
+				dispatch_async(_noticeQueue, ^{
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedAliasNotification object:self userInfo:uinfo];
+				});
+				
+				break;
+			}
+				
+			case tcbuddy_notify_notes:
+			{
+				// TCString *notes = dynamic_cast<TCString *>(info->context());
+				
+				break;
+			}
+				
+			case tcbuddy_notify_blocked:
+			{
+				NSNumber		*blocked = info.context;
+				NSDictionary	*uinfo = [NSDictionary dictionaryWithObject:blocked forKey:@"blocked"];
+				
+				dispatch_async(_noticeQueue, ^{
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedBlockedNotification object:self userInfo:uinfo];
+				});
+				
+				break;
+			}
+				
+			case tcbuddy_notify_version:
+			{
+				NSString        *version = info.context;
+				NSDictionary    *uinfo = [NSDictionary dictionaryWithObject:version forKey:@"version"];
+				
+				_peerVersion = version;
+				
+				dispatch_async(_noticeQueue, ^{
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedPeerVersionNotification object:self userInfo:uinfo];
+				});
+				
+				break;
+			}
+				
+			case tcbuddy_notify_client:
+			{
+				NSString        *client = info.context;
+				NSDictionary    *uinfo = [NSDictionary dictionaryWithObject:client forKey:@"client"];
+				
+				_peerClient = client;
+				
+				dispatch_async(_noticeQueue, ^{
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedPeerClientNotification object:self userInfo:uinfo];
+				});
+				
+				break;
+			}
+				
+			case tcbuddy_notify_file_send_start:
+			{
+				TCFileInfo *finfo = (TCFileInfo *)info.context;
+				
+				if (!finfo)
+					return;
+				
+				// Add the file transfert to the controller
+				[[TCFilesController sharedController] startFileTransfert:[finfo uuid] withFilePath:[finfo filePath] buddyAddress:[aBuddy address] buddyName:[aBuddy finalName] transfertWay:tcfile_upload fileSize:[finfo fileSizeTotal]];
+				
+				break;
+			}
+				
+			case tcbuddy_notify_file_send_running:
+			{
+				TCFileInfo *finfo = (TCFileInfo *)info.context;
+				
+				if (!finfo)
+					return;
+				
+				// Update bytes received
+				[[TCFilesController sharedController] setCompleted:[finfo fileSizeCompleted] forFileTransfert:[finfo uuid] withWay:tcfile_upload];
+				
+				break;
+			}
+				
+			case tcbuddy_notify_file_send_finish:
+			{
+				TCFileInfo *finfo = (TCFileInfo *)info.context;
+				
+				if (!finfo)
+					return;
+				
+				// Update status
+				[[TCFilesController sharedController] setStatus:tcfile_status_finish andTextStatus:NSLocalizedString(@"file_upload_done", @"") forFileTransfert:[finfo uuid] withWay:tcfile_upload];
+				
+				break;
+			}
+				
+			case tcbuddy_notify_file_send_stoped:
+			{
+				TCFileInfo *finfo = (TCFileInfo *)info.context;
+				
+				if (!finfo)
+					return;
+				
+				// Update status
+				[[TCFilesController sharedController] setStatus:tcfile_status_stoped andTextStatus:NSLocalizedString(@"file_upload_stoped", @"") forFileTransfert:[finfo uuid] withWay:tcfile_upload];
+				
+				break;
+			}
+				
+			case tcbuddy_notify_file_receive_start:
+			{
+				TCFileInfo *finfo = (TCFileInfo *)info.context;
+				
+				if (!finfo)
+					return;
+				
+				// Add the file transfert to the controller
+				[[TCFilesController sharedController] startFileTransfert:[finfo uuid] withFilePath:[finfo filePath] buddyAddress:[aBuddy address] buddyName:[aBuddy finalName] transfertWay:tcfile_download fileSize:[finfo fileSizeTotal]];
+				
+				break;
+			}
+				
+			case tcbuddy_notify_file_receive_running:
+			{
+				TCFileInfo *finfo = (TCFileInfo *)info.context;
+				
+				if (!finfo)
+					return;
+				
+				// Update bytes received
+				[[TCFilesController sharedController] setCompleted:[finfo fileSizeCompleted] forFileTransfert:[finfo uuid] withWay:tcfile_download];
+				
+				break;
+			}
+				
+			case tcbuddy_notify_file_receive_finish:
+			{
+				TCFileInfo *finfo = (TCFileInfo *)info.context;
+				
+				if (!finfo)
+					return;
+				
+				// Update status
+				[[TCFilesController sharedController] setStatus:tcfile_status_finish andTextStatus:NSLocalizedString(@"file_download_done", @"") forFileTransfert:[finfo uuid] withWay:tcfile_download];
+				
+				break;
+			}
+				
+			case tcbuddy_notify_file_receive_stoped:
+			{
+				TCFileInfo *finfo = (TCFileInfo *)info.context;
+				
+				if (!finfo)
+					return;
+				
+				// Update status
+				[[TCFilesController sharedController] setStatus:tcfile_status_stoped andTextStatus:NSLocalizedString(@"file_download_stoped", @"") forFileTransfert:[finfo uuid] withWay:tcfile_download];
+				
+				break;
+			}
+				
+			case tcbuddy_error_resolve_tor:
+				break;
+				
+			case tcbuddy_error_connect_tor:
+				break;
+				
+			case tcbuddy_error_socket:
+				break;
+				
+			case tcbuddy_error_socks:
+				break;
+				
+			case tcbuddy_error_too_messages:
+				break;
+				
+			case tcbuddy_error_message_offline:
+			{
+				NSString	*message = info.context;
+				NSString	*full;
+				
+				if (message)
+					full = [[NSString alloc] initWithFormat:NSLocalizedString(@"bd_error_offline", ""), message];
+				else
+					full = [[NSString alloc] initWithFormat:NSLocalizedString(@"bd_error_offline", ""), @"-"];
+				
+				// Add the error
+				[[TCChatController sharedController] receiveError:full forIdentifier:[self address]];
+				
+				break;
+			}
+				
+			case tcbuddy_error_message_blocked:
+			{
+				NSString	*message = (NSString *)info.context;
+				NSString	*full;
+				
+				if (message)
+					full = [[NSString alloc] initWithFormat:NSLocalizedString(@"bd_error_blocked", ""), message];
+				else
+					full = [[NSString alloc] initWithFormat:NSLocalizedString(@"bd_error_blocked", ""), @"-"];
+				
+				// Add the error
+				[[TCChatController sharedController] receiveError:full forIdentifier:[self address]];
+				
+				break;
+			}
+				
+			case tcbuddy_error_send_file:
+				break;
+				
+			case tcbuddy_error_receive_file:
+				break;
+				
+			case tcbuddy_error_file_offline:
+				break;
+				
+			case tcbuddy_error_file_blocked:
+				break;
+				
+			case tcbuddy_error_parse:
+				break;
 		}
-			
-		case tcbuddy_notify_file_receive_finish:
-		{
-			TCFileInfo *finfo = (TCFileInfo *)info.context;
-			
-			if (!finfo)
-				return;
-			
-			// Update status
-			[[TCFilesController sharedController] setStatus:tcfile_status_finish andTextStatus:NSLocalizedString(@"file_download_done", @"") forFileTransfert:[finfo uuid] withWay:tcfile_download];
-			
-			break;
-		}
-			
-		case tcbuddy_notify_file_receive_stoped:
-		{
-			TCFileInfo *finfo = (TCFileInfo *)info.context;
-			
-			if (!finfo)
-				return;
-
-			// Update status
-			[[TCFilesController sharedController] setStatus:tcfile_status_stoped andTextStatus:NSLocalizedString(@"file_download_stoped", @"") forFileTransfert:[finfo uuid] withWay:tcfile_download];
-			
-			break;
-		}
-			
-		case tcbuddy_error_resolve_tor:
-			break;
-			
-		case tcbuddy_error_connect_tor:
-			break;
-			
-		case tcbuddy_error_socket:
-			break;
-			
-		case tcbuddy_error_socks:
-			break;
-			
-		case tcbuddy_error_too_messages:
-			break;
-			
-		case tcbuddy_error_message_offline:
-		{
-			NSString	*message = info.context;
-			NSString	*full;
-			
-			if (message)
-				full = [[NSString alloc] initWithFormat:NSLocalizedString(@"bd_error_offline", ""), message];
-			else
-				full = [[NSString alloc] initWithFormat:NSLocalizedString(@"bd_error_offline", ""), @"-"];
-			
-			// Add the error
-			[[TCChatController sharedController] receiveError:full forIdentifier:[self address]];
-			
-			break;
-		}
-			
-		case tcbuddy_error_message_blocked:
-		{
-			NSString	*message = (NSString *)info.context;
-			NSString	*full;
-			
-			if (message)
-				full = [[NSString alloc] initWithFormat:NSLocalizedString(@"bd_error_blocked", ""), message];
-			else
-				full = [[NSString alloc] initWithFormat:NSLocalizedString(@"bd_error_blocked", ""), @"-"];
-			
-			// Add the error
-			[[TCChatController sharedController] receiveError:full forIdentifier:[self address]];
-			
-			break;
-		}
-			
-		case tcbuddy_error_send_file:
-			break;
-			
-		case tcbuddy_error_receive_file:
-			break;
-			
-		case tcbuddy_error_file_offline:
-			break;
-			
-		case tcbuddy_error_file_blocked:
-			break;
-			
-		case tcbuddy_error_parse:
-			break;
-	}
+	});
 }
 
 @end
