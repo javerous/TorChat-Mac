@@ -61,13 +61,13 @@ void catch_signal(int sig);
     BOOL				_running;
 	
 	NSTask				*_task;
-	dispatch_source_t	errSource;
-	dispatch_source_t	outSource;
+	dispatch_source_t	_errSource;
+	dispatch_source_t	_outSource;
 	
 	NSString			*_hidden;
 	
-	dispatch_queue_t	mainQueue;
-	dispatch_source_t	testTimer;
+	dispatch_queue_t	_localQueue;
+	dispatch_source_t	_testTimer;
 }
 
 - (void)postNotification:(NSString *)notice;
@@ -109,7 +109,7 @@ void catch_signal(int sig);
 	
     if (self)
 	{
-        mainQueue = dispatch_queue_create("com.torchat.cocoa.tormanager.main", DISPATCH_QUEUE_SERIAL);
+        _localQueue = dispatch_queue_create("com.torchat.cocoa.tormanager.local", DISPATCH_QUEUE_SERIAL);
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillQuit:) name:NSApplicationWillTerminateNotification object:nil];
     }
@@ -129,17 +129,17 @@ void catch_signal(int sig);
 	torPid = -1;
 	
 	// Close out source
-	if (outSource)
-		dispatch_source_cancel(outSource);
+	if (_outSource)
+		dispatch_source_cancel(_outSource);
 	
 	// Close err source
-	if (errSource)
-		dispatch_source_cancel(errSource);
+	if (_errSource)
+		dispatch_source_cancel(_errSource);
 	
 	
 	// Kill the timer
-	if (testTimer)
-		dispatch_source_cancel(testTimer);
+	if (_testTimer)
+		dispatch_source_cancel(_testTimer);
 	
 	// Remove notification
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -181,7 +181,7 @@ void catch_signal(int sig);
 	[self stop];
 	
 	// Run in the main queue
-	dispatch_async(mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		if (_running)
 			return;
@@ -245,17 +245,17 @@ void catch_signal(int sig);
 		int			outFD = [[_outPipe fileHandleForReading] fileDescriptor];
 		
 		// Create source for pipe handle
-		errSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, (uintptr_t)errFD, 0, mainQueue);
-		outSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, (uintptr_t)outFD, 0, mainQueue);
+		_errSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, (uintptr_t)errFD, 0, _localQueue);
+		_outSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, (uintptr_t)outFD, 0, _localQueue);
 		
 		// Realease pipe when source canceled
-		dispatch_source_set_cancel_handler(errSource, ^{ });
-		dispatch_source_set_cancel_handler(outSource, ^{ });
+		dispatch_source_set_cancel_handler(_errSource, ^{ });
+		dispatch_source_set_cancel_handler(_outSource, ^{ });
 		
 		// Handle pipe data
-		dispatch_source_set_event_handler(errSource, ^{
+		dispatch_source_set_event_handler(_errSource, ^{
 			
-			unsigned long	size = dispatch_source_get_data(errSource);
+			unsigned long	size = dispatch_source_get_data(_errSource);
 			void			*data = malloc(size);
 			ssize_t			res;
 			
@@ -278,16 +278,16 @@ void catch_signal(int sig);
 			{
 				free(data);
 				
-				if (errSource)
+				if (_errSource)
 				{
-					dispatch_source_cancel(errSource);
-					errSource = nil;
+					dispatch_source_cancel(_errSource);
+					_errSource = nil;
 				}
 			}
 		});
 		
-		dispatch_source_set_event_handler(outSource, ^{
-			unsigned long	size = dispatch_source_get_data(outSource);
+		dispatch_source_set_event_handler(_outSource, ^{
+			unsigned long	size = dispatch_source_get_data(_outSource);
 			void			*data = malloc(size);
 			ssize_t			res;
 			
@@ -308,17 +308,17 @@ void catch_signal(int sig);
 			{
 				free(data);
 				
-				if (outSource)
+				if (_outSource)
 				{
-					dispatch_source_cancel(outSource);
-					outSource = nil;
+					dispatch_source_cancel(_outSource);
+					_outSource = nil;
 				}
 			}
 		});
 		
 		// Activate sources
-		dispatch_resume(errSource);
-		dispatch_resume(outSource);
+		dispatch_resume(_errSource);
+		dispatch_resume(_outSource);
 
 		// Build tor task
 		_task = [[NSTask alloc] init];
@@ -348,11 +348,11 @@ void catch_signal(int sig);
 		// Check the existence of the hostname file
 		NSString *htname = [configuration realPath:[[configuration torDataPath] stringByAppendingPathComponent:@"hidden/hostname"]];
 		
-		testTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, mainQueue);
+		_testTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _localQueue);
 		
-		dispatch_source_set_timer(testTimer, DISPATCH_TIME_NOW, 1000000000L, 0);
+		dispatch_source_set_timer(_testTimer, DISPATCH_TIME_NOW, 1000000000L, 0);
 		
-		dispatch_source_set_event_handler(testTimer, ^{
+		dispatch_source_set_event_handler(_testTimer, ^{
 			
 			FILE *f = fopen([htname UTF8String], "r");
 			
@@ -385,8 +385,8 @@ void catch_signal(int sig);
 						[configuration setSelfAddress:_hidden];
 						
 						// Cancel ourself
-						dispatch_source_cancel(testTimer);
-						testTimer = 0;
+						dispatch_source_cancel(_testTimer);
+						_testTimer = 0;
 						
 						// Inform of the change
 						_running = YES;
@@ -400,13 +400,13 @@ void catch_signal(int sig);
 		});
 		
 		// Start timer
-		dispatch_resume(testTimer);
+		dispatch_resume(_testTimer);
 	});
 }
 
 - (void)stop
 {
-	dispatch_async(mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		if (!_running)
 			return;
@@ -426,19 +426,17 @@ void catch_signal(int sig);
 		}
 		
 		// Close error pipe handling
-		if (errSource)
+		if (_errSource)
 		{
-			dispatch_source_cancel(errSource);
-			
-			errSource = 0;
+			dispatch_source_cancel(_errSource);
+			_errSource = nil;
 		}
 		
 		// Close output pipe handling
-		if (outSource)
+		if (_outSource)
 		{
-			dispatch_source_cancel(outSource);
-			
-			outSource = 0;
+			dispatch_source_cancel(_outSource);
+			_outSource = nil;
 		}
 		
 
@@ -446,11 +444,10 @@ void catch_signal(int sig);
 		_hidden = nil;
 		
 		// Kill timer
-		if (testTimer)
+		if (_testTimer)
 		{
-			dispatch_source_cancel(testTimer);
-			
-			testTimer = 0;
+			dispatch_source_cancel(_testTimer);
+			_testTimer = nil;
 		}
 	});
 }
@@ -459,7 +456,7 @@ void catch_signal(int sig);
 {
 	__block BOOL result = NO;
 	
-	dispatch_sync(mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		result = _running;
 	});
 	
@@ -477,7 +474,7 @@ void catch_signal(int sig);
 {
 	__block NSString *result = nil;
 	
-	dispatch_sync(mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		
 		if (_hidden)
 			result = [[NSString alloc] initWithString:_hidden];
