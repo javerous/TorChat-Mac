@@ -809,7 +809,7 @@
 		E81FD9E711E7259B000614D5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = SourceMac;
 			};
 			buildConfigurationList = E81FD9EA11E7259B000614D5 /* Build configuration list for PBXProject "TorChat" */;
@@ -1115,6 +1115,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_IDENTITY = "Developer ID Application: Julien-Pierre Averous";
+				COMBINE_HIDPI_IMAGES = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PREFIX_HEADER = TorChat/TorChat_Prefix.pch;
@@ -1135,6 +1136,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_IDENTITY = "Developer ID Application: Julien-Pierre Averous";
+				COMBINE_HIDPI_IMAGES = YES;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PREFIX_HEADER = TorChat/TorChat_Prefix.pch;
 				INFOPLIST_FILE = "TorChat/TorChat-Info.plist";
