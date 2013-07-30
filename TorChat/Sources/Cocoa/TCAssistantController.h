@@ -1,7 +1,7 @@
 /*
  *  TCAssistantController.h
  *
- *  Copyright 2012 Avérous Julien-Pierre
+ *  Copyright 2013 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
