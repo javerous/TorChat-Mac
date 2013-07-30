@@ -104,10 +104,6 @@
 
 
 /* Config */
-"conf_err_no_name" = "Can't open configuration file because no name was given.";
-"conf_err_cant_open" = "Can't open the configuration file.";
-"conf_err_parse" = "Can't parse the configuration file.";
-"conf_err_content" = "The configuration file contain bad data.";
 "conf_download" = "Downloads";
 
 
@@ -204,13 +200,10 @@
 
 
 /* Core - File Send */
-"core_fsend_err_cant_open" = "Can't open the file to send.";
-"core_fsend_err_cant_seek" = "Can't seek in the file to send.";
-"core_fsend_err_cant_tell" = "Can't tell the file to send.";
-
+"core_filesend_error" = "Can't open file for sending.";
 
 /* Core - File Receive */
-"core_frec_err_cant_open" = "Can't open file to receive incoming file.";
+"core_filereceive_error" = "Can't open file to receive incoming file.";
 
 
 /* Core - Socket */

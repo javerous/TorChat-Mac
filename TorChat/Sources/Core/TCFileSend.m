@@ -69,28 +69,18 @@
 		
 		if (!_file)
 			return nil;
-		//throw std::string("core_fsend_err_cant_open");
-#warning Remove this localized string.
 		
 		// -- Compute the file size --
 		long tl;
 		
 		if (fseek(_file, 0, SEEK_END) < 0)
 			return nil;
-//		throw std::string("core_fsend_err_cant_seek");
-#warning Remove this localized string.
-
 		
 		if ((tl = ftell(_file)) < 0)
 			return nil;
-		//throw std::string("core_fsend_err_cant_tell");
-#warning Remove this localized string.
 
 		if (fseek(_file, 0, SEEK_SET) < 0)
 			return nil;
-		
-			//throw std::string("core_fsend_err_cant_seek");
-#warning Remove this localized string.
 
 		_fileSize = (uint64_t)tl;
 		

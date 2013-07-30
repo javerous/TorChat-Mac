@@ -106,9 +106,6 @@
 		if (!filepath)
 			return nil;
 		
-		//throw "conf_err_no_name";
-#warning FIXME: remove localized string.
-		
 		NSFileManager	*mng = [NSFileManager defaultManager];
 		NSString		*npath;
 		NSData			*data = nil;
@@ -120,12 +117,7 @@
 			filepath = npath;
 		
 		if (!filepath)
-		{
-			//throw "conf_err_cant_open";
-#warning FIXME: remove localized string.
-
 			return nil;
-		}
 		
 #if defined(PROXY_ENABLED) && PROXY_ENABLED
 		_proxy = NULL;
@@ -142,9 +134,6 @@
 			
 			if (!data)
 				return nil;
-				//throw "conf_err_cant_open";
-#warning FIXME: remove localized string.
-
 		}
 		
 		// Load config
@@ -881,14 +870,8 @@
 	if (!content)
 		return nil;
 	
-	//throw "conf_err_parse";
-#warning FIXME: remove localized string.
-	
 	if ([content isKindOfClass:[NSDictionary class]] == NO)
 		return nil;
-
-	//throw "conf_err_content";
-#warning FIXME: remove localized string.
 
 	return content;
 }

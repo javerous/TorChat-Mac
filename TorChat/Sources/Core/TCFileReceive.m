@@ -86,8 +86,6 @@
 			
 			if (!_file)
 				return nil;
-			//throw std::string("core_frec_err_cant_open");
-#warning Remove this localized string.
 		}
 		else
 		{
@@ -113,8 +111,6 @@
 					
 					if (!_file)
 						return nil;
-					//throw std::string("core_frec_err_cant_open");
-#warning Remove this localized string.
 					break;
 				}
 				
