@@ -153,7 +153,7 @@
 	}
 	
 	// Check the MD5
-	NSString *md5 = createMD5(bytes, (size_t)(chunkSize));
+	NSString *md5 = hashMD5([NSData dataWithBytesNoCopy:(void *)bytes length:chunkSize freeWhenDone:NO]);
 	
 	if ([md5 isEqualToString:hash])
 	{

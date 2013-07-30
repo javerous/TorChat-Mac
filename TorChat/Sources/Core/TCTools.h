@@ -28,8 +28,8 @@
 BOOL doAsyncSocket(int sock);
 
 // == Hash ==
-NSString *	createMD5(const void *data, size_t size);
+NSString *	hashMD5(NSData *data);
 
 // == Encode ==
-NSString *	createEncodeBase64(const void *data, size_t size);
-BOOL		createDecodeBase64(NSString *data, size_t *osize, void **odata);
+NSString *	encodeBase64(NSData *data);
+NSData *	decodeBase64(NSString *base64);
