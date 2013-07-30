@@ -863,8 +863,7 @@ static char gMainQueueContext;
 				
 				if (!file)
 				{
-					[self _error:tcbuddy_error_send_file info:@"io_error" contextObj:filepath fatal:NO];
-#warning FIXME: localize 'io_error'.
+					[self _error:tcbuddy_error_send_file info:@"core_filesend_error" contextObj:filepath fatal:NO];
 					return;
 				}
 				
@@ -1304,8 +1303,7 @@ static char gMainQueueContext;
 	
 	if (!file)
 	{
-		[self _error:tcbuddy_error_receive_file info:@"io_error" fatal:NO];
-#warning FIXME; localize 'io_error'
+		[self _error:tcbuddy_error_receive_file info:@"core_filereceive_error" fatal:NO];
 		return;
 	}
 	
