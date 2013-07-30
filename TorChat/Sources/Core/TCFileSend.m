@@ -147,7 +147,7 @@
 		*fileOffset = (uint64_t)tl;
 	
 	// Return the chunk MD5.
-	return createMD5(bytes, sz);
+	return hashMD5([NSData dataWithBytesNoCopy:bytes length:sz freeWhenDone:NO]);
 }
 
 - (void)setNextChunkOffset:(uint64_t)offset
