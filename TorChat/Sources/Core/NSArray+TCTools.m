@@ -48,6 +48,9 @@
 	{
 		id object = [self objectAtIndex:i];
 		
+		if ([object isKindOfClass:[NSString class]])
+			object = [object dataUsingEncoding:NSUTF8StringEncoding];
+		
 		if ([object isKindOfClass:[NSData class]] == NO)
 			continue;
 		
@@ -59,6 +62,5 @@
 	
 	return result;
 }
-
 
 @end

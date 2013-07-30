@@ -59,7 +59,7 @@
 	
 	// > Buddies
 	BOOL					_buddiesLoaded;
-	std::vector<TCBuddy *>	_buddies;
+	NSMutableArray			*_buddies;
 	
 	// > Config
 	id <TCConfig>			_config;
@@ -136,6 +136,7 @@
 
 		// Containers.
 		_clients = [[NSMutableArray alloc] init];
+		_buddies = [[NSMutableArray alloc] init];
 	}
 	
 	return self;
@@ -150,15 +151,8 @@
 		[client stop];
 
 	// Stop buddies
-	size_t i, cnt = _buddies.size();
-	
-	for (i = 0; i < cnt; i++)
-	{
-		_buddies[i]->stop();
-		_buddies[i]->release();
-	}
-	
-	_buddies.clear();
+	for (TCBuddy *buddy in _buddies)
+		[buddy stop];
 }
 
 
@@ -186,29 +180,26 @@
 			for (i = 0; i < cnt; i++)
 			{
 				NSDictionary	*item = sbuddies[i];
-				TCBuddy			*buddy = new TCBuddy(_config, [item[TCConfigBuddyAlias] UTF8String], [item[TCConfigBuddyAddress] UTF8String], [item[TCConfigBuddyNotes] UTF8String]);
-				
+				TCBuddy			*buddy = [[TCBuddy alloc] initWithConfiguration:_config alias:item[TCConfigBuddyAlias] address:item[TCConfigBuddyAddress] notes:item[TCConfigBuddyNotes]];
+								
 				// Check blocked status
 				[self _checkBlocked:buddy];
 				
 				// Add to list
-				_buddies.push_back(buddy);
+				[_buddies addObject:buddy];
 				
 				// Notify
-				[self _notify:tcctrl_notify_buddy_new info:@"core_ctrl_note_new_buddy" context:buddy];
+				[self _notify:tcctrl_notify_buddy_new info:@"core_ctrl_note_new_buddy" context:(__bridge TCObject *)buddy];
 			}
 			
 			// -- Check that we are on the buddy list --
-			bool				found = false;
-			const std::string	self_address = [[_config selfAddress] UTF8String];
+			BOOL		found = NO;
+			NSString	*selfAddress = [_config selfAddress];
 			
-			cnt = _buddies.size();
 			
-			for (i = 0; i < cnt; i++)
+			for (TCBuddy	*buddy in _buddies)
 			{
-				TCBuddy	*buddy = _buddies[i];
-				
-				if (buddy->address().content().compare(self_address) == 0)
+				if ([[buddy address] isEqualToString:selfAddress])
 				{
 					found = true;
 					break;
@@ -216,7 +207,7 @@
 			}
 			
 			if (!found)
-				[self addBuddy:[_config localized:@"core_ctrl_myself"] address:@(self_address.c_str())];
+				[self addBuddy:[_config localized:@"core_ctrl_myself"] address:selfAddress];
 			
 			// -- Buddy are loaded --
 			_buddiesLoaded = true;
@@ -318,23 +309,15 @@
 				return;
 			
 			// (Re)start buddy (start do nothing if already started)
-			size_t i, cnt = cnt = _buddies.size();
-			
-			for (i = 0; i < cnt; i++)
-				_buddies[i]->keepAlive();
+			for (TCBuddy *buddy in _buddies)
+				[buddy keepAlive];
 			
 		});
 		dispatch_resume(_timer);
 		
 		// -- Start buddies --
-		size_t i, cnt = _buddies.size();
-		
-		for (i = 0; i < cnt; i++)
-		{
-			TCBuddy	*buddy = _buddies[i];
-			
-			buddy->start();
-		}
+		for (TCBuddy *buddy in _buddies)
+			[buddy start];
 		
 		// Give the status
 		[self setStatus:_mstatus];
@@ -371,10 +354,8 @@
 		[_clients removeAllObjects];
 		
 		// Stop buddies
-		size_t i, cnt = _buddies.size();
-		
-		for (i = 0; i < cnt; i++)
-			_buddies[i]->stop();
+		for (TCBuddy *buddy in _buddies)
+			[buddy stop];
 		
 		// Notify
 		[self _notify:tcctrl_notify_stoped info:@"core_ctrl_note_stoped"];
@@ -408,14 +389,8 @@
 		else
 		{
 			// Give this status to buddy list
-			size_t i, cnt = cnt = _buddies.size();
-			
-			for (i = 0; i < cnt; i++)
-			{
-				TCBuddy	*buddy = _buddies[i];
-				
-				buddy->sendStatus(status);
-			}
+			for (TCBuddy *buddy in _buddies)
+				[buddy sendStatus:status];
 		}
 	});
 }
@@ -446,14 +421,8 @@
 		[_config setProfileAvatar:_profileAvatar];
 		
 		// Give this avatar to buddy list
-		size_t i, cnt = cnt = _buddies.size();
-		
-		for (i = 0; i < cnt; i++)
-		{
-			TCBuddy	*buddy = _buddies[i];
-			
-			buddy->sendAvatar(_profileAvatar);
-		}
+		for (TCBuddy *buddy in _buddies)
+			[buddy sendAvatar:_profileAvatar];
 		
 		// Notify
 		[self _notify:tcctrl_notify_profile_avatar info:@"core_ctrl_note_profile_avatar" context:(__bridge TCObject *)_profileAvatar];
@@ -489,20 +458,11 @@
 		[_config setProfileName:name];
 		
 		// Give this name to buddy list
-		size_t		i, cnt = cnt = _buddies.size();
-		TCString	*pname = new TCString([_profileName UTF8String]);
-
-		for (i = 0; i < cnt; i++)
-		{
-			TCBuddy *buddy = _buddies[i];
-			
-			buddy->sendProfileName(pname);
-		}
+		for (TCBuddy *buddy in _buddies)
+			[buddy sendProfileName:_profileName];
 		
 		// Notify
-		[self _notify:tcctrl_notify_profile_name info:@"core_ctrl_note_profile_name" context:pname];
-		
-		pname->release();
+		[self _notify:tcctrl_notify_profile_name info:@"core_ctrl_note_profile_name" context:(__bridge TCObject *)_profileName];
 	});
 }
 
@@ -532,20 +492,11 @@
 		[_config setProfileText:text];
 		
 		// Give this text to buddy list
-		size_t		i, cnt = cnt = _buddies.size();
-		TCString	*ptext = new TCString([_profileText UTF8String]);
+		for (TCBuddy *buddy in _buddies)
+			[buddy sendProfileText:_profileText];
 
-		for (i = 0; i < cnt; i++)
-		{
-			TCBuddy	*buddy = _buddies[i];
-			
-			buddy->sendProfileText(ptext);
-		}
-		
 		// Notify
-		[self _notify:tcctrl_notify_profile_text info:@"core_ctrl_note_profile_name" context:ptext];
-		
-		ptext->release();
+		[self _notify:tcctrl_notify_profile_text info:@"core_ctrl_note_profile_name" context:(__bridge TCObject *)_profileText];
 	});
 }
 
@@ -577,7 +528,7 @@
 	if (!comment)
 		comment = @"";
 	
-	TCBuddy *buddy = new TCBuddy(_config, [name UTF8String], [address UTF8String], [comment UTF8String]);
+	TCBuddy *buddy = [[TCBuddy alloc] initWithConfiguration:_config alias:name address:address notes:comment];
 	
     dispatch_async(_mainQueue, ^{
         
@@ -585,13 +536,13 @@
 		[self _checkBlocked:buddy];
 		
         // Add to the buddy list
-        _buddies.push_back(buddy);
+		[_buddies addObject:buddy];
 		
 		// Notify
-		[self _notify:tcctrl_notify_buddy_new info:@"core_ctrl_note_new_buddy" context:buddy];
+		[self _notify:tcctrl_notify_buddy_new info:@"core_ctrl_note_new_buddy" context:(__bridge TCObject *)buddy];
 		
         // Start it
-        buddy->start();
+		[buddy start];
 		
 		// Save to config
 		[_config addBuddy:address alias:name notes:comment];
@@ -600,22 +551,24 @@
 
 - (void)removeBuddy:(NSString *)address
 {
+	if (!address)
+		return;
+	
 	dispatch_async(_mainQueue, ^{
 		
-		size_t	i, cnt = _buddies.size();
+		NSUInteger	i, cnt = [_buddies count];
 		
 		// Search the buddy
 		for (i = 0; i < cnt; i++)
 		{
-			if (_buddies[i]->address().content().compare([address UTF8String]) == 0)
+			TCBuddy *buddy = _buddies[i];
+			
+			if ([[buddy address] isEqualToString:address])
 			{
 				// Stop and release
-				TCBuddy	*buddy = _buddies[i];
+				[buddy stop];
 				
-				buddy->stop();
-				buddy->release();
-				
-				_buddies.erase(_buddies.begin() + (ptrdiff_t)i);
+				[_buddies removeObjectAtIndex:i];
 				
 				// Save to config
 				[_config removeBuddy:address];
@@ -629,25 +582,19 @@
 - (TCBuddy *)buddyWithAddress:(NSString *)address
 {
 	if (!address)
-		return NULL;
+		return nil;
 	
     __block TCBuddy *result = NULL;
 	
 	dispatch_sync(_mainQueue, ^{
         
-        size_t i, cnt = cnt = _buddies.size();
-		
-		for (i = 0; i < cnt; i++)
+		for (TCBuddy *buddy in _buddies)
 		{
-			TCBuddy	*buddy = _buddies[i];
-            
-            if (buddy->address().content().compare([address UTF8String]) == 0)
-            {
-                result = buddy;
-				result->retain();
-				
-                break;
-            }
+			if ([[buddy address] isEqualToString:address])
+			{
+				result = buddy;
+				break;
+			}
         }
     });
 	
@@ -656,21 +603,18 @@
 
 - (TCBuddy *)buddyWithRandom:(NSString *)random
 {
+	if (!random)
+		return nil;
+	
     __block TCBuddy *result = NULL;
 	
 	dispatch_sync(_mainQueue, ^{
-        
-        size_t i, cnt = cnt = _buddies.size();
 		
-		for (i = 0; i < cnt; i++)
+		for (TCBuddy *buddy in _buddies)
 		{
-			TCBuddy	*buddy = _buddies[i];
-            
-            if (buddy->brandom().content().compare([random UTF8String]) == 0)
+			if ([[buddy random] isEqualToString:random])
             {
                 result = buddy;
-				result->retain();
-				
                 break;
             }
         }
@@ -694,13 +638,9 @@
 	// Mark the buddy as blocked
 	if (result)
 	{
-		TCBuddy * buddy = [self buddyWithAddress:address];
+		TCBuddy *buddy = [self buddyWithAddress:address];
 		
-		if (buddy)
-		{
-			buddy->setBlocked(true);
-			buddy->release();
-		}
+		[buddy setBlocked:YES];
 	}
 	
 	return result;
@@ -720,13 +660,9 @@
 	// Mark the buddy as un-blocked
 	if (result)
 	{
-		TCBuddy * buddy = [self buddyWithAddress:address];
+		TCBuddy *buddy = [self buddyWithAddress:address];
 		
-		if (buddy)
-		{
-			buddy->setBlocked(false);
-			buddy->release();
-		}
+		[buddy setBlocked:NO];
 	}
 	
 	return result;
@@ -805,17 +741,17 @@
 	NSArray	*blocked = [_config blockedBuddies];
 	size_t	i, cnt = [blocked count];
 	
-	buddy->setBlocked(false);
+	[buddy setBlocked:NO];
 	
 	// Search
 	for (i = 0; i < cnt; i++)
 	{
-		const std::string address = [blocked[i] UTF8String];
+		NSString *address = blocked[i];
 		
-		if (address.compare(buddy->address().content()) == 0)
+		if ([address isEqualToString:[buddy address]])
 		{
-			buddy->setBlocked(true);
-			buddy->stop();
+			[buddy setBlocked:YES];
+			[buddy stop];
 			break;
 		}
 	}
