@@ -27,7 +27,7 @@
 #import "TCMainController.h"
 #import "TCBuddiesController.h"
 
-#include "TCConfig.h"
+#import "TCConfig.h"
 
 
 

@@ -29,7 +29,7 @@
 #import "TCCocoaConfig.h"
 #import "TCLogsController.h"
 
-#include "TCBuffer.h"
+#import "TCBuffer.h"
 
 
 
