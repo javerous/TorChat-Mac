@@ -33,12 +33,12 @@
 
 @interface TCButton ()
 {
-    NSImage					*image;
-	NSImage					*rollOverImage;
+    NSImage					*_image;
+	NSImage					*_rollOverImage;
 	
-	BOOL					isOver;
+	BOOL					_isOver;
 		
-	NSTrackingRectTag		tracking;
+	NSTrackingRectTag		_tracking;
 }
 
 - (void)_configure;
@@ -102,8 +102,8 @@
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidResizeNotification object:nil];
 
-	if (tracking)
-		 [self removeTrackingRect:tracking];
+	if (_tracking)
+		 [self removeTrackingRect:_tracking];
 }
 
 
@@ -115,25 +115,25 @@
 
 - (void)viewWillMoveToWindow:(NSWindow *)newWindow
 {
-    if ([self window] && tracking)
+    if ([self window] && _tracking)
 	{
-        [self removeTrackingRect:tracking];
-		tracking = 0;
+        [self removeTrackingRect:_tracking];
+		_tracking = 0;
     }
 }
 
 - (void)removeFromSuperview
 {
-	if (tracking)
-		[self removeTrackingRect:tracking];
+	if (_tracking)
+		[self removeTrackingRect:_tracking];
 
 	[super removeFromSuperview];
 }
 
 - (void)removeFromSuperviewWithoutNeedingDisplay
 {
-	if (tracking)
-		[self removeTrackingRect:tracking];
+	if (_tracking)
+		[self removeTrackingRect:_tracking];
 
 	[super removeFromSuperviewWithoutNeedingDisplay];
 }
@@ -157,9 +157,10 @@
 	}
 	else
 	{
-		if (tracking)
-			[self removeTrackingRect:tracking];
-		tracking = 0;
+		if (_tracking)
+			[self removeTrackingRect:_tracking];
+		
+		_tracking = 0;
 		
 		[[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidResizeNotification object:nil];
 	}
@@ -179,7 +180,8 @@
 
 - (void)mouseEntered:(NSEvent *)theEvent
 {	
-	isOver = YES;
+	_isOver = YES;
+	
 	[self _loadImage];
 	
 	id <TCButtonDelegate> delegate = _delegate;
@@ -190,7 +192,8 @@
 
 - (void)mouseExited:(NSEvent *)theEvent
 {
-	isOver = NO;
+	_isOver = NO;
+	
 	[self _loadImage];
 	
 	id <TCButtonDelegate> delegate = _delegate;
@@ -208,7 +211,7 @@
 
 - (void)setImage:(NSImage *)img
 {
-	image = img;
+	_image = img;
 	
 	[self _loadImage];
 }
@@ -220,7 +223,7 @@
 
 - (void)setRollOverImage:(NSImage *)img
 {
-	rollOverImage = img;
+	_rollOverImage = img;
 	
 	[self _loadImage];
 }
@@ -247,18 +250,18 @@
 	trackingRect.origin = NSZeroPoint;
 	trackingRect.size = NSMakeSize(trackingRect.size.width, trackingRect.size.height);
 	
-	if (tracking)
-		[self removeTrackingRect:tracking];
+	if (_tracking)
+		[self removeTrackingRect:_tracking];
 		
-	tracking = [self addTrackingRect:trackingRect owner:self userData:nil assumeInside:NO];
+	_tracking = [self addTrackingRect:trackingRect owner:self userData:nil assumeInside:NO];
 }
 
 - (void)_loadImage
 {
-	if (isOver)
-		[super setImage:rollOverImage];
+	if (_isOver)
+		[super setImage:_rollOverImage];
 	else
-		[super setImage:image];
+		[super setImage:_image];
 }
 
 @end
