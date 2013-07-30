@@ -192,9 +192,9 @@
 	}
 }
 
-- (void)assistantCallback:(NSValue *)content
+- (void)assistantCallback:(id)content
 {
-	TCCocoaConfig *conf = static_cast<TCCocoaConfig *>([content pointerValue]);
+	TCCocoaConfig *conf = (TCCocoaConfig *)content;
 	
 	// Hold the config
 	_configuration = conf;

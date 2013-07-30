@@ -157,12 +157,7 @@
 		*fileOffset = (uint64_t)tl;
 	
 	// Return the chunk MD5.
-	std::string *md5 = createMD5(bytes, sz);
-	NSString	*md5String = [[NSString alloc] initWithCString:md5->c_str() encoding:NSASCIIStringEncoding];
-	
-	delete md5;
-	
-	return md5String;
+	return createMD5(bytes, sz);
 }
 
 - (void)setNextChunkOffset:(uint64_t)offset
