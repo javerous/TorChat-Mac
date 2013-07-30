@@ -172,10 +172,7 @@
 			conf = [[TCCocoaConfig alloc] initWithFile:path];
 			
 			if (!conf)
-			{
-				[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_read_file"];
-#warning FIXME: fix 'ac_err_read_file' to remove arg.
-			}
+				[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_read_file", path];
 		}
 	}
 

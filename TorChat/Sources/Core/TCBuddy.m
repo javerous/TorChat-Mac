@@ -962,10 +962,6 @@ static char gMainQueueContext;
 */
 #pragma mark - Content
 
-- (NSArray *)messages
-{
-}
-
 - (NSString *)profileText
 {
 	__block NSString * result = NULL;
