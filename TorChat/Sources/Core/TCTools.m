@@ -60,32 +60,33 @@ BOOL doAsyncSocket(int sock)
 #pragma mark - Hash
 
 // == Build the MD5 of a chunk of data ==
-NSString *	createMD5(const void *data, size_t size)
+NSString * hashMD5(NSData *data)
 {
-#warning XXX check this code.
-	CC_MD5_CTX			state;
-	unsigned char	digest[CC_MD5_DIGEST_LENGTH];
-	int				di = 0;
-	int				rc;
-	char			hex[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-	
-	static char		temp[100];
+	static char hex[] = "0123456789abcdef";
 
+	CC_MD5_CTX	state;
+	uint8_t		digest[CC_MD5_DIGEST_LENGTH];
+	char		string[CC_MD5_DIGEST_LENGTH * 2 + 1];
+	unsigned	i = 0;
+
+	// Compute MD5.
 	CC_MD5_Init(&state);
 
-	CC_MD5_Update(&state, data, size);
+	CC_MD5_Update(&state, [data bytes], (CC_LONG)[data length]);
 	
 	CC_MD5_Final(digest, &state);
 	
-	for (di = 0, rc = 0; di < CC_MD5_DIGEST_LENGTH; ++di, rc += 2)
+	// Create hexa representaion.
+	for (i = 0; i < CC_MD5_DIGEST_LENGTH; i++)
 	{
-		temp[rc] = hex[digest[di] >> 4];
-		temp[rc + 1] = hex[digest[di] & 15];
+		string[i * 2] = hex[(digest[i] >> 4) & 0xf];
+		string[(i * 2) + 1] = hex[digest[i] & 0xf];
 	}
 	
-	temp[rc] = '\0';
+	string[i * 2] = '\0';
 
-	return [[NSString alloc] initWithCString:temp encoding:NSASCIIStringEncoding];
+	// Return result.
+	return [[NSString alloc] initWithCString:string encoding:NSASCIIStringEncoding];
 }
 
 
@@ -96,14 +97,11 @@ NSString *	createMD5(const void *data, size_t size)
 #pragma mark - Encode
 
 // == Encode to base 64 a chunk of data ==
-NSString * createEncodeBase64(const void *data, size_t size)
+NSString * encodeBase64(NSData *data)
 {
-#warning XXX check this code.
-
-	if (!data || size == 0)
-		return NULL;
+	if ([data length] == 0)
+		return nil;
 	
-	NSData			*input = [[NSData alloc] initWithBytesNoCopy:(void *)data length:size];
 	NSData			*output = nil;
 	SecTransformRef transform;
 	
@@ -114,23 +112,25 @@ NSString * createEncodeBase64(const void *data, size_t size)
         return nil;
 	
 	// Execute transform.
-    if (SecTransformSetAttribute(transform, kSecTransformInputAttributeName, (__bridge CFTypeRef)input, NULL))
+    if (SecTransformSetAttribute(transform, kSecTransformInputAttributeName, (__bridge CFTypeRef)data, NULL))
         output = (__bridge_transfer NSData *)SecTransformExecute(transform, NULL);
 	
-	  CFRelease(transform);
+	CFRelease(transform);
+	
+	if (!output)
+		return nil;
 	
 	// Create string.
 	return [[NSString alloc] initWithData:output encoding:NSASCIIStringEncoding];
 }
 
 // == Decode from base 64 a chunk of data ==
-BOOL createDecodeBase64(NSString *input, size_t *osize, void **odata)
+NSData * decodeBase64(NSString *base64)
 {
-#warning XXX check this code.
-
-	if (!odata || !osize)
-		return false;
+	if ([base64 length] == 0)
+		return nil;
 	
+	NSData			*input = [base64 dataUsingEncoding:NSASCIIStringEncoding];
 	NSData			*output = nil;
 	SecTransformRef transform;
 	
@@ -138,7 +138,7 @@ BOOL createDecodeBase64(NSString *input, size_t *osize, void **odata)
 	transform = SecDecodeTransformCreate(kSecBase64Encoding, NULL);
 	
     if (!transform)
-        return NO;
+        return nil;
 	
 	// Execute transform.
     if (SecTransformSetAttribute(transform, kSecTransformInputAttributeName, (__bridge CFTypeRef)input, NULL))
@@ -146,14 +146,5 @@ BOOL createDecodeBase64(NSString *input, size_t *osize, void **odata)
 	
 	CFRelease(transform);
 	
-	// Create result.
-	if (!output)
-		return NO;
-	
-	*odata = malloc([output length]);
-	*osize = [output length];
-	
-	memcpy(*odata, [output bytes], [output length]);
-	
-    return YES;
+    return output;
 }
