@@ -29,8 +29,7 @@
 
 @class TCSocket;
 @class TCBuffer;
-
-class TCInfo;
+@class TCInfo;
 
 
 
