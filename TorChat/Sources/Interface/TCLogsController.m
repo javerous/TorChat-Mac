@@ -89,19 +89,19 @@
 
 @interface TCLogsController ()
 {
-	NSMutableDictionary		*logs;
-	NSMutableArray			*klogs;
-	NSMutableDictionary		*kalias;
+	NSMutableDictionary		*_logs;
+	NSMutableArray			*_klogs;
+	NSMutableDictionary		*_kalias;
 	
-	NSMutableArray			*allLogs;			
-	NSString				*allLastKey;
+	NSMutableArray			*_allLogs;
+	NSString				*_allLastKey;
 	
-	NSMutableDictionary		*observers;
+	NSMutableDictionary		*_observers;
 	
-	NSCell					*separatorCell;
-	NSCell					*textCell;
+	NSCell					*_separatorCell;
+	NSCell					*_textCell;
 	
-	dispatch_queue_t		mainQueue;
+	dispatch_queue_t		_localQueue;
 }
 
 - (void)addLogEntry:(NSString *)key withContent:(NSString *)text;
@@ -142,23 +142,23 @@
     if (self)
 	{
 		// Build a working queue
-		mainQueue = dispatch_queue_create("com.torchat.cocoa.logs.main", DISPATCH_QUEUE_SERIAL);
+		_localQueue = dispatch_queue_create("com.torchat.cocoa.logs.local", DISPATCH_QUEUE_SERIAL);
 		
 		// Build logs containers
-		logs = [[NSMutableDictionary alloc] init];
-		klogs = [[NSMutableArray alloc] init];
-		kalias = [[NSMutableDictionary alloc] init];
-		allLogs = [[NSMutableArray alloc] init];
+		_logs = [[NSMutableDictionary alloc] init];
+		_klogs = [[NSMutableArray alloc] init];
+		_kalias = [[NSMutableDictionary alloc] init];
+		_allLogs = [[NSMutableArray alloc] init];
 		
-		[klogs addObject:TCLogsAllKey];
-		[klogs addObject:TCLogsGlobalKey];
+		[_klogs addObject:TCLogsAllKey];
+		[_klogs addObject:TCLogsGlobalKey];
 		
 		// Build observers container
-		observers = [[NSMutableDictionary alloc] init];
+		_observers = [[NSMutableDictionary alloc] init];
 		
 		// Build cell
-		separatorCell = [[TCCellSeparator alloc] initTextCell:@""];
-		textCell = [[NSTextFieldCell alloc] initTextCell:@""];
+		_separatorCell = [[TCCellSeparator alloc] initTextCell:@""];
+		_textCell = [[NSTextFieldCell alloc] initTextCell:@""];
 		
 		// Load the nib
 		[[NSBundle mainBundle] loadNibNamed:@"LogsWindow" owner:self topLevelObjects:nil];
@@ -188,12 +188,13 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
+#warning FIXME: klog should duplicated in main queue. using another queue there is not a good idea.
 	if (aTableView == _entriesView)
 	{
 		__block NSUInteger cnt = 0;
 		
-		dispatch_sync(mainQueue, ^{
-			cnt = [klogs count];
+		dispatch_sync(_localQueue, ^{
+			cnt = [_klogs count];
 		});
 		
 		return (NSInteger)cnt;
@@ -203,20 +204,20 @@
 		NSInteger			kindex = [_entriesView selectedRow];
 		__block NSUInteger	cnt = 0;
 		
-		dispatch_sync(mainQueue, ^{
+		dispatch_sync(_localQueue, ^{
 			
-			if (kindex < 0 || kindex >= [klogs count])
+			if (kindex < 0 || kindex >= [_klogs count])
 				return;
 			
-			NSString *key = [klogs objectAtIndex:(NSUInteger)kindex];
+			NSString *key = [_klogs objectAtIndex:(NSUInteger)kindex];
 			
 			if ([key isEqualToString:TCLogsAllKey])
 			{
-				cnt = [allLogs count];
+				cnt = [_allLogs count];
 			}
 			else if ([key isEqualToString:TCLogsGlobalKey])
 			{
-				cnt = [[logs objectForKey:TCLogsGlobalKey] count];
+				cnt = [[_logs objectForKey:TCLogsGlobalKey] count];
 			}
 			else if ([key isEqualToString:TCLogsSeparatorKey])
 			{
@@ -224,7 +225,7 @@
 			}
 			else
 			{
-				cnt = [[logs objectForKey:key] count];
+				cnt = [[_logs objectForKey:key] count];
 			}
 		});
 		
@@ -240,19 +241,19 @@
 	{
 		__block NSString *str =  nil;
 		
-		dispatch_sync(mainQueue, ^{
+		dispatch_sync(_localQueue, ^{
 			
-			if (rowIndex < 0 || rowIndex > [klogs count])
+			if (rowIndex < 0 || rowIndex > [_klogs count])
 				return ;
 			
-			NSString *key = [klogs objectAtIndex:(NSUInteger)rowIndex];
+			NSString *key = [_klogs objectAtIndex:(NSUInteger)rowIndex];
 			
 			if ([key isEqualToString:TCLogsAllKey])
 				str = NSLocalizedString(@"logs_all_logs", @"");
 			else if ([key isEqualToString:TCLogsGlobalKey])
 				str = NSLocalizedString(@"logs_global_logs", @"");
 			else
-				str = [kalias objectForKey:key];
+				str = [_kalias objectForKey:key];
 		});
 		
 		return str;
@@ -262,19 +263,19 @@
 		NSInteger			kindex = [_entriesView selectedRow];
 		__block NSString	*str =  nil;
 		
-		dispatch_sync(mainQueue, ^{
+		dispatch_sync(_localQueue, ^{
 			
-			if (kindex < 0 || kindex >= [klogs count])
+			if (kindex < 0 || kindex >= [_klogs count])
 				return;
 			
-			NSString *key = [klogs objectAtIndex:(NSUInteger)kindex];
+			NSString *key = [_klogs objectAtIndex:(NSUInteger)kindex];
 			
 			if ([key isEqualToString:TCLogsAllKey])
 			{
-				if (rowIndex < 0 || rowIndex >= [allLogs count])
+				if (rowIndex < 0 || rowIndex >= [_allLogs count])
 					return;
 				
-				NSDictionary *item = [allLogs objectAtIndex:(NSUInteger)rowIndex];
+				NSDictionary *item = [_allLogs objectAtIndex:(NSUInteger)rowIndex];
 				
 				str = [item objectForKey:TCLogsContentKey];
 				
@@ -283,12 +284,12 @@
 					if ([str isEqualToString:TCLogsGlobalKey])
 						str = NSLocalizedString(@"logs_global_logs", @"");
 					else
-						str = [NSString stringWithFormat:@"%@ (%@)", [kalias objectForKey:str], str];
+						str = [NSString stringWithFormat:@"%@ (%@)", [_kalias objectForKey:str], str];
 				}
 			}
 			else if ([key isEqualToString:TCLogsGlobalKey])
 			{
-				NSArray *array = [logs objectForKey:TCLogsGlobalKey];
+				NSArray *array = [_logs objectForKey:TCLogsGlobalKey];
 				
 				if (rowIndex < 0 || rowIndex >= [array count])
 					return;
@@ -300,7 +301,7 @@
 			}
 			else
 			{
-				NSArray *array = [logs objectForKey:key];
+				NSArray *array = [_logs objectForKey:key];
 				
 				if (rowIndex < 0 || rowIndex >= [array count])
 					return;
@@ -327,20 +328,20 @@
 	{
 		__block BOOL result = NO;
 		
-		dispatch_sync(mainQueue, ^{
+		dispatch_sync(_localQueue, ^{
 			
 			NSInteger	kindex = [_entriesView selectedRow];
 			NSString	*key;
 			
-			if (kindex < 0 || kindex >= [klogs count])
+			if (kindex < 0 || kindex >= [_klogs count])
 				return;
 			
-			key = [klogs objectAtIndex:(NSUInteger)kindex];
+			key = [_klogs objectAtIndex:(NSUInteger)kindex];
 						
 			if ([key isEqualToString:TCLogsAllKey] == NO)
 				return;
 			
-			NSDictionary *item = [allLogs objectAtIndex:(NSUInteger)rowIndex];
+			NSDictionary *item = [_allLogs objectAtIndex:(NSUInteger)rowIndex];
 			
 			result = [[item objectForKey:TCLogsTitleKey] boolValue];
 		});
@@ -357,14 +358,14 @@
 	{
 		__block CGFloat result = [tableView rowHeight];
 		
-		dispatch_sync(mainQueue, ^{
+		dispatch_sync(_localQueue, ^{
 			
 			NSString *key;
 			
-			if (rowIndex < 0 || rowIndex >= [klogs count])
+			if (rowIndex < 0 || rowIndex >= [_klogs count])
 				return;
 			
-			key = [klogs objectAtIndex:(NSUInteger)rowIndex];
+			key = [_klogs objectAtIndex:(NSUInteger)rowIndex];
 			
 			if ([key isEqualToString:TCLogsSeparatorKey])
 				result = 2;
@@ -380,21 +381,21 @@
 {
 	if (tableView == _entriesView)
 	{
-		__block NSCell *result = textCell;
+		__block NSCell *result = _textCell;
 		
-		dispatch_sync(mainQueue, ^{
+		dispatch_sync(_localQueue, ^{
 
 			NSString *key;
 			
-			if (rowIndex < 0 || rowIndex >= [klogs count])
+			if (rowIndex < 0 || rowIndex >= [_klogs count])
 				return;
 			
-			key = [klogs objectAtIndex:(NSUInteger)rowIndex];
+			key = [_klogs objectAtIndex:(NSUInteger)rowIndex];
 		
 			if ([key isEqualToString:TCLogsSeparatorKey])
-				result = separatorCell;
+				result = _separatorCell;
 			else
-				result = textCell;
+				result = _textCell;
 		});
 		
 		return result;
@@ -414,14 +415,14 @@
 	{
 		__block BOOL result = YES;
 		
-		dispatch_sync(mainQueue, ^{
+		dispatch_sync(_localQueue, ^{
 			
 			NSString *key;
 			
-			if (rowIndex < 0 || rowIndex >= [klogs count])
+			if (rowIndex < 0 || rowIndex >= [_klogs count])
 				return;
 			
-			key = [klogs objectAtIndex:(NSUInteger)rowIndex];
+			key = [_klogs objectAtIndex:(NSUInteger)rowIndex];
 		
 			if ([key isEqualToString:TCLogsSeparatorKey])
 				result = NO;
@@ -433,22 +434,22 @@
 	{
 		__block BOOL result = YES;
 		
-		dispatch_sync(mainQueue, ^{
+		dispatch_sync(_localQueue, ^{
 			
 			NSInteger	kindex = [_entriesView selectedRow];
 			NSString	*key;
 			
-			if (kindex < 0 || kindex > [klogs count])
+			if (kindex < 0 || kindex > [_klogs count])
 				return;
 			
-			key = [klogs objectAtIndex:(NSUInteger)kindex];
+			key = [_klogs objectAtIndex:(NSUInteger)kindex];
 			
 			if ([key isEqualToString:TCLogsAllKey])
 			{
-				if (rowIndex < 0 || rowIndex >= [allLogs count])
+				if (rowIndex < 0 || rowIndex >= [_allLogs count])
 					return;
 				
-				NSDictionary *item = [allLogs objectAtIndex:(NSUInteger)rowIndex];
+				NSDictionary *item = [_allLogs objectAtIndex:(NSUInteger)rowIndex];
 				
 				result = ![[item objectForKey:TCLogsTitleKey] boolValue];
 			}
@@ -483,26 +484,26 @@
 - (void)addLogEntry:(NSString *)key withContent:(NSString *)text
 {
 	// Hold it
-	dispatch_async(mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
-		NSMutableArray *array = [logs objectForKey:key];
+		NSMutableArray *array = [_logs objectForKey:key];
 		
 		// Build logs array for this key
 		if (!array)
 		{
 			array = [[NSMutableArray alloc] init];
 			
-			[logs setObject:array forKey:key];
+			[_logs setObject:array forKey:key];
 			
 			// Add the if not global (already added)
 			if ([key isEqualToString:TCLogsGlobalKey] == NO)
 			{
 				// Add separator
-				if ([klogs count] == 2)
-					[klogs addObject:TCLogsSeparatorKey];
+				if ([_klogs count] == 2)
+					[_klogs addObject:TCLogsSeparatorKey];
 				
 				// Add the object
-				[klogs addObject:key];
+				[_klogs addObject:key];
 			}
 		}
 		
@@ -519,34 +520,34 @@
 		
 		// -- Add the item in the full log --
 		// > Remove the first item (and item until we reach a title) if more than 2000
-		if ([allLogs count] > 2000)
+		if ([_allLogs count] > 2000)
 		{
-			[allLogs removeObjectAtIndex:0];
+			[_allLogs removeObjectAtIndex:0];
 			
-			while ([allLogs count] > 0)
+			while ([_allLogs count] > 0)
 			{
-				NSNumber *title = [[allLogs objectAtIndex:0] objectForKey:TCLogsTitleKey];
+				NSNumber *title = [[_allLogs objectAtIndex:0] objectForKey:TCLogsTitleKey];
 				
 				if ([title boolValue])
 					break;
 				else
-					[allLogs removeObjectAtIndex:0];
+					[_allLogs removeObjectAtIndex:0];
 			}
 		}
 		
 		// > Add the key as title if different than the previous one
-		if (!allLastKey || [allLastKey isEqualToString:key] == NO)
+		if (!_allLastKey || [_allLastKey isEqualToString:key] == NO)
 		{
-			allLastKey = key;
+			_allLastKey = key;
 			
-			[allLogs addObject:[NSDictionary dictionaryWithObjectsAndKeys:key, TCLogsContentKey, [NSNumber numberWithBool:YES], TCLogsTitleKey, nil]];
+			[_allLogs addObject:[NSDictionary dictionaryWithObjectsAndKeys:key, TCLogsContentKey, [NSNumber numberWithBool:YES], TCLogsTitleKey, nil]];
 		}
 		
 		// > Add
-		[allLogs addObject:[NSDictionary dictionaryWithObject:text forKey:TCLogsContentKey]];
+		[_allLogs addObject:[NSDictionary dictionaryWithObject:text forKey:TCLogsContentKey]];
 		
 		// Give the item to the observer
-		NSDictionary	*observer = [observers objectForKey:key];
+		NSDictionary	*observer = [_observers objectForKey:key];
 		id				oobject = [observer objectForKey:@"object"];
 		SEL				oselector = [[observer objectForKey:@"selector"] pointerValue];
 		
@@ -573,8 +574,8 @@
 	va_end(ap);
 	
 	// Add the alias
-	dispatch_async(mainQueue, ^{
-		[kalias setObject:alias forKey:address];
+	dispatch_async(_localQueue, ^{
+		[_kalias setObject:alias forKey:address];
 	});
 	
 	// Add the rendered log
@@ -636,13 +637,13 @@
 	// Build obserever item
 	NSDictionary *observer = [[NSDictionary alloc] initWithObjectsAndKeys:object, @"object", [NSValue valueWithPointer:selector], @"selector", nil];
 	
-	dispatch_async(mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		// Add it for this address
-		[observers setObject:observer forKey:key];
+		[_observers setObject:observer forKey:key];
 		
 		// Give the current content
-		NSArray *items = [logs objectForKey:key];
+		NSArray *items = [_logs objectForKey:key];
 		
 		if (items)
 			[object performSelector:selector withObject:items];
@@ -651,8 +652,8 @@
 
 - (void)removeObserverForKey:(NSString *)key
 {	
-	dispatch_async(mainQueue, ^{
-		[observers removeObjectForKey:key];
+	dispatch_async(_localQueue, ^{
+		[_observers removeObjectForKey:key];
 	});
 }
 

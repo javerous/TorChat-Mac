@@ -38,7 +38,7 @@
 
 @interface TCPrefController ()
 {
-	TCPrefView	*currentView;
+	TCPrefView	*_currentView;
 }
 
 - (void)loadViewIdentifier:(NSString *)identifier animated:(BOOL)animated;
@@ -158,8 +158,8 @@
 		[[_mainWindow toolbar] setSelectedItemIdentifier:identifier];
 	
 	// Save current view config
-	currentView.config = config;
-	[currentView saveConfig];
+	_currentView.config = config;
+	[_currentView saveConfig];
 	
 	// Load new view config
 	view.config = config;
@@ -182,19 +182,19 @@
 		{
 			[[NSAnimationContext currentContext] setDuration:0.125];
 			
-			[[[_mainWindow contentView] animator] replaceSubview:currentView with:view];
+			[[[_mainWindow contentView] animator] replaceSubview:_currentView with:view];
 			[[_mainWindow animator] setFrame:rect display:YES];
 		}
 		[NSAnimationContext endGrouping];
 	}
 	else
 	{
-		[currentView removeFromSuperview];
+		[_currentView removeFromSuperview];
 		[[_mainWindow contentView] addSubview:view];
 	}
 	
 	// Hold the current view
-	currentView = view;
+	_currentView = view;
 }
 
 
@@ -223,9 +223,9 @@
 {
 	id <TCConfig> config = [[TCMainController sharedController] config];
 
-	currentView.config = config;
+	_currentView.config = config;
 	
-	[currentView saveConfig];
+	[_currentView saveConfig];
 }
 
 @end
