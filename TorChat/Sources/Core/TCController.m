@@ -45,7 +45,7 @@
 {
 	// -- Vars --
 	// > Main Queue
-	dispatch_queue_t		_mainQueue;
+	dispatch_queue_t		_localQueue;
 	
 	// > Timer
 	dispatch_source_t		_timer;
@@ -129,9 +129,10 @@
 		_profileText = [config profileText];
 		
 		// Alloc queue
-		_mainQueue = dispatch_queue_create("com.torchat.core.controller.main", DISPATCH_QUEUE_SERIAL);
+		_localQueue = dispatch_queue_create("com.torchat.core.controller.local", DISPATCH_QUEUE_SERIAL);
 		_socketQueue = dispatch_queue_create("com.torchat.core.controller.socket", DISPATCH_QUEUE_SERIAL);
-
+		_delegateQueue = dispatch_queue_create("com.torchat.core.controller.delegate", DISPATCH_QUEUE_SERIAL);
+		
 		// Containers.
 		_clients = [[NSMutableArray alloc] init];
 		_buddies = [[NSMutableArray alloc] init];
@@ -162,7 +163,7 @@
 
 - (void)start
 {
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		if (_running)
 			return;
@@ -263,7 +264,7 @@
 			
 			if (csock == -1)
 			{
-				dispatch_async(_mainQueue, ^{
+				dispatch_async(_localQueue, ^{
 					[self _error:tcctrl_error_serv_accept info:@"core_ctrl_err_accept" fatal:YES];
 				});
 			}
@@ -272,7 +273,7 @@
 				// Make the client async
 				if (!doAsyncSocket(csock))
 				{
-					dispatch_async(_mainQueue, ^{
+					dispatch_async(_localQueue, ^{
 						[self _error:tcctrl_error_serv_accept info:@"core_ctrl_err_async" fatal:YES];
 					});
 					
@@ -296,7 +297,7 @@
 		
 		
 		// -- Build a timer to keep alive buddies (start or sendStatus) --
-		_timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _mainQueue);
+		_timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _localQueue);
 		
 		// Each 120s
 		dispatch_source_set_timer(_timer, DISPATCH_TIME_NOW, 120000000000L, 0);
@@ -330,7 +331,7 @@
 
 - (void)stop
 {
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		// Check if we are running
 		if (!_running)
@@ -366,7 +367,7 @@
 - (void)setStatus:(tccontroller_status)status
 {
 	// Give the status
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		// Notify
 		if (status != _mstatus)
@@ -391,7 +392,7 @@
 {
 	__block tccontroller_status result = tccontroller_available;
 	
-	dispatch_sync(_mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		result = _mstatus;
 	});
 	
@@ -405,7 +406,7 @@
 		return;
 	
 	// Set the avatar
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		_profileAvatar = avatar;
 		
@@ -425,7 +426,7 @@
 {
 	__block TCImage *result = NULL;
 	
-	dispatch_sync(_mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		
 		if (_profileAvatar)
 			result = [_profileAvatar copy];
@@ -441,7 +442,7 @@
 		return;
 	
 	// Set the avatar
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		// Hold the name
 		_profileName = name;
@@ -462,7 +463,7 @@
 {
 	__block NSString *result = NULL;
 	
-	dispatch_sync(_mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		result = _profileName;
 	});
 	
@@ -475,7 +476,7 @@
 		return;
 	
 	// Set the avatar
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		// Hold the text
 		_profileText = text;
@@ -496,7 +497,7 @@
 {
 	__block NSString *result = NULL;
 	
-	dispatch_sync(_mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		result = _profileText;
 	});
 	
@@ -522,7 +523,7 @@
 	
 	TCBuddy *buddy = [[TCBuddy alloc] initWithConfiguration:_config alias:name address:address notes:comment];
 	
-    dispatch_async(_mainQueue, ^{
+    dispatch_async(_localQueue, ^{
         
 		// Check blocked status
 		[self _checkBlocked:buddy];
@@ -546,7 +547,7 @@
 	if (!address)
 		return;
 	
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		NSUInteger	i, cnt = [_buddies count];
 		
@@ -578,7 +579,7 @@
 	
     __block TCBuddy *result = NULL;
 	
-	dispatch_sync(_mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
         
 		for (TCBuddy *buddy in _buddies)
 		{
@@ -600,7 +601,7 @@
 	
     __block TCBuddy *result = NULL;
 	
-	dispatch_sync(_mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		
 		for (TCBuddy *buddy in _buddies)
 		{
@@ -620,7 +621,7 @@
 {
 	__block BOOL result = false;
 	
-	dispatch_sync(_mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		
 		// Add the address to the configuration
 		if ([_config addBlockedBuddy:address] == YES)
@@ -642,7 +643,7 @@
 {
 	__block BOOL result = false;
 	
-	dispatch_sync(_mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		
 		// Remove the address from the configuration
 		if ([_config removeBlockedBuddy:address] == YES)
@@ -668,7 +669,7 @@
 		return;
 	
 	// Give the error
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		[self _sendEvent:info];
 	});
 	
@@ -699,7 +700,7 @@
 	if (!client || !info)
 		return;
 	
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		[self _sendEvent:info];
 	});
 }
@@ -718,7 +719,7 @@
 
 - (void)_checkBlocked:(TCBuddy *)buddy
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	if (!_config)
 		return;
@@ -746,7 +747,7 @@
 
 - (void)_error:(tcctrl_info)code info:(NSString *)info fatal:(BOOL)fatal
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	TCInfo *err = [TCInfo infoOfKind:tcinfo_error infoCode:code infoString:[_config localized:info]];
 
@@ -758,7 +759,7 @@
 
 - (void)_error:(tcctrl_info)code info:(NSString *)info context:(id)ctx fatal:(BOOL)fatal
 {
-	// > mainQueue <
+	// > localQueue <
 		
 	TCInfo *err = [TCInfo infoOfKind:tcinfo_error infoCode:code infoString:[_config localized:info] context:ctx];
 	
@@ -770,7 +771,7 @@
 
 - (void)_notify:(tcctrl_info)notice info:(NSString *)info
 {
-	// > mainQueue <
+	// > localQueue <
 		
 	TCInfo *ifo = [TCInfo infoOfKind:tcinfo_info infoCode:notice infoString:[_config localized:info]];
 
@@ -779,7 +780,7 @@
 
 - (void)_notify:(tcctrl_info)notice info:(NSString *)info context:(id)ctx
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	TCInfo *ifo = [TCInfo infoOfKind:tcinfo_info infoCode:notice infoString:[_config localized:info] context:ctx];
 
@@ -788,7 +789,7 @@
 
 - (void)_sendEvent:(TCInfo *)info
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	if (!info)
 		return;
