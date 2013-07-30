@@ -36,7 +36,7 @@
 #pragma mark - Network
 
 // == Use async I/O on a socket ==
-bool doAsyncSocket(int sock)
+BOOL doAsyncSocket(int sock)
 {
 	// Set as non blocking
 	int arg = fcntl(sock, F_GETFL, NULL);
@@ -54,98 +54,13 @@ bool doAsyncSocket(int sock)
 }
 
 
-
-/*
-** Strings
-*/
-#pragma mark - Strings
-
-// == Explode a string in an array, using a delimiter ==
-std::vector<std::string> * createExplode(const std::string &_s, const std::string &e)
-{
-    std::string                 s = _s;
-	std::vector<std::string>    *ret = new std::vector<std::string>;
-	
-	size_t	iPos = s.find(e, 0);
-	size_t	iPit = e.length();
-	
-	while (iPos != s.npos)
-	{
-		ret->push_back(s.substr(0, iPos));
-		
-		s.erase(0, iPos + iPit);
-		
-		iPos = s.find(e, 0);
-	}
-
-	ret->push_back(s);
-	
-	return ret;
-}
-
-// == Glue items in an array with a delimiter ==
-std::string * createJoin(const std::vector<std::string> &items, const std::string &glue)
-{
-	std::string	*result = new std::string;
-	size_t		i, cnt = items.size();
-	
-	if (cnt == 0)
-		return result;
-	
-	for (i = 0; i < cnt - 1; i++)
-	{
-		result->append(items[i]);
-		result->append(glue);
-	}
-	
-	if (cnt > 0)
-		result->append(items[cnt - 1]);
-	
-	return result;
-}
-
-std::string * createJoin(const std::vector<std::string> &items, size_t start, const std::string &glue)
-{
-	std::string	*result = new std::string;
-	size_t		i, cnt = items.size();
-	
-	if (cnt == 0)
-		return result;
-	
-	for (i = start; i < cnt - 1; i++)
-	{
-		result->append(items[i]);
-		result->append(glue);
-	}
-	
-	if (cnt > 0)
-		result->append(items[cnt - 1]);
-	
-	return result;
-}
-
-// == Replace all occurrence of a string by another one ==
-std::string * createReplaceAll(const std::string &s, const std::string &o, const std::string &r)
-{
-	std::string				*ret = new std::string(s);
-	
-	for (std::string::size_type i = ret->find(o, 0); i != std::string::npos; i = ret->find(o, i + r.size()))
-	{
-		ret->replace(i, o.size(), r);
-	}
-
-	return ret;
-}
-
-
-
 /*
 ** Hash
 */
 #pragma mark - Hash
 
 // == Build the MD5 of a chunk of data ==
-std::string * createMD5(const void *data, size_t size)
+NSString *	createMD5(const void *data, size_t size)
 {
 #warning XXX check this code.
 	CC_MD5_CTX			state;
@@ -170,7 +85,7 @@ std::string * createMD5(const void *data, size_t size)
 	
 	temp[rc] = '\0';
 
-	return new std::string(temp);
+	return [[NSString alloc] initWithCString:temp encoding:NSASCIIStringEncoding];
 }
 
 
@@ -181,7 +96,7 @@ std::string * createMD5(const void *data, size_t size)
 #pragma mark - Encode
 
 // == Encode to base 64 a chunk of data ==
-std::string * createEncodeBase64(const void *data, size_t size)
+NSString * createEncodeBase64(const void *data, size_t size)
 {
 #warning XXX check this code.
 
@@ -205,20 +120,17 @@ std::string * createEncodeBase64(const void *data, size_t size)
 	  CFRelease(transform);
 	
 	// Create string.
-	std::string *result = new std::string((char *)[output bytes], (size_t)[output length]);
-	
-    return result;
+	return [[NSString alloc] initWithData:output encoding:NSASCIIStringEncoding];
 }
 
 // == Decode from base 64 a chunk of data ==
-bool createDecodeBase64(const std::string &data, size_t *osize, void **odata)
+BOOL createDecodeBase64(NSString *input, size_t *osize, void **odata)
 {
 #warning XXX check this code.
 
 	if (!odata || !osize)
 		return false;
 	
-	NSString		*input = [[NSString alloc] initWithCString:data.c_str() encoding:NSASCIIStringEncoding];
 	NSData			*output = nil;
 	SecTransformRef transform;
 	
@@ -226,7 +138,7 @@ bool createDecodeBase64(const std::string &data, size_t *osize, void **odata)
 	transform = SecDecodeTransformCreate(kSecBase64Encoding, NULL);
 	
     if (!transform)
-        return nil;
+        return NO;
 	
 	// Execute transform.
     if (SecTransformSetAttribute(transform, kSecTransformInputAttributeName, (__bridge CFTypeRef)input, NULL))
@@ -236,12 +148,12 @@ bool createDecodeBase64(const std::string &data, size_t *osize, void **odata)
 	
 	// Create result.
 	if (!output)
-		return false;
+		return NO;
 	
 	*odata = malloc([output length]);
 	*osize = [output length];
 	
 	memcpy(*odata, [output bytes], [output length]);
 	
-    return true;
+    return YES;
 }

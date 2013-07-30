@@ -124,7 +124,7 @@ size_t memsearch(const uint8_t *token, size_t token_sz, const uint8_t *data, siz
 	if (size == 0 || !bytes)
 		return;
 	
-	tc_item	*item = static_cast<tc_item *>(malloc(sizeof(tc_item)));
+	tc_item	*item = (tc_item *)(malloc(sizeof(tc_item)));
 	
 	// Set data
 	if (copy)
@@ -161,7 +161,7 @@ size_t memsearch(const uint8_t *token, size_t token_sz, const uint8_t *data, siz
 	if (size == 0 || !bytes)
 		return;
 	
-	tc_item	*item = static_cast<tc_item *>(malloc(sizeof(tc_item)));
+	tc_item	*item = (tc_item *)(malloc(sizeof(tc_item)));
 	
 	// Set data
 	if (copy)

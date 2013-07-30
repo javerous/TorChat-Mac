@@ -25,28 +25,15 @@
 #ifndef _TCTOOLS_H_
 # define _TCTOOLS_H_
 
-#include <string>
-#include <vector>
-
 
 // == Network ==
-bool						doAsyncSocket(int sock);
-
-// == Strings ==
-std::vector<std::string> *	createExplode(const std::string &s, const std::string &e);
-
-std::string *				createJoin(const std::vector<std::string> &items, const std::string &glue);
-std::string *				createJoin(const std::vector<std::string> &items, size_t start, const std::string &glue);
-
-std::string *				createReplaceAll(const std::string &s, const std::string &o, const std::string &r);
-
-// == Data ==
+BOOL		doAsyncSocket(int sock);
 
 // == Hash ==
-std::string *				createMD5(const void *data, size_t size);
+NSString *	createMD5(const void *data, size_t size);
 
 // == Encode ==
-std::string *				createEncodeBase64(const void *data, size_t size);
-bool						createDecodeBase64(const std::string &data, size_t *osize, void **odata);
+NSString *	createEncodeBase64(const void *data, size_t size);
+BOOL		createDecodeBase64(NSString *data, size_t *osize, void **odata);
 
 #endif

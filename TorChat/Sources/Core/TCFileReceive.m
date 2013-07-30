@@ -157,9 +157,9 @@
 	}
 	
 	// Check the MD5
-	std::string *md5 = createMD5(bytes, (size_t)(chunkSize));
+	NSString *md5 = createMD5(bytes, (size_t)(chunkSize));
 	
-	if (md5->compare([hash UTF8String]) == 0)
+	if ([md5 isEqualToString:hash])
 	{
 		// Write content
 		fseek(_file, (long)start, SEEK_SET);
@@ -177,9 +177,6 @@
 		*offset = start;
 		result = NO;
 	}
-	
-	// Clean
-	delete md5;
 	
 	// Return write result
 	return result;
