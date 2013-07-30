@@ -39,7 +39,7 @@
 #import "TCDropButton.h"
 
 #include "TCController.h"
-#include "TCBuddy.h"
+#import "TCBuddy.h"
 #include "TCString.h"
 #include "TCImage.h"
 #include "TCNumber.h"
@@ -593,7 +593,7 @@
 			
 		case tcctrl_notify_buddy_new:
 		{
-			TCBuddy			*buddy = dynamic_cast<TCBuddy *>(info->context());
+			TCBuddy			*buddy = (__bridge TCBuddy *)info->context();
 			TCCocoaBuddy	*obuddy = [[TCCocoaBuddy alloc] initWithBuddy:buddy];
 			
 			dispatch_async(dispatch_get_main_queue(), ^{

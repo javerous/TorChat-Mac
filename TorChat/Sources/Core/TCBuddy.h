@@ -21,23 +21,10 @@
  */
 
 
+#import "TCConfig.h"
 
-#ifndef _TCBUDDY_H_
-# define _TCBUDDY_H_
+#import "TCController.h"
 
-# include <dispatch/dispatch.h>
-
-# include <string>
-# include <vector>
-# include <map>
-
-# import "TCController.h"
-# include "TCInfo.h"
-
-# import "TCSocket.h"
-# include "TCObject.h"
-
-# import "TCConfig.h"
 
 
 /*
@@ -45,13 +32,11 @@
 */
 #pragma mark - Forward
 
-class TCBuddy;
-@class TCFileReceive;
-@class TCFileSend;
-class TCString;
+@class TCBuddy;
+@class TCSocket;
 @class TCImage;
-class TCArray;
-class TCNumber;
+
+class TCInfo;
 
 
 
@@ -86,7 +71,7 @@ typedef enum
 	tcbuddy_notify_version,
 	tcbuddy_notify_client,
 	tcbuddy_notify_blocked,
-		
+	
 	tcbuddy_notify_file_send_start,
 	tcbuddy_notify_file_send_running,
 	tcbuddy_notify_file_send_finish,
@@ -136,15 +121,19 @@ typedef enum
 	tcbuddy_channel_in,		// Connection received by TControlClient
 } tcbuddy_channel;
 
-// == Notify block ==
-typedef void (^tcbuddy_event)(TCBuddy *buddy, const TCInfo *info);
 
-// == Iterators Alias ==
-typedef std::map<std::string, TCFileReceive *>::iterator		frec_iterator;
-typedef std::map<std::string, TCFileSend *>::iterator			fsend_iterator;
 
-typedef std::map<std::string, TCFileReceive *>::const_iterator	frec_const_iterator;
-typedef std::map<std::string, TCFileSend *>::const_iterator		fsend_const_iterator;
+/*
+** TCBuddyDelegate
+*/
+#pragma mark - TCBuddyDelegate
+
+@protocol TCBuddyDelegate <NSObject>
+
+- (void)buddy:(TCBuddy *)buddy event:(const TCInfo *)info;
+
+@end
+
 
 
 
@@ -153,191 +142,65 @@ typedef std::map<std::string, TCFileSend *>::const_iterator		fsend_const_iterato
 */
 #pragma mark - TCBuddy
 
-// == Class ==
-class TCBuddy : public TCObject
-{
-public:
-	
-	// -- Instance --
-	TCBuddy(id <TCConfig>_config, const std::string &alias, const std::string &address, const std::string &notes);
-	~TCBuddy();
-	
-	// -- Run --
-	void start();
-	void stop();
-	
-	bool isRunning();
-	bool isPonged();
-	void keepAlive();
-	
-	
-	// -- Delegate --
-	void setDelegate(dispatch_queue_t queue, tcbuddy_event event);
-	
-	// -- Accessors --
-	TCString *			alias();
-	void				setAlias(TCString *name);
-	
-	TCString *			notes();
-	void				setNotes(TCString *notes);
-	
-	bool				blocked();
-	void				setBlocked(bool blocked);
-		
-	tcbuddy_status		status();
+@interface TCBuddy : NSObject
 
-	TCString & address() const	{ return *maddress; }
-	TCString & brandom() const	{ return *mrandom; }
-	
-	// -- Files Info --
-	std::string		fileFileName(const std::string &uuid, tcbuddy_file_way way);
-	std::string		fileFilePath(const std::string &uuid, tcbuddy_file_way way);
-	bool			fileStat(const std::string &uuid, tcbuddy_file_way way, uint64_t &done, uint64_t &total);
-	void			fileCancel(const std::string &uuid, tcbuddy_file_way way);
-    
-	// -- Send Command --
-    void            sendStatus(tccontroller_status status);
-	void			sendAvatar(TCImage *avatar);
-	void			sendProfileName(TCString *name);
-	void			sendProfileText(TCString *text);
-	void			sendMessage(TCString *message);
-	void			sendFile(TCString *filepath);
-	
-	// -- Action --
-	void			startHandshake(TCString *rrandom, tccontroller_status status, TCImage *avatar, TCString *name, TCString *text);
-	void			setInputConnection(TCSocket *sock);
+// -- Properties --
+@property (weak, atomic) id <TCBuddyDelegate> delegate;
 
-	// -- Content --
-	TCArray *		getMessages();
-	TCString *		getProfileText();
-	TCImage *		getProfileAvatar();
-	
-	TCString *		getProfileName();		// Current profile name
-	TCString *		getLastProfileName();	// Last know profile name
-	TCString *		getFinalName();			// Best name representation (alias / profile name / last know profile name)
+// -- Instance --
+- (id)initWithConfiguration:(id <TCConfig>)configuration alias:(NSString *)alias address:(NSString *)address notes:(NSString *)notes;
 
+// -- Run --
+- (void)start;
+- (void)stop;
 
-private:
-	// -- TcSocket Delegate --
-	virtual void	socketOperationAvailable(TCSocket *socket, tcsocket_operation operation, int tag, void *content, size_t size);
-	virtual void	socketError(TCSocket *socket, TCInfo *err);
-	virtual void	socketRunPendingWrite(TCSocket *socket);
-	
-	// -- TCParser Command --
-	virtual void	doStatus(const std::string &status);
-	virtual void	doMessage(const std::string &message);
-	virtual void	doVersion(const std::string &version);
-	virtual void	doClient(const std::string &client);
-	virtual void	doProfileText(const std::string &text);
-	virtual void	doProfileName(const std::string &name);
-	virtual void	doProfileAvatar(const std::string &bitmap);
-	virtual void	doProfileAvatarAlpha(const std::string &bitmap);
-	virtual void	doAddMe();
-	virtual void	doRemoveMe();
-	virtual void	doFileName(const std::string &uuid, const std::string &fsize, const std::string &bsize, const std::string &filename);
-	virtual void	doFileData(const std::string &uuid, const std::string &start, const std::string &hash, const std::string &data);
-	virtual void	doFileDataOk(const std::string &uuid, const std::string &start);
-	virtual void	doFileDataError(const std::string &uuid, const std::string &start);
-	virtual void	doFileStopSending(const std::string &uuid);
-	virtual void	doFileStopReceiving(const std::string &uuid);
-	
-	virtual void	parserError(TCInfo *err);
+- (BOOL)isRunning;
+- (BOOL)isPonged;
+- (void)keepAlive;
 
-	// -- Send Low Command --
-	void			_sendPing();
-	void            _sendPong(TCString *random);
-	void			_sendVersion();
-	void			_sendClient();
-	void			_sendProfileName(TCString *name);
-	void			_sendProfileText(TCString *text);
-	void			_sendAvatar(TCImage *avatar);
-	void			_sendAddMe();
-	void			_sendRemoveMe();
-	void            _sendStatus(tccontroller_status status);
-	void			_sendMessage(const std::string &message);
-	void			_sendFileName(TCFileSend *file);
-	void			_sendFileData(TCFileSend *file);
-	void			_sendFileDataOk(const std::string &uuid, uint64_t start);
-	void			_sendFileDataError(const std::string &uuid, uint64_t start);
-	void			_sendFileStopSending(const std::string &uuid);
-	void			_sendFileStopReceiving(const std::string &uuid);
-	
-	// -- Send Command Data --
-	bool			_sendCommand(const std::string &command, tcbuddy_channel channel = tcbuddy_channel_out);
-	bool			_sendCommand(const std::string &command, const std::vector<std::string> &data, tcbuddy_channel channel = tcbuddy_channel_out);
-	bool			_sendCommand(const std::string &command, const std::string &data, tcbuddy_channel channel = tcbuddy_channel_out);
-	bool			_sendCommand(const std::string &command, TCString *data, tcbuddy_channel channel = tcbuddy_channel_out);
-	bool			_sendData(const void *data, size_t size, tcbuddy_channel channel = tcbuddy_channel_out);
-	
-	// -- Network Helper --
-	void			_startSocks();
-	void			_loadData();
-	void			_connectedSocks();
-	void			_runPendingWrite();
-	void			_runPendingFileWrite();
-	
-	// -- Helper --
-	void			_error(tcbuddy_info code, const std::string &info, bool fatal);
-	void			_error(tcbuddy_info code, const std::string &info, TCObject *ctx, bool fatal);
-	void			_error(tcbuddy_info code, const std::string &info, TCInfo *serr, bool fatal);
-	
-	void			_notify(tcbuddy_info notice);
-	void			_notify(tcbuddy_info notice, const std::string &info);
-	void			_notify(tcbuddy_info notice, const std::string &info, TCObject *ctx);
-	
-	void			_send_event(TCInfo *info);
-	
-	TCNumber *		_status();
-	
-	// -- Vars --
-	// > Config
-	id <TCConfig>				config;
-	
-	// > Status
-	int							socksstate;
-	bool						running;
-	bool						ponged;
-	bool						pongSent;
-	
-	bool						mblocked;
-	
-	// > Property
-	TCString *					malias;
-	TCString *					maddress;
-	TCString *					mnotes;
-	TCString *					mrandom;
-		
-	tcbuddy_status				mstatus;
-	tccontroller_status			cstatus;
+// -- Accessors --
+- (NSString *)alias;
+- (void)setAlias:(NSString *)name;
 
-	// > Dispatch
-	dispatch_queue_t			mainQueue;
+- (NSString *)notes;
+- (void)setNotes:(NSString *)notes;
 
-	// > Socket
-	TCSocket					*inSocket;
-	TCSocket					*outSocket;
-	
-	// > Command
-	std::vector<std::string *>	bufferedCommands;
-	
-	// Delegate
-	dispatch_queue_t			nQueue;
-	tcbuddy_event				nBlock;
-			
-	// > Profile
-	TCString					*profileName;
-	TCString					*profileText;
-	TCImage						*profileAvatar;
-		
-	// > Peer
-	TCString *					peerClient;
-	TCString *					peerVersion;
+- (BOOL)blocked;
+- (void)setBlocked:(BOOL)blocked;
 
-	
-	// > File session
-	NSMutableDictionary	*freceive;
-	NSMutableDictionary	*fsend;
-};
+- (tcbuddy_status)status;
+
+- (NSString *)address;
+- (NSString *)random;
+
+// -- Files Info --
+- (NSString *)fileNameForUUID:(NSString *)uuid andWay:(tcbuddy_file_way)way;
+- (NSString *)filePathForUUID:(NSString *)uuid andWay:(tcbuddy_file_way)way;
+- (BOOL)fileStatForUUID:(NSString *)uuid way:(tcbuddy_file_way)way done:(uint64_t *)done total:(uint64_t *)total;
+- (void)fileCancelOfUUID:(NSString *)uuid way:(tcbuddy_file_way)way;
+
+// -- Send Command --
+- (void)sendStatus:(tccontroller_status)status;
+- (void)sendAvatar:(TCImage *)avatar;
+- (void)sendProfileName:(NSString *)name;
+- (void)sendProfileText:(NSString *)text;
+- (void)sendMessage:(NSString *)message;
+- (void)sendFile:(NSString *)filepath;
+
+// -- Action --
+- (void)startHandshake:(NSString *)remoteRandom status:(tccontroller_status)status avatar:(TCImage *)avatar name:(NSString *)name text:(NSString *)text;
+- (void)setInputConnection:(TCSocket *)sock;
+
+// -- Content --
+- (NSArray *)messages;
+- (NSString *)profileText;
+- (TCImage *)profileAvatar;
+
+- (NSString *)profileName;		// Current profile name
+- (NSString *)lastProfileName;	// Last know profile name
+- (NSString *)finalName;		// Best name representation (alias / profile name / last know profile name)
+
+@end
 
 
 
@@ -346,26 +209,14 @@ private:
 */
 #pragma mark - TCFileInfo
 
-class TCFileInfo : public TCObject
-{
-public:
-	// -- Constructor --
-	TCFileInfo(TCFileSend *sender);
-	TCFileInfo(TCFileReceive *receiver);
-	~TCFileInfo();
-	
-	// -- Property --
-	const std::string uuid();
-	
-	uint64_t			fileSizeCompleted();
-	uint64_t			fileSizeTotal();
-	
-	const std::string fileName();
-	const std::string filePath();
-	
-private:
-	TCFileSend		*sender;
-	TCFileReceive	*receiver;
-};
+@interface TCFileInfo : NSObject
 
-#endif
+- (NSString *)uuid;
+
+- (uint64_t)fileSizeCompleted;
+- (uint64_t)fileSizeTotal;
+
+- (NSString *)fileName;
+- (NSString *)filePath;
+
+@end

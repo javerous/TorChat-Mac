@@ -33,11 +33,10 @@
 #pragma mark - Forward
 
 @class TCController;
-@class TCImage;
-
 @class TCControlClient;
 
-class TCBuddy;
+@class TCImage;
+@class TCBuddy;
 
 
 
