@@ -32,7 +32,6 @@
 #import "TCPrefController.h"
 
 #import "TCCocoaBuddy.h"
-#include <string>
 
 
 
