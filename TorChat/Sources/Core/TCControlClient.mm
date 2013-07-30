@@ -26,11 +26,8 @@
 
 #import "TCParser.h"
 #import "TCSocket.h"
-
-#import "TCObject.h"
 #import "TCInfo.h"
 #import "TCBuddy.h"
-#import "TCString.h"
 
 
 /*
@@ -65,7 +62,7 @@
 
 // -- Helpers --
 - (void)_error:(tcctrl_info)code info:(NSString *)info fatal:(BOOL)fatal;
-- (void)_error:(tcctrl_info)code info:(NSString *)info contextObj:(TCObject *)ctx fatal:(BOOL)fatal;
+- (void)_error:(tcctrl_info)code info:(NSString *)info contextObj:(id)ctx fatal:(BOOL)fatal;
 - (void)_error:(tcctrl_info)code info:(NSString *)info contextInfo:(TCInfo *)serr fatal:(BOOL)fatal;
 
 - (void)_notify:(tcctrl_info)notice info:(NSString *)info;
@@ -423,7 +420,7 @@
 - (void)socket:(TCSocket *)socket error:(TCInfo *)error
 {
 	// Localize the info
-	error->setInfo([[_config localized:@(error->info().c_str())] UTF8String]);
+	error.infoString = [_config localized:error.infoString];
 	
 	// Fallback Error
 	[self _error:tcctrl_error_socket info:@"core_cctrl_err_socket" contextInfo:error fatal:YES];
@@ -441,31 +438,27 @@
 	// > localQueue <
 
 	TCController	*ctrl = _ctrl;
-	TCInfo			*err = new TCInfo(tcinfo_error, code, [[_config localized:info] UTF8String]);
+	TCInfo			*err = [TCInfo infoOfKind:tcinfo_error infoCode:code infoString:[_config localized:info]];
 	
 #warning Use delegate for this, no ?
 	if (ctrl)
 		[ctrl cc_error:self info:err];
-	
-	err->release();
-	
+		
 	if (fatal)
 		[self stop];
 }
 
-- (void)_error:(tcctrl_info)code info:(NSString *)info contextObj:(TCObject *)ctx fatal:(BOOL)fatal
+- (void)_error:(tcctrl_info)code info:(NSString *)info contextObj:(id)ctx fatal:(BOOL)fatal
 {
 	// > localQueue <
 
 	TCController	*ctrl = _ctrl;
-	TCInfo			*err = new TCInfo(tcinfo_error, code, [[_config localized:info] UTF8String], ctx);
+	TCInfo			*err = [TCInfo infoOfKind:tcinfo_error infoCode:code infoString:[_config localized:info] context:ctx];
 	
 #warning Use delegate for this, no ?
 	if (ctrl)
 		[ctrl cc_error:self info:err];
-	
-	err->release();
-	
+		
 	if (fatal)
 		[self stop];
 }
@@ -475,14 +468,12 @@
 	// > localQueue <
 
 	TCController	*ctrl = _ctrl;
-	TCInfo			*err = new TCInfo(tcinfo_error, code, [[_config localized:info] UTF8String], serr);
-	
+	TCInfo			*err = [TCInfo infoOfKind:tcinfo_error infoCode:code infoString:[_config localized:info] info:serr];
+
 #warning Use delegate for this, no ?
 	if (ctrl)
 		[ctrl cc_error:self info:err];
-	
-	err->release();
-	
+		
 	if (fatal)
 		[self stop];
 }
@@ -492,13 +483,11 @@
 	// > localQueue <
 	
 	TCController	*ctrl = _ctrl;
-	TCInfo			*ifo = new TCInfo(tcinfo_info, notice, [[_config localized:info] UTF8String]);
-	
+	TCInfo			*ifo = [TCInfo infoOfKind:tcinfo_info infoCode:notice infoString:[_config localized:info]];
+
 #warning Use delegate for this, no ?
 	if (ctrl)
 		[ctrl cc_notify:self info:ifo];
-	
-	ifo->release();
 }
 
 - (BOOL)_isBlocked:(NSString *)address

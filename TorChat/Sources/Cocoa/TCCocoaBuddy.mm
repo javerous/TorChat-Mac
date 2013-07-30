@@ -31,10 +31,8 @@
 #import "TCBuddiesController.h"
 
 #import "TCBuddy.h"
-#include "TCInfo.h"
-#include "TCString.h"
-#include "TCImage.h"
-#include "TCNumber.h"
+#import "TCInfo.h"
+#import "TCImage.h"
 
 
 /*
@@ -445,10 +443,10 @@ static char gMainQueueContext;
 - (void)buddy:(TCBuddy *)aBuddy event:(const TCInfo *)info
 {
 	// Add the error in the error manager
-	[[TCLogsController sharedController] addBuddyLogEntryFromAddress:[self address] alias:[self alias] andText:[NSString stringWithUTF8String:info->render().c_str()]];
+	[[TCLogsController sharedController] addBuddyLogEntryFromAddress:[self address] alias:[self alias] andText:[info render]];
 	
 	// Actions
-	switch ((tcbuddy_info)info->infoCode())
+	switch ((tcbuddy_info)info.infoCode)
 	{
 		case tcbuddy_notify_connected_tor:
 			break;
@@ -477,12 +475,12 @@ static char gMainQueueContext;
 			
 		case tcbuddy_notify_status:
 		{
-			TCNumber		*statusValue = dynamic_cast<TCNumber *>(info->context());
+			NSNumber		*statusValue = (NSNumber *)info.context;
 			NSDictionary	*uinfo;
 			NSString		*ostatus = @"";
 			
 			// Update status
-			status = (tcbuddy_status)statusValue->uint8Value();
+			status = (tcbuddy_status)[statusValue intValue];
 			
 			// Build notification info
 			uinfo = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:status] forKey:@"status"];
@@ -521,8 +519,7 @@ static char gMainQueueContext;
 			
 		case tcbuddy_notify_profile_avatar:
 		{
-			TCImage			*img = (__bridge TCImage *)(info->context());
-			NSImage			*avatar = [img imageRepresentation];
+			NSImage			*avatar = [(TCImage *)info.context imageRepresentation];
 			NSDictionary	*uinfo;
 			
 			// If no avatar, use standard user
@@ -553,14 +550,12 @@ static char gMainQueueContext;
 			
 		case tcbuddy_notify_profile_text:
 		{
-			TCString		*text = dynamic_cast<TCString *>(info->context());
-			NSString		*otext = [[NSString alloc] initWithUTF8String:text->content().c_str()];
-			NSDictionary	*uinfo = [NSDictionary dictionaryWithObject:otext forKey:@"text"];
+			NSString		*text = info.context;
+			NSDictionary	*uinfo = [NSDictionary dictionaryWithObject:text forKey:@"text"];
 			
-			profileText = otext;
+			profileText = text;
 			
 			dispatch_async(noticeQueue, ^{
-				
 				[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedTextNotification object:self userInfo:uinfo];
 			});
 			
@@ -569,14 +564,12 @@ static char gMainQueueContext;
 			
 		case tcbuddy_notify_profile_name:
 		{
-			TCString		*name = dynamic_cast<TCString *>(info->context());
-			NSString		*oname = [[NSString alloc] initWithUTF8String:name->content().c_str()];
-			NSDictionary	*uinfo = [NSDictionary dictionaryWithObject:oname forKey:@"name"];
+			NSString		*name = info.context;
+			NSDictionary	*uinfo = [NSDictionary dictionaryWithObject:name forKey:@"name"];
 			
-			profileName = oname;
+			profileName = name;
 			
 			dispatch_async(noticeQueue, ^{
-				
 				[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedNameNotification object:self userInfo:uinfo];
 			});
 			
@@ -585,26 +578,21 @@ static char gMainQueueContext;
 			
 		case tcbuddy_notify_message:
 		{
-			TCString	*message = dynamic_cast<TCString *>(info->context());
-			NSString	*omessage = [[NSString alloc] initWithUTF8String:message->content().c_str()];
-			
 			// Start a chat UI
 			[self startChatAndSelect:NO];
 			
 			// Add the message (on main queue, else the chat can be not started)
-			[[TCChatController sharedController] receiveMessage:omessage forIdentifier:[self address]];
+			[[TCChatController sharedController] receiveMessage:info.context forIdentifier:[self address]];
 			
 			break;
 		}
 			
 		case tcbuddy_notify_alias:
 		{
-			TCString        *alias = dynamic_cast<TCString *>(info->context());
-			NSString        *oalias = [NSString stringWithUTF8String:alias->content().c_str()];
-			NSDictionary    *uinfo = [NSDictionary dictionaryWithObject:oalias forKey:@"alias"];
+			NSString        *alias =info.context;
+			NSDictionary    *uinfo = [NSDictionary dictionaryWithObject:alias forKey:@"alias"];
 			
 			dispatch_async(noticeQueue, ^{
-				
 				[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedAliasNotification object:self userInfo:uinfo];
 			});
 			
@@ -620,12 +608,10 @@ static char gMainQueueContext;
 			
 		case tcbuddy_notify_blocked:
 		{
-			TCNumber		*blocked = dynamic_cast<TCNumber *>(info->context());
-			NSNumber		*oblocked = [NSNumber numberWithBool:(BOOL)blocked->uint8Value()];
-			NSDictionary	*uinfo = [NSDictionary dictionaryWithObject:oblocked forKey:@"blocked"];
+			NSNumber		*blocked = info.context;
+			NSDictionary	*uinfo = [NSDictionary dictionaryWithObject:blocked forKey:@"blocked"];
 			
 			dispatch_async(noticeQueue, ^{
-				
 				[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedBlockedNotification object:self userInfo:uinfo];
 			});
 			
@@ -634,14 +620,12 @@ static char gMainQueueContext;
 			
 		case tcbuddy_notify_version:
 		{
-			TCString        *version = dynamic_cast<TCString *>(info->context());
-			NSString        *oversion = [[NSString alloc] initWithUTF8String:version->content().c_str()];
-			NSDictionary    *uinfo = [NSDictionary dictionaryWithObject:oversion forKey:@"version"];
+			NSString        *version = info.context;
+			NSDictionary    *uinfo = [NSDictionary dictionaryWithObject:version forKey:@"version"];
 			
-			peerVersion = oversion;
+			peerVersion = version;
 			
 			dispatch_async(noticeQueue, ^{
-				
 				[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedPeerVersionNotification object:self userInfo:uinfo];
 			});
 			
@@ -650,14 +634,12 @@ static char gMainQueueContext;
 			
 		case tcbuddy_notify_client:
 		{
-			TCString        *client = dynamic_cast<TCString *>(info->context());
-			NSString        *oclient = [[NSString alloc] initWithUTF8String:client->content().c_str()];
-			NSDictionary    *uinfo = [NSDictionary dictionaryWithObject:oclient forKey:@"client"];
+			NSString        *client = info.context;
+			NSDictionary    *uinfo = [NSDictionary dictionaryWithObject:client forKey:@"client"];
 			
-			peerClient = oclient;
+			peerClient = client;
 			
 			dispatch_async(noticeQueue, ^{
-				
 				[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedPeerClientNotification object:self userInfo:uinfo];
 			});
 			
@@ -666,7 +648,7 @@ static char gMainQueueContext;
 			
 		case tcbuddy_notify_file_send_start:
 		{
-			TCFileInfo *finfo = (__bridge TCFileInfo *)(info->context());
+			TCFileInfo *finfo = (TCFileInfo *)info.context;
 			
 			if (!finfo)
 				return;
@@ -679,7 +661,7 @@ static char gMainQueueContext;
 			
 		case tcbuddy_notify_file_send_running:
 		{
-			TCFileInfo *finfo = (__bridge TCFileInfo *)(info->context());
+			TCFileInfo *finfo = (TCFileInfo *)info.context;
 			
 			if (!finfo)
 				return;
@@ -692,7 +674,7 @@ static char gMainQueueContext;
 			
 		case tcbuddy_notify_file_send_finish:
 		{
-			TCFileInfo *finfo = (__bridge TCFileInfo *)(info->context());
+			TCFileInfo *finfo = (TCFileInfo *)info.context;
 			
 			if (!finfo)
 				return;
@@ -705,7 +687,7 @@ static char gMainQueueContext;
 			
 		case tcbuddy_notify_file_send_stoped:
 		{
-			TCFileInfo *finfo = (__bridge TCFileInfo *)(info->context());
+			TCFileInfo *finfo = (TCFileInfo *)info.context;
 			
 			if (!finfo)
 				return;
@@ -718,7 +700,7 @@ static char gMainQueueContext;
 			
 		case tcbuddy_notify_file_receive_start:
 		{
-			TCFileInfo *finfo = (__bridge TCFileInfo *)(info->context());
+			TCFileInfo *finfo = (TCFileInfo *)info.context;
 			
 			if (!finfo)
 				return;
@@ -731,7 +713,7 @@ static char gMainQueueContext;
 			
 		case tcbuddy_notify_file_receive_running:
 		{
-			TCFileInfo *finfo = (__bridge TCFileInfo *)(info->context());
+			TCFileInfo *finfo = (TCFileInfo *)info.context;
 			
 			if (!finfo)
 				return;
@@ -744,7 +726,7 @@ static char gMainQueueContext;
 			
 		case tcbuddy_notify_file_receive_finish:
 		{
-			TCFileInfo *finfo = (__bridge TCFileInfo *)(info->context());
+			TCFileInfo *finfo = (TCFileInfo *)info.context;
 			
 			if (!finfo)
 				return;
@@ -757,7 +739,7 @@ static char gMainQueueContext;
 			
 		case tcbuddy_notify_file_receive_stoped:
 		{
-			TCFileInfo *finfo = (__bridge TCFileInfo *)(info->context());
+			TCFileInfo *finfo = (TCFileInfo *)info.context;
 			
 			if (!finfo)
 				return;
@@ -785,11 +767,11 @@ static char gMainQueueContext;
 			
 		case tcbuddy_error_message_offline:
 		{
-			TCString	*message = dynamic_cast<TCString *>(info->context());
+			NSString	*message = info.context;
 			NSString	*full;
 			
 			if (message)
-				full = [[NSString alloc] initWithFormat:NSLocalizedString(@"bd_error_offline", ""), [NSString stringWithUTF8String:message->content().c_str()]];
+				full = [[NSString alloc] initWithFormat:NSLocalizedString(@"bd_error_offline", ""), message];
 			else
 				full = [[NSString alloc] initWithFormat:NSLocalizedString(@"bd_error_offline", ""), @"-"];
 			
@@ -801,11 +783,11 @@ static char gMainQueueContext;
 			
 		case tcbuddy_error_message_blocked:
 		{
-			TCString	*message = dynamic_cast<TCString *>(info->context());
+			NSString	*message = (NSString *)info.context;
 			NSString	*full;
 			
 			if (message)
-				full = [[NSString alloc] initWithFormat:NSLocalizedString(@"bd_error_blocked", ""), [NSString stringWithUTF8String:message->content().c_str()]];
+				full = [[NSString alloc] initWithFormat:NSLocalizedString(@"bd_error_blocked", ""), message];
 			else
 				full = [[NSString alloc] initWithFormat:NSLocalizedString(@"bd_error_blocked", ""), @"-"];
 			
