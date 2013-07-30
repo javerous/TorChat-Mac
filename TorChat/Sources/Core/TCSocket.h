@@ -87,7 +87,7 @@ typedef enum
 @interface TCSocket : NSObject
 
 // -- Properties --
-@property (weak) id <TCSocketDelegate> delegate;
+@property (weak, atomic) id <TCSocketDelegate> delegate;
 
 // -- Instance --
 - (id)initWithSocket:(int)descriptor;

@@ -67,7 +67,7 @@
 @property (strong, nonatomic, readonly) NSString *identifier;
 @property (strong, nonatomic)			NSString *name;
 
-@property (weak, nonatomic)				id <TCChatViewDelegate> delegate;
+@property (weak, atomic)				id <TCChatViewDelegate> delegate;
 
 
 // -- Instance --
