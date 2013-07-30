@@ -36,7 +36,7 @@
 
 @interface TCChatView ()
 {
-	NSRect	baseRect;
+	NSRect	_baseRect;
 }
 
 // -- Property --
@@ -100,7 +100,7 @@
 - (void)awakeFromNib
 {
 	// "Mark" field size
-	baseRect = [_userField frame];
+	_baseRect = [_userField frame];
 	
 	// Install notification
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowDidResize:) name:NSWindowDidResizeNotification object:_view.window];
@@ -193,7 +193,7 @@
 	CGFloat	height = [text heightForDrawingWithFont:font andWidth:(r.size.width - 8)];
 	CGFloat	lheight = [@" " heightForDrawingWithFont:font andWidth:100];
 
-	height += (baseRect.size.height - lheight);
+	height += (_baseRect.size.height - lheight);
 
 	if (height != r.size.height)
 	{
