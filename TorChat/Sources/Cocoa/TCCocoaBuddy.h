@@ -24,7 +24,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "TCBuddy.h"
+#import "TCBuddy.h"
 
 #import "TCChatController.h"
 
