@@ -35,6 +35,7 @@
 #import "TCParser.h"
 #import "TCSocket.h"
 #import "TCImage.h"
+#import "TCInfo.h"
 
 #import "TCFileReceive.h"
 #import "TCFileSend.h"
@@ -42,10 +43,6 @@
 #import "NSArray+TCTools.h"
 #import "NSData+TCTools.h"
 
-
-//
-#import "TCInfo.h"
-#import "TCNumber.h"
 
 
 /*
@@ -218,12 +215,12 @@ static char gMainQueueContext;
 
 // -- Helper --
 - (void)_error:(tcbuddy_info)code info:(NSString *)info fatal:(BOOL)fatal;
-- (void)_error:(tcbuddy_info)code info:(NSString *)info contextObj:(TCObject *)ctx fatal:(BOOL)fatal;
+- (void)_error:(tcbuddy_info)code info:(NSString *)info contextObj:(id)ctx fatal:(BOOL)fatal;
 - (void)_error:(tcbuddy_info)code info:(NSString *)info contextInfo:(TCInfo *)serr fatal:(BOOL)fatal;
 
 - (void)_notify:(tcbuddy_info)notice;
 - (void)_notify:(tcbuddy_info)notice info:(NSString *)info;
-- (void)_notify:(tcbuddy_info)notice info:(NSString *)info context:(TCObject *)ctx;
+- (void)_notify:(tcbuddy_info)notice info:(NSString *)info context:(id)ctx;
 
 - (void)_sendEvent:(TCInfo *)info;
 
@@ -449,13 +446,7 @@ static char gMainQueueContext;
 			
 			// Notify
 			if (lstatus != tcbuddy_status_offline)
-			{
-				TCNumber *tstatus = new TCNumber((uint16_t)[[self _status] intValue]);
-				
-				[self _notify:tcbuddy_notify_status info:@"core_bd_note_status_changed"];
-
-				tstatus->release();
-			}
+				[self _notify:tcbuddy_notify_status info:@"core_bd_note_status_changed" context:[self _status]];
 			
 			[self _notify:tcbuddy_notify_disconnected info:@"core_bd_note_stoped"];
 		}
@@ -533,7 +524,7 @@ static char gMainQueueContext;
 		_alias = name;
 		
 		// Notidy of the change
-		[self _notify:tcbuddy_notify_alias info:@"core_bd_note_alias_changed" context:(__bridge TCObject *)name];
+		[self _notify:tcbuddy_notify_alias info:@"core_bd_note_alias_changed" context:name];
 	});
 }
 
@@ -562,7 +553,7 @@ static char gMainQueueContext;
 		_notes = notes;
 		
 		// Notify of the change
-		[self _notify:tcbuddy_notify_notes info:@"core_bd_note_notes_changed" context:(__bridge TCObject *)_notes];
+		[self _notify:tcbuddy_notify_notes info:@"core_bd_note_notes_changed" context:_notes];
 
 	});
 }
@@ -590,15 +581,10 @@ static char gMainQueueContext;
 {
 	dispatch_async(_mainQueue, ^{
 		
-		TCNumber *blk = new TCNumber((uint8_t)blocked);
-		
 		_blocked = blocked;
 		
 		// Notify of the change
-		[self _notify:tcbuddy_notify_blocked info:@"core_bd_note_blocked_changed" context:blk];
-		
-		// Clean
-		blk->release();
+		[self _notify:tcbuddy_notify_blocked info:@"core_bd_note_blocked_changed" context:@(blocked)];
 	});
 }
 
@@ -758,7 +744,7 @@ static char gMainQueueContext;
 				// Notify that we stop sending the file
 				TCFileInfo *info = [[TCFileInfo alloc] initWithFileSend:file];
 				
-				[self _notify:tcbuddy_notify_file_send_stoped info:@"core_bd_note_file_send_canceled" context:(__bridge TCInfo *)info];
+				[self _notify:tcbuddy_notify_file_send_stoped info:@"core_bd_note_file_send_canceled" context:info];
 				
 				// Release file
 				[_fsend removeObjectForKey:uuid];
@@ -776,7 +762,7 @@ static char gMainQueueContext;
 				// Notify that we stop sending the file
 				TCFileInfo *info = [[TCFileInfo alloc] initWithFileReceive:file];
 
-				[self _notify:tcbuddy_notify_file_receive_stoped info:@"core_bd_note_file_receive_canceled" context:(__bridge TCInfo *)info];
+				[self _notify:tcbuddy_notify_file_receive_stoped info:@"core_bd_note_file_receive_canceled" context:info];
 
 				// Release file
 				[_freceive removeObjectForKey:uuid];
@@ -851,10 +837,10 @@ static char gMainQueueContext;
 			if (_pongSent && _ponged)
 				[self _sendCommand:@"message" string:message channel:tcbuddy_channel_out];
 			else
-				[self _error:tcbuddy_error_message_offline info:@"core_bd_err_message_offline" contextObj:(__bridge TCObject *)message fatal:NO];
+				[self _error:tcbuddy_error_message_offline info:@"core_bd_err_message_offline" contextObj:message fatal:NO];
 		}
 		else
-			[self _error:tcbuddy_error_message_blocked info:@"core_bd_err_message_blocked" contextObj:(__bridge TCObject *)message fatal:NO];
+			[self _error:tcbuddy_error_message_blocked info:@"core_bd_err_message_blocked" contextObj:message fatal:NO];
 	});
 }
 
@@ -877,7 +863,7 @@ static char gMainQueueContext;
 				
 				if (!file)
 				{
-					[self _error:tcbuddy_error_send_file info:@"io_error" contextObj:(__bridge TCObject *)filepath fatal:NO];
+					[self _error:tcbuddy_error_send_file info:@"io_error" contextObj:filepath fatal:NO];
 #warning FIXME: localize 'io_error'.
 					return;
 				}
@@ -888,7 +874,7 @@ static char gMainQueueContext;
 				// Notify
 				TCFileInfo *info = [[TCFileInfo alloc] initWithFileSend:file];
 				
-				[self _notify:tcbuddy_notify_file_send_start info:@"core_bd_note_file_send_start" context:(__bridge TCObject *)info];
+				[self _notify:tcbuddy_notify_file_send_start info:@"core_bd_note_file_send_start" context:info];
 				
 				// Start the file session
 				[self _sendFileName:file];
@@ -897,12 +883,12 @@ static char gMainQueueContext;
 				[self _sendFileData:file];
 			}
 			else
-			[self _error:tcbuddy_error_file_blocked info:@"core_bd_err_file_blocked" contextObj:(__bridge TCObject *)filepath fatal:NO];
+			[self _error:tcbuddy_error_file_blocked info:@"core_bd_err_file_blocked" contextObj:filepath fatal:NO];
 
 		}
 		else
 		{
-			[self _error:tcbuddy_error_file_offline info:@"core_bd_err_file_offline" contextObj:(__bridge TCObject *)filepath fatal:NO];
+			[self _error:tcbuddy_error_file_offline info:@"core_bd_err_file_offline" contextObj:filepath fatal:NO];
 		}
 	});
 }
@@ -1118,7 +1104,7 @@ static char gMainQueueContext;
 	dispatch_async(_mainQueue, ^{
 
 		// Localize the info
-		error->setInfo([[_config localized:@(error->info().c_str())] UTF8String]);
+		error.infoString = [_config localized:error.infoString];
 		
 		// Fallback error
 		[self _error:tcbuddy_error_socket info:@"core_bd_err_socket" contextInfo:error fatal:YES];
@@ -1169,11 +1155,7 @@ static char gMainQueueContext;
 		_status = nstatus;
 		
 		// Notify that status changed
-		TCNumber *tstatus = new TCNumber((uint16_t)[[self _status] intValue]);
-		
-		[self _notify:tcbuddy_notify_status info:@"core_bd_note_status_changed" context:tstatus];
-		
-		tstatus->release();
+		[self _notify:tcbuddy_notify_status info:@"core_bd_note_status_changed" context:[self _status]];
 	}
 }
 
@@ -1185,7 +1167,7 @@ static char gMainQueueContext;
 		return;
 	
 	// Notify it
-	[self _notify:tcbuddy_notify_message info:@"core_bd_note_new_message" context:(__bridge TCObject *)message];
+	[self _notify:tcbuddy_notify_message info:@"core_bd_note_new_message" context:message];
 }
 
 - (void)parser:(TCParser *)parser parsedVersion:(NSString *)version
@@ -1198,7 +1180,7 @@ static char gMainQueueContext;
 	_peerVersion = version;
 		
 	// Notify it
-	[self _notify:tcbuddy_notify_version info:@"core_bd_note_new_version" context:(__bridge TCObject *)version];
+	[self _notify:tcbuddy_notify_version info:@"core_bd_note_new_version" context:version];
 }
 
 - (void)parser:(TCParser *)parser parsedClient:(NSString *)client
@@ -1211,7 +1193,7 @@ static char gMainQueueContext;
 	_peerClient = client;
 	
 	// Notify it
-	[self _notify:tcbuddy_notify_client info:@"core_bd_note_new_client" context:(__bridge TCObject *)client];
+	[self _notify:tcbuddy_notify_client info:@"core_bd_note_new_client" context:client];
 }
 
 - (void)parser:(TCParser *)parser parsedProfileText:(NSString *)text
@@ -1224,7 +1206,7 @@ static char gMainQueueContext;
 	_profileText = text;
 	
 	// Notify it
-	[self _notify:tcbuddy_notify_profile_text info:@"core_bd_note_new_profile_text" context:(__bridge TCObject *)text];
+	[self _notify:tcbuddy_notify_profile_text info:@"core_bd_note_new_profile_text" context:text];
 }
 
 - (void)parser:(TCParser *)parser parsedProfileName:(NSString *)name
@@ -1241,7 +1223,7 @@ static char gMainQueueContext;
 	[_config setBuddy:_address lastProfileName:name];
 	
 	// Notify it
-	[self _notify:tcbuddy_notify_profile_name info:@"core_bd_note_new_profile_name" context:(__bridge TCObject *)name];
+	[self _notify:tcbuddy_notify_profile_name info:@"core_bd_note_new_profile_name" context:name];
 }
 
 - (void)parser:(TCParser *)parser parsedProfileAvatar:(NSData *)bitmap
@@ -1254,7 +1236,7 @@ static char gMainQueueContext;
 	[_profileAvatar setBitmap:bitmap];
 	
 	// Notify it
-	[self _notify:tcbuddy_notify_profile_avatar info:@"core_bd_note_new_profile_avatar" context:(__bridge TCObject *)_profileAvatar];
+	[self _notify:tcbuddy_notify_profile_avatar info:@"core_bd_note_new_profile_avatar" context:_profileAvatar];
 }
 
 - (void)parser:(TCParser *)parser parsedProfileAvatarAlpha:(NSData *)bitmap
@@ -1332,7 +1314,7 @@ static char gMainQueueContext;
 		
 	TCFileInfo *info = [[TCFileInfo alloc] initWithFileReceive:file];
 		
-	[self _notify:tcbuddy_notify_file_receive_start info:@"core_bd_note_file_receive_start" context:(__bridge TCObject *)info];
+	[self _notify:tcbuddy_notify_file_receive_start info:@"core_bd_note_file_receive_start" context:info];
 }
 
 - (void)parser:(TCParser *)parser parsedFileDataWithUUID:(NSString *)uuid start:(NSString *)start hash:(NSString *)hash data:(NSData *)data
@@ -1370,13 +1352,13 @@ static char gMainQueueContext;
 			// Notify of the new chunk
 			TCFileInfo *info = [[TCFileInfo alloc] initWithFileReceive:file];
 			
-			[self _notify:tcbuddy_notify_file_receive_running info:@"core_bd_note_file_chunk_receive" context:(__bridge TCObject *)info];
+			[self _notify:tcbuddy_notify_file_receive_running info:@"core_bd_note_file_chunk_receive" context:info];
 			
 			// Do nothing if we are no more to send
 			if ([file isFinished])
 			{
 				// Notify that we have finished
-				[self _notify:tcbuddy_notify_file_receive_finish info:@"core_bd_note_file_receive_finish" context:(__bridge TCObject *)info];
+				[self _notify:tcbuddy_notify_file_receive_finish info:@"core_bd_note_file_receive_finish" context:info];
 
 				// Release file
 				[_freceive removeObjectForKey:uuid];
@@ -1411,13 +1393,13 @@ static char gMainQueueContext;
 		// Notice the advancing
 		TCFileInfo *info = [[TCFileInfo alloc] initWithFileSend:file];
 				
-		[self _notify:tcbuddy_notify_file_send_running info:@"core_bd_note_file_chunk_send" context:(__bridge TCObject *)info];
+		[self _notify:tcbuddy_notify_file_send_running info:@"core_bd_note_file_chunk_send" context:info];
 
 		// Do nothing if we are no more to send
 		if ([file isFinished])
 		{
 			// Notify
-			[self _notify:tcbuddy_notify_file_send_finish info:@"core_bd_note_file_send_finish" context:(__bridge TCObject *)info];
+			[self _notify:tcbuddy_notify_file_send_finish info:@"core_bd_note_file_send_finish" context:info];
 
 			// Release the file
 			[_fsend removeObjectForKey:uuid];
@@ -1474,7 +1456,7 @@ static char gMainQueueContext;
 	// Notify that we stop sending the file
 	TCFileInfo *info = [[TCFileInfo alloc] initWithFileSend:file];
 		
-	[self _notify:tcbuddy_notify_file_send_stoped info:@"core_bd_note_file_send_stoped" context:(__bridge TCObject *)info];
+	[self _notify:tcbuddy_notify_file_send_stoped info:@"core_bd_note_file_send_stoped" context:info];
 		
 	// Release file
 	[_fsend removeObjectForKey:uuid];
@@ -1497,7 +1479,7 @@ static char gMainQueueContext;
 	// Notify that we stop receiving the file
 	TCFileInfo *info = [[TCFileInfo alloc] initWithFileReceive:file];
 
-	[self _notify:tcbuddy_notify_file_receive_stoped info:@"core_bd_note_file_receive_stoped" context:(__bridge TCObject *)info];
+	[self _notify:tcbuddy_notify_file_receive_stoped info:@"core_bd_note_file_receive_stoped" context:info];
 	
 	// Release file
 	[_freceive removeObjectForKey:uuid];
@@ -1509,11 +1491,9 @@ static char gMainQueueContext;
 		return;
 	
 	// Don't get parse error on blocked buddy (prevent spam, etc.)
-	TCInfo *info = new TCInfo(tcinfo_error, error, [information UTF8String]);
-	
+	TCInfo *info = [TCInfo infoOfKind:tcinfo_error infoCode:error infoString:information];
+		
 	[self _error:tcbuddy_error_parse info:@"core_bd_err_parse" contextInfo:info fatal:NO];
-	
-	info->release();
 }
 
 
@@ -1965,26 +1945,22 @@ static char gMainQueueContext;
 {
 	// > mainQueue <
 	
-	TCInfo *err = new TCInfo(tcinfo_error, code, [[_config localized:info] UTF8String]);
+	TCInfo *err = [TCInfo infoOfKind:tcinfo_error infoCode:code infoString:[_config localized:info]];
 	
 	[self _sendEvent:err];
-	
-	err->release();
 	
 	// Fatal -> stop
 	if (fatal)
 		[self stop];
 }
 
-- (void)_error:(tcbuddy_info)code info:(NSString *)info contextObj:(TCObject *)ctx fatal:(BOOL)fatal
+- (void)_error:(tcbuddy_info)code info:(NSString *)info contextObj:(id)ctx fatal:(BOOL)fatal
 {
 	// > mainQueue <
 	
-	TCInfo *err = new TCInfo(tcinfo_error, code, [[_config localized:info] UTF8String], ctx);
-	
+	TCInfo *err = [TCInfo infoOfKind:tcinfo_error infoCode:code infoString:[_config localized:info] context:ctx];
+
 	[self _sendEvent:err];
-	
-	err->release();
 	
 	// Fatal -> stop
 	if (fatal)
@@ -1995,11 +1971,9 @@ static char gMainQueueContext;
 {
 	// > mainQueue <
 	
-	TCInfo *err = new TCInfo(tcinfo_error, code, [[_config localized:info] UTF8String], serr);
+	TCInfo *err = [TCInfo infoOfKind:tcinfo_error infoCode:code infoString:[_config localized:info] info:serr];
 	
 	[self _sendEvent:err];
-	
-	err->release();
 	
 	// Fatal -> stop
 	if (fatal)
@@ -2010,33 +1984,27 @@ static char gMainQueueContext;
 {
 	// > mainQueue <
 	
-	TCInfo *ifo = new TCInfo(tcinfo_info, notice);
+	TCInfo *ifo = [TCInfo infoOfKind:tcinfo_info infoCode:notice];
 	
 	[self _sendEvent:ifo];
-
-	ifo->release();
 }
 
 - (void)_notify:(tcbuddy_info)notice info:(NSString *)info
 {
 	// > mainQueue <
-	
-	TCInfo *ifo = new TCInfo(tcinfo_info, notice, [[_config localized:info] UTF8String]);
-	
+		
+	TCInfo *ifo = [TCInfo infoOfKind:tcinfo_info infoCode:notice infoString:[_config localized:info]];
+
 	[self _sendEvent:ifo];
-	
-	ifo->release();
 }
 
-- (void)_notify:(tcbuddy_info)notice info:(NSString *)info context:(TCObject *)ctx
+- (void)_notify:(tcbuddy_info)notice info:(NSString *)info context:(id)ctx
 {
 	// > mainQueue <
 	
-	TCInfo *ifo = new TCInfo(tcinfo_info, notice, [[_config localized:info] UTF8String], ctx);
+	TCInfo *ifo = [TCInfo infoOfKind:tcinfo_info infoCode:notice infoString:[_config localized:info] context:ctx];
 	
 	[self _sendEvent:ifo];
-	
-	ifo->release();
 }
 
 - (void)_sendEvent:(TCInfo *)info
@@ -2048,13 +2016,8 @@ static char gMainQueueContext;
 	
 	id <TCBuddyDelegate> delegate = _delegate;
 	
-	info->retain();
-		
 	dispatch_async(_delegateQueue, ^{
-		
 		[delegate buddy:self event:info];
-			
-		info->release();
 	});
 }
 

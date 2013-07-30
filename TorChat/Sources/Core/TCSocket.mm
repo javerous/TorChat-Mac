@@ -429,15 +429,11 @@
 	if (!delegate)
 		return;
 	
-	TCInfo *err = new TCInfo(tcinfo_error, error, [info UTF8String]);
+	TCInfo *err = [TCInfo infoOfKind:tcinfo_error infoCode:error infoString:info];
 	
 	// Dispatch on the delegate queue.
 	dispatch_async(_delegateQueue, ^{
-		
 		[delegate socket:self error:err];
-		
-		// Release.
-		err->release();
 	});
 }
 
