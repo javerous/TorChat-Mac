@@ -21,6 +21,9 @@
  */
 
 
+#import <Foundation/Foundation.h>
+
+
 /*
 ** TCBuffer
 */
