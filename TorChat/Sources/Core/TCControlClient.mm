@@ -207,15 +207,8 @@
 	
 	abuddy = [ctrl buddyWithAddress:address];
 	
-	if (abuddy)
-	{
-		bool blocked = abuddy->blocked();
-		
-		abuddy->release();
-		
-		if (blocked)
-			return;
-	}
+	if ([abuddy blocked])
+		return;
 	
 	// first a little security check to detect mass pings
 	// with faked host names over the same connection
@@ -245,12 +238,9 @@
 	if (ctrl)
 		abuddy = [ctrl buddyWithAddress:address];
 	
-	if (abuddy && abuddy->isPonged())
+	if ([abuddy isPonged])
 	{
 		[self _error:tcctrl_error_client_cmd_ping info:@"core_cctrl_err_already_pinged" fatal:YES];
-
-		abuddy->release();
-		
 		return;
 	}
 	
@@ -259,12 +249,9 @@
 	// random value is not from us, then someone is definitely
 	// trying to fake and we can close.
 	
-	if ([address isEqualToString:[_config selfAddress]] && abuddy && abuddy->brandom().content().compare([random UTF8String]) != 0)
+	if ([address isEqualToString:[_config selfAddress]] && abuddy && [[abuddy random] isEqualToString:random])
 	{
 		[self _error:tcctrl_error_client_cmd_ping info:@"core_cctrl_err_masquerade" fatal:YES];
-
-		abuddy->release();
-		
 		return;
 	}
 	
@@ -287,18 +274,7 @@
 	
 	// ping messages must be answered with pong messages
 	// the pong must contain the same random string as the ping.
-	TCImage		*avatar = [ctrl profileAvatar];
-	TCString	*trandom = new TCString([random UTF8String]);
-	TCString	*pname = new TCString([[ctrl profileName] UTF8String]);
-	TCString	*ptext = new TCString([[ctrl profileText] UTF8String]);
-	
-	abuddy->startHandshake(trandom, [ctrl status], avatar, pname, ptext);
-	
-	// Release
-	abuddy->release();
-	trandom->release();
-	pname->release();
-	ptext->release();
+	[abuddy startHandshake:random status:[ctrl status] avatar:[ctrl profileAvatar] name:[ctrl profileName] text:[ctrl profileText]];
 }
 
 - (void)parser:(TCParser *)parser parsedPongWithRandom:(NSString *)random
@@ -312,12 +288,10 @@
 	if (buddy)
 	{
 		// Check blocked list
-		if (buddy->blocked())
+		if ([buddy blocked])
 		{
-			// Stop buffy
-			buddy->stop();
-			buddy->release();
-			buddy = NULL;
+			// Stop buddy
+			[buddy stop];
 			
 			// Stop socket
 			[_sock stop];
@@ -326,11 +300,7 @@
 		else
 		{
 			// Give the baby to buddy
-			buddy->setInputConnection(_sock);
-			
-			// Release buddy (getBuddyRandom retained it)
-			buddy->release();
-			buddy = NULL;
+			[buddy setInputConnection:_sock];
 			
 			// Unhandle socket
 			_sock = nil;

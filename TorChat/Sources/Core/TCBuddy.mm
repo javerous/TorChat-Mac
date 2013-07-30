@@ -20,33 +20,32 @@
  *
  */
 
-
-
-#include <stdio.h>
-
 #include <netdb.h>
 #include <pwd.h>
-#include <errno.h>
+
 #include <sys/stat.h>
-
-#include <Block.h>
-
-#include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 
-#include "TCBuddy.h"
+#include <arpa/inet.h>
 
-#include "TCConfig.h"
-#include "TCTools.h"
 
-#include "TCString.h"
-#include "TCImage.h"
-#include "TCNumber.h"
+#import "TCBuddy.h"
 
-#include "TCFileSend.h"
-#include "TCFileReceive.h"
+#import "TCParser.h"
+#import "TCSocket.h"
+#import "TCImage.h"
 
+#import "TCFileReceive.h"
+#import "TCFileSend.h"
+
+#import "NSArray+TCTools.h"
+#import "NSData+TCTools.h"
+
+
+//
+#import "TCInfo.h"
+#import "TCNumber.h"
 
 
 /*
@@ -63,7 +62,8 @@
 */
 #pragma mark - Types
 
-// == Structure representing a Socks connection request ==
+// == SOCKS ==
+// -- Structure representing a Socks connection request --
 struct sockreq
 {
 	uint8_t		version;
@@ -73,7 +73,7 @@ struct sockreq
 	// A null terminated username goes here
 };
 
-// == Structure representing a Socks connection request response ==
+// -- Structure representing a Socks connection request response --
 struct sockrep
 {
 	uint8_t		version;
@@ -82,15 +82,15 @@ struct sockrep
 	uint32_t	ignore2;
 };
 
-// == Socks State ==
+// -- Socks State --
 typedef enum
 {
 	socks_nostate,
 	socks_running,
 	socks_finish,
-} socks_state;	
+} socks_state;
 
-// == Socks trame type ==
+// -- Socks trame type --
 typedef enum
 {
 	socks_v4_reply,
@@ -108,134 +108,240 @@ static char gMainQueueContext;
 
 
 
+/*
+** TCFileInfo
+*/
+#pragma mark - TCFileInfo
+
+@interface TCFileInfo ()
+{
+	TCFileSend		*_sender;
+	TCFileReceive	*_receiver;
+}
+
+// -- Instance --
+- (id)initWithFileSend:(TCFileSend *)sender;
+- (id)initWithFileReceive:(TCFileReceive *)receiver;
+
+@end
+
+
+
+/*
+** TCBuddy - Private
+*/
+#pragma mark - TCBuddy - Private
+
+@interface TCBuddy () <TCParserCommand, TCParserDelegate, TCSocketDelegate>
+{
+	// > Config
+	id <TCConfig>				_config;
+	
+	// > Parser
+	TCParser					*_parser;
+	
+	// > Status
+	int							_socksstate;
+	BOOL						_running;
+	BOOL						_ponged;
+	BOOL						_pongSent;
+	
+	BOOL						_blocked;
+	
+	// > Property
+	NSString					*_alias;
+	NSString					*_address;
+	NSString					*_notes;
+	NSString					*_random;
+	
+	tcbuddy_status				_status;
+	tccontroller_status			_cstatus;
+	
+	// > Dispatch
+	dispatch_queue_t			_mainQueue;
+	
+	// > Socket
+	TCSocket					*_inSocket;
+	TCSocket					*_outSocket;
+	
+	// > Command
+	NSMutableArray				*_bufferedCommands;
+	
+	// Delegate
+	dispatch_queue_t			_delegateQueue;
+	
+	// > Profile
+	NSString					*_profileName;
+	NSString					*_profileText;
+	TCImage						*_profileAvatar;
+	
+	// > Peer
+	NSString					*_peerClient;
+	NSString					*_peerVersion;
+	
+	// > File session
+	NSMutableDictionary			*_freceive;
+	NSMutableDictionary			*_fsend;
+}
+
+// -- Send Low Command --
+- (void)_sendPing;
+- (void)_sendPong:(NSString *)random;
+- (void)_sendVersion;
+- (void)_sendClient;
+- (void)_sendProfileName:(NSString *)name;
+- (void)_sendProfileText:(NSString *)text;
+- (void)_sendAvatar:(TCImage *)avatar;
+- (void)_sendAddMe;
+- (void)_sendRemoveMe;
+- (void)_sendStatus:(tccontroller_status)status;
+- (void)_sendMessage:(NSString *)message;
+- (void)_sendFileName:(TCFileSend *)file;
+- (void)_sendFileData:(TCFileSend *)file;
+- (void)_sendFileDataOk:(NSString *)uuid start:(uint64_t)start;
+- (void)_sendFileDataError:(NSString *)uuid start:(uint64_t)start;
+- (void)_sendFileStopSending:(NSString *)uuid;
+- (void)_sendFileStopReceiving:(NSString *)uuid;
+
+// -- Send Command Data --
+- (BOOL)_sendCommand:(NSString *)command channel:(tcbuddy_channel)channel; // tcbuddy_channel_out
+- (BOOL)_sendCommand:(NSString *)command array:(NSArray *)data channel:(tcbuddy_channel)channel; // = tcbuddy_channel_out);
+- (BOOL)_sendCommand:(NSString *)command data:(NSData *)data channel:(tcbuddy_channel)channel; // = tcbuddy_channel_out);
+- (BOOL)_sendCommand:(NSString *)command string:(NSString *)data channel:(tcbuddy_channel)channel; // = tcbuddy_channel_out);
+- (BOOL)_sendData:(NSData *)data channel:(tcbuddy_channel)channel; // = tcbuddy_channel_out);
+
+// -- Network Helper --
+- (void)_startSocks;
+- (void)_connectedSocks;
+- (void)_runPendingWrite;
+- (void)_runPendingFileWrite;
+
+// -- Helper --
+- (void)_error:(tcbuddy_info)code info:(NSString *)info fatal:(BOOL)fatal;
+- (void)_error:(tcbuddy_info)code info:(NSString *)info contextObj:(TCObject *)ctx fatal:(BOOL)fatal;
+- (void)_error:(tcbuddy_info)code info:(NSString *)info contextInfo:(TCInfo *)serr fatal:(BOOL)fatal;
+
+- (void)_notify:(tcbuddy_info)notice;
+- (void)_notify:(tcbuddy_info)notice info:(NSString *)info;
+- (void)_notify:(tcbuddy_info)notice info:(NSString *)info context:(TCObject *)ctx;
+
+- (void)_sendEvent:(TCInfo *)info;
+
+- (NSNumber *)_status;
+
+@end
+
+
+
+/*
+** TCBuddy
+*/
+#pragma mark - TCBuddy
+
+@implementation TCBuddy
+
 
 /*
 ** TCBuddy - Instance
 */
 #pragma mark - TCBuddy - Instance
 
-TCBuddy::TCBuddy(id <TCConfig>_config, const std::string &_alias, const std::string &_address, const std::string &_notes)
-{	
-	// Retain config
-	config = _config;
+- (id)initWithConfiguration:(id <TCConfig>)configuration alias:(NSString *)alias address:(NSString *)address notes:(NSString *)notes
+{
+	self = [super init];
 	
-	// Retain property
-	malias = new TCString(_alias);
-	maddress = new TCString(_address);
-	mnotes = new TCString(_notes);
-	
-	fsend = [[NSMutableDictionary alloc] init];
-	freceive = [[NSMutableDictionary alloc] init];
-
-	TCDebugLog("Buddy (%s) - New", maddress->content().c_str());
-
-	// Build queue
-	mainQueue = dispatch_queue_create("com.torchat.core.buddy.main", DISPATCH_QUEUE_SERIAL);
-	
-	dispatch_queue_set_specific(mainQueue, &gQueueIdentityKey, &gMainQueueContext, NULL);
-
-	// Init notice queue & block
-	nQueue = 0;
-	nBlock = 0;
-	
-	// Init status
-	running = false;
-	ponged = false;
-	pongSent = false;
-	
-	outSocket = NULL;
-	inSocket = NULL;
-	
-	socksstate = socks_nostate;
-	mstatus = tcbuddy_status_offline;
-	
-	// Init profiles
-	profileName = new TCString("");
-	profileText = new TCString("");
-	profileAvatar = [[TCImage alloc] initWithWidth:64 andHeight:64];
-		
-	// Init remotes
-	peerClient = new TCString("");
-	peerVersion = new TCString("");
-	
-	// Generate random
-	char	rnd[101];
-	char	charset [] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-	size_t	i;
-	size_t	index;
-	
-	srandomdev();
-	
-	for (i = 0; i < sizeof(rnd) - 1; i++)
+	if (self)
 	{
-		index = (unsigned long)random() % (sizeof(charset) - 1);
-		rnd[i] = charset[index];
+		// Retain config
+		_config = configuration;
+		
+		// Retain property
+		_alias = alias;
+		_address = address;
+		_notes = notes;
+		
+		TCDebugLog("Buddy (%s) - New", [_address UTF8String]);
+
+		
+		// Build queue
+		_mainQueue = dispatch_queue_create("com.torchat.core.buddy.main", DISPATCH_QUEUE_SERIAL);
+		_delegateQueue = dispatch_queue_create("com.torchat.core.buddy.delegate", DISPATCH_QUEUE_SERIAL);
+		
+		dispatch_queue_set_specific(_mainQueue, &gQueueIdentityKey, &gMainQueueContext, NULL);
+		
+		// Create containers.
+		_fsend = [[NSMutableDictionary alloc] init];
+		_freceive = [[NSMutableDictionary alloc] init];
+		
+		_bufferedCommands = [[NSMutableArray alloc] init];
+		
+		// Create parser.
+		_parser = [[TCParser alloc] initWithParsingResult:self];
+		[_parser setDelegate:self];
+		
+		// Init status
+		_socksstate = socks_nostate;
+		_status = tcbuddy_status_offline;
+		
+		// Init profiles
+		_profileName = @"";
+		_profileText = @"";
+		_profileAvatar = [[TCImage alloc] initWithWidth:64 andHeight:64];
+		
+		// Init remotes
+		_peerClient = @"";
+		_peerVersion = @"";
+		
+		// Generate random
+		char	rnd[101];
+		char	charset[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+		size_t	i;
+		size_t	index;
+				
+		for (i = 0; i < sizeof(rnd) - 1; i++)
+		{
+			index = arc4random_uniform(sizeof(charset));
+			rnd[i] = charset[index];
+		}
+		
+		rnd[100] = '\0';
+		
+		_random = [[NSString alloc] initWithCString:rnd encoding:NSASCIIStringEncoding];
+		
+		TCDebugLog("Buddy (%s) - Random: %s", [_address UTF8String], rnd);
 	}
 	
-	rnd[100] = '\0';
-	
-	mrandom = new TCString(rnd);
+	return self;
 }
 
-TCBuddy::~TCBuddy()
+- (void)dealloc
 {
 	TCDebugLog("TCBuddy Destructor");
 	
 	// Clean out connections
-	if (outSocket)
-	{
-		[outSocket stop];
-		outSocket = nil;
-	}
-	
+	[_outSocket stop];
+
 	// Clean in connexions
-	if (inSocket)
-	{
-		[inSocket stop];
-		inSocket = nil;
-	}
-	
-	// Release config
-	config = nil;
-	
-	// Release property
-	malias->release();
-	maddress->release();
-	mnotes->release();
-	mrandom->release();
-	
-	// Release profile
-	profileName->release();
-	profileText->release();
-	profileAvatar = nil;
-	
-	// Release
-	peerClient->release();
-	peerVersion->release();
-	
-	// Clean.
-	fsend = nil;
-	freceive = nil;
+	[_inSocket stop];
 }
 
 
-
 /*
-** TCBuddy - Running
+** TCBuddy - Run
 */
-#pragma mark - TCBuddy - Running
+#pragma mark - Run
 
-void TCBuddy::start()
+- (void)start
 {
-	dispatch_async_cpp(this, mainQueue, ^{
+	dispatch_async(_mainQueue, ^{
 		
-		if (running)
+		if (_running)
 			return;
 		
-		if (mblocked)
+		if (_blocked)
 			return;
 		
-		TCDebugLog( "Buddy (%s) - Start", maddress->content().c_str());
+		TCDebugLog( "Buddy (%s) - Start", [_address UTF8String]);
 		
 		// -- Make a connection to Tor proxy --
 		struct addrinfo	hints, *res, *res0;
@@ -245,21 +351,23 @@ void TCBuddy::start()
 		
 		memset(&hints, 0, sizeof(hints));
 		
-		snprintf(sport, sizeof(sport), "%i", [config torPort]);
+		snprintf(sport, sizeof(sport), "%i", [_config torPort]);
 		
 		// Configure the resolver
 		hints.ai_family = PF_UNSPEC;
 		hints.ai_socktype = SOCK_STREAM;
-
+		
 		// Try to resolve and connect to the given address
-		error = getaddrinfo([[config torAddress] UTF8String], sport, &hints, &res0);
+		error = getaddrinfo([[_config torAddress] UTF8String], sport, &hints, &res0);
+		
 		if (error)
 		{
-			_error(tcbuddy_error_resolve_tor, "core_bd_err_tor_resolve", true);
+			[self _error:tcbuddy_error_resolve_tor info:@"core_bd_err_tor_resolve" fatal:YES];
 			return;
 		}
 		
 		s = -1;
+		
 		for (res = res0; res; res = res->ai_next)
 		{
 			if ((s = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0)
@@ -280,133 +388,116 @@ void TCBuddy::start()
 		
 		if (s < 0)
 		{
-			_error(tcbuddy_error_connect_tor, "core_bd_err_tor_connect", true);
+			[self _error:tcbuddy_error_connect_tor info:@"core_bd_err_tor_connect" fatal:YES];
+
 			return;
 		}
 		
 		// Build a socket with this descriptor
-		outSocket = [[TCSocket alloc] initWithSocket:s];
-		
+		_outSocket = [[TCSocket alloc] initWithSocket:s];
 		
 		// Set ourself as delegate
-#warning FIXME: fix when switched to OC.
-		//outSocket->setDelegate(mainQueue, this);
+		_outSocket.delegate = self;
 		
 		// Start SOCKS protocol
-		_startSocks();
-
+		[self _startSocks];
+		
 		// Set as running
-		running = true;
+		_running = YES;
 		
 		// Say that we are connected
-		_notify(tcbuddy_notify_connected_tor, "core_bd_note_tor_connected");
+		[self _notify:tcbuddy_notify_connected_tor info:@"core_bd_note_tor_connected"];
 	});
 }
 
-void TCBuddy::stop()
+- (void)stop
 {
-	dispatch_async_cpp(this, mainQueue, ^{
-
-		if (running)
+	dispatch_async(_mainQueue, ^{
+		
+		if (_running)
 		{
 			tcbuddy_status lstatus;
 			
 			// Realease out socket
-			if (outSocket)
+			if (_outSocket)
 			{
-				[outSocket stop];
-				outSocket = nil;
+				[_outSocket stop];
+				_outSocket = nil;
 			}
 			
 			// Realease in socket
-			if (inSocket)
+			if (_inSocket)
 			{
-				[inSocket stop];
-				inSocket = nil;
+				[_inSocket stop];
+				_inSocket = nil;
 			}
 			
 			// Clean receive session
-			[freceive removeAllObjects];
+			[_freceive removeAllObjects];
 			
 			// Clean send session
-			[fsend removeAllObjects];
+			[_fsend removeAllObjects];
 			
 			// Reset status
-			lstatus = mstatus;
-			mstatus = tcbuddy_status_offline;
+			lstatus = _status;
+			_status = tcbuddy_status_offline;
 			
-			socksstate = socks_nostate;
-			ponged = false;
-			pongSent = false;
-			running = false;
+			_socksstate = socks_nostate;
+			_ponged = false;
+			_pongSent = false;
+			_running = false;
 			
 			// Notify
 			if (lstatus != tcbuddy_status_offline)
 			{
-				TCNumber *tstatus = _status();
+				TCNumber *tstatus = new TCNumber((uint16_t)[[self _status] intValue]);
 				
-				_notify(tcbuddy_notify_status, "core_bd_note_status_changed", tstatus);
-				
+				[self _notify:tcbuddy_notify_status info:@"core_bd_note_status_changed"];
+
 				tstatus->release();
 			}
 			
-			_notify(tcbuddy_notify_disconnected, "core_bd_note_stoped");
+			[self _notify:tcbuddy_notify_disconnected info:@"core_bd_note_stoped"];
 		}
 	});
 }
 
-bool TCBuddy::isRunning()
+- (BOOL)isRunning
 {
-	__block bool result = false;
+	__block BOOL result = false;
 	
-	dispatch_sync_cpp(this, mainQueue, ^{
-		result = running;
+	dispatch_sync(_mainQueue, ^{
+		result = _running;
 	});
 	
 	return result;
 }
 
-bool TCBuddy::isPonged()
+- (BOOL)isPonged
 {
-	__block bool result = false;
+	__block BOOL result = false;
 	
-	dispatch_sync_cpp(this, mainQueue, ^{
-		result = ponged;
+	dispatch_sync(_mainQueue, ^{
+		result = _ponged;
 	});
 	
 	return result;
 }
 
-
-void TCBuddy::keepAlive()
+- (void)keepAlive
 {
-	dispatch_async_cpp(this, mainQueue, ^{
+	dispatch_async(_mainQueue, ^{
 		
-		if (mblocked)
+		if (_blocked)
 			return;
 		
-		if (!running)
-			start();
+		if (!_running)
+			[self start];
 		else
 		{
-			if (pongSent && ponged)
-				_sendStatus(cstatus);
+			if (_pongSent && _ponged)
+				[self _sendStatus:_cstatus];
 		}
-	});
-}
-
-
-/*
-** TCBuddy - Delegate
-*/
-#pragma mark - TCBuddy - Delegate
-
-void TCBuddy::setDelegate(dispatch_queue_t queue, tcbuddy_event event)
-{
-	// Asign on a block
-	dispatch_async_cpp(this, mainQueue, ^{
-		nQueue = queue;
-		nBlock = event;
 	});
 }
 
@@ -415,127 +506,125 @@ void TCBuddy::setDelegate(dispatch_queue_t queue, tcbuddy_event event)
 /*
 ** TCBuddy - Accessors
 */
-#pragma mark - TCBuddy - Accessor
+#pragma mark - Accessors
 
-TCString * TCBuddy::alias()
+- (NSString *)alias
 {
-	__block TCString *result = NULL;
+	__block NSString *result = NULL;
 	
-	dispatch_sync_cpp(this, mainQueue, ^{
-		
-		malias->retain();
-		
-		result = malias;
+	dispatch_sync(_mainQueue, ^{
+		result = _alias;
 	});
 	
 	return result;
 }
 
-void TCBuddy::setAlias(TCString *alias)
+- (void)setAlias:(NSString *)name
 {
-	if (!alias)
+	if (!name)
 		return;
-	
-	alias->retain();
-	
-	dispatch_async_cpp(this, mainQueue, ^{
+		
+	dispatch_async(_mainQueue, ^{
 		
 		// Set the new name in config
-		[config setBuddy:@(maddress->content().c_str()) alias:@(alias->content().c_str())];
+		[_config setBuddy:_address alias:name];
 		
 		// Change the name internaly
-		malias->release();
-		malias = alias;
+		_alias = name;
 		
 		// Notidy of the change
-		_notify(tcbuddy_notify_alias, "core_bd_note_alias_changed", malias);
+		[self _notify:tcbuddy_notify_alias info:@"core_bd_note_alias_changed" context:(__bridge TCObject *)name];
 	});
 }
 
-TCString * TCBuddy::notes()
+- (NSString *)notes
 {
-	__block TCString *result = NULL;
+	__block NSString *result = NULL;
 	
-	dispatch_sync_cpp(this, mainQueue, ^{
-		
-		mnotes->retain();
-		
-		result = mnotes;
+	dispatch_sync(_mainQueue, ^{
+		result = _notes;
 	});
 	
 	return result;
 }
 
-void TCBuddy::setNotes(TCString *notes)
+- (void)setNotes:(NSString *)notes
 {
 	if (!notes)
 		return;
-	
-	notes->retain();
-	
-	dispatch_async_cpp(this, mainQueue, ^{
+		
+	dispatch_async(_mainQueue, ^{
 		
 		// Set the new name in config
-		[config setBuddy:@(maddress->content().c_str()) notes:@(notes->content().c_str())];
+		[_config setBuddy:_address notes:notes];
 		
 		// Change the name internaly
-		mnotes->release();
-		mnotes = notes;
+		_notes = notes;
 		
 		// Notify of the change
-		_notify(tcbuddy_notify_notes, "core_bd_note_notes_changed", mnotes);
+		[self _notify:tcbuddy_notify_notes info:@"core_bd_note_notes_changed" context:(__bridge TCObject *)_notes];
+
 	});
 }
 
-bool TCBuddy::blocked()
+- (BOOL)blocked
 {
 	// Prevent dead-lock
 	if (dispatch_get_specific(&gQueueIdentityKey) == &gMainQueueContext)
 	{
-		return mblocked;
+		return _blocked;
 	}
 	else
 	{
 		__block bool isblocked = false;
 		
-		dispatch_sync_cpp(this, mainQueue, ^{
-			
-			isblocked = mblocked;
+		dispatch_sync(_mainQueue, ^{
+			isblocked = _blocked;
 		});
 		
 		return isblocked;
 	}
 }
 
-void TCBuddy::setBlocked(bool blocked)
+- (void)setBlocked:(BOOL)blocked
 {
-	dispatch_async_cpp(this, mainQueue, ^{
+	dispatch_async(_mainQueue, ^{
 		
 		TCNumber *blk = new TCNumber((uint8_t)blocked);
 		
-		mblocked = blocked;
+		_blocked = blocked;
 		
 		// Notify of the change
-		_notify(tcbuddy_notify_blocked, "core_bd_note_blocked_changed", blk);
+		[self _notify:tcbuddy_notify_blocked info:@"core_bd_note_blocked_changed" context:blk];
 		
 		// Clean
 		blk->release();
 	});
 }
 
-tcbuddy_status TCBuddy::status()
+- (tcbuddy_status)status
 {
 	__block tcbuddy_status res = tcbuddy_status_offline;
 	
-	dispatch_sync_cpp(this, mainQueue, ^{
+	dispatch_sync(_mainQueue, ^{
 		
-		if (pongSent && ponged)
-			res = mstatus;
+		if (_pongSent && _ponged)
+			res = _status;
 		else
 			res = tcbuddy_status_offline;
 	});
-					  
+	
 	return res;
+}
+
+- (NSString *)address
+{
+	return _address;
+}
+
+- (NSString *)random
+{
+	return _random;
 }
 
 
@@ -543,80 +632,79 @@ tcbuddy_status TCBuddy::status()
 /*
 ** TCBuddy - Files Info
 */
-#pragma mark - TCBuddy - Files Info
+#pragma mark - Files Info
 
-std::string TCBuddy::fileFileName(const std::string &uuid, tcbuddy_file_way way)
+- (NSString *)fileNameForUUID:(NSString *)uuid andWay:(tcbuddy_file_way)way
 {
-	std::string			*c_uuid = new std::string(uuid);
-	__block std::string res;
+	if (!uuid)
+		return nil;
 	
-	dispatch_sync_cpp(this, mainQueue, ^{
+	__block NSString *res = nil;
+	
+	dispatch_sync(_mainQueue, ^{
 		
 		if (way == tcbuddy_file_send)
 		{
-			TCFileSend *file = fsend[@(c_uuid->c_str())];
+			TCFileSend *file = _fsend[uuid];
 			
 			if (file)
-				res = [[file fileName] UTF8String];
+				res = [file fileName];
 		}
 		else if (way == tcbuddy_file_receive)
 		{
-			TCFileReceive *file = freceive[@(c_uuid->c_str())];
+			TCFileReceive *file = _freceive[uuid];
 			
 			if (file)
-				res = [[file fileName] UTF8String];
+				res = [file fileName];
 		}
-		
-		delete c_uuid;
 	});
 	
 	return res;
 }
 
-std::string TCBuddy::fileFilePath(const std::string &uuid, tcbuddy_file_way way)
+- (NSString *)filePathForUUID:(NSString *)uuid andWay:(tcbuddy_file_way)way
 {
-	std::string			*c_uuid = new std::string(uuid);
+	if (!uuid)
+		return nil;
 	
-	__block std::string res;
+	__block NSString *res = nil;
 	
-	dispatch_sync_cpp(this, mainQueue, ^{
+	dispatch_sync(_mainQueue, ^{
 		
 		if (way == tcbuddy_file_send)
 		{
-			TCFileSend *file = fsend[@(c_uuid->c_str())];
-
-			res = [[file filePath] UTF8String];
+			TCFileSend *file = _fsend[uuid];
+			
+			res = [file filePath];
 		}
 		else if (way == tcbuddy_file_receive)
 		{
-			TCFileReceive *file = freceive[@(c_uuid->c_str())];
-
+			TCFileReceive *file = _freceive[uuid];
+			
 			if (file)
-				res = [[file filePath] UTF8String];
+				res = [file filePath];
 		}
-		
-		delete c_uuid;
 	});
 	
 	return res;
 }
 
-bool TCBuddy::fileStat(const std::string &uuid, tcbuddy_file_way way, uint64_t &done, uint64_t &total)
+- (BOOL)fileStatForUUID:(NSString *)uuid way:(tcbuddy_file_way)way done:(uint64_t *)done total:(uint64_t *)total
 {
-	std::string		*c_uuid = new std::string(uuid);
+	if (!uuid)
+		return NO;
 	
-	__block bool		result = false;
+	__block BOOL		result = false;
 	__block uint64_t	rdone = 0;
 	__block uint64_t	rtotal = 0;
 	
-	
-	dispatch_sync_cpp(this, mainQueue, ^{
+	dispatch_sync(_mainQueue, ^{
 		
 		if (way == tcbuddy_file_send)
 		{
 			// Search the file send
-			TCFileSend *file = fsend[@(c_uuid->c_str())];
-
+			TCFileSend *file = _fsend[uuid];
+			
 			if (file)
 			{
 				rdone = [file validatedSize];
@@ -627,8 +715,8 @@ bool TCBuddy::fileStat(const std::string &uuid, tcbuddy_file_way way, uint64_t &
 		}
 		else if (way == tcbuddy_file_receive)
 		{
-			TCFileReceive *file = freceive[@(c_uuid->c_str())];
-
+			TCFileReceive *file = _freceive[uuid];
+			
 			if (file)
 			{
 				rdone = [file receivedSize];
@@ -637,67 +725,63 @@ bool TCBuddy::fileStat(const std::string &uuid, tcbuddy_file_way way, uint64_t &
 				result = true;
 			}
 		}
-		
-		delete c_uuid;
 	});
 	
 	// Give values
-	done = rdone;
-	total = rtotal;
+	if (done)
+		*done = rdone;
+	
+	if (total)
+		*total = rtotal;
 	
 	// Return result
 	return result;
 }
 
-void TCBuddy::fileCancel(const std::string &uuid, tcbuddy_file_way way)
+- (void)fileCancelOfUUID:(NSString *)uuid way:(tcbuddy_file_way)way
 {
-	std::string *c_uuid = new std::string(uuid);
+	if (!uuid)
+		return;
 	
-	dispatch_async_cpp(this, mainQueue, ^{
+	dispatch_async(_mainQueue, ^{
 		
 		if (way == tcbuddy_file_send)
 		{
 			// Search the file send
-			TCFileSend *file = fsend[@(c_uuid->c_str())];
-
+			TCFileSend *file = _fsend[uuid];
+			
 			if (file)
 			{
 				// Say to the remote peer to stop receiving data
-				_sendFileStopReceiving(*c_uuid);
+				[self _sendFileStopReceiving:uuid];
 				
 				// Notify that we stop sending the file
-				TCFileInfo *info = new TCFileInfo(file);
+				TCFileInfo *info = [[TCFileInfo alloc] initWithFileSend:file];
 				
-				_notify(tcbuddy_notify_file_send_stoped, "core_bd_note_file_send_canceled", info);
-
-				info->release();
+				[self _notify:tcbuddy_notify_file_send_stoped info:@"core_bd_note_file_send_canceled" context:(__bridge TCInfo *)info];
 				
 				// Release file
-				[fsend removeObjectForKey:@(c_uuid->c_str())];
+				[_fsend removeObjectForKey:uuid];
 			}
 		}
 		else if (way == tcbuddy_file_receive)
 		{
-			TCFileReceive *file = freceive[@(c_uuid->c_str())];
+			TCFileReceive *file = _freceive[uuid];
 			
 			if (file)
 			{
 				// Say to the remote peer to stop sending data
-				_sendFileStopSending(*c_uuid);
+				[self _sendFileStopSending:uuid];
 				
 				// Notify that we stop sending the file
-				TCFileInfo *info = new TCFileInfo(file);
+				TCFileInfo *info = [[TCFileInfo alloc] initWithFileReceive:file];
 
-				_notify(tcbuddy_notify_file_receive_stoped, "core_bd_note_file_receive_canceled", info);
-				
-				info->release();
-				
+				[self _notify:tcbuddy_notify_file_receive_stoped info:@"core_bd_note_file_receive_canceled" context:(__bridge TCInfo *)info];
+
 				// Release file
-				[freceive removeObjectForKey:@(c_uuid->c_str())];
+				[_freceive removeObjectForKey:uuid];
 			}
 		}
-		
-		delete c_uuid;
 	});
 }
 
@@ -706,214 +790,182 @@ void TCBuddy::fileCancel(const std::string &uuid, tcbuddy_file_way way)
 /*
 ** TCBuddy - Send Command
 */
-#pragma mark - TCBuddy - Send Command
+#pragma mark - Send Command
 
-void TCBuddy::sendStatus(tccontroller_status status)
+- (void)sendStatus:(tccontroller_status)status
 {
-	dispatch_async_cpp(this, mainQueue, ^{
+	dispatch_async(_mainQueue, ^{
 		
 		// Send status only if we are ponged
-		if (pongSent && !mblocked)		
-			_sendStatus(status);
+		if (_pongSent && !_blocked)
+			[self _sendStatus:status];
 	});
 }
 
-void TCBuddy::sendAvatar(TCImage *avatar)
+- (void)sendAvatar:(TCImage *)avatar
 {
 	if (!avatar)
 		return;
 	
-	dispatch_async_cpp(this, mainQueue, ^{
-
-		if (pongSent && ponged && !mblocked)		
-			_sendAvatar(avatar);
+	dispatch_async(_mainQueue, ^{
+		
+		if (_pongSent && _ponged && !_blocked)
+			[self _sendAvatar:avatar];
 	});
 }
 
-void TCBuddy::sendProfileName(TCString *name)
+- (void)sendProfileName:(NSString *)name
 {
 	if (!name)
 		return;
 	
-	name->retain();
-	
-	dispatch_async_cpp(this, mainQueue, ^{
-
-		if (pongSent && ponged && !mblocked)
-			_sendProfileName(name);
+	dispatch_async(_mainQueue, ^{
 		
-		name->release();
+		if (_pongSent && _ponged && !_blocked)
+			[self _sendProfileName:name];
 	});
 }
 
-void TCBuddy::sendProfileText(TCString *text)
+- (void)sendProfileText:(NSString *)text
 {
 	if (!text)
 		return;
-	
-	text->retain();
-	
-	dispatch_async_cpp(this, mainQueue, ^{
 		
-		if (pongSent && ponged && !mblocked)
-			_sendProfileText(text);
+	dispatch_async(_mainQueue, ^{
 		
-		text->release();
+		if (_pongSent && _ponged && !_blocked)
+			[self _sendProfileText:text];
 	});
 }
 
-void TCBuddy::sendMessage(TCString *message)
+- (void)sendMessage:(NSString *)message
 {
 	if (!message)
 		return;
-	
-	message->retain();
-	
-	dispatch_async_cpp(this, mainQueue, ^{
 		
-		if (!mblocked)
+	dispatch_async(_mainQueue, ^{
+		
+		if (!_blocked)
 		{
 			// Send Message only if we sent pong and we are ponged
-			if (pongSent && ponged)
-				_sendCommand("message", message);
+			if (_pongSent && _ponged)
+				[self _sendCommand:@"message" string:message channel:tcbuddy_channel_out];
 			else
-				_error(tcbuddy_error_message_offline, "core_bd_err_message_offline", message, false);
+				[self _error:tcbuddy_error_message_offline info:@"core_bd_err_message_offline" contextObj:(__bridge TCObject *)message fatal:NO];
 		}
 		else
-			_error(tcbuddy_error_message_blocked, "core_bd_err_message_blocked", message, false);
-
-		message->release();
+			[self _error:tcbuddy_error_message_blocked info:@"core_bd_err_message_blocked" contextObj:(__bridge TCObject *)message fatal:NO];
 	});
 }
 
-void TCBuddy::sendFile(TCString *filepath)
+- (void)sendFile:(NSString *)filepath
 {
 	if (!filepath)
 		return;
 	
-	filepath->retain();
+	dispatch_async(_mainQueue, ^{
 		
-	dispatch_async_cpp(this, mainQueue, ^{
-
 		// Send file only if we sent pong and we are ponged
-		if (pongSent && ponged)
+		if (_pongSent && _ponged)
 		{
-			if (!mblocked)
+			if (!_blocked)
 			{
 				TCFileSend *file;
 				
 				// Try to open the file for send
-				NSString *fpath = @(filepath->content().c_str());
-				
-				file = [[TCFileSend alloc] initWithFilePath:fpath];
+				file = [[TCFileSend alloc] initWithFilePath:filepath];
 				
 				if (!file)
 				{
-					_error(tcbuddy_error_send_file, "io_error", filepath, false);
-#warning FIXME: localized string.
-					
-					filepath->release();
+					[self _error:tcbuddy_error_send_file info:@"io_error" contextObj:(__bridge TCObject *)filepath fatal:NO];
+#warning FIXME: localize 'io_error'.
 					return;
 				}
 				
 				// Insert the new file session
-				fsend[[file uuid]] = file;
+				_fsend[[file uuid]] = file;
 				
 				// Notify
-				TCFileInfo *info = new TCFileInfo(file);
+				TCFileInfo *info = [[TCFileInfo alloc] initWithFileSend:file];
 				
-				_notify(tcbuddy_notify_file_send_start, "core_bd_note_file_send_start", info);
-				
-				info->release();
+				[self _notify:tcbuddy_notify_file_send_start info:@"core_bd_note_file_send_start" context:(__bridge TCObject *)info];
 				
 				// Start the file session
-				_sendFileName(file);
+				[self _sendFileName:file];
 				
 				// Send the first block to start the send
-				_sendFileData(file);
+				[self _sendFileData:file];
 			}
 			else
-				_error(tcbuddy_error_file_blocked, "core_bd_err_file_blocked", filepath, false);
+			[self _error:tcbuddy_error_file_blocked info:@"core_bd_err_file_blocked" contextObj:(__bridge TCObject *)filepath fatal:NO];
+
 		}
 		else
 		{
-			_error(tcbuddy_error_file_offline, "core_bd_err_file_offline", filepath, false);
+			[self _error:tcbuddy_error_file_offline info:@"core_bd_err_file_offline" contextObj:(__bridge TCObject *)filepath fatal:NO];
 		}
-		
-		// Release
-		filepath->release();
 	});
 }
-
 
 
 /*
 ** TCBuddy - Action
 */
-#pragma mark - TCBuddy - Action
+#pragma mark - Action
 
-void TCBuddy::startHandshake(TCString *rrandom, tccontroller_status status, TCImage *avatar, TCString *name, TCString *text)
+- (void)startHandshake:(NSString *)remoteRandom status:(tccontroller_status)status avatar:(TCImage *)avatar name:(NSString *)name text:(NSString *)text
 {
-	if (!rrandom || !avatar || !name || !text)
+	if (!remoteRandom || !avatar || !name || !text)
 		return;
-		
-	rrandom->retain();
-	name->retain();
-	text->retain();
 	
-	dispatch_async_cpp(this, mainQueue, ^{
+	dispatch_async(_mainQueue, ^{
 		
-		if (!mblocked)
-		{
-			_sendPong(rrandom);
-			_sendClient();
-			_sendVersion();
-			_sendProfileName(name);
-			_sendProfileText(text);
-			_sendAvatar(avatar);
-			_sendAddMe();
-			_sendStatus(status);
-			
-			pongSent = true;
-		}
+		if (_blocked)
+			return;
 		
-		rrandom->release();
-		name->release();
-		text->release();
+		[self _sendPong:remoteRandom];
+		[self _sendClient];
+		[self _sendVersion];
+		[self _sendProfileName:name];
+		[self _sendProfileText:text];
+		[self _sendAvatar:avatar];
+		[self _sendAddMe];
+		[self _sendStatus:status];
+		
+		_pongSent = YES;
 	});
 }
 
-void TCBuddy::setInputConnection(TCSocket *sock)
+- (void)setInputConnection:(TCSocket *)sock
 {
 	if (!sock)
 		return;
+	
+	dispatch_async(_mainQueue, ^{
 		
-	dispatch_async_cpp(this, mainQueue, ^{
-		
-		if (mblocked)
+		if (_blocked)
 		{
 			[sock stop];
 		}
 		else
 		{
 			// Activate send message & send file commands
-			ponged = true;
+			_ponged = YES;
 			
 			// Use this incomming connection
-#warning FIXME: use self when switched to OC.
 #warning XXX: check that we will not loose event during this change.
-			//sock->setDelegate(mainQueue, this);
+			sock.delegate = self;
 			
-			if (inSocket)
-				[inSocket stop];
+			if (_inSocket)
+				[_inSocket stop];
 			
-			inSocket = sock;
+			_inSocket = sock;
 			
-			[inSocket setGlobalOperation:tcsocket_op_line withSize:0 andTag:0];
+			[_inSocket setGlobalOperation:tcsocket_op_line withSize:0 andTag:0];
 			
 			// Notify that we are ready
-			if (ponged && pongSent)
-				_notify(tcbuddy_notify_identified, "core_bd_note_identified");
+			if (_ponged && _pongSent)
+				[self _notify:tcbuddy_notify_identified info:@"core_bd_note_identified"];
 		}
 	});
 }
@@ -921,350 +973,372 @@ void TCBuddy::setInputConnection(TCSocket *sock)
 
 
 /*
-** TCBuddy(TCSocket) - Delegate
+** TCBuddy - Content
 */
-#pragma mark - TCBuddy(TCSocket) - Delegate
+#pragma mark - Content
 
-void TCBuddy::socketOperationAvailable(TCSocket *socket, tcsocket_operation operation, int tag, void *content, size_t size)
+- (NSArray *)messages
 {
-#warning FIXME: use TCSocketDelegate once switched to OC.
+}
+
+- (NSString *)profileText
+{
+	__block NSString * result = NULL;
+	
+	dispatch_sync(_mainQueue, ^{
+		result = _profileText;
+	});
+	
+	return result;
+}
+
+- (TCImage *)profileAvatar
+{
+	__block TCImage * result = NULL;
+	
+	dispatch_sync(_mainQueue, ^{
+		result = [_profileAvatar copy];
+	});
+	
+	return result;
+}
+
+- (NSString *)profileName
+{
+	__block NSString * result = NULL;
+	
+	dispatch_sync(_mainQueue, ^{
+		result = _profileName;
+	});
+	
+	return result;
+}
+
+- (NSString *)lastProfileName
+{
+	__block NSString *result = NULL;
+	
+	dispatch_sync(_mainQueue, ^{
+		result = [_config getBuddyLastProfileName:_address];
+	});
+	
+	return result;
+}
+
+- (NSString *)finalName
+{
+	__block NSString *result = NULL;
+	
+	dispatch_sync(_mainQueue, ^{
+		
+		if ([_alias length] > 0)
+			result = _alias;
+		else if ([_profileName length] > 0)
+			result = _profileName;
+		else
+			result = [_config getBuddyLastProfileName:_address];
+	});
+	
+	return result;
+}
+
+
+
+/*
+** TCBuddy - TCSocketDelegate
+*/
+#pragma mark - TCSocketDelegate
+
+- (void)socket:(TCSocket *)socket operationAvailable:(tcsocket_operation)operation tag:(NSUInteger)tag content:(id)content
+{
+	dispatch_async(_mainQueue, ^{
+		
+		if (_blocked)
+			return;
+		
+		if (operation == tcsocket_op_data)
+		{
+			// Get the reply
+			NSData			*data = content;
+			struct sockrep	*thisrep = (struct sockrep *)([data bytes]);
+			
+			// Check result
+			switch (thisrep->result)
+			{
+				case 90: // Socks v4 protocol finish
+				{
+					_socksstate = socks_finish;
+					
+					[_outSocket setGlobalOperation:tcsocket_op_line withSize:0 andTag:0];
+					
+					// Notify
+					[self _notify:tcbuddy_notify_connected_buddy info:@"core_bd_note_connected"];
+					
+					// We are connected, do things
+					[self _connectedSocks];
+					
+					break;
+				}
+					
+				case 91:
+					[self _error:tcbuddy_error_socks info:@"core_bd_err_socks_91" fatal:YES];
+					break;
+					
+				case 92:
+					[self _error:tcbuddy_error_socks info:@"core_bd_err_socks_92" fatal:YES];
+					break;
+					
+				case 93:
+					[self _error:tcbuddy_error_socks info:@"core_bd_err_socks_93" fatal:YES];
+					break;
+					
+				default:
+					[self _error:tcbuddy_error_socks info:@"core_bd_err_socks_unknown" fatal:YES];
+					break;
+			}
+		}
+		else if (operation == tcsocket_op_line)
+		{
+			NSArray *lines = content;
+			
+			for (NSData *line in lines)
+			{
+				dispatch_async(_mainQueue, ^{
+					
+					// Parse the line
+					[_parser parseLine:line];
+				});
+			}
+		}
+	});
+}
+
+- (void)socket:(TCSocket *)socket error:(TCInfo *)error
+{
+	dispatch_async(_mainQueue, ^{
+
+		// Localize the info
+		error->setInfo([[_config localized:@(error->info().c_str())] UTF8String]);
+		
+		// Fallback error
+		[self _error:tcbuddy_error_socket info:@"core_bd_err_socket" contextInfo:error fatal:YES];
+	});
+}
+
+- (void)socketRunPendingWrite:(TCSocket *)socket
+{
+	dispatch_async(_mainQueue, ^{
+		[self _runPendingFileWrite];
+	});
+}
+
+
+/*
+** TCBuddy - TCParserDelegate & TCParserCommand
+*/
+#pragma mark - TCParserDelegate & TCParserCommand
+
+- (void)parser:(TCParser *)parser parsedPingWithAddress:(NSString *)address random:(NSString *)random
+{
+	// not-implemented
+}
+
+- (void)parser:(TCParser *)parser parsedPongWithRandom:(NSString *)random
+{
+	// not-implemented
+}
+
+- (void)parser:(TCParser *)parser parsedStatus:(NSString *)status
+{
 	// > mainQueue <
 	
-	if (mblocked)
+	if (_blocked)
 		return;
 	
-	if (operation == tcsocket_op_data)
-	{
-		// Get the reply
-		struct sockrep *thisrep = static_cast<struct sockrep *> (content);
-		
-		// Check result
-		switch (thisrep->result)
-		{
-			case 90: // Socks v4 protocol finish
-			{
-				socksstate = socks_finish;
-				
-				[outSocket setGlobalOperation:tcsocket_op_line withSize:0 andTag:0];
-				
-				// Notify
-				_notify(tcbuddy_notify_connected_buddy, "core_bd_note_connected");
-				
-				// We are connected, do things
-				_connectedSocks();
-				
-				break;
-			}
-				
-			case 91:
-				_error(tcbuddy_error_socks, "core_bd_err_socks_91", true);				
-				break;
-				
-			case 92:
-				_error(tcbuddy_error_socks, "core_bd_err_socks_92", true);
-				break;
-				
-			case 93:
-				_error(tcbuddy_error_socks, "core_bd_err_socks_93", true);
-				break;
-				
-			default:
-				_error(tcbuddy_error_socks, "core_bd_err_socks_unknown", true);
-				break;
-		}
-		
-		// Clean content
-		free(content);
-	}
-	else if (operation == tcsocket_op_line)
-	{
-		std::vector <std::string *> *vect = static_cast< std::vector <std::string *> * > (content);
-		size_t						i, cnt = vect->size();
-		
-		for (i = 0; i < cnt; i++)
-		{
-			std::string *line = vect->at(i);
-			
-			dispatch_async_cpp(this, mainQueue, ^{
-				
-				// Parse the line
-#warning FIXME: use TCParser object once switched to OC
-				//parseLine(*line);
-				
-				// Free memory
-				delete line;
-			});
-		}
-		
-		// Clean
-		delete vect;
-	}
-}
-
-void TCBuddy::socketError(TCSocket *socket, TCInfo *err)
-{
-#warning FIXME: use TCSocketDelegate once switched to OC.
-
-	// > mainQueue <
-	
-	// Localize the info
-	err->setInfo([[config localized:@(err->info().c_str())] UTF8String]);
-	
-	// Fallback error
-	_error(tcbuddy_error_socket, "core_bd_err_socket", err, true);
-}
-
-void TCBuddy::socketRunPendingWrite(TCSocket *socket)
-{
-#warning FIXME: use TCSocketDelegate once switched to OC.
-
-	// > mainQueue <
-	
-	_runPendingWrite();
-}
-
-
-
-/*
-** TCBuddy(TCParser) - Overwrite
-*/
-#pragma mark - TCBuddy(TCParser) - Overwrite
-
-void TCBuddy::doStatus(const std::string &status)
-{
 	tcbuddy_status nstatus = tcbuddy_status_offline;
-		
-	if (status.compare("available") == 0)
+	
+	if ([status isEqualToString:@"available"])
 		nstatus = tcbuddy_status_available;
-	else if (status.compare("away") == 0)
+	else if ([status isEqualToString:@"away"])
 		nstatus = tcbuddy_status_away;
-	else if (status.compare("xa") == 0)
+	else if ([status isEqualToString:@"xa"])
 		nstatus = tcbuddy_status_xa;
 	
-	dispatch_async_cpp(this, mainQueue, ^{
-
-		if (nstatus != mstatus && !mblocked)
-		{
-			mstatus = nstatus;
-			
-			// Notify that status changed
-			TCNumber *tstatus = _status();
-			
-			_notify(tcbuddy_notify_status, "core_bd_note_status_changed", tstatus);
-			
-			tstatus->release();
-		}
-	});
+	if (nstatus != _status)
+	{
+		_status = nstatus;
+		
+		// Notify that status changed
+		TCNumber *tstatus = new TCNumber((uint16_t)[[self _status] intValue]);
+		
+		[self _notify:tcbuddy_notify_status info:@"core_bd_note_status_changed" context:tstatus];
+		
+		tstatus->release();
+	}
 }
 
-void TCBuddy::doMessage(const std::string &message)
+- (void)parser:(TCParser *)parser parsedMessage:(NSString *)message
 {
-	TCString *amsg = new TCString(message);
+	// > mainQueue <
+
+	if (_blocked)
+		return;
 	
-	dispatch_async_cpp(this, mainQueue, ^{
-		
-		if (!mblocked)
-		{
-			// Notify it
-			_notify(tcbuddy_notify_message, "core_bd_note_new_message", amsg);
-		}
-		
-		// Release
-		amsg->release();
-	});
+	// Notify it
+	[self _notify:tcbuddy_notify_message info:@"core_bd_note_new_message" context:(__bridge TCObject *)message];
 }
 
-void TCBuddy::doVersion(const std::string &version)
+- (void)parser:(TCParser *)parser parsedVersion:(NSString *)version
 {
-	TCString *aversion = new TCString(version);
+	// > mainQueue <
+
+	if (_blocked)
+		return;
 	
-	dispatch_async_cpp(this, mainQueue, ^{
+	_peerVersion = version;
 		
-		peerVersion->release();
-		peerVersion = aversion;
-		
-		// Notify it
-		_notify(tcbuddy_notify_version, "core_bd_note_new_version", peerVersion);
-	});
+	// Notify it
+	[self _notify:tcbuddy_notify_version info:@"core_bd_note_new_version" context:(__bridge TCObject *)version];
 }
 
-void TCBuddy::doClient(const std::string &client)
+- (void)parser:(TCParser *)parser parsedClient:(NSString *)client
 {
-	TCString *aclient = new TCString(client);
+	// > mainQueue <
 
-	dispatch_async_cpp(this, mainQueue, ^{
+	if (_blocked)
+		return;
 		
-		if (!mblocked)
-		{
-			peerClient->release();
-			peerClient = aclient;
-		
-			// Notify it
-			_notify(tcbuddy_notify_client, "core_bd_note_new_client", peerClient);
-		}
-		else
-			aclient->release();
-	});
-}
-
-
-void TCBuddy::doProfileText(const std::string &text)
-{
-	TCString *atext = new TCString(text);
+	_peerClient = client;
 	
-	dispatch_async_cpp(this, mainQueue, ^{
-		
-		if (!mblocked)
-		{
-			profileText->release();
-			profileText = atext;
-				
-			// Notify it
-			_notify(tcbuddy_notify_profile_text, "core_bd_note_new_profile_text", profileText);
-		}
-		else
-			atext->release();
-	});
+	// Notify it
+	[self _notify:tcbuddy_notify_client info:@"core_bd_note_new_client" context:(__bridge TCObject *)client];
 }
 
-void TCBuddy::doProfileName(const std::string &name)
+- (void)parser:(TCParser *)parser parsedProfileText:(NSString *)text
 {
-	TCString *aname = new TCString(name);
+	// > mainQueue <
 
-	dispatch_async_cpp(this, mainQueue, ^{
-		
-		if (!mblocked)
-		{
-			// Hold profile name
-			profileName->release();
-			profileName = aname;
-		
-			// Store profile name
-			[config setBuddy:@(maddress->content().c_str()) lastProfileName:@(aname->content().c_str())];
-		
-			// Notify it
-			_notify(tcbuddy_notify_profile_name, "core_bd_note_new_profile_name", profileName);
-		}
-		else
-			aname->release();
-	});
+	if (_blocked)
+		return;
+	
+	_profileText = text;
+	
+	// Notify it
+	[self _notify:tcbuddy_notify_profile_text info:@"core_bd_note_new_profile_text" context:(__bridge TCObject *)text];
 }
 
-void TCBuddy::doProfileAvatar(const std::string &bitmap)
+- (void)parser:(TCParser *)parser parsedProfileName:(NSString *)name
 {
-	std::string *abitmap = new std::string(bitmap);
+	// > mainQueue <
 
-	dispatch_async_cpp(this, mainQueue, ^{
-		
-		if (!mblocked)
-		{
-			[profileAvatar setBitmap:[[NSData alloc] initWithBytes:abitmap->data() length:abitmap->size()]];
-		
-			// Notify it
-			_notify(tcbuddy_notify_profile_avatar, "core_bd_note_new_profile_avatar", (__bridge TCObject *)profileAvatar);
-		}
-		
-		// Clean
-		delete abitmap;
-	});
+	if (_blocked)
+		return;
+	
+	// Hold profile name
+	_profileName = name;
+	
+	// Store profile name
+	[_config setBuddy:_address lastProfileName:name];
+	
+	// Notify it
+	[self _notify:tcbuddy_notify_profile_name info:@"core_bd_note_new_profile_name" context:(__bridge TCObject *)name];
 }
 
-void TCBuddy::doProfileAvatarAlpha(const std::string &bitmap)
+- (void)parser:(TCParser *)parser parsedProfileAvatar:(NSData *)bitmap
 {
-	std::string *abitmap = new std::string(bitmap);
+	// > mainQueue <
+	
+	if (_blocked)
+		return;
 
-	dispatch_async_cpp(this, mainQueue, ^{
-		
-		if (!mblocked)
-			[profileAvatar setBitmapAlpha:[[NSData alloc] initWithBytes:abitmap->data() length:abitmap->size()]];
-		
-		delete abitmap;
-	});
+	[_profileAvatar setBitmap:bitmap];
+	
+	// Notify it
+	[self _notify:tcbuddy_notify_profile_avatar info:@"core_bd_note_new_profile_avatar" context:(__bridge TCObject *)_profileAvatar];
 }
 
-void TCBuddy::doAddMe()
+- (void)parser:(TCParser *)parser parsedProfileAvatarAlpha:(NSData *)bitmap
 {
+	// > mainQueue <
+	
+	if (_blocked)
+		return;
+
+	[_profileAvatar setBitmapAlpha:bitmap];
+}
+
+- (void)parserParsedAddMe:(TCParser *)parser
+{
+	// > mainQueue <
+
 	/*
-	 This must be sent after connection if you are (or want to be) 
-	 on the other's buddy list. Since a client can also connect for 
-	 the purpose of joining a chat room without automatically appearing 
+	 This must be sent after connection if you are (or want to be)
+	 on the other's buddy list. Since a client can also connect for
+	 the purpose of joining a chat room without automatically appearing
 	 on the buddy list this message is needed.
-	*/
+	 */
 	
-	// -> I will not for this fork. In futur, perhaps.
+	// -> I will not do this for this fork. In futur, perhaps.
 }
 
-void TCBuddy::doRemoveMe()
+- (void)parserparsedRemoveMe:(TCParser *)parser
 {
+	// > mainQueue <
+
 	/*
 	 when receiving this message the buddy MUST be removed from
 	 the buddy list (or somehow marked as removed) so that it will not
 	 automatically add itself again and cause annoyance. When removing
 	 a buddy first send this message before disconnecting or the other
 	 client will never know about it and add itself again next time"""
-	*/
+	 */
 	
 	
-	// -> I will not for this fork. In futur, perhaps.
+	// -> I will not do this for this fork. In futur, perhaps.
 }
 
-void TCBuddy::doFileName(const std::string &uuid, const std::string &fsize, const std::string &bsize, const std::string &filename)
+- (void)parser:(TCParser *)parser parsedFileNameWithUUIDD:(NSString *)uuid fileSize:(NSString *)fileSize blockSize:(NSString *)blockSize fileName:(NSString *)filename
 {
 	// Check if we are blocked
-	if (blocked())
+	if (_blocked)
 		return;
 	
 	// Quick check
-	std::string *sfilename_1 = createReplaceAll(filename, "..", "_");
-	std::string *sfilename_2 = createReplaceAll(*sfilename_1, "/", "_");
-	
+	NSString *sfilename_1 = [filename stringByReplacingOccurrencesOfString:@".." withString:@"_"];
+	NSString *sfilename_2 = [sfilename_1 stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
 	
 	// Get the download folder
-	std::string down = [[config realPath:[config downloadFolder]] UTF8String];
+	NSString *downPath = [[_config realPath:[_config downloadFolder]] stringByAppendingPathComponent:_address];
 	
-	mkdir(down.c_str(), S_IRWXU | (S_IRGRP | S_IXGRP) | (S_IRWXO | S_IXOTH));
-	
-	
-	// Build the final download path
-	down = down + "/" + maddress->content() + "/";
-	
-	mkdir(down.c_str(), S_IRWXU | (S_IRGRP | S_IXGRP) | (S_IRWXO | S_IXOTH));
-	
+	[[NSFileManager defaultManager] createDirectoryAtPath:downPath withIntermediateDirectories:YES attributes:Nil error:nil];
 	
 	// Parse values
-	uint64_t	ifsize = strtoull(fsize.c_str(), NULL, 10);
-	uint64_t	ibsize = strtoull(bsize.c_str(), NULL, 10);
-	TCFileReceive *file;
+	uint64_t		ifsize = strtoull([fileSize cStringUsingEncoding:NSASCIIStringEncoding], NULL, 10);
+	uint64_t		ibsize = strtoull([blockSize cStringUsingEncoding:NSASCIIStringEncoding], NULL, 10);
+	TCFileReceive	*file;
 	
 	// Build a receiver instance
-	file = [[TCFileReceive alloc] initWithUUID:@(uuid.c_str()) folder:@(down.c_str()) fileName:@(sfilename_2->c_str()) fileSize:ifsize blockSiz:ibsize];
-
+	file = [[TCFileReceive alloc] initWithUUID:uuid folder:downPath fileName:sfilename_2 fileSize:ifsize blockSiz:ibsize];
+	
 	if (!file)
 	{
-		_error(tcbuddy_error_receive_file, "io_error", false);
-#warning FIXME; add localized string
+		[self _error:tcbuddy_error_receive_file info:@"io_error" fatal:NO];
+#warning FIXME; localize 'io_error'
 		return;
 	}
 	
 	// Add it to the list
-	dispatch_async_cpp(this, mainQueue, ^{
+	_freceive[[file uuid]] = file;
 		
-		freceive[[file uuid]] = file;
+	TCFileInfo *info = [[TCFileInfo alloc] initWithFileReceive:file];
 		
-		TCFileInfo *info = new TCFileInfo(file);
-		
-		_notify(tcbuddy_notify_file_receive_start, "core_bd_note_file_receive_start", info);
-		
-		info->release();
-	});
-
-	// Clean
-	delete sfilename_1;
-	delete sfilename_2;
+	[self _notify:tcbuddy_notify_file_receive_start info:@"core_bd_note_file_receive_start" context:(__bridge TCObject *)info];
 }
 
-void TCBuddy::doFileData(const std::string &uuid, const std::string &start, const std::string &hash, const std::string &data)
+- (void)parser:(TCParser *)parser parsedFileDataWithUUID:(NSString *)uuid start:(NSString *)start hash:(NSString *)hash data:(NSData *)data
 {
+	// > mainQueue <
+
 	/*
 	 TorChat protocol is based on text token protocol ("filedata", "filedata_ok", space separator, etc.).
 	 TorChat Python use text function for this text protocol ("join", "split", "replace", etc.)
@@ -1275,471 +1349,329 @@ void TCBuddy::doFileData(const std::string &uuid, const std::string &start, cons
 	 When TorChat (Python) ask Python to do some text work on this data (like "replace"), Python try to
 	 interpret them as UTF8 string before doing the job. On some rare case, when data contain a sequence
 	 looking like UTF8 sequence but invalid, this interpretation fail and raise an un-handled exception.
-	*/
+	 */
 	
 	// Check if we are blocked
-	if (blocked())
+	if (_blocked)
 		return;
 	
-	std::string *c_uuid = new std::string(uuid);
-	std::string *c_start = new std::string(start);
-	std::string *c_hash = new std::string(hash);
-	std::string *c_data = new std::string(data);
-	
 	// Manage file chunk
-	dispatch_async_cpp(this, mainQueue, ^{
+	TCFileReceive *file = _freceive[uuid];
 		
-		TCFileReceive *file = freceive[@(c_uuid->c_str())];
+	if (file)
+	{
+		uint64_t offset = strtoull([start cStringUsingEncoding:NSASCIIStringEncoding], NULL, 10);
 		
-		if (file)
+		if ([file writeChunk:[data bytes] chunkSize:[data length] hash:hash offset:&offset])
 		{
-			uint64_t offset = strtoull(c_start->c_str(), NULL, 10);
+			// Send that this chunk is okay
+			[self _sendFileDataOk:uuid start:offset];
 			
-			if ([file writeChunk:c_data->data() chunkSize:c_data->size() hash:@(c_hash->c_str()) offset:&offset])
-			{
-				// Send that this chunk is okay
-				_sendFileDataOk(*c_uuid, offset);
-				
-				// Notify of the new chunk
-				TCFileInfo *info = new TCFileInfo(file);
-				
-				_notify(tcbuddy_notify_file_receive_running, "core_bd_note_file_chunk_receive", info);
-
-				// Do nothing if we are no more to send
-				if ([file isFinished])
-				{
-					// Notify that we have finished
-					_notify(tcbuddy_notify_file_receive_finish, "core_bd_note_file_receive_finish", info);
-
-					// Release file
-					[freceive removeObjectForKey:@(c_uuid->c_str())];
-				}
-				
-				// Release info
-				info->release();
-			}
-			else
-				_sendFileDataError(*c_uuid, offset);
-		}
-		else
-		{
-			_sendFileStopSending(*c_uuid);
-		}
-		
-		// Clean
-		delete c_uuid;
-		delete c_start;
-		delete c_hash;
-		delete c_data;
-	});
-}
-
-
-void TCBuddy::doFileDataOk(const std::string &uuid, const std::string &start)
-{
-	// Check if we are blocked
-	if (blocked())
-		return;
-	
-	std::string *c_uuid = new std::string(uuid);
-	std::string *c_start = new std::string(start);
-	
-	// Manage file chunk
-	dispatch_async_cpp(this, mainQueue, ^{
-		
-		TCFileSend *file = fsend[@(c_uuid->c_str())];
-
-		if (file)
-		{
-			uint64_t offset = strtoull(c_start->c_str(), NULL, 10);
+			// Notify of the new chunk
+			TCFileInfo *info = [[TCFileInfo alloc] initWithFileReceive:file];
 			
-			// Inform that this offset was validated
-			[file setValidatedOffset:offset];
-			
-			// Notice the advancing
-			TCFileInfo *info = new TCFileInfo(file);
-			
-			_notify(tcbuddy_notify_file_send_running, "core_bd_note_file_chunk_send", info);
+			[self _notify:tcbuddy_notify_file_receive_running info:@"core_bd_note_file_chunk_receive" context:(__bridge TCObject *)info];
 			
 			// Do nothing if we are no more to send
 			if ([file isFinished])
 			{
-				// Notify
-				_notify(tcbuddy_notify_file_send_finish, "core_bd_note_file_send_finish", info);
-				
-				// Release the file
-				[fsend removeObjectForKey:@(c_uuid->c_str())];
+				// Notify that we have finished
+				[self _notify:tcbuddy_notify_file_receive_finish info:@"core_bd_note_file_receive_finish" context:(__bridge TCObject *)info];
+
+				// Release file
+				[_freceive removeObjectForKey:uuid];
 			}
-			else
-				_runPendingFileWrite();
-			
-			// Release info
-			info->release();
 		}
 		else
-		{
-			_sendFileStopReceiving(*c_uuid);
-		}
-		
-		// Clean
-		delete c_uuid;
-		delete c_start;
-	});
+			[self _sendFileDataError:uuid start:offset];
+	}
+	else
+	{
+		[self _sendFileStopSending:uuid];
+	}
 }
 
-void TCBuddy::doFileDataError(const std::string &uuid, const std::string &start)
+- (void)parser:(TCParser *)parser parsedFileDataOkWithUUID:(NSString *)uuid start:(NSString *)start
 {
+	// > mainQueue <
+
 	// Check if we are blocked
-	if (blocked())
+	if (_blocked)
 		return;
+
+	TCFileSend *file = _fsend[uuid];
 	
-	std::string *c_uuid = new std::string(uuid);
-	std::string *c_start = new std::string(start);
-
-	// Manage file chunk
-	dispatch_async_cpp(this, mainQueue, ^{
-
-		TCFileSend *file = fsend[@(c_uuid->c_str())];
+	if (file)
+	{
+		uint64_t offset = strtoull([start cStringUsingEncoding:NSASCIIStringEncoding], NULL, 10);
 		
-		if (file)
+		// Inform that this offset was validated
+		[file setValidatedOffset:offset];
+		
+		// Notice the advancing
+		TCFileInfo *info = [[TCFileInfo alloc] initWithFileSend:file];
+				
+		[self _notify:tcbuddy_notify_file_send_running info:@"core_bd_note_file_chunk_send" context:(__bridge TCObject *)info];
+
+		// Do nothing if we are no more to send
+		if ([file isFinished])
 		{
-			uint64_t offset = strtoull(c_start->c_str(), NULL, 10);
-			
-			// Set the position where we should re-send
-			[file setNextChunkOffset:offset];
+			// Notify
+			[self _notify:tcbuddy_notify_file_send_finish info:@"core_bd_note_file_send_finish" context:(__bridge TCObject *)info];
+
+			// Release the file
+			[_fsend removeObjectForKey:uuid];
 		}
 		else
-		{
-			_sendFileStopReceiving(*c_uuid);
-		}
-		
-		// Clean
-		delete c_uuid;
-		delete c_start;
-	});
+			[self _runPendingFileWrite];
+
+	}
+	else
+	{
+		[self _sendFileStopReceiving:uuid];
+	}
+
 }
 
-void TCBuddy::doFileStopSending(const std::string &uuid)
+- (void)parser:(TCParser *)parser parsedFileDataErrorWithUUID:(NSString *)uuid start:(NSString *)start
 {
+	// > mainQueue <
+
 	// Check if we are blocked
-	if (blocked())
+	if (!_blocked)
+		return;
+
+	// Manage file chunk
+	TCFileSend *file = _fsend[uuid];
+	
+	if (file)
+	{
+		uint64_t offset = strtoull([start cStringUsingEncoding:NSASCIIStringEncoding], NULL, 10);
+		
+		// Set the position where we should re-send
+		[file setNextChunkOffset:offset];
+	}
+	else
+	{
+		[self _sendFileStopReceiving:uuid];
+	}
+}
+
+- (void)parser:(TCParser *)parser parsedFileStopSendingWithUUID:(NSString *)uuid
+{
+	// > mainQueue <
+
+	// Check if we are blocked
+	if (_blocked)
+		return;
+		
+	// Get file session.
+	TCFileSend *file = _fsend[uuid];
+	
+	if (!file)
 		return;
 	
-	std::string *c_uuid = new std::string(uuid);
+	// Notify that we stop sending the file
+	TCFileInfo *info = [[TCFileInfo alloc] initWithFileSend:file];
+		
+	[self _notify:tcbuddy_notify_file_send_stoped info:@"core_bd_note_file_send_stoped" context:(__bridge TCObject *)info];
+		
+	// Release file
+	[_fsend removeObjectForKey:uuid];
+}
+
+- (void)parser:(TCParser *)parser parsedFileStopReceivingWithUUID:(NSString *)uuid
+{
+	// > mainQueue <
+	
+	// Check if we are blocked
+	if (_blocked)
+		return;
 	
 	// Manage file chunk
-	dispatch_async_cpp(this, mainQueue, ^{
-		
-		TCFileSend *file = fsend[@(c_uuid->c_str())];
-		
-		if (file)
-		{
-			// Notify that we stop sending the file
-			TCFileInfo *info = new TCFileInfo(file);
-			
-			_notify(tcbuddy_notify_file_send_stoped, "core_bd_note_file_send_stoped", info);
-			
-			info->release();
-
-			// Release file
-			[fsend removeObjectForKey:@(c_uuid->c_str())];
-		}
-		
-		// Clean
-		delete c_uuid;
-	});
-}
-
-void TCBuddy::doFileStopReceiving(const std::string &uuid)
-{
-	// Check if we are blocked
-	if (blocked())
+	TCFileReceive *file = _freceive[uuid];
+	
+	if (!file)
 		return;
 	
-	std::string *c_uuid = new std::string(uuid);
+	// Notify that we stop receiving the file
+	TCFileInfo *info = [[TCFileInfo alloc] initWithFileReceive:file];
+
+	[self _notify:tcbuddy_notify_file_receive_stoped info:@"core_bd_note_file_receive_stoped" context:(__bridge TCObject *)info];
 	
-	// Manage file chunk
-	dispatch_async_cpp(this, mainQueue, ^{
-		
-		TCFileSend *file = fsend[@(c_uuid->c_str())];
-		
-		if (file)
-		{
-			// Notify that we stop receiving the file
-			TCFileInfo *info = new TCFileInfo(file);
-			
-			_notify(tcbuddy_notify_file_receive_stoped, "core_bd_note_file_receive_stoped", info);
-			
-			info->release();
-			
-			// Release file
-			[freceive removeObjectForKey:@(c_uuid->c_str())];
-		}
-		
-		// Clean
-		delete c_uuid;
-	});
+	// Release file
+	[_freceive removeObjectForKey:uuid];
 }
 
-void TCBuddy::parserError(TCInfo *err)
+- (void)parser:(TCParser *)parser errorWithCode:(tcrec_error)error andInformation:(NSString *)information
 {
-	if (!err)
+	if (_blocked)
 		return;
 	
-	err->retain();
+	// Don't get parse error on blocked buddy (prevent spam, etc.)
+	TCInfo *info = new TCInfo(tcinfo_error, error, [information UTF8String]);
 	
-	dispatch_async_cpp(this, mainQueue, ^{
-		
-		// Don't get parse error on blocked buddy (prevent spam, etc.)
-		if (!mblocked)
-			_error(tcbuddy_error_parse, "core_bd_err_parse", err, false);
-		
-		err->release();
-	});
+	[self _error:tcbuddy_error_parse info:@"core_bd_err_parse" contextInfo:info fatal:NO];
+	
+	info->release();
 }
 
-
-
-/*
-** TCBuddy - Content
-*/
-#pragma mark - TCBuddy - Content
-
-TCString * TCBuddy::getProfileText()
-{
-	__block TCString * result = NULL;
-	
-	dispatch_sync_cpp(this, mainQueue, ^{
-		
-		profileText->retain();
-		result = profileText;
-	});
-	
-	return result;
-}
-
-TCImage * TCBuddy::getProfileAvatar()
-{
-	__block TCImage * result = NULL;
-	
-	dispatch_sync_cpp(this, mainQueue, ^{
-		result = profileAvatar;
-	});
-
-	return result;
-}
-
-
-TCString * TCBuddy::getProfileName()
-{
-	__block TCString * result = NULL;
-	
-	dispatch_sync_cpp(this, mainQueue, ^{
-		
-		profileName->retain();
-		result = profileName;
-	});
-	
-	return result;
-}
-
-TCString * TCBuddy::getLastProfileName()
-{
-	__block TCString *result = NULL;
-	
-	dispatch_sync_cpp(this, mainQueue, ^{
-
-		std::string value = [[config getBuddyLastProfileName:@(maddress->content().c_str())] UTF8String];
-		
-		result = new TCString(value);
-	});
-	
-	return result;
-}
-
-TCString * TCBuddy::getFinalName()
-{
-	__block TCString *result = NULL;
-	
-	dispatch_sync_cpp(this, mainQueue, ^{
-		
-		if (malias->content().length() > 0)
-		{
-			malias->retain();
-		
-			result = malias;
-		}
-		else if (profileName->content().length() > 0)
-		{
-			profileName->retain();
-			
-			result = profileName;
-		}
-		else
-		{
-			std::string value = [[config getBuddyLastProfileName:@(maddress->content().c_str())] UTF8String];
-			
-			result = new TCString(value);
-		}
-	});
-	
-	return result;
-}
 
 
 
 /*
 ** TCBuddy - Send Low Command
 */
-#pragma mark - TCBuddy - Send Low Command
+#pragma mark - Send Low Command
 
-void TCBuddy::_sendPing()
+- (void)_sendPing
 {
 	// > mainQueue <
 	
-	std::vector <std::string> items;
+	NSMutableArray *items = [[NSMutableArray alloc] init];
 	
-	items.push_back([[config selfAddress] UTF8String]);
-	items.push_back(mrandom->content());
-	
-	_sendCommand("ping", items);
+	[items addObject:[_config selfAddress]];
+	[items addObject:_random];
+
+	[self _sendCommand:@"ping" array:items channel:tcbuddy_channel_out];
 }
 
-void TCBuddy::_sendPong(TCString *random)
+- (void)_sendPong:(NSString *)random
 {
 	// > mainQueue <
 	
-	if (!random)
+	if ([random length] == 0)
 		return;
 	
-    _sendCommand("pong", random);
+	[self _sendCommand:@"pong" string:random channel:tcbuddy_channel_out];
 }
 
-void TCBuddy::_sendStatus(tccontroller_status status)
-{
-	// > mainQueue <
-	cstatus = status;
-	
-	switch (status)
-	{
-		case tccontroller_available:
-			_sendCommand("status", "available");
-			break;
-			
-		case tccontroller_away:
-			_sendCommand("status", "away");
-			break;
-			
-		case tccontroller_xa:
-			_sendCommand("status", "xa");
-			break;
-	}
-}
-
-void TCBuddy::_sendMessage(const std::string &message)
+- (void)_sendVersion
 {
 	// > mainQueue <
 	
-	_sendCommand("message", message);
+	[self _sendCommand:@"version" string:[_config clientVersion:tc_config_get_real] channel:tcbuddy_channel_out];
 }
 
-void TCBuddy::_sendVersion()
+- (void)_sendClient
+{
+	// > mainQueue <
+		
+	[self _sendCommand:@"client" string:[_config clientName:tc_config_get_real] channel:tcbuddy_channel_out];
+}
+
+- (void)_sendProfileName:(NSString *)name
 {
 	// > mainQueue <
 	
-	_sendCommand("version", [[config clientVersion:tc_config_get_real] UTF8String]);
-}
-
-void TCBuddy::_sendClient()
-{
-	// > mainQueue <
-	
-	_sendCommand("client",  [[config clientName:tc_config_get_real] UTF8String]);
-}
-
-void TCBuddy::_sendProfileName(TCString *name)
-{
-	// > mainQueue <
-
 	if (!name)
 		return;
 	
-	_sendCommand("profile_name", name);
+	[self _sendCommand:@"profile_name" string:name channel:tcbuddy_channel_out];
 }
 
-void TCBuddy::_sendProfileText(TCString *text)
+- (void)_sendProfileText:(NSString *)text
 {
 	// > mainQueue <
-
+	
 	if (!text)
 		return;
 	
-	_sendCommand("profile_text", text);
+	[self _sendCommand:@"profile_text" string:text channel:tcbuddy_channel_out];
 }
 
-void TCBuddy::_sendAvatar(TCImage *avatar)
+- (void)_sendAvatar:(TCImage *)avatar
 {
 	// > mainQueue <
-
-	std::vector <std::string> items;
 	
 	if (!avatar)
 		return;
 	
 	if ([avatar bitmapAlpha])
 	{
-		std::string data((char *)[[avatar bitmapAlpha] bytes], [[avatar bitmapAlpha] length]);
+		NSData *data = [avatar bitmapAlpha];
 		
-		_sendCommand("profile_avatar_alpha", data);
+		if (data)
+			[self _sendCommand:@"profile_avatar_alpha" data:data channel:tcbuddy_channel_out];
 	}
-
+	
 	if ([avatar bitmap])
 	{
-		std::string data((char *)[[avatar bitmap] bytes], [[avatar bitmap] length]);
-		
-		_sendCommand("profile_avatar", data);
+		NSData *data = [avatar bitmap];
+
+		[self _sendCommand:@"profile_avatar" data:data channel:tcbuddy_channel_out];
 	}
 	else
-		_sendCommand("profile_avatar");
+		[self _sendCommand:@"profile_avatar" channel:tcbuddy_channel_out];
 }
 
-void TCBuddy::_sendAddMe()
+- (void)_sendAddMe
 {
 	// > mainQueue <
 	
-	_sendCommand("add_me");
+	[self _sendCommand:@"add_me" channel:tcbuddy_channel_out];
 }
 
-void TCBuddy::_sendFileName(TCFileSend *file)
+- (void)_sendRemoveMe
+{
+	// not-implemented
+}
+
+- (void)_sendStatus:(tccontroller_status)status
+{
+	// > mainQueue <
+	
+	_cstatus = status;
+	
+	switch (status)
+	{
+		case tccontroller_available:
+			[self _sendCommand:@"status" string:@"available" channel:tcbuddy_channel_out];
+			break;
+			
+		case tccontroller_away:
+			[self _sendCommand:@"status" string:@"away" channel:tcbuddy_channel_out];
+			break;
+			
+		case tccontroller_xa:
+			[self _sendCommand:@"status" string:@"xa" channel:tcbuddy_channel_out];
+			break;
+	}
+}
+
+- (void)_sendMessage:(NSString *)message
+{
+	// > mainQueue <
+
+	[self _sendCommand:@"message" string:message channel:tcbuddy_channel_out];
+}
+
+- (void)_sendFileName:(TCFileSend *)file
 {
 	// > mainQueue <
 	
 	if (!file)
 		return;
 	
-	std::vector <std::string> items;
-	
-	char		buffer[1024];
-	
+	NSMutableArray *items = [[NSMutableArray alloc] init];
+		
 	// Add the uuid
-	items.push_back(std::string([[file uuid] UTF8String]));
+	[items addObject:[file uuid]];
 	
 	// Add the file size
-	snprintf(buffer, sizeof(buffer), "%llu", [file fileSize]);
-	items.push_back(std::string(buffer));
+	[items addObject:[NSString stringWithFormat:@"%llu", [file fileSize]]];
 	
 	// Add the block size
-	snprintf(buffer, sizeof(buffer), "%u", [file blockSize]);
-	items.push_back(std::string(buffer));
+	[items addObject:[NSString stringWithFormat:@"%u", [file blockSize]]];
 	
 	// Add the filename
-	items.push_back(std::string([[file fileName] UTF8String]));
-		
+	[items addObject:[file fileName]];
+
 	// Send the command
-	_sendCommand("filename", items, tcbuddy_channel_in);
+	[self _sendCommand:@"filename" array:items channel:tcbuddy_channel_in];
 }
 
-void TCBuddy::_sendFileData(TCFileSend *file)
+- (void)_sendFileData:(TCFileSend *)file
 {
 	// > mainQueue <
 	
@@ -1749,94 +1681,80 @@ void TCBuddy::_sendFileData(TCFileSend *file)
 	uint8_t		chunk[[file blockSize]];
 	uint64_t	chunksz = 0;
 	uint64_t	offset = 0;
-	NSString	*md5String;
+	NSString	*md5;
 	
-	//
-	md5String = [file readChunk:chunk chunkSize:&chunksz fileOffset:&offset];
+	// Read chunk of data.
+	md5 = [file readChunk:chunk chunkSize:&chunksz fileOffset:&offset];
 	
-	if (!md5String)
+	if (!md5)
 		return;
-	
-	//
-	std::string	*md5 = NULL;
 
-	md5 = new std::string([md5String UTF8String]);
+	// Build command.
+	NSMutableArray *items = [[NSMutableArray alloc] init];
 	
-	//
-	std::vector <std::string>	items;
-	char						buffer[50];
+	// > Add UUID
+	[items addObject:[file uuid]];
 	
-	// Add UUID
-	items.push_back([[file uuid] UTF8String]);
-	
-	// Add the offset
-	snprintf(buffer, sizeof(buffer), "%llu", offset);
-	items.push_back(buffer);
-	
-	// Add the MD5
-	items.push_back(*md5);
-	delete md5;
-	
-	// Add the data
-	std::string chk((char *)chunk, static_cast <size_t>(chunksz));
-	items.push_back(chk);
-	
-	// Send the chunk
-	_sendCommand("filedata", items, tcbuddy_channel_in);
-	
-}
+	// > Add the offset
+	[items addObject:[NSString stringWithFormat:@"%llu", offset]];
 
-void TCBuddy::_sendFileDataOk(const std::string &uuid, uint64_t start)
-{
-	// > mainQueue <
-	
-	std::vector<std::string>	items;
-	char						buffer[100];
-	
-	// Add UUID
-	items.push_back(uuid);
-	
-	// Add the offset
-	snprintf(buffer, sizeof(buffer), "%llu", start);
-	
-	items.push_back(buffer);
-	
+	// > Add the MD5
+	[items addObject:md5];
+
+	// > Add the data
+	[items addObject:[[NSData alloc] initWithBytes:chunk length:chunksz]];
 	
 	// Send the command
-	_sendCommand("filedata_ok", items);
+	[self _sendCommand:@"filedata" array:items channel:tcbuddy_channel_in];
 }
 
-void TCBuddy::_sendFileDataError(const std::string &uuid, uint64_t start)
+- (void)_sendFileDataOk:(NSString *)uuid start:(uint64_t)start
 {
 	// > mainQueue <
 	
-	std::vector<std::string>	items;
-	char						buffer[100];
+	// Build command.
+
+	NSMutableArray *items = [[NSMutableArray alloc] init];
 	
-	// Add UUID
-	items.push_back(uuid);
+	// > Add UUID
+	[items addObject:uuid];
 	
-	// Add the offset
-	snprintf(buffer, sizeof(buffer), "%llu", start);
-	
-	items.push_back(buffer);
+	// > Add the offset
+	[items addObject:[NSString stringWithFormat:@"%llu", start]];
 	
 	// Send the command
-	_sendCommand("filedata_error", items);
+	[self _sendCommand:@"filedata_ok" array:items channel:tcbuddy_channel_out];
 }
 
-void TCBuddy::_sendFileStopSending(const std::string &uuid)
+- (void)_sendFileDataError:(NSString *)uuid start:(uint64_t)start
+{
+	// > mainQueue <
+		
+	// Build command.
+	NSMutableArray *items = [[NSMutableArray alloc] init];
+	
+	// > Add UUID
+	[items addObject:uuid];
+	
+	// Add the offset
+	[items addObject:[NSString stringWithFormat:@"%llu", start]];
+	
+	// Send the command
+	[self _sendCommand:@"filedata_error" array:items channel:tcbuddy_channel_out];
+}
+
+- (void)_sendFileStopSending:(NSString *)uuid
 {
 	// > mainQueue <
 	
-	_sendCommand("file_stop_sending", uuid);
+	[self _sendCommand:@"file_stop_sending" string:uuid channel:tcbuddy_channel_out];
 }
 
-void TCBuddy::_sendFileStopReceiving(const std::string &uuid)
+- (void)_sendFileStopReceiving:(NSString *)uuid
 {
 	// > mainQueue <
 	
-	_sendCommand("file_stop_receiving", uuid);
+	[self _sendCommand:@"file_stop_receiving" string:uuid channel:tcbuddy_channel_out];
 }
 
 
@@ -1844,101 +1762,102 @@ void TCBuddy::_sendFileStopReceiving(const std::string &uuid)
 /*
 ** TCBuddy - Send Command Data
 */
-#pragma mark - TCBuddy - Send Command Data
+#pragma mark - Send Command Data
 
-bool TCBuddy::_sendCommand(const std::string &command, tcbuddy_channel channel)
+- (BOOL)_sendCommand:(NSString *)command channel:(tcbuddy_channel)channel
 {
 	// > mainQueue <
 	
-	return _sendCommand(command, "", channel);
+	return [self _sendCommand:command data:nil channel:channel];
 }
 
-bool TCBuddy::_sendCommand(const std::string &command, const std::vector<std::string> &data, tcbuddy_channel channel)
+- (BOOL)_sendCommand:(NSString *)command array:(NSArray *)data channel:(tcbuddy_channel)channel
 {
 	// > mainQueue <
 	
-	std::string *result = createJoin(data, " ");
-	bool		bresult;
+	// Render data.
+	NSData *rdata = nil;
+	
+	if (data)
+	{
+		rdata = [data joinWithCStr:" "];
+		
+		if (!rdata)
+			return NO;
+	}
 
 	// Send the command
-	bresult = _sendCommand(command, *result, channel);
-	
-	// Clean
-	delete result;
-	
-	return bresult;
+	return [self _sendCommand:command data:rdata channel:channel];
 }
 
-bool TCBuddy::_sendCommand(const std::string &command, TCString *data, tcbuddy_channel channel)
+- (BOOL)_sendCommand:(NSString *)command string:(NSString *)data channel:(tcbuddy_channel)channel
 {
-	if (!data)
-		return false;
-	
-	return _sendCommand(command, data->content(), channel);
+	return [self _sendCommand:command data:[data dataUsingEncoding:NSASCIIStringEncoding] channel:channel];
 }
 
-
-bool TCBuddy::_sendCommand(const std::string &command, const std::string &data, tcbuddy_channel channel)
+- (BOOL)_sendCommand:(NSString *)command data:(NSData *)data channel:(tcbuddy_channel)channel
 {
 	// > mainQueue <
 	
-	// -- Build the command line --
-	std::string *part = new std::string(command);
+	if (!command)
+		return NO;
 	
-	if (data.size() > 0)
+	// -- Build the command line --
+	NSMutableData *part = [[NSMutableData alloc] init];
+	
+	[part appendData:[command dataUsingEncoding:NSASCIIStringEncoding]];
+	
+	if ([data length] > 0)
 	{
-		part->append(" ");
-		part->append(data);
+		[part appendBytes:" " length:1];
+		[part appendData:data];
 	}
 	
 	// Escape protocol special chars
-	std::string *l1 = createReplaceAll(*part, "\\", "\\/");
-	std::string *l2 = createReplaceAll(*l1, "\n", "\\n");
-		
-	l2->append("\n");
-	
-	delete part;
-	delete l1;
+	[part replaceCStr:"\\" withCStr:"\\/"];
+	[part replaceCStr:"\n" withCStr:"\\n"];
 
+	// Add end line.
+	[part appendBytes:"\n" length:1];
+	
 	// -- Buffer or send the command --
-	if (socksstate != socks_finish)
+	if (_socksstate != socks_finish)
 	{
-		bufferedCommands.push_back(l2);
+		[_bufferedCommands addObject:part];
 		
-		if (!running)
-			start();
+		if (!_running)
+			[self start];
 	}
 	else
 	{
-		_sendData(l2->data(), l2->size(), channel);
-		delete l2;
+		[self _sendData:part channel:channel];
 	}
 	
-	return true;
+	return YES;
 }
 
-bool TCBuddy::_sendData(const void *data, size_t size, tcbuddy_channel channel)
+- (BOOL)_sendData:(NSData *)data channel:(tcbuddy_channel)channel
 {
 	// > mainQueue <
 	
-	if (!data || size == 0)
-		return false;
+	return [self _sendBytes:[data bytes] length:[data length] channel:channel];
+}
 
-	void *cpy = malloc(size);
+- (BOOL)_sendBytes:(const void *)bytes length:(NSUInteger)length channel:(tcbuddy_channel)channel
+{
+	// > mainQueue <
 	
-	if (!cpy)
-		return false;
+	if (!bytes || length == 0)
+		return NO;
 	
-	memcpy(cpy, data, size);
-
-	if (channel == tcbuddy_channel_in && inSocket)
-		[inSocket sendBytes:cpy ofSize:size copy:NO];
-	else if (channel == tcbuddy_channel_out && outSocket)
-		[outSocket sendBytes:cpy ofSize:size copy:NO];
+	if (channel == tcbuddy_channel_in && _inSocket)
+		[_inSocket sendBytes:bytes ofSize:length copy:YES];
+	else if (channel == tcbuddy_channel_out && _outSocket)
+		[_outSocket sendBytes:bytes ofSize:length copy:YES];
 	else
-		free(cpy);
-
-	return true;
+		return NO;
+	
+	return YES;
 }
 
 
@@ -1946,9 +1865,9 @@ bool TCBuddy::_sendData(const void *data, size_t size, tcbuddy_channel channel)
 /*
 ** TCBuddy - Network Helper
 */
-#pragma mark - TCBuddy - Network Helper
+#pragma mark - Network Helper
 
-void TCBuddy::_startSocks()
+- (void)_startSocks
 {
 	// > mainQueue <
 	
@@ -1958,11 +1877,12 @@ void TCBuddy::_startSocks()
 	size_t				datalen;
 	
 	// Get the target connexion informations
-	std::string host = maddress->content() + ".onion";
-
+	NSString	*host = [_address stringByAppendingString:@".onion"];
+	const char	*c_host = [host UTF8String];
+	
 	// Check data size
 	datalen = sizeof(struct sockreq) + strlen(user) + 1;
-	datalen += strlen(host.c_str()) + 1;
+	datalen += strlen(c_host) + 1;
 	
 	buffer = (char *)malloc(datalen);
 	thisreq = (struct sockreq *)buffer;
@@ -1980,183 +1900,179 @@ void TCBuddy::_startSocks()
 	char *pos = (char *)thisreq + sizeof(struct sockreq);
 	
 	pos += strlen(user) + 1;
-	strcpy(pos, host.c_str());
+	strcpy(pos, c_host);
 	
 	// Set the next input operation
-	[outSocket scheduleOperation:tcsocket_op_data withSize:sizeof(struct sockrep) andTag:socks_v4_reply];
+	[_outSocket scheduleOperation:tcsocket_op_data withSize:sizeof(struct sockrep) andTag:socks_v4_reply];
 	
 	// Send the request
-	if (_sendData(buffer, datalen))
-		socksstate = socks_running;
+	if ([self _sendBytes:buffer length:datalen channel:tcbuddy_channel_out])
+		_socksstate = socks_running;
 	else
-		_error(tcbuddy_error_socks, "core_bd_err_socks_request", true);
+		[self _error:tcbuddy_error_socks info:@"core_bd_err_socks_request" fatal:true];
 	
 	free(buffer);
 }
 
-void TCBuddy::_connectedSocks()
+- (void)_connectedSocks
 {
 	// > mainQueue <
 	
 	// -- Send ping --
-	_sendPing();
+	[self _sendPing];
 	
 	// -- Send buffered commands --
-	size_t i, cnt = bufferedCommands.size();
-	
-	for (i = 0; i < cnt; i++)
+	for (NSData *command in _bufferedCommands)
 	{
-		_sendData(bufferedCommands[i]->data(), bufferedCommands[i]->size());
-		
-		delete bufferedCommands[i];
+		[self _sendData:command channel:tcbuddy_channel_out];
 	}
 	
-	bufferedCommands.clear();
+	[_bufferedCommands removeAllObjects];
 }
 
-// There is place to write, so... write
-void TCBuddy::_runPendingWrite()
+- (void)_runPendingWrite
 {
 	// > mainQueue <
 	
 	// Try to send pending files send
-	_runPendingFileWrite();
+	[self _runPendingFileWrite];
 }
 
-void TCBuddy::_runPendingFileWrite()
+- (void)_runPendingFileWrite
 {
 	// > mainQueue <
-		
+	
 	// Send a block of each send file session
-	for (NSString *uuid in fsend)
+	for (NSString *uuid in _fsend)
 	{
-		TCFileSend *file = fsend[uuid];
+		TCFileSend *file = _fsend[uuid];
 		
 		if (([file readSize] - [file validatedSize]) >= 16 * [file blockSize])
 			continue;
 		
-		_sendFileData(file);
+		[self _sendFileData:file];
 	}
 }
 
 
 
 /*
-** TCBuddy - Helper
+** TCBuddy - Helpers
 */
-#pragma mark - TCBuddy - Helper
+#pragma mark - Helpers
 
-void TCBuddy::_error(tcbuddy_info code, const std::string &info, bool fatal)
+- (void)_error:(tcbuddy_info)code info:(NSString *)info fatal:(BOOL)fatal
 {
 	// > mainQueue <
 	
-	TCInfo *err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String]);
+	TCInfo *err = new TCInfo(tcinfo_error, code, [[_config localized:info] UTF8String]);
 	
-	_send_event(err);
+	[self _sendEvent:err];
 	
 	err->release();
 	
 	// Fatal -> stop
 	if (fatal)
-		stop();		
+		[self stop];
 }
 
-void TCBuddy::_error(tcbuddy_info code, const std::string &info, TCObject *ctx, bool fatal)
+- (void)_error:(tcbuddy_info)code info:(NSString *)info contextObj:(TCObject *)ctx fatal:(BOOL)fatal
 {
 	// > mainQueue <
 	
-	TCInfo *err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String], ctx);
+	TCInfo *err = new TCInfo(tcinfo_error, code, [[_config localized:info] UTF8String], ctx);
 	
-	_send_event(err);
+	[self _sendEvent:err];
 	
 	err->release();
 	
 	// Fatal -> stop
 	if (fatal)
-		stop();		
+		[self stop];
 }
 
-void TCBuddy::_error(tcbuddy_info code, const std::string &info, TCInfo *serr, bool fatal)
+- (void)_error:(tcbuddy_info)code info:(NSString *)info contextInfo:(TCInfo *)serr fatal:(BOOL)fatal
 {
 	// > mainQueue <
 	
-	TCInfo *err = new TCInfo(tcinfo_error, code, [[config localized:@(info.c_str())] UTF8String], serr);
+	TCInfo *err = new TCInfo(tcinfo_error, code, [[_config localized:info] UTF8String], serr);
 	
-	_send_event(err);
+	[self _sendEvent:err];
 	
 	err->release();
 	
 	// Fatal -> stop
 	if (fatal)
-		stop();	
+		[self stop];
 }
 
-void TCBuddy::_notify(tcbuddy_info notice)
+- (void)_notify:(tcbuddy_info)notice
 {
 	// > mainQueue <
 	
 	TCInfo *ifo = new TCInfo(tcinfo_info, notice);
 	
-	_send_event(ifo);
-	
+	[self _sendEvent:ifo];
+
 	ifo->release();
 }
 
-void TCBuddy::_notify(tcbuddy_info notice, const std::string &info)
+- (void)_notify:(tcbuddy_info)notice info:(NSString *)info
 {
 	// > mainQueue <
 	
-	TCInfo *ifo = new TCInfo(tcinfo_info, notice, [[config localized:@(info.c_str())] UTF8String]);
+	TCInfo *ifo = new TCInfo(tcinfo_info, notice, [[_config localized:info] UTF8String]);
 	
-	_send_event(ifo);
+	[self _sendEvent:ifo];
 	
 	ifo->release();
 }
 
-void TCBuddy::_notify(tcbuddy_info notice, const std::string &info, TCObject *ctx)
+- (void)_notify:(tcbuddy_info)notice info:(NSString *)info context:(TCObject *)ctx
 {
 	// > mainQueue <
 	
-	TCInfo *ifo = new TCInfo(tcinfo_info, notice, [[config localized:@(info.c_str())] UTF8String], ctx);
+	TCInfo *ifo = new TCInfo(tcinfo_info, notice, [[_config localized:info] UTF8String], ctx);
 	
-	_send_event(ifo);
+	[self _sendEvent:ifo];
 	
 	ifo->release();
 }
 
-void TCBuddy::_send_event(TCInfo *info)
+- (void)_sendEvent:(TCInfo *)info
 {
 	// > mainQueue <
 	
 	if (!info)
 		return;
 	
-	if (nQueue && nBlock)
-	{
-		info->retain();
+	id <TCBuddyDelegate> delegate = _delegate;
+	
+	info->retain();
 		
-		dispatch_async_cpp(this, nQueue, ^{
-				
-			nBlock(this, info);
-				
-			info->release();
-		});
-	}
+	dispatch_async(_delegateQueue, ^{
+		
+		[delegate buddy:self event:info];
+			
+		info->release();
+	});
 }
 
-TCNumber * TCBuddy::_status()
+- (NSNumber *)_status
 {
 	// > mainQueue <
 	
 	tcbuddy_status res;
 	
-	if (pongSent && ponged)
-		res = mstatus;
+	if (_pongSent && _ponged)
+		res = _status;
 	else
 		res = tcbuddy_status_offline;
 	
-	return new TCNumber((uint8_t) res);
+	return @(res);
 }
+
+@end
 
 
 
@@ -2165,91 +2081,103 @@ TCNumber * TCBuddy::_status()
 */
 #pragma mark - TCFileInfo
 
-// -- Constructor --
-TCFileInfo::TCFileInfo(TCFileSend *_sender)
+@implementation TCFileInfo
+
+
+/*
+** TCFileInfo - Instance
+*/
+#pragma mark - TCFileInfo - Instance
+
+- (id)initWithFileSend:(TCFileSend *)sender
 {
-	if (!_sender)
-		throw "NULL TCFileSend in TCFileInfo";
-		
-	sender = _sender;
-	receiver = nil;
+	if (!sender)
+		return nil;
+	
+	self = [super init];
+	
+	if (self)
+	{
+		_sender = sender;
+	}
+	
+	return self;
 }
 
-TCFileInfo::TCFileInfo(TCFileReceive *_receiver)
+- (id)initWithFileReceive:(TCFileReceive *)receiver
 {
-	if (!_receiver)
-		throw "NULL TCFileSend in TCFileInfo";
-		
-	receiver = _receiver;
-	sender = nil;
+	if (!receiver)
+		return nil;
+	
+	self = [super init];
+	
+	if (self)
+	{
+		_receiver = receiver;
+	}
+	
+	return self;
 }
 
-TCFileInfo::~TCFileInfo()
+
+/*
+** TCFileInfo - Properties
+*/
+#pragma mark - TCFileInfo - Properties
+
+- (NSString *)uuid
 {
-	sender = nil;
-	receiver = nil;
+	if (_receiver)
+		return [_receiver uuid];
 	
-	receiver = NULL;
+	if (_sender)
+		return [_sender uuid];
+	
+	return @"";
 }
 
-// -- Property --
-const std::string TCFileInfo::uuid()
+- (uint64_t)fileSizeCompleted
 {
-	static std::string null;
+	if (_receiver)
+		return [_receiver receivedSize];
 	
-	if (receiver)
-		return [[receiver uuid] UTF8String];
-	
-	if (sender)
-		return [[sender uuid] UTF8String];
-	
-	return null;
-}
-
-uint64_t TCFileInfo::fileSizeCompleted()
-{
-	if (receiver)
-		return [receiver receivedSize];
-	
-	if (sender)
-		return [sender validatedSize];
+	if (_sender)
+		return [_sender validatedSize];
 	
 	return 0;
 }
 
-uint64_t TCFileInfo::fileSizeTotal()
+- (uint64_t)fileSizeTotal
 {
-	if (receiver)
-		return [receiver fileSize];
+	if (_receiver)
+		return [_receiver fileSize];
 	
-	if (sender)
-		return [sender fileSize];
+	if (_sender)
+		return [_sender fileSize];
 	
 	return 0;
 }
 
-const std::string TCFileInfo::fileName()
+- (NSString *)fileName
 {
-	static std::string null;
+	if (_receiver)
+		return [_receiver fileName];
 	
-	if (receiver)
-		return [[receiver fileName] UTF8String];
+	if (_sender)
+		return [_sender fileName];
 	
-	if (sender)
-		return [[sender fileName] UTF8String];
-	
-	return null;
+	return @"";
 }
 
-const std::string TCFileInfo::filePath()
+- (NSString *)filePath
 {
-	static std::string null;
-
-	if (receiver)
-		return [[receiver filePath] UTF8String];
+	if (_receiver)
+		return [_receiver filePath];
 	
-	if (sender)
-		return [[sender filePath] UTF8String];
+	if (_sender)
+		return [_sender filePath];
 	
-	return null;
+	return @"";
 }
+
+@end
