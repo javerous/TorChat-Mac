@@ -164,6 +164,8 @@
 
 - (void)_switchToPanel:(NSString *)panel
 {
+	// > main queue <
+	
 	if ([[_currentPanel panelID] isEqualToString:panel])
 		return;
 	
@@ -192,6 +194,8 @@
 
 - (void)_checkNextButton
 {
+	// > main queue <
+	
 	if (_fDisable)
 	{
 		[_nextButton setEnabled:NO];
