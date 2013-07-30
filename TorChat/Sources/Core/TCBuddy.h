@@ -191,7 +191,6 @@ typedef enum
 - (void)setInputConnection:(TCSocket *)sock;
 
 // -- Content --
-- (NSArray *)messages;
 - (NSString *)profileText;
 - (TCImage *)profileAvatar;
 
