@@ -21,6 +21,8 @@
  */
 
 
+#import <Foundation/Foundation.h>
+
 #import "TCConfig.h"
 
 
