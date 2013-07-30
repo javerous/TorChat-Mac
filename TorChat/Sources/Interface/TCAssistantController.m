@@ -332,9 +332,7 @@
 		if (!aconfig)
 		{
 			// Log error
-			[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_read_file"];
-#warning fix 'ac_err_read_file': no more args.
-			
+			[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_read_file", [url path]];
 			return;
 		}
 		
@@ -455,14 +453,12 @@
 	// Configuration
 	path = [[[bundle bundlePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"];
 		
-	aconfig = [[TCCocoaConfig alloc] init];
+	aconfig = [[TCCocoaConfig alloc] initWithFile:path];
 	
-	if (aconfig)
+	if (!aconfig)
 	{
 		// Log error
-		[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_write_file"];
-#warning FIXME: fix 'ac_err_write_file' to not get args.
-
+		[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_write_file", path];
 		return nil;
 	}
 	
@@ -557,11 +553,7 @@
 	if (!cconfig)
 	{
 		[imAddressField setStringValue:NSLocalizedString(@"ac_err_config", @"")];
-		[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_write_file"];
-#warning FIXME: fix 'ac_err_write_file' to remoive args.
-
-		cconfig = nil;
-		
+		[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_write_file", pth];
 		return;
 	}
 	
