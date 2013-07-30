@@ -52,16 +52,16 @@
 @interface TCBuddiesController () <TCControllerDelegate>
 {
 	id <TCConfig>		_configuration;
-	TCController		*control;
+	TCController		*_control;
 	
-	dispatch_queue_t	mainQueue;
+	dispatch_queue_t	_localQueue;
 	
-	NSMutableArray		*buddies;
-	id					lastSelected;
+	NSMutableArray		*_buddies;
+	id					_lastSelected;
 	
-	BOOL				running;
+	BOOL				_running;
 	
-	NSDictionary		*infos;
+	NSDictionary		*_infos;
 }
 
 - (void)doAvatarDrop:(NSImage *)avatar;
@@ -105,10 +105,10 @@
 	if (self)
 	{
 		// Build an event dispatch queue
-		mainQueue = dispatch_queue_create("com.torchat.cocoa.buddies.main", DISPATCH_QUEUE_SERIAL);
+		_localQueue = dispatch_queue_create("com.torchat.cocoa.buddies.local", DISPATCH_QUEUE_SERIAL);
 		
 		// Build array of cocoa buddy
-		buddies = [[NSMutableArray alloc] init];
+		_buddies = [[NSMutableArray alloc] init];
 		
 		// Observe file events
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(fileCancel:) name:TCFileCellCancelNotify object:nil];
@@ -162,10 +162,10 @@
 		return;
 	}
 	
-	if (running)
+	if (_running)
 		return;
 	
-	running = YES;
+	_running = YES;
 	
 	// Hold the config
 	_configuration = configuration;
@@ -175,7 +175,7 @@
 		[[TCTorManager sharedManager] startWithConfiguration:_configuration];
 	
 	// Build controller
-	control = [[TCController alloc] initWithConfiguration:_configuration];
+	_control = [[TCController alloc] initWithConfiguration:_configuration];
 	
 	
 	// -- Init window content --
@@ -186,10 +186,10 @@
 	[self updateTitleUI];
 	
 	// > Init status
-	[self updateStatusUI:[control status]];
+	[self updateStatusUI:[_control status]];
 	
 	// > Init avatar
-	tavatar = [control profileAvatar];
+	tavatar = [_control profileAvatar];
 	avatar = [tavatar imageRepresentation];
 	
 	if ([[avatar representations] count] > 0)
@@ -215,19 +215,19 @@
 	[_mainWindow makeKeyAndOrderFront:self];
 	
 	// Init delegate
-	control.delegate = self;
+	_control.delegate = self;
 	
 	// Start the controller
-	[control start];
+	[_control start];
 }
 
 - (void)stop
 {
-	if (!running)
+	if (!_running)
 		return;
 	
 	// Clean buddies
-	for (TCCocoaBuddy *buddy in buddies)
+	for (TCCocoaBuddy *buddy in _buddies)
 	{
 		// Yield the handled core item
 		[buddy yieldCore];
@@ -236,17 +236,17 @@
 		[TCBuddyInfoController removingBuddy:buddy];
 	}
 	
-	[buddies removeAllObjects];
+	[_buddies removeAllObjects];
 	[_tableView reloadData];
 	
 	// Clean controller
-	if (control)
+	if (_control)
 	{
-		control.delegate = nil;
+		_control.delegate = nil;
 		
-		[control stop];
+		[_control stop];
 		
-		control = nil;
+		_control = nil;
 	}
 	
 	// Set status to offline
@@ -254,7 +254,7 @@
 	[self updateTitleUI];
 	
 	// Update status
-	running = NO;
+	_running = NO;
 }
 
 
@@ -267,13 +267,13 @@
 - (BOOL)addBlockedBuddy:(NSString *)address
 {
 	// Add
-	return [control addBlockedBuddy:address];
+	return [_control addBlockedBuddy:address];
 }
 
 - (BOOL)removeBlockedBuddy:(NSString *)address
 {
 	// Remove
-	return [control removeBlockedBuddy:address];
+	return [_control removeBlockedBuddy:address];
 }
 
 
@@ -285,16 +285,16 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
-	return (NSInteger)[buddies count];
+	return (NSInteger)[_buddies count];
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
-	if (rowIndex < 0 || rowIndex >= [buddies count])
+	if (rowIndex < 0 || rowIndex >= [_buddies count])
 		return nil;
 	
 	NSString		*identifier = [aTableColumn identifier];
-	TCCocoaBuddy	*buddy = [buddies objectAtIndex:(NSUInteger)rowIndex];
+	TCCocoaBuddy	*buddy = [_buddies objectAtIndex:(NSUInteger)rowIndex];
 	
 	if ([identifier isEqualToString:@"state"])
 	{
@@ -339,13 +339,13 @@
 	[_imRemove setEnabled:(row >= 0)];
 
 	// Hold current selection (not perfect)
-	if (row >= 0 && row < [buddies count])
-		lastSelected = [buddies objectAtIndex:(NSUInteger)row];
+	if (row >= 0 && row < [_buddies count])
+		_lastSelected = [_buddies objectAtIndex:(NSUInteger)row];
 	else
-		lastSelected = nil;
+		_lastSelected = nil;
 	
 	// Notify
-	id				obj = (row >= 0 ? [buddies objectAtIndex:(NSUInteger)row] : [NSNull null]);
+	id				obj = (row >= 0 ? [_buddies objectAtIndex:(NSUInteger)row] : [NSNull null]);
 	NSDictionary	*content = [NSDictionary dictionaryWithObject:obj forKey:TCBuddiesControllerBuddyKey];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesControllerSelectChanged object:self userInfo:content];	
@@ -356,10 +356,10 @@
 	NSInteger		row = [_tableView clickedRow];
 	TCCocoaBuddy	*buddy;
 
-	if (row < 0 || row >= [buddies count])
+	if (row < 0 || row >= [_buddies count])
 		return;
 	
-	buddy = [buddies objectAtIndex:(NSUInteger)row];
+	buddy = [_buddies objectAtIndex:(NSUInteger)row];
 	
 	[buddy startChatAndSelect:YES];
 }
@@ -379,10 +379,10 @@
 	NSArray			*types = [pboard types];
 	NSArray			*fileList = [pboard propertyListForType:NSFilenamesPboardType];
 	
-	if (row < 0 || row >= [buddies count])
+	if (row < 0 || row >= [_buddies count])
 		return NO;
 	
-	TCCocoaBuddy	*buddy = [buddies objectAtIndex:(NSUInteger)row];
+	TCCocoaBuddy	*buddy = [_buddies objectAtIndex:(NSUInteger)row];
 	
 	if ([types containsObject:NSFilenamesPboardType])
 	{
@@ -419,7 +419,7 @@
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		// Sort buddies by status
-		NSUInteger		i, cnt = [buddies count];
+		NSUInteger		i, cnt = [_buddies count];
 		NSMutableArray	*temp_off = [[NSMutableArray alloc] initWithCapacity:cnt];
 		NSMutableArray	*temp_av = [[NSMutableArray alloc] initWithCapacity:cnt];
 		NSMutableArray	*temp_aw = [[NSMutableArray alloc] initWithCapacity:cnt];
@@ -427,7 +427,7 @@
 		
 		for (i = 0; i < cnt; i++)
 		{
-			TCCocoaBuddy *buddy = [buddies objectAtIndex:i];
+			TCCocoaBuddy *buddy = [_buddies objectAtIndex:i];
 			
 			switch ([buddy status])
 			{
@@ -449,12 +449,12 @@
 			}
 		}
 		
-		[buddies removeAllObjects];
+		[_buddies removeAllObjects];
 		
-		[buddies addObjectsFromArray:temp_av];
-		[buddies addObjectsFromArray:temp_aw];
-		[buddies addObjectsFromArray:temp_xa];
-		[buddies addObjectsFromArray:temp_off];
+		[_buddies addObjectsFromArray:temp_av];
+		[_buddies addObjectsFromArray:temp_aw];
+		[_buddies addObjectsFromArray:temp_xa];
+		[_buddies addObjectsFromArray:temp_off];
 
 		// Reload table
 		[_tableView reloadData];
@@ -593,7 +593,7 @@
 			
 			dispatch_async(dispatch_get_main_queue(), ^{
 				
-				[buddies addObject:obuddy];
+				[_buddies addObject:obuddy];
 				
 				[obuddy setLocalAvatar:[_imAvatar image]];
 				
@@ -629,7 +629,7 @@
 	tcfile_way		way = (tcfile_way)[[info objectForKey:@"way"] intValue];
 	
 	// Search the buddy associated with this transfert
-	for (TCCocoaBuddy *buddy in buddies)
+	for (TCCocoaBuddy *buddy in _buddies)
 	{
 		if ([[buddy address] isEqualToString:address])
 		{
@@ -660,20 +660,20 @@
 	switch ([_imStatus selectedTag])
 	{
 		case -2:
-			[control stop];
+			[_control stop];
 			[self updateStatusUI:-2];
 			break;
 			
 		case 0:
-			[control setStatus:tccontroller_available];
+			[_control setStatus:tccontroller_available];
 			break;
 			
 		case 1:
-			[control setStatus:tccontroller_away];
+			[_control setStatus:tccontroller_away];
 			break;
 			
 		case 2:
-			[control setStatus:tccontroller_xa];
+			[_control setStatus:tccontroller_xa];
 			break;
 	}
 }
@@ -706,7 +706,7 @@
 	if (!image)
 		return;
 	
-	[control setProfileAvatar:image];
+	[_control setProfileAvatar:image];
 }
 
 - (IBAction)doTitle:(id)sender
@@ -744,11 +744,11 @@
 	TCCocoaBuddy	*buddy;
 	NSString		*address;
 	
-	if (row < 0 || row >= [buddies count])
+	if (row < 0 || row >= [_buddies count])
 		return;
 	
 	// Get the buddy address
-	buddy = [buddies objectAtIndex:(NSUInteger)row];
+	buddy = [_buddies objectAtIndex:(NSUInteger)row];
 	address = [buddy address];
 	
 	// Inform the info controller that we are removing this buddy
@@ -756,11 +756,11 @@
 	
 	// Remove the buddy from interface side
 	[buddy yieldCore];
-	[buddies removeObjectAtIndex:(NSUInteger)row];
+	[_buddies removeObjectAtIndex:(NSUInteger)row];
 	[_tableView reloadData];
 	
 	// Remove the buddy from the controller
-	[control removeBuddy:address];
+	[_control removeBuddy:address];
 }
 
 - (IBAction)doAdd:(id)sender
@@ -780,10 +780,10 @@
 	NSInteger		row = [_tableView selectedRow];
 	TCCocoaBuddy	*buddy;
 	
-	if (row < 0 || row >= [buddies count])
+	if (row < 0 || row >= [_buddies count])
 		return;
 
-	buddy = [buddies objectAtIndex:(NSUInteger)row];
+	buddy = [_buddies objectAtIndex:(NSUInteger)row];
 	
 	[buddy startChatAndSelect:YES];
 }
@@ -793,10 +793,10 @@
 	NSInteger		row = [_tableView selectedRow];
 	TCCocoaBuddy	*buddy;
 	
-	if (row < 0 || row >= [buddies count])
+	if (row < 0 || row >= [_buddies count])
 		return;
 	
-	buddy = [buddies objectAtIndex:(NSUInteger)row];
+	buddy = [_buddies objectAtIndex:(NSUInteger)row];
 	
 	// Show dialog to select files to send
 	NSOpenPanel	*openDlg = [NSOpenPanel openPanel];
@@ -821,21 +821,21 @@
 	NSInteger		row = [_tableView selectedRow];
 	TCCocoaBuddy	*buddy;
 	
-	if (row < 0 || row >= [buddies count])
+	if (row < 0 || row >= [_buddies count])
 		return;
 	
-	buddy = [buddies objectAtIndex:(NSUInteger)row];
+	buddy = [_buddies objectAtIndex:(NSUInteger)row];
 		
 	if ([buddy blocked])
-		[control removeBlockedBuddy:[buddy address]];
+		[_control removeBlockedBuddy:[buddy address]];
 	else
-		[control addBlockedBuddy:[buddy address]];
+		[_control addBlockedBuddy:[buddy address]];
 }
 
 - (IBAction)doEditProfile:(id)sender
 {
-	NSString *tname = [control profileName];
-	NSString *ttext = [control profileText];
+	NSString *tname = [_control profileName];
+	NSString *ttext = [_control profileText];
 	
 	[_profileName setStringValue:tname];
 	[[[_profileText textStorage] mutableString] setString:ttext];
@@ -848,7 +848,7 @@
 	NSString *notes = [[_addNotesField textStorage] mutableString];
 
 	// Add the buddy to the controller. Notification will add it on our interface.
-	[control addBuddy:[_addNameField stringValue] address:[_addAddressField stringValue] comment:notes];
+	[_control addBuddy:[_addNameField stringValue] address:[_addAddressField stringValue] comment:notes];
 	
 	[_addWindow orderOut:self];
 }
@@ -866,7 +866,7 @@
 	// -- Hold name --
 	NSString *name = [_profileName stringValue];
 	
-	[control setProfileName:name];
+	[_control setProfileName:name];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesControllerNameChanged object:self userInfo:@{ @"name" : name }];
 	
@@ -874,7 +874,7 @@
 	// -- Hold text --
 	NSString *text = [[_profileText textStorage] mutableString];
 	
-	[control setProfileText:text];
+	[_control setProfileText:text];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesControllerTextChanged object:self userInfo:@{ @"text" : text }];
 
@@ -902,10 +902,10 @@
 {
 	NSInteger row = [_tableView selectedRow];
 	
-	if (row < 0 || row >= [buddies count])
+	if (row < 0 || row >= [_buddies count])
 		return nil;
 	
-	return [buddies objectAtIndex:(NSUInteger)row];
+	return [_buddies objectAtIndex:(NSUInteger)row];
 }
 
 - (void)updateStatusUI:(int)status
@@ -957,7 +957,7 @@
 				
 			case tc_config_title_name:
 			{
-				content = [control profileName];
+				content = [_control profileName];
 				
 				if ([content length] == 0)
 					content = @"-";

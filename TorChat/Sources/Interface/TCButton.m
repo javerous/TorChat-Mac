@@ -41,9 +41,9 @@
 	NSTrackingRectTag		_tracking;
 }
 
-- (void)_configure;
-- (void)_loadImage;
-- (void)_resetTracking;
+- (void)configure;
+- (void)loadImage;
+- (void)resetTracking;
 
 @end
 
@@ -68,7 +68,7 @@
 	
     if (self)
 	{
-		[self _configure];
+		[self configure];
 	}
     
     return self;
@@ -80,7 +80,7 @@
 	
 	if (self)
 	{
-		[self _configure];
+		[self configure];
 	}
 	
 	return self;
@@ -92,7 +92,7 @@
 	
 	if (self)
 	{
-		[self _configure];
+		[self configure];
 	}
 	
 	return self;
@@ -145,14 +145,14 @@
 	[super setFrame:frame];
 	
 	if (prev.size.width != frame.size.width || prev.size.height != frame.size.height)
-		[self _resetTracking];
+		[self resetTracking];
 }
 
 - (void)viewDidMoveToWindow
 {
 	if ([self window])
 	{
-		[self _resetTracking];
+		[self resetTracking];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(frameDidChange:) name:NSWindowDidResizeNotification object:[self window]];
 	}
 	else
@@ -168,7 +168,7 @@
 
 - (void)frameDidChange:(NSNotification *)aNotification
 {	
-	[self _resetTracking];
+	[self resetTracking];
 }
 
 
@@ -182,7 +182,7 @@
 {	
 	_isOver = YES;
 	
-	[self _loadImage];
+	[self loadImage];
 	
 	id <TCButtonDelegate> delegate = _delegate;
 	
@@ -194,7 +194,7 @@
 {
 	_isOver = NO;
 	
-	[self _loadImage];
+	[self loadImage];
 	
 	id <TCButtonDelegate> delegate = _delegate;
 
@@ -213,7 +213,7 @@
 {
 	_image = img;
 	
-	[self _loadImage];
+	[self loadImage];
 }
 
 - (void)setPushImage:(NSImage *)img
@@ -225,7 +225,7 @@
 {
 	_rollOverImage = img;
 	
-	[self _loadImage];
+	[self loadImage];
 }
 
 
@@ -235,15 +235,15 @@
 */
 #pragma mark - TCButton - Tools
 
-- (void)_configure
+- (void)configure
 {
 	[self setBordered:NO];
 	[self setButtonType:NSMomentaryChangeButton];
 
-	[self _resetTracking];
+	[self resetTracking];
 }
 
-- (void)_resetTracking
+- (void)resetTracking
 {
 	NSRect trackingRect = [self frame];
 	
@@ -256,7 +256,7 @@
 	_tracking = [self addTrackingRect:trackingRect owner:self userData:nil assumeInside:NO];
 }
 
-- (void)_loadImage
+- (void)loadImage
 {
 	if (_isOver)
 		[super setImage:_rollOverImage];

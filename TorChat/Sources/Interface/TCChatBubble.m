@@ -35,9 +35,9 @@
 
 @interface TCChatBubble ()
 {
-    tcbubble_style	style;
-	NSTextField		*field;
-	NSFont			*font;
+    tcbubble_style	_style;
+	NSTextField		*_field;
+	NSFont			*_font;
 }
 
 - (NSRect)computeTextWithFrame:(NSRect)frame;
@@ -63,8 +63,8 @@
 {
 	TCChatBubble *result = [[TCChatBubble alloc] initWithFrame:NSMakeRect(0, 0, 150, 150)];
 	
-	result->style = _style;
-	[result->field setStringValue:_text];
+	result->_style = _style;
+	[result->_field setStringValue:_text];
 	
 	return result;
 }
@@ -75,17 +75,17 @@
 	
     if (self)
 	{
-		font = [NSFont fontWithName:@"Helvetica" size:14];
+		_font = [NSFont fontWithName:@"Helvetica" size:14];
 		
-		field = [[NSTextField alloc] initWithFrame:frame];
+		_field = [[NSTextField alloc] initWithFrame:frame];
 		
-		[field setFont:font];
-		[field setEditable:NO];
-		[field setSelectable:YES];
-		[field setBordered:NO];
-		[field setDrawsBackground:NO];
+		[_field setFont:_font];
+		[_field setEditable:NO];
+		[_field setSelectable:YES];
+		[_field setBordered:NO];
+		[_field setDrawsBackground:NO];
 		
-		[self addSubview:field];
+		[self addSubview:_field];
     }
     
     return self;
@@ -141,7 +141,7 @@
 	
 
 	// Alloc bubble image part
-	switch (style)
+	switch (_style)
 	{
 		case tcbubble_blue:
 		{
@@ -260,7 +260,7 @@
 
 - (NSRect)computeTextWithFrame:(NSRect)frame
 {
-	CGFloat	height = [field.stringValue heightForDrawingWithFont:font andWidth:(frame.size.width - 30.0f - 4.0f)];
+	CGFloat	height = [_field.stringValue heightForDrawingWithFont:_font andWidth:(frame.size.width - 30.0f - 4.0f)];
 	
 	return NSMakeRect(15, 10, frame.size.width - 30, height);
 }
@@ -276,7 +276,7 @@
 {
 	NSRect txtRect = [self computeTextWithFrame:rect];
 
-	[field setFrame:txtRect];
+	[_field setFrame:txtRect];
 	[super setFrame:NSMakeRect(rect.origin.x, rect.origin.y, rect.size.width, txtRect.size.height + 21)];
 }
 
