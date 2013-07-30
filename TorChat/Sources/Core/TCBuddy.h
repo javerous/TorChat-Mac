@@ -35,8 +35,7 @@
 @class TCBuddy;
 @class TCSocket;
 @class TCImage;
-
-class TCInfo;
+@class TCInfo;
 
 
 

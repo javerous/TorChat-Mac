@@ -31,10 +31,8 @@
 
 #import "TCControlClient.h"
 #import "TCBuddy.h"
-#import "TCString.h"
 #import "TCBuddy.h"
 #import "TCTools.h"
-#import "TCNumber.h"
 
 
 
@@ -85,10 +83,10 @@
 - (void)_checkBlocked:(TCBuddy *)buddy;
 
 - (void)_error:(tcctrl_info)code info:(NSString *)info fatal:(BOOL)fatal;
-- (void)_error:(tcctrl_info)code info:(NSString *)info context:(TCObject *)ctx fatal:(BOOL)fatal;
+- (void)_error:(tcctrl_info)code info:(NSString *)info context:(id)ctx fatal:(BOOL)fatal;
 
 - (void)_notify:(tcctrl_info)notice info:(NSString *)info;
-- (void)_notify:(tcctrl_info)notice info:(NSString *)info context:(TCObject *)ctx;
+- (void)_notify:(tcctrl_info)notice info:(NSString *)info context:(id)ctx;
 
 - (void)_sendEvent:(TCInfo *)info;
 
@@ -189,7 +187,7 @@
 				[_buddies addObject:buddy];
 				
 				// Notify
-				[self _notify:tcctrl_notify_buddy_new info:@"core_ctrl_note_new_buddy" context:(__bridge TCObject *)buddy];
+				[self _notify:tcctrl_notify_buddy_new info:@"core_ctrl_note_new_buddy" context:buddy];
 			}
 			
 			// -- Check that we are on the buddy list --
@@ -372,13 +370,7 @@
 		
 		// Notify
 		if (status != _mstatus)
-		{
-			TCNumber *nstatus = new TCNumber((uint8_t)status);
-			
-			[self _notify:tcctrl_notify_status info:@"" context:nstatus];
-			
-			nstatus->release();
-		}
+			[self _notify:tcctrl_notify_status info:@"" context:@(status)];
 		
 		// Hold internal status
 		_mstatus = status;
@@ -425,7 +417,7 @@
 			[buddy sendAvatar:_profileAvatar];
 		
 		// Notify
-		[self _notify:tcctrl_notify_profile_avatar info:@"core_ctrl_note_profile_avatar" context:(__bridge TCObject *)_profileAvatar];
+		[self _notify:tcctrl_notify_profile_avatar info:@"core_ctrl_note_profile_avatar" context:_profileAvatar];
 	});
 }
 
@@ -462,7 +454,7 @@
 			[buddy sendProfileName:_profileName];
 		
 		// Notify
-		[self _notify:tcctrl_notify_profile_name info:@"core_ctrl_note_profile_name" context:(__bridge TCObject *)_profileName];
+		[self _notify:tcctrl_notify_profile_name info:@"core_ctrl_note_profile_name" context:_profileName];
 	});
 }
 
@@ -496,7 +488,7 @@
 			[buddy sendProfileText:_profileText];
 
 		// Notify
-		[self _notify:tcctrl_notify_profile_text info:@"core_ctrl_note_profile_name" context:(__bridge TCObject *)_profileText];
+		[self _notify:tcctrl_notify_profile_text info:@"core_ctrl_note_profile_name" context:_profileText];
 	});
 }
 
@@ -539,7 +531,7 @@
 		[_buddies addObject:buddy];
 		
 		// Notify
-		[self _notify:tcctrl_notify_buddy_new info:@"core_ctrl_note_new_buddy" context:(__bridge TCObject *)buddy];
+		[self _notify:tcctrl_notify_buddy_new info:@"core_ctrl_note_new_buddy" context:buddy];
 		
         // Start it
 		[buddy start];
@@ -676,11 +668,8 @@
 		return;
 	
 	// Give the error
-	info->retain();
-	
 	dispatch_async(_mainQueue, ^{
 		[self _sendEvent:info];
-		info->release();
 	});
 	
 	// Remove the client
@@ -710,11 +699,8 @@
 	if (!client || !info)
 		return;
 	
-	info->retain();
-	
 	dispatch_async(_mainQueue, ^{
 		[self _sendEvent:info];
-		info->release();
 	});
 }
 
@@ -762,25 +748,21 @@
 {
 	// > mainQueue <
 	
-	TCInfo *err = new TCInfo(tcinfo_error, code, [[_config localized:info] UTF8String]);
-	
+	TCInfo *err = [TCInfo infoOfKind:tcinfo_error infoCode:code infoString:[_config localized:info]];
+
 	[self _sendEvent:err];
-	
-	err->release();
-	
+		
 	if (fatal)
 		[self stop];
 }
 
-- (void)_error:(tcctrl_info)code info:(NSString *)info context:(TCObject *)ctx fatal:(BOOL)fatal
+- (void)_error:(tcctrl_info)code info:(NSString *)info context:(id)ctx fatal:(BOOL)fatal
 {
 	// > mainQueue <
-	
-	TCInfo *err = new TCInfo(tcinfo_error, code, [[_config localized:info] UTF8String], ctx);
+		
+	TCInfo *err = [TCInfo infoOfKind:tcinfo_error infoCode:code infoString:[_config localized:info] context:ctx];
 	
 	[self _sendEvent:err];
-	
-	err->release();
 	
 	if (fatal)
 		[self stop];
@@ -789,23 +771,19 @@
 - (void)_notify:(tcctrl_info)notice info:(NSString *)info
 {
 	// > mainQueue <
-	
-	TCInfo *ifo = new TCInfo(tcinfo_info, notice, [[_config localized:info] UTF8String]);
-	
-	[self _sendEvent:ifo];
+		
+	TCInfo *ifo = [TCInfo infoOfKind:tcinfo_info infoCode:notice infoString:[_config localized:info]];
 
-	ifo->release();
+	[self _sendEvent:ifo];
 }
 
-- (void)_notify:(tcctrl_info)notice info:(NSString *)info context:(TCObject *)ctx
+- (void)_notify:(tcctrl_info)notice info:(NSString *)info context:(id)ctx
 {
 	// > mainQueue <
 	
-	TCInfo *ifo = new TCInfo(tcinfo_info, notice, [[_config localized:info] UTF8String], ctx);
-	
+	TCInfo *ifo = [TCInfo infoOfKind:tcinfo_info infoCode:notice infoString:[_config localized:info] context:ctx];
+
 	[self _sendEvent:ifo];
-	
-	ifo->release();
 }
 
 - (void)_sendEvent:(TCInfo *)info
@@ -819,13 +797,8 @@
 	
 	if (delegate)
 	{
-		info->retain();
-		
 		dispatch_async(_delegateQueue, ^{
-			
 			[delegate torchatController:self information:info];
-			
-			info->release();
 		});
 	}
 }

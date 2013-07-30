@@ -32,17 +32,6 @@
 
 
 /*
-** Prototypes
-*/
-#pragma mark - Prototypes
-
-NSString *	TCStringWithCPPString(const std::string &str);
-std::string	TCCPPStringWithString(NSString *str);
-NSString *	TCStringWithInt(int value);
-
-
-
-/*
 ** TCPrefController - Private
 */
 #pragma mark - TCPrefController - Private
@@ -589,35 +578,3 @@ NSString *	TCStringWithInt(int value);
 }
 
 @end
-
-
-
-/*
-** C Tools
-*/
-#pragma mark - C Tools
-
-NSString * TCStringWithCPPString(const std::string &str)
-{
-	const char *cstr = str.c_str();
-	
-	if (!cstr)
-		return nil;
-	
-	return [NSString stringWithUTF8String:cstr];
-}
-
-std::string	TCCPPStringWithString(NSString *str)
-{
-	const char *cstr = [str UTF8String];
-	
-	if (!str)
-		return "";
-	
-	return cstr;
-}
-
-NSString *	TCStringWithInt(int value)
-{
-	return [NSString stringWithFormat:@"%i", value];
-}

@@ -38,11 +38,9 @@
 #import "TCTorManager.h"
 #import "TCDropButton.h"
 
-#include "TCController.h"
+#import "TCController.h"
 #import "TCBuddy.h"
-#include "TCString.h"
-#include "TCImage.h"
-#include "TCNumber.h"
+#import "TCImage.h"
 
 
 
@@ -509,10 +507,10 @@
 - (void)torchatController:(TCController *)controller information:(const TCInfo *)info
 {
 	// Log the item
-	[[TCLogsController sharedController] addGlobalLogEntry:[NSString stringWithUTF8String:info->render().c_str()]];
+	[[TCLogsController sharedController] addGlobalLogEntry:[info render]];
 	
 	// Action information
-	switch (info->infoCode())
+	switch (info.infoCode)
 	{
 		case tcctrl_notify_started:
 		{
@@ -534,8 +532,7 @@
 			
 		case tcctrl_notify_status:
 		{
-			TCNumber			*nbr = dynamic_cast<TCNumber *>(info->context());
-			tccontroller_status	status = (tccontroller_status)nbr->uint8Value();
+			tccontroller_status	status = (tccontroller_status)[(NSNumber *)info.context intValue];
 			
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[self updateStatusUI:status];
@@ -546,8 +543,7 @@
 			
 		case tcctrl_notify_profile_avatar:
 		{
-			TCImage *image = (__bridge TCImage *)(info->context());
-			NSImage	*final = [image imageRepresentation];
+			NSImage	*final = [(TCImage *)info.context imageRepresentation];
 			
 			if ([[final representations] count] == 0)
 			{
@@ -593,8 +589,7 @@
 			
 		case tcctrl_notify_buddy_new:
 		{
-			TCBuddy			*buddy = (__bridge TCBuddy *)info->context();
-			TCCocoaBuddy	*obuddy = [[TCCocoaBuddy alloc] initWithBuddy:buddy];
+			TCCocoaBuddy *obuddy = [[TCCocoaBuddy alloc] initWithBuddy:info.context];
 			
 			dispatch_async(dispatch_get_main_queue(), ^{
 				
