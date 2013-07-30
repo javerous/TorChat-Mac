@@ -101,7 +101,7 @@ typedef enum
 #pragma mark - Global
 
 static char gQueueIdentityKey;
-static char gMainQueueContext;
+static char gLocalQueueContext;
 
 
 
@@ -155,7 +155,7 @@ static char gMainQueueContext;
 	tccontroller_status			_cstatus;
 	
 	// > Dispatch
-	dispatch_queue_t			_mainQueue;
+	dispatch_queue_t			_localQueue;
 	
 	// > Socket
 	TCSocket					*_inSocket;
@@ -258,13 +258,12 @@ static char gMainQueueContext;
 		_notes = notes;
 		
 		TCDebugLog("Buddy (%s) - New", [_address UTF8String]);
-
 		
 		// Build queue
-		_mainQueue = dispatch_queue_create("com.torchat.core.buddy.main", DISPATCH_QUEUE_SERIAL);
+		_localQueue = dispatch_queue_create("com.torchat.core.buddy.local", DISPATCH_QUEUE_SERIAL);
 		_delegateQueue = dispatch_queue_create("com.torchat.core.buddy.delegate", DISPATCH_QUEUE_SERIAL);
 		
-		dispatch_queue_set_specific(_mainQueue, &gQueueIdentityKey, &gMainQueueContext, NULL);
+		dispatch_queue_set_specific(_localQueue, &gQueueIdentityKey, &gLocalQueueContext, NULL);
 		
 		// Create containers.
 		_fsend = [[NSMutableDictionary alloc] init];
@@ -330,7 +329,7 @@ static char gMainQueueContext;
 
 - (void)start
 {
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		if (_running)
 			return;
@@ -409,7 +408,7 @@ static char gMainQueueContext;
 
 - (void)stop
 {
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		if (_running)
 		{
@@ -457,7 +456,7 @@ static char gMainQueueContext;
 {
 	__block BOOL result = false;
 	
-	dispatch_sync(_mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		result = _running;
 	});
 	
@@ -468,7 +467,7 @@ static char gMainQueueContext;
 {
 	__block BOOL result = false;
 	
-	dispatch_sync(_mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		result = _ponged;
 	});
 	
@@ -477,7 +476,7 @@ static char gMainQueueContext;
 
 - (void)keepAlive
 {
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		if (_blocked)
 			return;
@@ -503,7 +502,7 @@ static char gMainQueueContext;
 {
 	__block NSString *result = NULL;
 	
-	dispatch_sync(_mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		result = _alias;
 	});
 	
@@ -515,7 +514,7 @@ static char gMainQueueContext;
 	if (!name)
 		return;
 		
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		// Set the new name in config
 		[_config setBuddy:_address alias:name];
@@ -532,7 +531,7 @@ static char gMainQueueContext;
 {
 	__block NSString *result = NULL;
 	
-	dispatch_sync(_mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		result = _notes;
 	});
 	
@@ -544,7 +543,7 @@ static char gMainQueueContext;
 	if (!notes)
 		return;
 		
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		// Set the new name in config
 		[_config setBuddy:_address notes:notes];
@@ -561,7 +560,7 @@ static char gMainQueueContext;
 - (BOOL)blocked
 {
 	// Prevent dead-lock
-	if (dispatch_get_specific(&gQueueIdentityKey) == &gMainQueueContext)
+	if (dispatch_get_specific(&gQueueIdentityKey) == &gLocalQueueContext)
 	{
 		return _blocked;
 	}
@@ -569,7 +568,7 @@ static char gMainQueueContext;
 	{
 		__block bool isblocked = false;
 		
-		dispatch_sync(_mainQueue, ^{
+		dispatch_sync(_localQueue, ^{
 			isblocked = _blocked;
 		});
 		
@@ -579,7 +578,7 @@ static char gMainQueueContext;
 
 - (void)setBlocked:(BOOL)blocked
 {
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		_blocked = blocked;
 		
@@ -592,7 +591,7 @@ static char gMainQueueContext;
 {
 	__block tcbuddy_status res = tcbuddy_status_offline;
 	
-	dispatch_sync(_mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		
 		if (_pongSent && _ponged)
 			res = _status;
@@ -627,7 +626,7 @@ static char gMainQueueContext;
 	
 	__block NSString *res = nil;
 	
-	dispatch_sync(_mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		
 		if (way == tcbuddy_file_send)
 		{
@@ -655,7 +654,7 @@ static char gMainQueueContext;
 	
 	__block NSString *res = nil;
 	
-	dispatch_sync(_mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		
 		if (way == tcbuddy_file_send)
 		{
@@ -684,7 +683,7 @@ static char gMainQueueContext;
 	__block uint64_t	rdone = 0;
 	__block uint64_t	rtotal = 0;
 	
-	dispatch_sync(_mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		
 		if (way == tcbuddy_file_send)
 		{
@@ -729,7 +728,7 @@ static char gMainQueueContext;
 	if (!uuid)
 		return;
 	
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		if (way == tcbuddy_file_send)
 		{
@@ -780,7 +779,7 @@ static char gMainQueueContext;
 
 - (void)sendStatus:(tccontroller_status)status
 {
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		// Send status only if we are ponged
 		if (_pongSent && !_blocked)
@@ -793,7 +792,7 @@ static char gMainQueueContext;
 	if (!avatar)
 		return;
 	
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		if (_pongSent && _ponged && !_blocked)
 			[self _sendAvatar:avatar];
@@ -805,7 +804,7 @@ static char gMainQueueContext;
 	if (!name)
 		return;
 	
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		if (_pongSent && _ponged && !_blocked)
 			[self _sendProfileName:name];
@@ -817,7 +816,7 @@ static char gMainQueueContext;
 	if (!text)
 		return;
 		
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		if (_pongSent && _ponged && !_blocked)
 			[self _sendProfileText:text];
@@ -829,7 +828,7 @@ static char gMainQueueContext;
 	if (!message)
 		return;
 		
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		if (!_blocked)
 		{
@@ -849,7 +848,7 @@ static char gMainQueueContext;
 	if (!filepath)
 		return;
 	
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		// Send file only if we sent pong and we are ponged
 		if (_pongSent && _ponged)
@@ -903,7 +902,7 @@ static char gMainQueueContext;
 	if (!remoteRandom || !avatar || !name || !text)
 		return;
 	
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		if (_blocked)
 			return;
@@ -926,7 +925,7 @@ static char gMainQueueContext;
 	if (!sock)
 		return;
 	
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		if (_blocked)
 		{
@@ -966,7 +965,7 @@ static char gMainQueueContext;
 {
 	__block NSString * result = NULL;
 	
-	dispatch_sync(_mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		result = _profileText;
 	});
 	
@@ -977,7 +976,7 @@ static char gMainQueueContext;
 {
 	__block TCImage * result = NULL;
 	
-	dispatch_sync(_mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		result = [_profileAvatar copy];
 	});
 	
@@ -988,7 +987,7 @@ static char gMainQueueContext;
 {
 	__block NSString * result = NULL;
 	
-	dispatch_sync(_mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		result = _profileName;
 	});
 	
@@ -999,7 +998,7 @@ static char gMainQueueContext;
 {
 	__block NSString *result = NULL;
 	
-	dispatch_sync(_mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		result = [_config getBuddyLastProfileName:_address];
 	});
 	
@@ -1010,7 +1009,7 @@ static char gMainQueueContext;
 {
 	__block NSString *result = NULL;
 	
-	dispatch_sync(_mainQueue, ^{
+	dispatch_sync(_localQueue, ^{
 		
 		if ([_alias length] > 0)
 			result = _alias;
@@ -1032,7 +1031,7 @@ static char gMainQueueContext;
 
 - (void)socket:(TCSocket *)socket operationAvailable:(tcsocket_operation)operation tag:(NSUInteger)tag content:(id)content
 {
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		
 		if (_blocked)
 			return;
@@ -1084,7 +1083,7 @@ static char gMainQueueContext;
 			
 			for (NSData *line in lines)
 			{
-				dispatch_async(_mainQueue, ^{
+				dispatch_async(_localQueue, ^{
 					
 					// Parse the line
 					[_parser parseLine:line];
@@ -1096,7 +1095,7 @@ static char gMainQueueContext;
 
 - (void)socket:(TCSocket *)socket error:(TCInfo *)error
 {
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 
 		// Localize the info
 		error.infoString = [_config localized:error.infoString];
@@ -1108,7 +1107,7 @@ static char gMainQueueContext;
 
 - (void)socketRunPendingWrite:(TCSocket *)socket
 {
-	dispatch_async(_mainQueue, ^{
+	dispatch_async(_localQueue, ^{
 		[self _runPendingFileWrite];
 	});
 }
@@ -1131,7 +1130,7 @@ static char gMainQueueContext;
 
 - (void)parser:(TCParser *)parser parsedStatus:(NSString *)status
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	if (_blocked)
 		return;
@@ -1156,7 +1155,7 @@ static char gMainQueueContext;
 
 - (void)parser:(TCParser *)parser parsedMessage:(NSString *)message
 {
-	// > mainQueue <
+	// > localQueue <
 
 	if (_blocked)
 		return;
@@ -1167,7 +1166,7 @@ static char gMainQueueContext;
 
 - (void)parser:(TCParser *)parser parsedVersion:(NSString *)version
 {
-	// > mainQueue <
+	// > localQueue <
 
 	if (_blocked)
 		return;
@@ -1180,7 +1179,7 @@ static char gMainQueueContext;
 
 - (void)parser:(TCParser *)parser parsedClient:(NSString *)client
 {
-	// > mainQueue <
+	// > localQueue <
 
 	if (_blocked)
 		return;
@@ -1193,7 +1192,7 @@ static char gMainQueueContext;
 
 - (void)parser:(TCParser *)parser parsedProfileText:(NSString *)text
 {
-	// > mainQueue <
+	// > localQueue <
 
 	if (_blocked)
 		return;
@@ -1206,7 +1205,7 @@ static char gMainQueueContext;
 
 - (void)parser:(TCParser *)parser parsedProfileName:(NSString *)name
 {
-	// > mainQueue <
+	// > localQueue <
 
 	if (_blocked)
 		return;
@@ -1223,7 +1222,7 @@ static char gMainQueueContext;
 
 - (void)parser:(TCParser *)parser parsedProfileAvatar:(NSData *)bitmap
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	if (_blocked)
 		return;
@@ -1236,7 +1235,7 @@ static char gMainQueueContext;
 
 - (void)parser:(TCParser *)parser parsedProfileAvatarAlpha:(NSData *)bitmap
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	if (_blocked)
 		return;
@@ -1246,7 +1245,7 @@ static char gMainQueueContext;
 
 - (void)parserParsedAddMe:(TCParser *)parser
 {
-	// > mainQueue <
+	// > localQueue <
 
 	/*
 	 This must be sent after connection if you are (or want to be)
@@ -1260,7 +1259,7 @@ static char gMainQueueContext;
 
 - (void)parserparsedRemoveMe:(TCParser *)parser
 {
-	// > mainQueue <
+	// > localQueue <
 
 	/*
 	 when receiving this message the buddy MUST be removed from
@@ -1313,7 +1312,7 @@ static char gMainQueueContext;
 
 - (void)parser:(TCParser *)parser parsedFileDataWithUUID:(NSString *)uuid start:(NSString *)start hash:(NSString *)hash data:(NSData *)data
 {
-	// > mainQueue <
+	// > localQueue <
 
 	/*
 	 TorChat protocol is based on text token protocol ("filedata", "filedata_ok", space separator, etc.).
@@ -1369,7 +1368,7 @@ static char gMainQueueContext;
 
 - (void)parser:(TCParser *)parser parsedFileDataOkWithUUID:(NSString *)uuid start:(NSString *)start
 {
-	// > mainQueue <
+	// > localQueue <
 
 	// Check if we are blocked
 	if (_blocked)
@@ -1411,7 +1410,7 @@ static char gMainQueueContext;
 
 - (void)parser:(TCParser *)parser parsedFileDataErrorWithUUID:(NSString *)uuid start:(NSString *)start
 {
-	// > mainQueue <
+	// > localQueue <
 
 	// Check if we are blocked
 	if (!_blocked)
@@ -1435,7 +1434,7 @@ static char gMainQueueContext;
 
 - (void)parser:(TCParser *)parser parsedFileStopSendingWithUUID:(NSString *)uuid
 {
-	// > mainQueue <
+	// > localQueue <
 
 	// Check if we are blocked
 	if (_blocked)
@@ -1458,7 +1457,7 @@ static char gMainQueueContext;
 
 - (void)parser:(TCParser *)parser parsedFileStopReceivingWithUUID:(NSString *)uuid
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	// Check if we are blocked
 	if (_blocked)
@@ -1500,7 +1499,7 @@ static char gMainQueueContext;
 
 - (void)_sendPing
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	NSMutableArray *items = [[NSMutableArray alloc] init];
 	
@@ -1512,7 +1511,7 @@ static char gMainQueueContext;
 
 - (void)_sendPong:(NSString *)random
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	if ([random length] == 0)
 		return;
@@ -1522,21 +1521,21 @@ static char gMainQueueContext;
 
 - (void)_sendVersion
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	[self _sendCommand:@"version" string:[_config clientVersion:tc_config_get_real] channel:tcbuddy_channel_out];
 }
 
 - (void)_sendClient
 {
-	// > mainQueue <
+	// > localQueue <
 		
 	[self _sendCommand:@"client" string:[_config clientName:tc_config_get_real] channel:tcbuddy_channel_out];
 }
 
 - (void)_sendProfileName:(NSString *)name
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	if (!name)
 		return;
@@ -1546,7 +1545,7 @@ static char gMainQueueContext;
 
 - (void)_sendProfileText:(NSString *)text
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	if (!text)
 		return;
@@ -1556,7 +1555,7 @@ static char gMainQueueContext;
 
 - (void)_sendAvatar:(TCImage *)avatar
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	if (!avatar)
 		return;
@@ -1581,7 +1580,7 @@ static char gMainQueueContext;
 
 - (void)_sendAddMe
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	[self _sendCommand:@"add_me" channel:tcbuddy_channel_out];
 }
@@ -1593,7 +1592,7 @@ static char gMainQueueContext;
 
 - (void)_sendStatus:(tccontroller_status)status
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	_cstatus = status;
 	
@@ -1615,14 +1614,14 @@ static char gMainQueueContext;
 
 - (void)_sendMessage:(NSString *)message
 {
-	// > mainQueue <
+	// > localQueue <
 
 	[self _sendCommand:@"message" string:message channel:tcbuddy_channel_out];
 }
 
 - (void)_sendFileName:(TCFileSend *)file
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	if (!file)
 		return;
@@ -1647,7 +1646,7 @@ static char gMainQueueContext;
 
 - (void)_sendFileData:(TCFileSend *)file
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	if (!file)
 		return;
@@ -1684,7 +1683,7 @@ static char gMainQueueContext;
 
 - (void)_sendFileDataOk:(NSString *)uuid start:(uint64_t)start
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	// Build command.
 
@@ -1702,7 +1701,7 @@ static char gMainQueueContext;
 
 - (void)_sendFileDataError:(NSString *)uuid start:(uint64_t)start
 {
-	// > mainQueue <
+	// > localQueue <
 		
 	// Build command.
 	NSMutableArray *items = [[NSMutableArray alloc] init];
@@ -1719,14 +1718,14 @@ static char gMainQueueContext;
 
 - (void)_sendFileStopSending:(NSString *)uuid
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	[self _sendCommand:@"file_stop_sending" string:uuid channel:tcbuddy_channel_out];
 }
 
 - (void)_sendFileStopReceiving:(NSString *)uuid
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	[self _sendCommand:@"file_stop_receiving" string:uuid channel:tcbuddy_channel_out];
 }
@@ -1740,14 +1739,14 @@ static char gMainQueueContext;
 
 - (BOOL)_sendCommand:(NSString *)command channel:(tcbuddy_channel)channel
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	return [self _sendCommand:command data:nil channel:channel];
 }
 
 - (BOOL)_sendCommand:(NSString *)command array:(NSArray *)data channel:(tcbuddy_channel)channel
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	// Render data.
 	NSData *rdata = nil;
@@ -1771,7 +1770,7 @@ static char gMainQueueContext;
 
 - (BOOL)_sendCommand:(NSString *)command data:(NSData *)data channel:(tcbuddy_channel)channel
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	if (!command)
 		return NO;
@@ -1812,14 +1811,14 @@ static char gMainQueueContext;
 
 - (BOOL)_sendData:(NSData *)data channel:(tcbuddy_channel)channel
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	return [self _sendBytes:[data bytes] length:[data length] channel:channel];
 }
 
 - (BOOL)_sendBytes:(const void *)bytes length:(NSUInteger)length channel:(tcbuddy_channel)channel
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	if (!bytes || length == 0)
 		return NO;
@@ -1843,7 +1842,7 @@ static char gMainQueueContext;
 
 - (void)_startSocks
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	const char			*user = "torchat";
 	struct sockreq		*thisreq;
@@ -1890,7 +1889,7 @@ static char gMainQueueContext;
 
 - (void)_connectedSocks
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	// -- Send ping --
 	[self _sendPing];
@@ -1906,7 +1905,7 @@ static char gMainQueueContext;
 
 - (void)_runPendingWrite
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	// Try to send pending files send
 	[self _runPendingFileWrite];
@@ -1914,7 +1913,7 @@ static char gMainQueueContext;
 
 - (void)_runPendingFileWrite
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	// Send a block of each send file session
 	for (NSString *uuid in _fsend)
@@ -1937,7 +1936,7 @@ static char gMainQueueContext;
 
 - (void)_error:(tcbuddy_info)code info:(NSString *)info fatal:(BOOL)fatal
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	TCInfo *err = [TCInfo infoOfKind:tcinfo_error infoCode:code infoString:[_config localized:info]];
 	
@@ -1950,7 +1949,7 @@ static char gMainQueueContext;
 
 - (void)_error:(tcbuddy_info)code info:(NSString *)info contextObj:(id)ctx fatal:(BOOL)fatal
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	TCInfo *err = [TCInfo infoOfKind:tcinfo_error infoCode:code infoString:[_config localized:info] context:ctx];
 
@@ -1963,7 +1962,7 @@ static char gMainQueueContext;
 
 - (void)_error:(tcbuddy_info)code info:(NSString *)info contextInfo:(TCInfo *)serr fatal:(BOOL)fatal
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	TCInfo *err = [TCInfo infoOfKind:tcinfo_error infoCode:code infoString:[_config localized:info] info:serr];
 	
@@ -1976,7 +1975,7 @@ static char gMainQueueContext;
 
 - (void)_notify:(tcbuddy_info)notice
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	TCInfo *ifo = [TCInfo infoOfKind:tcinfo_info infoCode:notice];
 	
@@ -1985,7 +1984,7 @@ static char gMainQueueContext;
 
 - (void)_notify:(tcbuddy_info)notice info:(NSString *)info
 {
-	// > mainQueue <
+	// > localQueue <
 		
 	TCInfo *ifo = [TCInfo infoOfKind:tcinfo_info infoCode:notice infoString:[_config localized:info]];
 
@@ -1994,7 +1993,7 @@ static char gMainQueueContext;
 
 - (void)_notify:(tcbuddy_info)notice info:(NSString *)info context:(id)ctx
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	TCInfo *ifo = [TCInfo infoOfKind:tcinfo_info infoCode:notice infoString:[_config localized:info] context:ctx];
 	
@@ -2003,7 +2002,7 @@ static char gMainQueueContext;
 
 - (void)_sendEvent:(TCInfo *)info
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	if (!info)
 		return;
@@ -2017,7 +2016,7 @@ static char gMainQueueContext;
 
 - (NSNumber *)_status
 {
-	// > mainQueue <
+	// > localQueue <
 	
 	tcbuddy_status res;
 	
