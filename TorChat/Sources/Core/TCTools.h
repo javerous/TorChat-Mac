@@ -21,13 +21,11 @@
  */
 
 
-
-#ifndef _TCTOOLS_H_
-# define _TCTOOLS_H_
+#import <Foundation/Foundation.h>
 
 
 // == Network ==
-BOOL		doAsyncSocket(int sock);
+BOOL doAsyncSocket(int sock);
 
 // == Hash ==
 NSString *	createMD5(const void *data, size_t size);
@@ -35,5 +33,3 @@ NSString *	createMD5(const void *data, size_t size);
 // == Encode ==
 NSString *	createEncodeBase64(const void *data, size_t size);
 BOOL		createDecodeBase64(NSString *data, size_t *osize, void **odata);
-
-#endif
