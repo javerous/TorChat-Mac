@@ -25,14 +25,16 @@
 #include <netinet/in.h>
 
 #import "TCController.h"
+#import "TCConnection.h"
 
 #import "TCConfig.h"
 #import "TCImage.h"
 
-#import "TCControlClient.h"
 #import "TCBuddy.h"
 #import "TCBuddy.h"
 #import "TCTools.h"
+#import "TCInfo.h"
+#import "TCSocket.h"
 
 
 
@@ -41,7 +43,7 @@
 */
 #pragma mark - TCController
 
-@interface TCController ()
+@interface TCController () <TCConnectionDelegate>
 {
 	// -- Vars --
 	// > Main Queue
@@ -63,7 +65,7 @@
 	id <TCConfig>			_config;
 	
 	// > Clients
-	NSMutableArray			*_clients;
+	NSMutableArray			*_connections;
 	
 	// > Status
 	bool					_running;
@@ -78,10 +80,14 @@
 	NSString				*_profileText;
 }
 
-// -- Helpers --
-- (void)_addClient:(int)sock;
+// -- Blocked --
 - (void)_checkBlocked:(TCBuddy *)buddy;
 
+// -- Connection --
+- (void)_addConnectionSocket:(int)sock;
+- (void)removeConnection:(TCConnection *)connection;
+
+// -- Helpers --
 - (void)_error:(tcctrl_info)code info:(NSString *)info fatal:(BOOL)fatal;
 - (void)_error:(tcctrl_info)code info:(NSString *)info context:(id)ctx fatal:(BOOL)fatal;
 
@@ -134,7 +140,7 @@
 		_delegateQueue = dispatch_queue_create("com.torchat.core.controller.delegate", DISPATCH_QUEUE_SERIAL);
 		
 		// Containers.
-		_clients = [[NSMutableArray alloc] init];
+		_connections = [[NSMutableArray alloc] init];
 		_buddies = [[NSMutableArray alloc] init];
 	}
 	
@@ -146,8 +152,8 @@
 	TCDebugLog("TCController Destructor");
 	
 	// Close client
-	for (TCControlClient *client in _clients)
-		[client stop];
+	for (TCConnection *connection in _connections)
+		[connection stop];
 
 	// Stop buddies
 	for (TCBuddy *buddy in _buddies)
@@ -196,7 +202,7 @@
 			NSString	*selfAddress = [_config selfAddress];
 			
 			
-			for (TCBuddy	*buddy in _buddies)
+			for (TCBuddy *buddy in _buddies)
 			{
 				if ([[buddy address] isEqualToString:selfAddress])
 				{
@@ -282,7 +288,7 @@
 				
 				// Add it later
 				dispatch_async(_socketQueue, ^{
-					[self _addClient:csock];
+					[self _addConnectionSocket:csock];
 				});
 			}
 		});
@@ -347,10 +353,10 @@
 		_socketAccept = nil;
 		
 		// Stop & release clients
-		for (TCControlClient *client in _clients)
-			[client stop];
+		for (TCConnection *connection in _connections)
+			[connection stop];
 		
-		[_clients removeAllObjects];
+		[_connections removeAllObjects];
 		
 		// Stop buddies
 		for (TCBuddy *buddy in _buddies)
@@ -363,7 +369,13 @@
 	});
 }
 
-// -- Status --
+
+
+/*
+** TCController - Status
+*/
+#pragma mark - TCController - Status
+
 - (void)setStatus:(tccontroller_status)status
 {
 	// Give the status
@@ -399,7 +411,13 @@
 	return result;
 }
 
-// -- Profile --
+
+
+/*
+** TCController - Profile
+*/
+#pragma mark - TCController - Profile
+
 - (void)setProfileAvatar:(TCImage *)avatar
 {
 	if (!avatar)
@@ -504,7 +522,12 @@
 	return result;
 }
 
-// -- Buddies --
+
+/*
+** TCController - Buddies
+*/
+#pragma mark - TCController - Buddies
+
 - (void)addBuddy:(NSString *)name address:(NSString *)address
 {
 	[self addBuddy:name address:address comment:@""];
@@ -616,7 +639,13 @@
     return result;
 }
 
-// -- Blocked Buddies --
+
+
+/*
+** TCController - Blocked Buddies
+*/
+#pragma mark - TCController - Blocked Buddies
+
 - (BOOL)addBlockedBuddy:(NSString *)address
 {
 	__block BOOL result = false;
@@ -661,62 +690,6 @@
 	return result;
 }
 
-// -- TCControlClient --
-- (void)cc_error:(TCControlClient *)client info:(TCInfo *)info
-{
-#warning Why not a delegate ?
-	if (!client || !info)
-		return;
-	
-	// Give the error
-	dispatch_async(_localQueue, ^{
-		[self _sendEvent:info];
-	});
-	
-	// Remove the client
-	dispatch_async(_socketQueue, ^{
-		
-		NSUInteger i, cnt = [_clients count];
-		
-		for (i = 0; i < cnt; i++)
-		{
-			TCControlClient *item = _clients[i];
-			
-			if (item == client)
-			{
-				[_clients removeObjectAtIndex:i];
-				
-				[item stop];
-				break;
-			}
-		}
-	});
-}
-
-- (void)cc_notify:(TCControlClient *)client info:(TCInfo *)info
-{
-#warning Why not a delegate ?
-
-	if (!client || !info)
-		return;
-	
-	dispatch_async(_localQueue, ^{
-		[self _sendEvent:info];
-	});
-}
-
-// -- Helpers --
-- (void)_addClient:(int)csock
-{
-	// > socketQueue <
-	
-	TCControlClient *client = [[TCControlClient alloc] initWithConfiguration:_config andSocket:csock];
-	
-	[_clients addObject:client];
-	
-	[client startWithController:self];
-}
-
 - (void)_checkBlocked:(TCBuddy *)buddy
 {
 	// > localQueue <
@@ -744,6 +717,140 @@
 	}
 }
 
+
+
+/*
+** TCController - TCConnectionDelegate
+*/
+#pragma mark - TCController - TCConnectionDelegate
+
+- (void)connection:(TCConnection *)connection pingAddress:(NSString *)address withRandomToken:(NSString *)random
+{
+	TCBuddy *abuddy = [self buddyWithAddress:address];
+	
+	if ([abuddy blocked])
+		return;
+	
+	// Check for faked pings: we search all our already
+	// *connected* buddies and if there is one with the same address
+	// but another incoming connection then this one must be a fake.
+
+	if ([abuddy isPonged])
+	{
+		[self _error:tcctrl_error_client_cmd_ping info:@"core_cctrl_err_already_pinged" fatal:YES];
+		return;
+	}
+	
+	
+	// if someone is pinging us with our own address and the
+	// random value is not from us, then someone is definitely
+	// trying to fake and we can close.
+	
+	if ([address isEqualToString:[_config selfAddress]] && abuddy && [[abuddy random] isEqualToString:random])
+	{
+		[self _error:tcctrl_error_client_cmd_ping info:@"core_cctrl_err_masquerade" fatal:YES];
+		return;
+	}
+	
+	
+	// if the buddy don't exist, add it on the buddy list
+	if (!abuddy)
+	{
+		[self addBuddy:[_config localized:@"core_cctrl_new_buddy"] address:address];
+		
+		abuddy = [self buddyWithAddress:address];
+		
+		if (!abuddy)
+		{
+			[self _error:tcctrl_error_client_cmd_ping info:@"core_cctrl_err_add_buddy" fatal:YES];
+			return;
+		}
+	}
+	
+	// ping messages must be answered with pong messages
+	// the pong must contain the same random string as the ping.
+	[abuddy startHandshake:random status:[self status] avatar:[self profileAvatar] name:[self profileName] text:[self profileText]];
+}
+
+- (void)connection:(TCConnection *)connection pongWithSocket:(TCSocket *)sock andRandomToken:(NSString *)random
+{
+	TCBuddy *buddy = [self buddyWithRandom:random];
+	
+	if (buddy)
+	{
+		// Check blocked list
+		if ([buddy blocked])
+		{
+			// Stop buddy
+			[buddy stop];
+			
+			// Stop socket
+			[sock stop];
+		}
+		else
+		{
+			// Give the baby to buddy
+			[buddy setInputConnection:sock];
+		}
+	}
+	else
+		[self _error:tcctrl_error_client_cmd_pong info:@"core_cctrl_err_pong" fatal:YES];
+	
+	// We don't need the connection at this time: simply remove it.
+	[self removeConnection:connection];
+}
+
+- (void)connection:(TCConnection *)connection information:(TCInfo *)info
+{
+	if (!info)
+		return;
+	
+	// Forward the information.
+	dispatch_async(_localQueue, ^{
+		
+		info.infoString = [_config localized:info.infoString];
+		
+		[self _sendEvent:info];
+	});
+	
+	// If it's an error: kill the connection.
+	if (info.kind == tcinfo_error)
+		[self removeConnection:connection];
+}
+
+
+
+/*
+** TCController - Connections
+*/
+#pragma mark - TCController - Connections
+
+- (void)_addConnectionSocket:(int)csock
+{
+	// > socketQueue <
+	
+	TCConnection *client = [[TCConnection alloc] initWithDelegate:self andSocket:csock];
+	
+	[_connections addObject:client];
+	
+	[client start];
+}
+
+- (void)removeConnection:(TCConnection *)connection
+{
+	dispatch_async(_socketQueue, ^{
+		[connection stop];
+		[_connections removeObject:connection];
+	});
+}
+
+
+
+
+/*
+** TCController - Helpers
+*/
+#pragma mark - TCController - Helpers
 
 - (void)_error:(tcctrl_info)code info:(NSString *)info fatal:(BOOL)fatal
 {

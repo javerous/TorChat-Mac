@@ -184,8 +184,7 @@
 
 
 /* Core - Client Controller */
-"core_cctrl_note_started" = "Client controller was started.";
-"core_cctrl_note_stoped" = "Client controller was stoped.";
+"core_cctrl_note_started" = "Connection controller was started.";
 
 "core_cctrl_err_fake_ping" = "A remote peer sent a faked ping hostname. It was killed.";
 "core_cctrl_err_already_pinged" = "A remote peer try to ping a buddy already pinged. It was killed.";
