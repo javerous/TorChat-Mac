@@ -30,36 +30,49 @@
 
 @implementation NSData (TCTools)
 
-- (NSArray *)explodeWithCStr:(const char *)str
+- (NSArray *)explodeWithMaxFields:(NSUInteger)count withFieldSeparator:(const char *)separator
 {
-#warning XXX check this code.
-	if (!str)
+	// Check args.
+	if (count == 0 || !separator)
 		return nil;
 	
-	// Chek separator size.
-	size_t str_len = strlen(str);
+	size_t sepSize = strlen(separator);
 	
-	if (str_len)
-		return @[ self ];
+	if (sepSize == 0)
+		return nil;
 	
-	// Explose.
-	NSMutableArray	*result = [[NSMutableArray alloc] init];
-	NSUInteger		last_i = 0, i = 0, length = [self length];
 	const void		*bytes = [self bytes];
-
+	NSUInteger		lasti, i;
+	NSUInteger		length = [self length];
+	NSUInteger		fields = 0;
+	NSMutableArray	*result = [[NSMutableArray alloc] init];
+	
+	
+	lasti = 0;
+	i = 0;
+	
 	while (i < length)
 	{
-		if (i + str_len > [self length])
+		if (i + sepSize > length)
 			break;
 		
-		if (memcmp(bytes + i, str, str_len) == 0)
+		if (memcmp(bytes + i, separator, sepSize) == 0)
 		{
-			[result addObject:[self subdataWithRange:NSMakeRange(last_i, (i - last_i))]];
-			last_i = i + str_len;
+			[result addObject:[NSData dataWithBytes:(bytes + lasti) length:(i - lasti)]];
+			fields++;
+			
+			i += sepSize;
+			lasti = i;
 		}
+		else
+			i++;
 		
-		i += str_len;
+		if (fields >= count)
+			break;
 	}
+	
+	if (length - lasti > 0)
+		[result addObject:[NSData dataWithBytes:(bytes + lasti) length:(length - lasti)]];
 	
 	return result;
 }
@@ -106,5 +119,7 @@
 		i += replace_len;
 	}
 }
+
+
 
 @end

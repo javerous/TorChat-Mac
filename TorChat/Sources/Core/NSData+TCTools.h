@@ -31,7 +31,7 @@
 
 @interface NSData (TCTools)
 
-- (NSArray *)explodeWithCStr:(const char *)str;
+- (NSArray *)explodeWithMaxFields:(NSUInteger)count withFieldSeparator:(const char *)separator;
 
 @end
 
