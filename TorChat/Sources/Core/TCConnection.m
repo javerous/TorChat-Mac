@@ -22,8 +22,6 @@
 
 #import "TCConnection.h"
 
-#import "TCController.h"
-
 #import "TCParser.h"
 #import "TCSocket.h"
 #import "TCInfo.h"
@@ -48,16 +46,13 @@
 	
 	// > Parser
 	TCParser					*_parser;
-	
-	// > Controller
-	__weak TCController			*_ctrl;
-		
+
 	// > Queue
 	dispatch_queue_t			_localQueue;
 	
 	// > Delegate
 	dispatch_queue_t			_delegateQueue;
-	id <TCConnectionDelegate>	_delegate;
+	__weak id <TCConnectionDelegate> _delegate;
 
 	NSString					*_last_ping_address;
 }
