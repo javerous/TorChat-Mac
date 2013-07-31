@@ -89,7 +89,10 @@
 	[mutableLine replaceCStr:"\\/" withCStr:"\\"];
 
 	// Eplode the line from spaces.
-	NSArray *items = [mutableLine explodeWithCStr:" "];
+	NSArray *items = [mutableLine explodeWithMaxFields:1 withFieldSeparator:" "];
+	
+	if ([items count] == 0)
+		return;
 	
 	[self parseCommand:items];
 }
@@ -100,45 +103,48 @@
         return;
     
     NSString	*command = [[NSString alloc] initWithData:items[0] encoding:NSASCIIStringEncoding];
-	NSArray		*subItems = [items subarrayWithRange:NSMakeRange(1, [items count] - 1)];
+	NSData		*parameters = nil;
+	
+	if ([items count] > 1)
+		parameters = items[1];
 		
     // Dispatch command
     if ([command isEqualToString:@"ping"])
-		[self parsePing:subItems];
+		[self parsePing:parameters];
     else if ([command isEqualToString:@"pong"])
-        [self parsePong:subItems];
+        [self parsePong:parameters];
     else if ([command isEqualToString:@"status"])
-        [self parseStatus:subItems];
+        [self parseStatus:parameters];
     else if ([command isEqualToString:@"version"])
-        [self parseVersion:subItems];
+        [self parseVersion:parameters];
 	else if ([command isEqualToString:@"client"])
-        [self parseClient:subItems];
+        [self parseClient:parameters];
 	else if ([command isEqualToString:@"profile_name"])
-        [self parseProfileName:subItems];
+        [self parseProfileName:parameters];
 	else if ([command isEqualToString:@"profile_text"])
-        [self parseProfileText:subItems];
+        [self parseProfileText:parameters];
 	else if ([command isEqualToString:@"profile_avatar_alpha"])
-		 [self parseProfileAvatarAlpha:subItems];
+		 [self parseProfileAvatarAlpha:parameters];
 	else if ([command isEqualToString:@"profile_avatar"])
-        [self parseProfileAvatar:subItems];
+        [self parseProfileAvatar:parameters];
 	else if ([command isEqualToString:@"message"])
-        [self parseMessage:subItems];
+        [self parseMessage:parameters];
 	else if ([command isEqualToString:@"add_me"])
-        [self parseAddMe:subItems];
+        [self parseAddMe:parameters];
 	else if ([command isEqualToString:@"remove_me"])
-        [self parseRemoveMe:subItems];
+        [self parseRemoveMe:parameters];
 	else if ([command isEqualToString:@"filename"])
-        [self parseFileName:subItems];
+        [self parseFileName:parameters];
 	else if ([command isEqualToString:@"filedata"])
-        [self parseFileData:subItems];
+        [self parseFileData:parameters];
 	else if ([command isEqualToString:@"filedata_ok"])
-        [self parseFileDataOk:subItems];
+        [self parseFileDataOk:parameters];
 	else if ([command isEqualToString:@"filedata_error"])
-        [self parseFileDataError:subItems];
+        [self parseFileDataError:parameters];
 	else if ([command isEqualToString:@"file_stop_sending"])
-        [self parseFileStopSending:subItems];
+        [self parseFileStopSending:parameters];
 	else if ([command isEqualToString:@"file_stop_receiving"])
-        [self parseFileStopReceiving:subItems];
+        [self parseFileStopReceiving:parameters];
     else
 	{
 		NSString *error = [NSString stringWithFormat:@"Unknown command '%@'", command];
@@ -148,8 +154,10 @@
 }
 
 
-- (void)parsePing:(NSArray *)args
+- (void)parsePing:(NSData *)parameters
 {
+	NSArray *args = [parameters explodeWithMaxFields:2 withFieldSeparator:" "];
+	
 	// Check args.
 	if ([args count] != 2)
     {
@@ -170,17 +178,17 @@
 		[self parserError:tcrec_cmd_ping withString:@"Ping: Not handled"];
 }
 
-- (void)parsePong:(NSArray *)args
+- (void)parsePong:(NSData *)parameters
 {
 	// Check args.
-	if ([args count] != 1)
+	if ([parameters length] == 0)
     {
 		[self parserError:tcrec_cmd_pong withString:@"Bad pong argument"];
         return;
 	}
 	
 	// Parse command.
-	NSString *random = [[NSString alloc] initWithData:args[0] encoding:NSASCIIStringEncoding];
+	NSString *random = [[NSString alloc] initWithData:parameters encoding:NSASCIIStringEncoding];
 	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
@@ -191,17 +199,17 @@
 		[self parserError:tcrec_cmd_pong withString:@"Pong: Not handled"];
 }
 
-- (void)parseStatus:(NSArray *)args
+- (void)parseStatus:(NSData *)parameters
 {
 	// Check args.
-	if ([args count] != 1)
+	if ([parameters length] == 0)
     {
 		[self parserError:tcrec_cmd_status withString:@"Bad status argument"];
         return;
 	}
 	
 	// Parse command.
-	NSString *status = [[NSString alloc] initWithData:args[0] encoding:NSASCIIStringEncoding];
+	NSString *status = [[NSString alloc] initWithData:parameters encoding:NSASCIIStringEncoding];
 	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
@@ -212,17 +220,17 @@
 		[self parserError:tcrec_cmd_status withString:@"Status: Not handled"];
 }
 
-- (void)parseVersion:(NSArray *)args
+- (void)parseVersion:(NSData *)parameters
 {
 	// Check args.
-	if ([args count] != 1)
+	if ([parameters length] == 0)
     {
 		[self parserError:tcrec_cmd_version withString:@"Bad version argument"];
         return;
 	}
 	
 	// Parse command.
-	NSString *version = [[NSString alloc] initWithData:args[0] encoding:NSASCIIStringEncoding];
+	NSString *version = [[NSString alloc] initWithData:parameters encoding:NSASCIIStringEncoding];
 	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
@@ -233,17 +241,17 @@
 		[self parserError:tcrec_cmd_status withString:@"Version: Not handled"];
 }
 
-- (void)parseClient:(NSArray *)args
+- (void)parseClient:(NSData *)parameters
 {
 	// Check args.
-	if ([args count] == 0)
+	if ([parameters length] == 0)
 	{
 		[self parserError:tcrec_cmd_client withString:@"Empty client argument"];
         return;
 	}
 
 	// Parse command.
-	NSString *client = [[NSString alloc] initWithData:[args joinWithCStr:" "] encoding:NSUTF8StringEncoding];
+	NSString *client = [[NSString alloc] initWithData:parameters encoding:NSUTF8StringEncoding];
 	
 	if (!client)
 		return;
@@ -257,10 +265,13 @@
 		[self parserError:tcrec_cmd_client withString:@"Client: Not handled"];
 }
 
-- (void)parseProfileText:(NSArray *)args
+- (void)parseProfileText:(NSData *)parameters
 {
 	// Parse command.
-	NSString *text = [[NSString alloc] initWithData:[args joinWithCStr:" "] encoding:NSUTF8StringEncoding];
+	NSString *text = @"";
+	
+	if (parameters)
+		text = [[NSString alloc] initWithData:parameters encoding:NSUTF8StringEncoding];
 	
 	if (!text)
 		return;
@@ -274,10 +285,13 @@
 		[self parserError:tcrec_cmd_profile_text withString:@"Profile-Text: Not handled"];
 }
 
-- (void)parseProfileName:(NSArray *)args
+- (void)parseProfileName:(NSData *)parameters
 {
 	// Parse command.
-	NSString *name = [[NSString alloc] initWithData:[args joinWithCStr:" "] encoding:NSUTF8StringEncoding];
+	NSString *name = @"";
+	
+	if (parameters)
+		name = [[NSString alloc] initWithData:parameters encoding:NSUTF8StringEncoding];
 	
 	if (!name)
 		return;
@@ -291,51 +305,47 @@
 		[self parserError:tcrec_cmd_profile_name withString:@"Profile-Name: Not handled"];
 }
 
-- (void)parseProfileAvatar:(NSArray *)args
+- (void)parseProfileAvatar:(NSData *)parameters
 {
-	// Parse command.
-	NSData *bitmap = [args joinWithCStr:" "];
-	
-	if (!bitmap)
+	// Check command.
+	if (!parameters)
 		return;
 	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
 	
 	if ([receiver respondsToSelector:@selector(parser:parsedProfileAvatar:)])
-		[receiver parser:self parsedProfileAvatar:bitmap];
+		[receiver parser:self parsedProfileAvatar:parameters];
 	else
 		[self parserError:tcrec_cmd_profile_avatar withString:@"Profile-Avatar: Not handled"];
 }
 
-- (void)parseProfileAvatarAlpha:(NSArray *)args
+- (void)parseProfileAvatarAlpha:(NSData *)parameters
 {
-	// Parse command.
-	NSData *bitmap = [args joinWithCStr:" "];
-	
-	if (!bitmap)
+	// Check command.
+	if (!parameters)
 		return;
 	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
 	
 	if ([receiver respondsToSelector:@selector(parser:parsedProfileAvatarAlpha:)])
-		[receiver parser:self parsedProfileAvatarAlpha:bitmap];
+		[receiver parser:self parsedProfileAvatarAlpha:parameters];
 	else
 		[self parserError:tcrec_cmd_profile_avatar_alpha withString:@"Profile-AvatarAlpha: Not handled"];
 }
 
-- (void)parseMessage:(NSArray *)args
+- (void)parseMessage:(NSData *)parameters
 {
 	// Check args.
-	if ([args count] == 0)
+	if ([parameters length] == 0)
 	{
 		[self parserError:tcrec_cmd_message withString:@"Empty message content"];
         return;
 	}
 	
 	// Parse command.
-	NSString *message = [[NSString alloc] initWithData:[args joinWithCStr:" "] encoding:NSUTF8StringEncoding];
+	NSString *message = [[NSString alloc] initWithData:parameters encoding:NSUTF8StringEncoding];
 	
 	if (!message)
 		return;
@@ -349,7 +359,7 @@
 		[self parserError:tcrec_cmd_message withString:@"Message: Not handled"];
 }
 
-- (void)parseAddMe:(NSArray *)args
+- (void)parseAddMe:(NSData *)parameters
 {
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
@@ -360,7 +370,7 @@
 		[self parserError:tcrec_cmd_addme withString:@"AddMe: Not handled"];
 }
 
-- (void)parseRemoveMe:(NSArray *)args
+- (void)parseRemoveMe:(NSData *)parameters
 {
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
@@ -371,9 +381,11 @@
 		[self parserError:tcrec_cmd_removeme withString:@"RemoveMe: Not handled"];
 }
 
-- (void)parseFileName:(NSArray *)args
+- (void)parseFileName:(NSData *)parameters
 {
 	// Check args.
+	NSArray *args = [parameters explodeWithMaxFields:3 withFieldSeparator:" "];
+	
 	if ([args count] != 4)
     {
 		[self parserError:tcrec_cmd_filename withString:@"Bad filename argument"];
@@ -395,10 +407,12 @@
 		[self parserError:tcrec_cmd_filename withString:@"FileName: Not handled"];
 }
 
-- (void)parseFileData:(NSArray *)args
+- (void)parseFileData:(NSData *)parameters
 {
 	// Check args.
-	if ([args count] < 4)
+	NSArray *args = [parameters explodeWithMaxFields:3 withFieldSeparator:" "];
+	
+	if ([args count] != 4)
     {
 		[self parserError:tcrec_cmd_filedata withString:@"Bad filedata argument"];
         return;
@@ -408,20 +422,22 @@
 	NSString	*uuid = [[NSString alloc] initWithData:args[0] encoding:NSASCIIStringEncoding];
 	NSString	*start = [[NSString alloc] initWithData:args[1] encoding:NSASCIIStringEncoding];
 	NSString	*hash = [[NSString alloc] initWithData:args[2] encoding:NSASCIIStringEncoding];
-	NSData		*data = [args joinFromIndex:3 withCStr:" "];
-	
+	NSData		*fileData = args[3];
+
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
 	
 	if ([receiver respondsToSelector:@selector(parser:parsedFileDataWithUUID:start:hash:data:)])
-		[receiver parser:self parsedFileDataWithUUID:uuid start:start hash:hash data:data];
+		[receiver parser:self parsedFileDataWithUUID:uuid start:start hash:hash data:fileData];
 	else
 		[self parserError:tcrec_cmd_filedata withString:@"FileData: Not handled"];
 }
 
-- (void)parseFileDataOk:(NSArray *)args
+- (void)parseFileDataOk:(NSData *)parameters
 {
 	// Check args.
+	NSArray *args = [parameters explodeWithMaxFields:2 withFieldSeparator:" "];
+	
 	if ([args count] != 2)
     {
 		[self parserError:tcrec_cmd_filedataok withString:@"Bad filedataok argument"];
@@ -441,9 +457,11 @@
 		[self parserError:tcrec_cmd_filedataok withString:@"FileDataOk: Not handled"];
 }
 
-- (void)parseFileDataError:(NSArray *)args
+- (void)parseFileDataError:(NSData *)parameters
 {
 	// Check args.
+	NSArray *args = [parameters explodeWithMaxFields:2 withFieldSeparator:" "];
+
 	if ([args count] != 2)
     {
 		[self parserError:tcrec_cmd_filedataerror withString:@"Bad filedataerror argument"];
@@ -463,17 +481,17 @@
 		[self parserError:tcrec_cmd_filedataerror withString:@"FileDataError: Not handled"];
 }
 
-- (void)parseFileStopSending:(NSArray *)args
+- (void)parseFileStopSending:(NSData *)parameters
 {
 	// Check args.
-	if ([args count] != 1)
+	if ([parameters length] == 0)
     {
 		[self parserError:tcrec_cmd_filestopsending withString:@"Bad filestopsending argument"];
         return;
 	}
 	
 	// Parse command.
-	NSString *uuid = [[NSString alloc] initWithData:args[0] encoding:NSASCIIStringEncoding];
+	NSString *uuid = [[NSString alloc] initWithData:parameters encoding:NSASCIIStringEncoding];
 	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
@@ -484,17 +502,17 @@
 		[self parserError:tcrec_cmd_filestopsending withString:@"FileStopSending: Not handled"];
 }
 
-- (void)parseFileStopReceiving:(NSArray *)args
+- (void)parseFileStopReceiving:(NSData *)parameters
 {
 	// Check args.
-	if ([args count] != 1)
+	if ([parameters length] == 0)
     {
 		[self parserError:tcrec_cmd_filestopreceiving withString:@"Bad filestopreceiving argument"];
         return;
 	}
 	
 	// Parse command.
-	NSString *uuid = [[NSString alloc] initWithData:args[0] encoding:NSASCIIStringEncoding];
+	NSString *uuid = [[NSString alloc] initWithData:parameters encoding:NSASCIIStringEncoding];
 	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;

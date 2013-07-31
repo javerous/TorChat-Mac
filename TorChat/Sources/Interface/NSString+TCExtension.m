@@ -1,5 +1,5 @@
 /*
- *  TCStringExtension.m
+ *  TCExtension.m
  *
  *  Copyright 2013 Avérous Julien-Pierre
  *
@@ -22,16 +22,16 @@
 
 
 
-#import "TCStringExtension.h"
+#import "NSString+TCExtension.h"
 
 
 
 /*
-** NSString - TCStringExtension
+** NSString - TCExtension
 */
-#pragma mark - NSString - TCStringExtension
+#pragma mark - NSString - TCExtension
 
-@implementation NSString (TCStringExtension)
+@implementation NSString (TCExtension)
 
 // == Compute string height ==
 - (CGFloat)heightForDrawingWithFont:(NSFont *)font andWidth:(CGFloat)width
@@ -80,11 +80,11 @@
 
 
 /*
-** NSAttributedString - TCStringExtension
+** NSAttributedString - TCExtension
 */
-#pragma mark - NSAttributedString - TCStringExtension
+#pragma mark - NSAttributedString - TCExtension
 
-@implementation NSAttributedString (TCStringExtension)
+@implementation NSAttributedString (TCExtension)
 
 // == Compute string height ==
 - (CGFloat)heightForDrawingWithWidth:(float)width

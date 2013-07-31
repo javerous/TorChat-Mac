@@ -937,7 +937,6 @@ static char gLocalQueueContext;
 			_ponged = YES;
 			
 			// Use this incomming connection
-#warning XXX: check that we will not loose event during this change.
 			sock.delegate = self;
 			
 			if (_inSocket)

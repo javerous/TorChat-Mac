@@ -25,7 +25,7 @@
 #import "TCChatView.h"
 
 #import "TCChatTalk.h"
-#import "TCStringExtension.h"
+#import "NSString+TCExtension.h"
 
 
 

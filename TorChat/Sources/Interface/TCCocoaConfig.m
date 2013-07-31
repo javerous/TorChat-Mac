@@ -23,7 +23,7 @@
 
 #import "TCCocoaConfig.h"
 
-#import "TCStringExtension.h"
+#import "NSString+TCExtension.h"
 #import "TCImage.h"
 
 
