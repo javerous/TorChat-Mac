@@ -25,9 +25,14 @@
 #import "TCMainController.h"
 
 #import "TCCocoaConfig.h"
-#import "TCAssistantController.h"
 #import "TCLogsController.h"
 #import "TCBuddiesController.h"
+
+#import "TCAssistantController.h"
+#import "TCPanel_Welcome.h"
+#import "TCPanel_Mode.h"
+#import "TCPanel_Advanced.h"
+#import "TCPanel_Basic.h"
 
 #if defined(PROXY_ENABLED) && PROXY_ENABLED
 # import "TCConfigProxy.h"
@@ -43,7 +48,8 @@
 @interface TCMainController ()
 {
 	id <TCConfig> _configuration;
-
+	
+	TCAssistantController	*_assistant;
 }
 
 @end
@@ -178,7 +184,22 @@
 
 	// > Check if we should launch assistant
 	if (!conf)
-		[[TCAssistantController sharedController] startWithCallback:@selector(assistantCallback:) onObject:self];
+	{
+		NSArray *panels = @[ [TCPanel_Welcome class], [TCPanel_Mode class], [TCPanel_Advanced class], [TCPanel_Basic class] ];
+		
+		_assistant = [TCAssistantController startAssistantWithPanels:panels andCallback:^(id context) {
+			TCCocoaConfig *config = (TCCocoaConfig *)context;
+			
+			// Hold the config
+			_configuration = config;
+			
+			// Start buddy controller
+			[[TCBuddiesController sharedController] startWithConfiguration:_configuration];
+			
+			// Remove instance.
+			_assistant = nil;
+		}];
+	}
 	else
 	{
 		// > Hold the config
@@ -187,17 +208,6 @@
 		// > Start buddy controller
 		[[TCBuddiesController sharedController] startWithConfiguration:conf];
 	}
-}
-
-- (void)assistantCallback:(id)content
-{
-	TCCocoaConfig *conf = (TCCocoaConfig *)content;
-	
-	// Hold the config
-	_configuration = conf;
-	
-	// Start buddy controller
-	[[TCBuddiesController sharedController] startWithConfiguration:conf];
 }
 
 
