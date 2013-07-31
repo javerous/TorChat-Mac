@@ -21,12 +21,13 @@
  */
 
 
-
 #import "TCAssistantController.h"
 
 #import "TCCocoaConfig.h"
 #import "TCTorManager.h"
 #import "TCLogsController.h"
+
+#import "TCPanel.h"
 
 
 
@@ -37,19 +38,19 @@
 
 @interface TCAssistantController () <TCAssistantProxy>
 {
-	NSMutableDictionary			*_pannels;
+	NSMutableDictionary		*_panelsClass;
+	NSMutableDictionary		*_panelsInstances;
+
+	id <TCAssistantPanel>	_currentPanel;
 	
-	id <TCAssistantPanel>		_currentPanel;
+	NSString				*_nextID;
+	BOOL					_isLast;
+	BOOL					_fDisable;
 	
-	NSString					*_nextID;
-	BOOL						_isLast;
-	BOOL						_fDisable;
-	
-	id							_respObj;
-	SEL							_respSel;
+	TCAssistantCallback		_callback;
 }
 
-- (void)_switchToPanel:(NSString *)panel;
+- (void)_switchToPanel:(NSString *)panelID;
 - (void)_checkNextButton;
 
 @end
@@ -69,57 +70,52 @@
 */
 #pragma mark - TCAssistantController - Instance
 
-+ (TCAssistantController *)sharedController
++ (TCAssistantController *)startAssistantWithPanels:(NSArray *)panels andCallback:(TCAssistantCallback)callback
 {
-	static dispatch_once_t			pred;
-	static TCAssistantController	*instance = nil;
-		
-	dispatch_once(&pred, ^{
-		instance = [[TCAssistantController alloc] init];
-	});
+	TCAssistantController *assistant = [[TCAssistantController alloc] initWithPanels:panels andCallback:callback];
 	
-	return instance;
+	return assistant;
 }
 
-- (id)init
+- (id)initWithPanels:(NSArray *)panels andCallback:(TCAssistantCallback)callback
 {
 	self = [super init];
 	
 	if (self)
 	{
+		if ([panels count] == 0)
+			return nil;
+		
+		// Handle callback.
+		_callback = callback;
+		
+		// Create containers.
+		_panelsClass = [[NSMutableDictionary alloc] init];
+		_panelsInstances = [[NSMutableDictionary alloc] init];
+		
+		// Handle pannels class.
+		for (Class <TCAssistantPanel> class in panels)
+			[_panelsClass setObject:class forKey:[class identifiant]];
+		
 		// Load Bundle
 		[[NSBundle mainBundle] loadNibNamed:@"AssistantWindow" owner:self topLevelObjects:nil];
+		
+		// Show first pannel.
+		Class <TCAssistantPanel> class = panels[0];
+		
+		[self _switchToPanel:[class identifiant]];
+		
+		// Show window.
+		[_mainWindow center];
+		[_mainWindow makeKeyAndOrderFront:self];
 	}
 	
 	return self;
 }
 
-- (void)awakeFromNib
+- (void)dealloc
 {
-	// Catalog pannels
-	_pannels = [[NSMutableDictionary alloc] init];
-	
-	[_pannels setObject:_welcomePanel forKey:[_welcomePanel panelID]];
-	[_pannels setObject:_modePanel forKey:[_modePanel panelID]];
-	[_pannels setObject:_basicPanel forKey:[_basicPanel panelID]];
-	[_pannels setObject:_advancedPanel forKey:[_advancedPanel panelID]];
-}
-
-
-/*
-** TCAssistantController - Run
-*/
-#pragma mark - TCAssistantController - Run
-
-- (void)startWithCallback:(SEL)selector onObject:(id)obj
-{
-	_respSel = selector;
-	_respObj = obj;
-		
-	[self _switchToPanel:@"ac_welcome"];
-	
-	[_mainWindow center];
-	[_mainWindow makeKeyAndOrderFront:self];
+    TCDebugLog("TCAssistantController dealloc");
 }
 
 
@@ -144,7 +140,15 @@
 	
 	if (_isLast)
 	{
-		[_respObj performSelector:_respSel withObject:[_currentPanel content]];
+		id content = [_currentPanel content];
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			
+			if (_callback)
+				_callback(content);
+			
+			_callback = nil;
+		});
 
 		[_mainWindow orderOut:sender];
 	}
@@ -162,34 +166,47 @@
 */
 #pragma mark - TCAssistantController - Tools
 
-- (void)_switchToPanel:(NSString *)panel
+- (void)_switchToPanel:(NSString *)panelID
 {
 	// > main queue <
 	
-	if ([[_currentPanel panelID] isEqualToString:panel])
+	// Check that the panel is not already loaded.
+	if ([[[_currentPanel class] identifiant] isEqualToString:panelID])
 		return;
 	
-	[[_currentPanel panelView] removeFromSuperview];
+	// Remove it from current view.
+	[[_currentPanel view] removeFromSuperview];
 	
-	id <TCAssistantPanel> nPanel = [_pannels objectForKey:panel];
+	// Get the panel instance.
+	id <TCAssistantPanel> panel = _panelsInstances[panelID];
+	
+	if (!panel)
+	{
+		Class <TCAssistantPanel> class = _panelsClass[panelID];
+		
+		panel = [class panelWithProxy:self];
+		
+		if (panel)
+			_panelsInstances[panelID] = panel;
+	}
 	
 
 	// Set the view
-	if (nPanel)
-		[_mainView addSubview:[nPanel panelView]];
+	if (panel)
+		[_mainView addSubview:[panel view]];
 
 	// Set the title
-	_mainTitle.stringValue = [nPanel panelTitle];
+	_mainTitle.stringValue = [[panel class] title];
 	
 	// Set the proxy
 	_nextID = nil;
 	_isLast = YES;
 	[_nextButton setEnabled:NO];
 	[_nextButton setTitle:NSLocalizedString(@"ac_next_finish", @"")];
-	[nPanel showWithProxy:self];
+	[panel showPanel];
 	 
 	// Hold the panel
-	_currentPanel = nPanel;
+	_currentPanel = panel;
 }
 
 - (void)_checkNextButton
@@ -206,12 +223,10 @@
 		[_nextButton setEnabled:YES];
 	else
 	{
-		id obj = [_pannels objectForKey:_nextID];
+		Class class = _panelsClass[_nextID];
 		
-		[_nextButton setEnabled:(obj != nil)];
+		[_nextButton setEnabled:(class != nil)];
 	}
-	
-
 }
 
 
@@ -245,387 +260,6 @@
 	_fDisable = disabled;
 	
 	[self _checkNextButton];
-}
-
-@end
-
-
-
-/*
-** Pannel - Welcome
-*/
-#pragma mark - Pannel - Welcome
-
-@interface TCPanel_Welcome ()
-{
-	id <TCAssistantProxy>	proxy;
-	BOOL					pathSet;
-	TCCocoaConfig			*config;
-}
-
-@end
-
-@implementation TCPanel_Welcome
-
-- (void)showWithProxy:(id <TCAssistantProxy>)_proxy
-{
-	proxy = _proxy;
-	
-	[proxy setIsLastPanel:NO];
-	[proxy setNextPanelID:@"ac_mode"];
-}
-
-- (NSString *)panelID
-{
-	return @"ac_welcome";
-}
-
-- (NSString *)panelTitle
-{
-	return NSLocalizedString(@"ac_title_welcome", @"");
-}
-
-- (NSView *)panelView
-{
-	return self;
-}
-
-- (id)content
-{
-	return config;
-}
-
-- (IBAction)selectChange:(id)sender
-{
-	NSMatrix	*mtr = sender;
-	NSButton	*obj = [mtr selectedCell];
-	NSInteger	tag = [obj tag];
-	
-	if (tag == 1)
-	{
-		[proxy setIsLastPanel:NO];
-		[proxy setNextPanelID:@"ac_mode"];
-		
-		[proxy setDisableContinue:NO];
-	}
-	else if (tag == 2)
-	{
-		[proxy setIsLastPanel:YES];
-		[proxy setNextPanelID:nil];
-		
-		[proxy setDisableContinue:!pathSet];
-	}
-}
-
-- (IBAction)selectFile:(id)sender
-{
-	NSOpenPanel	*openDlg = [NSOpenPanel openPanel];
-	
-	// Ask for a file
-	[openDlg setCanChooseFiles:YES];
-	[openDlg setCanChooseDirectories:NO];
-	[openDlg setCanCreateDirectories:NO];
-	[openDlg setAllowsMultipleSelection:NO];
-	
-	if ([openDlg runModal] == NSFileHandlingPanelOKButton)
-	{
-		NSArray			*urls = [openDlg URLs];
-		NSURL			*url = [urls objectAtIndex:0];
-		TCCocoaConfig	*aconfig = [[TCCocoaConfig alloc] initWithFile:[url path]];
-		
-		if (!aconfig)
-		{
-			// Log error
-			[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_read_file", [url path]];
-			return;
-		}
-		
-		// Update status
-		config = aconfig;
-		pathSet = YES;
-		
-		[_confPathField setStringValue:[url path]];
-		
-		[proxy setDisableContinue:NO];
-	}
-}
-
-@end
-
-
-
-/*
-** Pannel - Mode
-*/
-#pragma mark - Pannel - Mode
-
-@interface TCPanel_Mode ()
-{
-    id <TCAssistantProxy> proxy;
-}
-
-@end
-
-@implementation TCPanel_Mode
-
-- (void)showWithProxy:(id <TCAssistantProxy>)_proxy
-{
-	proxy = _proxy;
-	
-	[proxy setIsLastPanel:NO];
-	[proxy setNextPanelID:@"ac_basic"];
-}
-
-- (NSString *)panelID
-{
-	return @"ac_mode";
-}
-
-- (NSString *)panelTitle
-{
-	return NSLocalizedString(@"ac_title_mode", @"");
-}
-
-- (NSView *)panelView
-{
-	return self;
-}
-
-- (id)content
-{
-	return nil;
-}
-
-- (IBAction)selectChange:(id)sender
-{
-	NSMatrix	*mtr = sender;
-	NSButton	*obj = [mtr selectedCell];
-	NSInteger	tag = [obj tag];
-	
-	if (tag == 1)
-		[proxy setNextPanelID:@"ac_basic"];
-	else if (tag == 2)
-		[proxy setNextPanelID:@"ac_advanced"];
-	else
-		[proxy setNextPanelID:nil];
-}
-
-@end
-
-
-
-/*
-** Pannel - Advanced
-*/
-#pragma mark - Pannel - Advanced
-
-@implementation TCPanel_Advanced
-
-@synthesize imAddressField;
-@synthesize imInPortField;
-@synthesize imDownloadField;
-
-@synthesize torAddressField;
-@synthesize torPortField;
-
-- (void)showWithProxy:(id <TCAssistantProxy>)proxy
-{
-	[proxy setIsLastPanel:YES];
-}
-
-- (NSString *)panelID
-{
-	return @"ac_advanced";
-}
-
-- (NSString *)panelTitle
-{
-	return NSLocalizedString(@"ac_title_advanced", @"");
-}
-
-- (NSView *)panelView
-{
-	return self;
-}
-
-- (id)content
-{
-	NSBundle		*bundle = [NSBundle mainBundle];
-	NSString		*path = nil;
-	TCCocoaConfig	*aconfig = nil;
-	
-	// Configuration
-	path = [[[bundle bundlePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"];
-		
-	aconfig = [[TCCocoaConfig alloc] initWithFile:path];
-	
-	if (!aconfig)
-	{
-		// Log error
-		[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_write_file", path];
-		return nil;
-	}
-	
-	// Set up the config with the fields
-	[aconfig setTorAddress:[torAddressField stringValue]];
-	[aconfig setSelfAddress:[imAddressField stringValue]];
-	[aconfig setDownloadFolder:[imDownloadField stringValue]];
-
-	[aconfig setTorPort:(uint16_t)[torPortField intValue]];
-	[aconfig setClientPort:(uint16_t)[imInPortField intValue]];
-	[aconfig setMode:tc_config_advanced];
-	
-	// Return the config
-	return aconfig;
-}
-
-- (IBAction)selectFolder:(id)sender
-{
-	NSOpenPanel	*openDlg = [NSOpenPanel openPanel];
-	
-	// Ask for a file
-	[openDlg setCanChooseFiles:NO];
-	[openDlg setCanChooseDirectories:YES];
-	[openDlg setCanCreateDirectories:YES];
-	[openDlg setAllowsMultipleSelection:NO];
-	
-	if ([openDlg runModal] == NSOKButton)
-	{
-		NSArray		*urls = [openDlg URLs];
-		NSURL		*url = [urls objectAtIndex:0];
-		
-		[imDownloadField setStringValue:[url path]];
-	}
-}
-
-@end
-
-
-
-/*
-** Pannel - Basic
-*/
-#pragma mark - Pannel - Basic
-
-@interface TCPanel_Basic ()
-{
-	TCCocoaConfig			*_config;
-	id <TCAssistantProxy>	_proxy;
-}
-
-@end
-
-@implementation TCPanel_Basic
-
-@synthesize imAddressField;
-@synthesize imDownloadField;
-@synthesize loadingIndicator;
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)showWithProxy:(id <TCAssistantProxy>)proxy
-{	
-	[proxy setIsLastPanel:YES];
-	[proxy setDisableContinue:YES]; // Wait for tor
-	
-	// Retain proxy
-	_proxy = proxy;
-	
-	// If we already a config, stop here
-	if (_config)
-		return;
-	
-	// Obserse tor status changes
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(torChanged:) name:TCTorManagerStatusChanged object:nil];
-
-	// Get the default tor config path
-	NSString *bpath = [[NSBundle mainBundle] bundlePath];
-	NSString *pth = [[bpath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"];
-	
-	if (!pth)
-	{
-		[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_build_path"];
-		return;
-	}
-	
-	// Try to build a new config file
-	_config = [[TCCocoaConfig alloc] initWithFile:pth];
-	
-	if (!_config)
-	{
-		[imAddressField setStringValue:NSLocalizedString(@"ac_err_config", @"")];
-		[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_write_file", pth];
-		return;
-	}
-	
-	// Start manager
-	[[TCTorManager sharedManager] startWithConfiguration:_config];
-}
-
-- (void)torChanged:(NSNotification *)notice
-{
-	NSDictionary	*info = notice.userInfo;
-	NSNumber		*running = [info objectForKey:TCTorManagerInfoRunningKey];
-	NSString		*host = [info objectForKey:TCTorManagerInfoHostNameKey];
-		
-	if ([running boolValue])
-	{
-		[_proxy setDisableContinue:NO];
-		[imAddressField setStringValue:host];
-	}
-	else
-	{
-		[_proxy setDisableContinue:YES];
-		
-		// Log the error
-		[[TCLogsController sharedController] addGlobalAlertLog:@"tor_err_launch"];
-	}
-}
-
-- (NSString *)panelID
-{
-	return @"ac_basic";
-}
-
-- (NSString *)panelTitle
-{
-	return NSLocalizedString(@"ac_title_basic", @"");
-}
-
-- (NSView *)panelView
-{
-	return self;
-}
-
-- (id)content
-{
-	return _config;
-}
-
-- (IBAction)selectFolder:(id)sender
-{
-	if (!_config)
-		return;
-	
-	NSOpenPanel	*openDlg = [NSOpenPanel openPanel];
-	
-	// Ask for a file
-	[openDlg setCanChooseFiles:NO];
-	[openDlg setCanChooseDirectories:YES];
-	[openDlg setCanCreateDirectories:YES];
-	[openDlg setAllowsMultipleSelection:NO];
-	
-	if ([openDlg runModal] == NSOKButton)
-	{
-		NSArray	*urls = [openDlg URLs];
-		NSURL	*url = [urls objectAtIndex:0];
-		
-		[imDownloadField setStringValue:[url path]];
-		[_config setDownloadFolder:[url path]];
-	}
 }
 
 @end

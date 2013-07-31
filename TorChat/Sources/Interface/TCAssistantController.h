@@ -21,56 +21,15 @@
  */
 
 
-
 #import <Cocoa/Cocoa.h>
 
 
-
 /*
-** Forward
+** Types
 */
-#pragma mark - Forward
+#pragma mark - Types
 
-@class TCPanel_Welcome;
-@class TCPanel_Mode;
-@class TCPanel_Advanced;
-@class TCPanel_Basic;
-
-@class TCCocoaConfig;
-
-
-
-/*
-** TCAssistantProxy
-*/
-#pragma mark - TCAssistantProxy
-
-@protocol TCAssistantProxy <NSObject>
-
-- (void)setNextPanelID:(NSString *)panelID;
-- (void)setIsLastPanel:(BOOL)last;
-- (void)setDisableContinue:(BOOL)disabled;
-
-@end
-
-
-
-/*
-** TCAssistantPanel
-*/
-#pragma mark - TCAssistantController
-
-@protocol TCAssistantPanel <NSObject>
-
-- (void)showWithProxy:(id <TCAssistantProxy>)proxy;
-
-- (NSString *)panelID;
-- (NSString *)panelTitle;
-- (NSView *)panelView;
-
-- (id)content;
-
-@end
+typedef void (^TCAssistantCallback)(id context);
 
 
 
@@ -81,13 +40,6 @@
 
 @interface TCAssistantController : NSObject
 
-// -- Property --
-// > Pannels
-@property (strong, nonatomic)	IBOutlet TCPanel_Welcome	*welcomePanel;
-@property (strong, nonatomic)	IBOutlet TCPanel_Mode		*modePanel;
-@property (strong, nonatomic)	IBOutlet TCPanel_Advanced	*advancedPanel;
-@property (strong, nonatomic)	IBOutlet TCPanel_Basic		*basicPanel;
-	
 // > Assistant
 @property (strong, nonatomic)	IBOutlet NSWindow			*mainWindow;
 @property (strong, nonatomic)	IBOutlet NSTextField		*mainTitle;
@@ -96,61 +48,10 @@
 @property (strong, nonatomic)	IBOutlet NSButton			*nextButton;
 
 // -- Constructor --
-+ (TCAssistantController *)sharedController;
-
-// -- Run --
-- (void)startWithCallback:(SEL)selector onObject:(id)obj;
++ (TCAssistantController *)startAssistantWithPanels:(NSArray *)panels andCallback:(TCAssistantCallback)callback;
 
 // -- IBAction --
 - (IBAction)doCancel:(id)sender;
 - (IBAction)doNext:(id)sender;
-
-@end
-
-
-
-/*
-** Pannels
-*/
-#pragma mark - Pannels
-
-@interface TCPanel_Welcome : NSView <TCAssistantPanel>
-
-@property (strong, nonatomic)	IBOutlet NSTextField *confPathField;
-
-- (IBAction)selectChange:(id)sender;
-- (IBAction)selectFile:(id)sender;
-
-@end
-
-
-@interface TCPanel_Mode : NSView <TCAssistantPanel>
-
-- (IBAction)selectChange:(id)sender;
-
-@end
-
-
-@interface TCPanel_Advanced : NSView <TCAssistantPanel>
-
-@property (strong, nonatomic)	IBOutlet NSTextField	*imAddressField;
-@property (strong, nonatomic)	IBOutlet NSTextField	*imInPortField;
-@property (strong, nonatomic)	IBOutlet NSTextField	*imDownloadField;
-	
-@property (strong, nonatomic)	IBOutlet NSTextField	*torAddressField;
-@property (strong, nonatomic)	IBOutlet NSTextField	*torPortField;
-
-- (IBAction)selectFolder:(id)sender;
-
-@end
-
-
-@interface TCPanel_Basic : NSView <TCAssistantPanel>
-
-@property (strong, nonatomic)	IBOutlet NSTextField			*imAddressField;
-@property (strong, nonatomic)	IBOutlet NSTextField			*imDownloadField;
-@property (strong, nonatomic)	IBOutlet NSProgressIndicator	*loadingIndicator;
-
-- (IBAction)selectFolder:(id)sender;
 
 @end

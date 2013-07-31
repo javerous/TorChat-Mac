@@ -33,7 +33,6 @@
 #pragma mark - Forward
 
 @class TCController;
-@class TCConnection;
 
 @class TCImage;
 @class TCBuddy;
@@ -155,9 +154,5 @@ typedef enum
 // -- Blocked Buddies --
 - (BOOL)addBlockedBuddy:(NSString *)address;
 - (BOOL)removeBlockedBuddy:(NSString *)address;
-
-// -- TCConnection --
-- (void)cc_error:(TCConnection *)client info:(TCInfo *)info;
-- (void)cc_notify:(TCConnection *)client info:(TCInfo *)info;
 
 @end
