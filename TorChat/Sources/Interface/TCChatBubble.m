@@ -24,7 +24,7 @@
 
 #import "TCChatBubble.h"
 
-#import "TCStringExtension.h"
+#import "NSString+TCExtension.h"
 
 
 

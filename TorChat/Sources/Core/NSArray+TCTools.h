@@ -32,6 +32,5 @@
 @interface NSArray (TCTools)
 
 - (NSData *)joinWithCStr:(const char *)str;
-- (NSData *)joinFromIndex:(NSUInteger)index withCStr:(const char *)str;
 
 @end

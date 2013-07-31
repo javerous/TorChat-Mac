@@ -26,11 +26,11 @@
 
 
 /*
-** NSString - TCStringExtension
+** NSString - TCExtension
 */
-#pragma mark - NSString - TCStringExtension
+#pragma mark - NSString - TCExtension
 
-@interface NSString (TCStringExtension)
+@interface NSString (TCExtension)
 
 - (CGFloat)heightForDrawingWithFont:(NSFont *)font andWidth:(CGFloat)width;
 
@@ -41,11 +41,11 @@
 
 
 /*
-** NSAttributedString - TCStringExtension
+** NSAttributedString - TCExtension
 */
-#pragma mark - NSAttributedString - TCStringExtension
+#pragma mark - NSAttributedString - TCExtension
 
-@interface NSAttributedString (TCStringExtension)
+@interface NSAttributedString (TCExtension)
 
 - (CGFloat)heightForDrawingWithWidth:(float)width;
 
