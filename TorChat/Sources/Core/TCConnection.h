@@ -1,5 +1,5 @@
 /*
- *  TCControlClient.h
+ *  TCConnection.h
  *
  *  Copyright 2013 Avérous Julien-Pierre
  *
@@ -23,30 +23,46 @@
 
 #import <Foundation/Foundation.h>
 
-#import "TCConfig.h"
-
 
 /*
 ** Forward
 */
 #pragma mark - Forward
 
-@class TCController;
+@class TCConnection;
+@class TCInfo;
+@class TCSocket;
 
 
 
 /*
-** TCControlClient
+** TCConnectionDelegate
 */
-#pragma mark - TCControlClient
+#pragma mark - TCConnectionDelegate
 
-@interface TCControlClient : NSObject
+@protocol TCConnectionDelegate <NSObject>
+
+- (void)connection:(TCConnection *)connection pingAddress:(NSString *)address withRandomToken:(NSString *)random;
+- (void)connection:(TCConnection *)connection pongWithSocket:(TCSocket *)socket andRandomToken:(NSString *)random;
+
+- (void)connection:(TCConnection *)connection information:(TCInfo *)info;
+
+@end
+
+
+
+/*
+** TCConnection
+*/
+#pragma mark - TCConnection
+
+@interface TCConnection : NSObject
 
 // -- Instance --
-- (id)initWithConfiguration:(id <TCConfig>)configuration andSocket:(int)sock;
+- (id)initWithDelegate:(id <TCConnectionDelegate>)delegate andSocket:(int)sock;
 
 // -- Life --
-- (void)startWithController:(TCController *)controller;
+- (void)start;
 - (void)stop;
 
 @end
