@@ -49,7 +49,7 @@
 */
 #pragma mark - TCBuddiesController - Private
 
-@interface TCBuddiesController () <TCControllerDelegate>
+@interface TCBuddiesController () <TCControllerDelegate, TCDropButtonDelegate>
 {
 	id <TCConfig>		_configuration;
 	TCController		*_control;
@@ -63,8 +63,6 @@
 	
 	NSDictionary		*_infos;
 }
-
-- (void)doAvatarDrop:(NSImage *)avatar;
 
 - (void)updateStatusUI:(int)status;
 - (void)updateTitleUI;
@@ -208,9 +206,8 @@
 	[_tableView setDraggingSourceOperationMask:NSDragOperationAll forLocal:NO];
 	
 	// > Redirect avatar drop
-	[_imAvatar setDropTarget:self withSelector:@selector(doAvatarDrop:)];
+	[_imAvatar setDelegate:self];
 
-	
 	// Show the window
 	[_mainWindow makeKeyAndOrderFront:self];
 	
@@ -617,6 +614,23 @@
 
 
 /*
+** TCBuddiesController - TCDropButtonDelegate
+*/
+#pragma mark - TCBuddiesController - TCDropButtonDelegate
+
+- (void)dropButton:(TCDropButton *)button doppedImage:(NSImage *)avatar
+{
+	TCImage *image = [[TCImage alloc] initWithImage:avatar];
+	
+	if (!image)
+		return;
+	
+	[_control setProfileAvatar:image];
+}
+
+
+
+/*
 ** TCBuddiesController - Files Notification
 */
 #pragma mark - TCBuddiesController - Files Notification
@@ -695,18 +709,8 @@
 		NSArray	*urls = [openDlg URLs];
 		NSImage *avatar = [[NSImage alloc] initWithContentsOfURL:[urls objectAtIndex:0]];
 
-		[self doAvatarDrop:avatar];
+		[self dropButton:nil doppedImage:avatar];
 	}
-}
-
-- (void)doAvatarDrop:(NSImage *)avatar
-{
-	TCImage *image = [[TCImage alloc] initWithImage:avatar];
-	
-	if (!image)
-		return;
-	
-	[_control setProfileAvatar:image];
 }
 
 - (IBAction)doTitle:(id)sender
