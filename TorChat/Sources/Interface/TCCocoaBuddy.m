@@ -700,7 +700,7 @@ static char gLocalQueueContext;
 			case tcbuddy_notify_file_receive_start:
 			{
 				TCFileInfo *finfo = (TCFileInfo *)info.context;
-				
+								
 				if (!finfo)
 					return;
 				
