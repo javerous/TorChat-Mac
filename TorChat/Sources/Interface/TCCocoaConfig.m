@@ -849,8 +849,8 @@
 	
 	local = NSLocalizedString(key, @"");
 	
-	if (!local)
-		return @"";
+	if ([local length] == 0)
+		return key;
 	
 	return local;
 }

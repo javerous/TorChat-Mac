@@ -119,7 +119,7 @@
 	
 	if (self)
 	{
-		config = _config;
+		_config = config;
 		
 		// Init vars
 		_mstatus = tccontroller_available;
