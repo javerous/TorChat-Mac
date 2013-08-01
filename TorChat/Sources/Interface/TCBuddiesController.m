@@ -33,7 +33,7 @@
 #import "TCFilesCommon.h"
 #import "TCFilesController.h"
 
-#import "TCLogsController.h"
+#import "TCLogsManager.h"
 
 #import "TCTorManager.h"
 #import "TCDropButton.h"
@@ -507,7 +507,7 @@
 - (void)torchatController:(TCController *)controller information:(const TCInfo *)info
 {
 	// Log the item
-	[[TCLogsController sharedController] addGlobalLogEntry:[info render]];
+	[[TCLogsManager sharedManager] addGlobalLogEntry:[info render]];
 	
 	// Action information
 	switch (info.infoCode)

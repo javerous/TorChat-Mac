@@ -8,7 +8,7 @@
 
 #import "TCPanel_Basic.h"
 
-#import "TCLogsController.h"
+#import "TCLogsManager.h"
 #import "TCCocoaConfig.h"
 #import "TCTorManager.h"
 
@@ -105,7 +105,8 @@
 	
 	if (!pth)
 	{
-		[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_build_path"];
+		[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_err_build_path"];
+		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_err_build_path", @"")] runModal];
 		return;
 	}
 	
@@ -115,7 +116,10 @@
 	if (!_config)
 	{
 		[_imAddressField setStringValue:NSLocalizedString(@"ac_err_config", @"")];
-		[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_write_file", pth];
+		
+		[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_err_write_file", pth];
+		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_err_write_file", @""), pth] runModal];
+
 		return;
 	}
 	
@@ -148,7 +152,7 @@
 		[proxy setDisableContinue:YES];
 		
 		// Log the error
-		[[TCLogsController sharedController] addGlobalAlertLog:@"tor_err_launch"];
+		[[TCLogsManager sharedManager] addGlobalAlertLog:@"tor_err_launch"];
 	}
 }
 
