@@ -60,17 +60,17 @@
 	
 	if (self)
 	{
-		// -- Vars --
-		_validatedOffset = 0;
+		// Init vars.
+		_validatedOffset = (uint64_t)-1;
 		_filePath = filePath;
 		
-		// -- Open the file --
+		// Open the file.
 		_file = fopen([_filePath UTF8String], "r");
 		
 		if (!_file)
 			return nil;
 		
-		// -- Compute the file size --
+		// File Size.
 		long tl;
 		
 		if (fseek(_file, 0, SEEK_END) < 0)
@@ -83,13 +83,11 @@
 			return nil;
 
 		_fileSize = (uint64_t)tl;
-		
-		
-		// -- Set the block size --
+				
+		// BLock size.
 		_blockSize = 8192;
 		
-		
-		// -- Compute uuid --
+		// UUID.
 		uuid_t	out;
 		char	cout[40];
 		
@@ -98,8 +96,7 @@
 		
 		_uuid = [[NSString alloc] initWithCString:cout encoding:NSASCIIStringEncoding];
 		
-		
-		// -- Filename --
+		// Filename.
 		_fileName = [_filePath lastPathComponent];
 	}
 	
@@ -127,19 +124,19 @@
 {
 	if (!bytes)
 		return nil;
-	
+
 	// Get the current file position.
 	long tl = ftell(_file);
 	
 	if (tl < 0)
 		return nil;
-	
+
 	// Read a chunk of data.
-	size_t	sz = fread(bytes, 1, _blockSize, _file);
+	size_t sz = fread(bytes, 1, _blockSize, _file);
 	
 	if (sz <= 0)
-		return NULL;
-	
+		return nil;
+
 	if (chunkSize)
 		*chunkSize = sz;
 	
@@ -152,7 +149,7 @@
 
 - (void)setNextChunkOffset:(uint64_t)offset
 {
-	if (offset <= _validatedOffset)
+	if (_validatedOffset != (uint64_t)-1 && offset <= _validatedOffset)
 		return;
 	
 	// Set the file cursor
@@ -161,12 +158,18 @@
 
 - (BOOL)isFinished
 {
+	if (_validatedOffset == (uint64_t)-1)
+		return NO;
+	
 	return ((_validatedOffset + _blockSize) >= _fileSize);
 
 }
 
 - (uint64_t)validatedSize
 {
+	if (_validatedOffset == (uint64_t)-1)
+		return 0;
+	
 	uint64_t amount = _validatedOffset + _blockSize;
 	
 	if (amount > _fileSize)

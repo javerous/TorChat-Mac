@@ -937,12 +937,11 @@ static char gLocalQueueContext;
 			_ponged = YES;
 			
 			// Use this incomming connection
-			sock.delegate = self;
-			
 			if (_inSocket)
 				[_inSocket stop];
 			
 			_inSocket = sock;
+			_inSocket.delegate = self;
 			
 			[_inSocket setGlobalOperation:tcsocket_op_line withSize:0 andTag:0];
 			
@@ -1312,7 +1311,7 @@ static char gLocalQueueContext;
 - (void)parser:(TCParser *)parser parsedFileDataWithUUID:(NSString *)uuid start:(NSString *)start hash:(NSString *)hash data:(NSData *)data
 {
 	// > localQueue <
-
+	
 	/*
 	 TorChat protocol is based on text token protocol ("filedata", "filedata_ok", space separator, etc.).
 	 TorChat Python use text function for this text protocol ("join", "split", "replace", etc.)
@@ -1357,7 +1356,9 @@ static char gLocalQueueContext;
 			}
 		}
 		else
+		{
 			[self _sendFileDataError:uuid start:offset];
+		}
 	}
 	else
 	{
@@ -1410,20 +1411,23 @@ static char gLocalQueueContext;
 - (void)parser:(TCParser *)parser parsedFileDataErrorWithUUID:(NSString *)uuid start:(NSString *)start
 {
 	// > localQueue <
-
+	
 	// Check if we are blocked
-	if (!_blocked)
+	if (_blocked)
 		return;
 
 	// Manage file chunk
 	TCFileSend *file = _fsend[uuid];
-	
+		
 	if (file)
 	{
 		uint64_t offset = strtoull([start cStringUsingEncoding:NSASCIIStringEncoding], NULL, 10);
 		
 		// Set the position where we should re-send
 		[file setNextChunkOffset:offset];
+		
+		// Try resending.
+		[self _runPendingFileWrite];
 	}
 	else
 	{
@@ -1647,10 +1651,10 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	if (!file)
+	if (!file || [file readSize] >= [file fileSize])
 		return;
 	
-	uint8_t		chunk[[file blockSize]];
+	uint8_t		*chunk = malloc([file blockSize]);
 	uint64_t	chunksz = 0;
 	uint64_t	offset = 0;
 	NSString	*md5;
@@ -1659,7 +1663,10 @@ static char gLocalQueueContext;
 	md5 = [file readChunk:chunk chunkSize:&chunksz fileOffset:&offset];
 	
 	if (!md5)
+	{
+		free(chunk);
 		return;
+	}
 
 	// Build command.
 	NSMutableArray *items = [[NSMutableArray alloc] init];
@@ -1674,7 +1681,7 @@ static char gLocalQueueContext;
 	[items addObject:md5];
 
 	// > Add the data
-	[items addObject:[[NSData alloc] initWithBytes:chunk length:chunksz]];
+	[items addObject:[[NSData alloc] initWithBytesNoCopy:chunk length:chunksz freeWhenDone:YES]];
 	
 	// Send the command
 	[self _sendCommand:@"filedata" array:items channel:tcbuddy_channel_in];
@@ -1757,7 +1764,7 @@ static char gLocalQueueContext;
 		if (!rdata)
 			return NO;
 	}
-
+	
 	// Send the command
 	return [self _sendCommand:command data:rdata channel:channel];
 }
@@ -1788,9 +1795,16 @@ static char gLocalQueueContext;
 	// Escape protocol special chars
 	[part replaceCStr:"\\" withCStr:"\\/"];
 	[part replaceCStr:"\n" withCStr:"\\n"];
+	
 
 	// Add end line.
 	[part appendBytes:"\n" length:1];
+	
+	static int _i = 0;
+	
+	_i++;
+	
+	[part writeToFile:[NSString stringWithFormat:@"/Users/jp/Desktop/out/file_%i", _i] atomically:YES];
 	
 	// -- Buffer or send the command --
 	if (_socksstate != socks_finish)

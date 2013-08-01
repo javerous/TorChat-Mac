@@ -87,7 +87,7 @@
 	
 	[mutableLine replaceCStr:"\\n" withCStr:"\n"];
 	[mutableLine replaceCStr:"\\/" withCStr:"\\"];
-
+	
 	// Eplode the line from spaces.
 	NSArray *items = [mutableLine explodeWithMaxFields:1 withFieldSeparator:" "];
 	

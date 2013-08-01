@@ -93,14 +93,18 @@
 			NSString	*name = [fileName stringByDeletingPathExtension];
 			NSUInteger	idx = 1;
 
-			if (!ext)
-				ext = @"";
-
 			// Search for a good name
 			while (1)
 			{
-				NSString *tempName = [NSString stringWithFormat:@"%@-%lu.%@", name, idx, ext];
-				NSString *tempPath = [folder stringByAppendingPathComponent:tempName];
+				NSString *tempName;
+				NSString *tempPath;
+				
+				if ([ext length] > 0)
+					tempName = [NSString stringWithFormat:@"%@-%lu.%@", name, idx, ext];
+				else
+					tempName = [NSString stringWithFormat:@"%@-%lu", name, idx];
+
+				tempPath = [folder stringByAppendingPathComponent:tempName];
 								
 				if (stat([tempPath UTF8String], &st) != 0)
 				{
@@ -141,17 +145,17 @@
 {
 	if (!offset)
 		return NO;
-	
+
 	uint64_t	start = *offset;
 	BOOL		result = YES;
-	
+
 	// Check that the offset is the one expected
 	if (start > _nextStart)
 	{
 		*offset = _nextStart;
 		return NO;
 	}
-	
+
 	// Check the MD5
 	NSString *md5 = hashMD5([NSData dataWithBytesNoCopy:(void *)bytes length:chunkSize freeWhenDone:NO]);
 	
