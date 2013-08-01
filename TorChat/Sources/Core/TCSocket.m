@@ -554,7 +554,7 @@
 				
 				// Get line
 				NSData *line = [_readBuffer dataUpToCStr:"\n" includeSearch:NO];
-				
+								
 				if (!line)
 					break;
 				
