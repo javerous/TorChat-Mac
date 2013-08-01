@@ -114,9 +114,10 @@
 		{
 			[self replaceBytesInRange:NSMakeRange(i, str_len) withBytes:replace length:replace_len];
 			bytes = [self bytes];
+			i += replace_len;
 		}
-		
-		i += replace_len;
+		else
+			i++;
 	}
 }
 
