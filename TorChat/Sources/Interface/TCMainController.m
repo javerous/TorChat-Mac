@@ -25,7 +25,7 @@
 #import "TCMainController.h"
 
 #import "TCCocoaConfig.h"
-#import "TCLogsController.h"
+#import "TCLogsManager.h"
 #import "TCBuddiesController.h"
 
 #import "TCAssistantController.h"
@@ -132,8 +132,9 @@
 			{
 				NSString *oerr = [NSString stringWithUTF8String:err];
 				
-				[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_read_proxy", NSLocalizedString(oerr, @"")];
-				
+				[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_err_read_proxy", NSLocalizedString(oerr, @"")];
+				[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_err_read_proxy", @""), NSLocalizedString(oerr, @"")] runModal];
+
 				if (conf)
 					delete conf;
 				
@@ -178,7 +179,10 @@
 			conf = [[TCCocoaConfig alloc] initWithFile:path];
 			
 			if (!conf)
-				[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_read_file", path];
+			{
+				[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_err_read_file", path];
+				[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_err_read_file", @""), path] runModal];
+			}
 		}
 	}
 

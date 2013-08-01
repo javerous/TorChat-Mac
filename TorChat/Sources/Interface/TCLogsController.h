@@ -25,7 +25,6 @@
 #import <Cocoa/Cocoa.h>
 
 
-
 /*
 ** TCLogsController
 */
@@ -33,24 +32,10 @@
 
 @interface TCLogsController : NSObject
 
-@property (strong, atomic) IBOutlet NSWindow	*mainWindow;
-@property (strong, atomic) IBOutlet NSTableView	*entriesView;
-@property (strong, atomic) IBOutlet NSTableView	*logsView;
-
 // -- Singleton --
 + (TCLogsController *)sharedController;
 
 // -- Interface --
 - (IBAction)showWindow:(id)sender;
-
-// -- Tools --
-- (void)addBuddyLogEntryFromAddress:(NSString *)address alias:(NSString *)alias andText:(NSString *)log, ...;
-- (void)addGlobalLogEntry:(NSString *)log, ...;
-- (void)addGlobalAlertLog:(NSString *)log, ...;
-
-// -- Observer --
-- (void)setObserver:(id)object withSelector:(SEL)selector forKey:(NSString *)key;
-- (void)removeObserverForKey:(NSString *)key;
-
 
 @end

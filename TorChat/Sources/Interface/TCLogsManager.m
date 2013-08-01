@@ -1,0 +1,286 @@
+//
+//  TCLogsManager.m
+//  TorChat
+//
+//  Created by Julien-Pierre Avérous on 01/08/13.
+//  Copyright (c) 2013 SourceMac. All rights reserved.
+//
+
+#import "TCLogsManager.h"
+
+
+/*
+** TCLogsManager - Private
+*/
+#pragma mark - TCLogsManager - Private
+
+@interface TCLogsManager ()
+{
+	dispatch_queue_t		_localQueue;
+	dispatch_queue_t		_observerQueue;
+
+	NSMapTable				*_keyObservers;
+	NSHashTable				*_allObserver;
+
+	NSMutableDictionary		*_logs;
+	NSMutableDictionary		*_alias;
+}
+
+@end
+
+
+
+/*
+** TCLogsManager
+*/
+#pragma mark - TCLogsManager
+
+@implementation TCLogsManager
+
+
+/*
+** TCLogsManager - Instance
+*/
+#pragma mark - TCLogsManager - Instance
+
++ (TCLogsManager *)sharedManager
+{
+	static dispatch_once_t	onceToken;
+	static TCLogsManager	*shr;
+	
+	dispatch_once(&onceToken, ^{
+		shr = [[TCLogsManager alloc] init];
+	});
+	
+	return shr;
+}
+
+- (id)init
+{
+    self = [super init];
+	
+    if (self)
+	{
+		// Create queue.
+        _localQueue = dispatch_queue_create("com.torchat.cocoa.logmanager.local", DISPATCH_QUEUE_SERIAL);
+		_observerQueue = dispatch_queue_create("com.torchat.cocoa.logmanager.observer", DISPATCH_QUEUE_SERIAL);
+		
+		// Build observers container.
+		_keyObservers = [NSMapTable strongToWeakObjectsMapTable];
+		_allObserver = [NSHashTable weakObjectsHashTable];
+		
+		// Build containers.
+		_logs = [[NSMutableDictionary alloc] init];
+		_alias = [[NSMutableDictionary alloc] init];
+    }
+	
+    return self;
+}
+
+
+
+/*
+** TCLogsController - Logs
+*/
+#pragma mark - TCLogsController - Logs
+
+- (void)addLogEntry:(NSString *)key withContent:(NSString *)text
+{
+	dispatch_sync(_localQueue, ^{
+		
+		NSMutableArray *array = [_logs objectForKey:key];
+		
+		// Build logs array for this key
+		if (!array)
+		{
+			array = [[NSMutableArray alloc] init];
+			
+			[_logs setObject:array forKey:key];
+		}
+		
+		// Add the log in the array.
+		// > Remove first item if more than 500
+		if ([array count] > 500)
+			[array removeObjectAtIndex:0];
+		
+		// > Add
+		[array addObject:text];
+		
+		// Give the item to the observers.
+		// > Keyed observer.
+		id <TCLogsObserver> kobserver = [_keyObservers objectForKey:key];
+		
+		if (kobserver)
+		{
+			dispatch_sync(_observerQueue, ^{
+				[kobserver logManager:self updateForKey:key withContent:text];
+			});
+		}
+		
+		// > Global observer.
+		for (id <TCLogsObserver> observer in _allObserver)
+		{
+			dispatch_sync(_observerQueue, ^{
+				[observer logManager:self updateForKey:key withContent:text];
+			});
+		}
+	});
+}
+
+- (void)addBuddyLogEntryFromAddress:(NSString *)address alias:(NSString *)alias andText:(NSString *)log, ...
+{
+	va_list		ap;
+	NSString	*msg;
+	
+	// Render string
+	va_start(ap, log);
+	
+	msg = [[NSString alloc] initWithFormat:NSLocalizedString(log, @"") arguments:ap];
+	
+	va_end(ap);
+	
+	// Add the alias
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[_alias setObject:alias forKey:address];
+	});
+	
+	// Add the rendered log
+	[self addLogEntry:address withContent:msg];
+}
+
+- (void)addGlobalLogEntry:(NSString *)log, ...
+{
+	va_list		ap;
+	NSString	*msg;
+	
+	// Render the full string
+	va_start(ap, log);
+	
+	msg = [[NSString alloc] initWithFormat:NSLocalizedString(log, @"") arguments:ap];
+	
+	va_end(ap);
+	
+	// Add the log
+	[self addLogEntry:TCLogsGlobalKey withContent:msg];
+}
+
+- (void)addGlobalAlertLog:(NSString *)log, ...
+{
+	va_list		ap;
+	NSString	*msg;
+	
+	// Render the full string
+	va_start(ap, log);
+	
+	msg = [[NSString alloc] initWithFormat:NSLocalizedString(log, @"") arguments:ap];
+	
+	va_end(ap);
+	
+	// Add the log
+	[self addLogEntry:TCLogsGlobalKey withContent:msg];
+}
+
+- (NSArray *)allKeys
+{
+	__block NSArray *result = nil;
+	
+	dispatch_sync(_localQueue, ^{
+		result = [_logs allKeys];
+	});
+	
+	return result;
+}
+
+- (NSArray *)logsForKey:(NSString *)key
+{
+	if (!key)
+		return nil;
+	
+	__block NSArray *result = nil;
+	
+	dispatch_sync(_localQueue, ^{
+		result = [_logs[key] copy];
+	});
+	
+	return result;
+}
+
+
+
+/*
+** TCLogsController - Properties
+*/
+#pragma mark - TCLogsController - Properties
+
+- (NSString *)aliasForKey:(NSString *)key
+{
+	if (!key)
+		return nil;
+	
+	__block NSString *result = nil;
+	
+	dispatch_sync(_localQueue, ^{
+		result = _alias[key];
+	});
+	
+	return result;
+}
+
+
+
+/*
+** TCLogsController - Observer
+*/
+#pragma mark - TCLogsController - Observer
+
+- (void)addObserver:(id <TCLogsObserver>)observer forKey:(NSString *)key
+{
+	if (!observer)
+		return;
+	
+	// Build obserever item
+	dispatch_async(_localQueue, ^{
+		
+		// Add it for this address
+		if (key)
+			[_keyObservers setObject:observer forKey:key];
+		else
+			[_allObserver addObject:observer];
+		
+		// Give the current content
+		if (key)
+		{
+			NSArray *items = [[_logs objectForKey:key] copy];
+		
+			if (items)
+			{
+				dispatch_async(_observerQueue, ^{
+					[observer logManager:self updateForKey:key withContent:items];
+				});
+			}
+		}
+		else
+		{
+			for (NSString *akey in _logs)
+			{
+				NSArray *items = [[_logs objectForKey:akey] copy];
+		
+				dispatch_async(_observerQueue, ^{
+					[observer logManager:self updateForKey:akey withContent:items];
+				});
+			}
+		}
+	});
+}
+
+- (void)removeObserverForKey:(NSString *)key
+{
+	if (!key)
+		return;
+	
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[_keyObservers removeObjectForKey:key];
+	});
+}
+
+@end

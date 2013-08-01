@@ -25,7 +25,7 @@
 #import "TCBuddyInfoController.h"
 
 #import "TCBuddiesController.h"
-#import "TCLogsController.h"
+#import "TCLogsManager.h"
 #import "TCDragImageView.h"
 #import "TCKeyedText.h"
 
@@ -58,7 +58,7 @@ static NSMutableArray *_windows = nil;
 */
 #pragma mark - TCBuddyInfoController - Private
 
-@interface TCBuddyInfoController ()
+@interface TCBuddyInfoController () <TCLogsObserver>
 {
 	NSMutableArray			*_logs;
 	
@@ -252,7 +252,7 @@ static NSMutableArray *_windows = nil;
 	[ctrl updateInfoView];
 	
 	// Register for logs
-	[[TCLogsController sharedController] setObserver:ctrl withSelector:@selector(logsChanged:) forKey:ctrl.address];
+	[[TCLogsManager sharedManager] addObserver:ctrl forKey:ctrl.address];
 	
 	// Register for buddy changes
 	[[NSNotificationCenter defaultCenter] addObserver:ctrl selector:@selector(buddyAvatarChanged:) name:TCCocoaBuddyChangedAvatarNotification object:buddy];
@@ -282,7 +282,7 @@ static NSMutableArray *_windows = nil;
 		
 		if (ctrl.buddy == buddy)
 		{			
-			[[TCLogsController sharedController] removeObserverForKey:ctrl.address];
+			[[TCLogsManager sharedManager] removeObserverForKey:ctrl.address];
 			
 			[[NSNotificationCenter defaultCenter] removeObserver:ctrl];
 			
@@ -303,7 +303,7 @@ static NSMutableArray *_windows = nil;
 
 - (void)windowWillClose:(NSNotification *)notification
 {	
-	[[TCLogsController sharedController] removeObserverForKey:self.address];
+	[[TCLogsManager sharedManager] removeObserverForKey:self.address];
 	
 	[_windows removeObject:self];
 }
@@ -436,14 +436,13 @@ static NSMutableArray *_windows = nil;
 }
 
 
-
 /*
-** TCBuddyInfoController - Notifications
+** CBuddyInfoController - TCLogsObserver
 */
-#pragma mark - TCBuddyInfoController - Notifications
+#pragma mark - CBuddyInfoController - TCLogsObserver
 
-- (void)logsChanged:(id)content
-{	
+- (void)logManager:(TCLogsManager *)manager updateForKey:(NSString *)key withContent:(id)content
+{
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		if ([content isKindOfClass:[NSString class]])
@@ -461,6 +460,13 @@ static NSMutableArray *_windows = nil;
 		[_logTable reloadData];
 	});
 }
+
+
+
+/*
+** TCBuddyInfoController - Notifications
+*/
+#pragma mark - TCBuddyInfoController - Notifications
 
 - (void)buddyAvatarChanged:(NSNotification *)notice
 {

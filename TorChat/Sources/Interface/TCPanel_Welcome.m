@@ -9,7 +9,7 @@
 #import "TCPanel_Welcome.h"
 
 #import "TCCocoaConfig.h"
-#import "TCLogsController.h"
+#import "TCLogsManager.h"
 
 
 
@@ -135,7 +135,9 @@
 		if (!aconfig)
 		{
 			// Log error
-			[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_read_file", [url path]];
+			[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_err_read_file", [url path]];
+			[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_err_read_file", @""), [url path]] runModal];
+
 			return;
 		}
 		

@@ -24,8 +24,9 @@
 
 #import "TCLogsController.h"
 
+#import "TCLogsManager.h"
+
 #define TCLogsAllKey		@"_all_"
-#define TCLogsGlobalKey		@"_global_"
 #define TCLogsSeparatorKey	@"_separator_"
 
 #define TCLogsContentKey	@"content"
@@ -87,24 +88,24 @@
 */
 #pragma mark - TCLogsController - Private
 
-@interface TCLogsController ()
+@interface TCLogsController () <TCLogsObserver>
 {
 	NSMutableDictionary		*_logs;
 	NSMutableArray			*_klogs;
-	NSMutableDictionary		*_kalias;
 	
 	NSMutableArray			*_allLogs;
 	NSString				*_allLastKey;
 	
-	NSMutableDictionary		*_observers;
-	
 	NSCell					*_separatorCell;
 	NSCell					*_textCell;
-	
-	dispatch_queue_t		_localQueue;
 }
 
-- (void)addLogEntry:(NSString *)key withContent:(NSString *)text;
+// -- Properties --
+@property (strong, atomic) IBOutlet NSWindow	*mainWindow;
+@property (strong, atomic) IBOutlet NSTableView	*entriesView;
+@property (strong, atomic) IBOutlet NSTableView	*logsView;
+
+- (void)addLogEntries:(NSArray *)entries forKey:(NSString *)key;
 
 @end
 
@@ -119,9 +120,9 @@
 
 
 /*
-** TCLogsController - Constructor & Destructor
+** TCLogsController - Instance
 */
-#pragma mark - TCLogsController - Constructor & Destructor
+#pragma mark - TCLogsController - Instance
 
 + (TCLogsController *)sharedController
 {
@@ -141,26 +142,22 @@
 	
     if (self)
 	{
-		// Build a working queue
-		_localQueue = dispatch_queue_create("com.torchat.cocoa.logs.local", DISPATCH_QUEUE_SERIAL);
-		
-		// Build logs containers
+		// Build logs containers.
 		_logs = [[NSMutableDictionary alloc] init];
 		_klogs = [[NSMutableArray alloc] init];
-		_kalias = [[NSMutableDictionary alloc] init];
 		_allLogs = [[NSMutableArray alloc] init];
 		
 		[_klogs addObject:TCLogsAllKey];
 		[_klogs addObject:TCLogsGlobalKey];
 		
-		// Build observers container
-		_observers = [[NSMutableDictionary alloc] init];
-		
-		// Build cell
+		// Build cell.
 		_separatorCell = [[TCCellSeparator alloc] initTextCell:@""];
 		_textCell = [[NSTextFieldCell alloc] initTextCell:@""];
 		
-		// Load the nib
+		// Add logs observer.
+		[[TCLogsManager sharedManager] addObserver:self forKey:nil];
+		
+		// Load the nib.
 		[[NSBundle mainBundle] loadNibNamed:@"LogsWindow" owner:self topLevelObjects:nil];
     }
     
@@ -188,48 +185,35 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
-#warning FIXME: klog should duplicated in main queue. using another queue there is not a good idea.
 	if (aTableView == _entriesView)
 	{
-		__block NSUInteger cnt = 0;
-		
-		dispatch_sync(_localQueue, ^{
-			cnt = [_klogs count];
-		});
-		
-		return (NSInteger)cnt;
+		return (NSInteger)[_klogs count];
 	}
 	else if (aTableView == _logsView)
 	{
-		NSInteger			kindex = [_entriesView selectedRow];
-		__block NSUInteger	cnt = 0;
+		NSInteger kindex = [_entriesView selectedRow];
 		
-		dispatch_sync(_localQueue, ^{
+		if (kindex < 0 || kindex >= [_klogs count])
+			return 0;
 			
-			if (kindex < 0 || kindex >= [_klogs count])
-				return;
-			
-			NSString *key = [_klogs objectAtIndex:(NSUInteger)kindex];
-			
-			if ([key isEqualToString:TCLogsAllKey])
-			{
-				cnt = [_allLogs count];
-			}
-			else if ([key isEqualToString:TCLogsGlobalKey])
-			{
-				cnt = [[_logs objectForKey:TCLogsGlobalKey] count];
-			}
-			else if ([key isEqualToString:TCLogsSeparatorKey])
-			{
-				cnt = 0;
-			}
-			else
-			{
-				cnt = [[_logs objectForKey:key] count];
-			}
-		});
+		NSString *key = [_klogs objectAtIndex:(NSUInteger)kindex];
 		
-		return (NSInteger)cnt;
+		if ([key isEqualToString:TCLogsAllKey])
+		{
+			return (NSInteger)[_allLogs count];
+		}
+		else if ([key isEqualToString:TCLogsGlobalKey])
+		{
+			return (NSInteger)[[_logs objectForKey:TCLogsGlobalKey] count];
+		}
+		else if ([key isEqualToString:TCLogsSeparatorKey])
+		{
+			return 0;
+		}
+		else
+		{
+			return (NSInteger)[[_logs objectForKey:key] count];
+		}
 	}
 	
 	return 0;
@@ -239,114 +223,89 @@
 {
 	if (aTableView == _entriesView)
 	{
-		__block NSString *str =  nil;
+		if (rowIndex < 0 || rowIndex > [_klogs count])
+			return nil;
 		
-		dispatch_sync(_localQueue, ^{
-			
-			if (rowIndex < 0 || rowIndex > [_klogs count])
-				return ;
-			
-			NSString *key = [_klogs objectAtIndex:(NSUInteger)rowIndex];
-			
-			if ([key isEqualToString:TCLogsAllKey])
-				str = NSLocalizedString(@"logs_all_logs", @"");
-			else if ([key isEqualToString:TCLogsGlobalKey])
-				str = NSLocalizedString(@"logs_global_logs", @"");
-			else
-				str = [_kalias objectForKey:key];
-		});
+		NSString *key = [_klogs objectAtIndex:(NSUInteger)rowIndex];
 		
-		return str;
+		if ([key isEqualToString:TCLogsAllKey])
+			return NSLocalizedString(@"logs_all_logs", @"");
+		else if ([key isEqualToString:TCLogsGlobalKey])
+			return NSLocalizedString(@"logs_global_logs", @"");
+		else
+			return [[TCLogsManager sharedManager] aliasForKey:key];
 	}
 	else if (aTableView == _logsView)
 	{
-		NSInteger			kindex = [_entriesView selectedRow];
-		__block NSString	*str =  nil;
+		NSInteger kindex = [_entriesView selectedRow];
 		
-		dispatch_sync(_localQueue, ^{
-			
-			if (kindex < 0 || kindex >= [_klogs count])
-				return;
-			
-			NSString *key = [_klogs objectAtIndex:(NSUInteger)kindex];
-			
-			if ([key isEqualToString:TCLogsAllKey])
-			{
-				if (rowIndex < 0 || rowIndex >= [_allLogs count])
-					return;
-				
-				NSDictionary *item = [_allLogs objectAtIndex:(NSUInteger)rowIndex];
-				
-				str = [item objectForKey:TCLogsContentKey];
-				
-				if ([[item objectForKey:TCLogsTitleKey] boolValue])
-				{
-					if ([str isEqualToString:TCLogsGlobalKey])
-						str = NSLocalizedString(@"logs_global_logs", @"");
-					else
-						str = [NSString stringWithFormat:@"%@ (%@)", [_kalias objectForKey:str], str];
-				}
-			}
-			else if ([key isEqualToString:TCLogsGlobalKey])
-			{
-				NSArray *array = [_logs objectForKey:TCLogsGlobalKey];
-				
-				if (rowIndex < 0 || rowIndex >= [array count])
-					return;
-				
-				str = [array objectAtIndex:(NSUInteger)rowIndex];
-			}
-			else if ([key isEqualToString:TCLogsSeparatorKey])
-			{
-			}
-			else
-			{
-				NSArray *array = [_logs objectForKey:key];
-				
-				if (rowIndex < 0 || rowIndex >= [array count])
-					return;
-				
-				str = [array objectAtIndex:(NSUInteger)rowIndex];
-			}
-		});
+		if (kindex < 0 || kindex >= [_klogs count])
+			return nil;
 		
-		return str;
+		NSString *key = [_klogs objectAtIndex:(NSUInteger)kindex];
+		
+		if ([key isEqualToString:TCLogsAllKey])
+		{
+			if (rowIndex < 0 || rowIndex >= [_allLogs count])
+				return nil;
+			
+			NSDictionary	*item = [_allLogs objectAtIndex:(NSUInteger)rowIndex];
+			NSString		*str = [item objectForKey:TCLogsContentKey];
+			
+			if ([[item objectForKey:TCLogsTitleKey] boolValue])
+			{
+				if ([str isEqualToString:TCLogsGlobalKey])
+					return NSLocalizedString(@"logs_global_logs", @"");
+				else
+					return [NSString stringWithFormat:@"%@ (%@)", [[TCLogsManager sharedManager] aliasForKey:str], str];
+			}
+			
+			return str;
+		}
+		else if ([key isEqualToString:TCLogsGlobalKey])
+		{
+			NSArray *array = [_logs objectForKey:TCLogsGlobalKey];
+			
+			if (rowIndex < 0 || rowIndex >= [array count])
+				return nil;
+			
+			return [array objectAtIndex:(NSUInteger)rowIndex];
+		}
+		else if ([key isEqualToString:TCLogsSeparatorKey])
+		{
+		}
+		else
+		{
+			NSArray *array = [_logs objectForKey:key];
+			
+			if (rowIndex < 0 || rowIndex >= [array count])
+				return nil;
+			
+			return [array objectAtIndex:(NSUInteger)rowIndex];
+		}
 	}
 	
 	return nil;
 }
 
-/*
-- (void)tableView:(NSTableView *)aTableView willDisplayCell:(id)aCell forTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
-{
-}
-*/
-
 - (BOOL)tableView:(NSTableView *)tableView isGroupRow:(NSInteger)rowIndex
 {
 	if (tableView == _logsView)
 	{
-		__block BOOL result = NO;
+		NSInteger	kindex = [_entriesView selectedRow];
+		NSString	*key;
 		
-		dispatch_sync(_localQueue, ^{
-			
-			NSInteger	kindex = [_entriesView selectedRow];
-			NSString	*key;
-			
-			if (kindex < 0 || kindex >= [_klogs count])
-				return;
-			
-			key = [_klogs objectAtIndex:(NSUInteger)kindex];
-						
-			if ([key isEqualToString:TCLogsAllKey] == NO)
-				return;
-			
-			NSDictionary *item = [_allLogs objectAtIndex:(NSUInteger)rowIndex];
-			
-			result = [[item objectForKey:TCLogsTitleKey] boolValue];
-		});
+		if (kindex < 0 || kindex >= [_klogs count])
+			return NO;
 		
-		return result;
+		key = [_klogs objectAtIndex:(NSUInteger)kindex];
+		
+		if ([key isEqualToString:TCLogsAllKey] == NO)
+			return NO;
+		
+		NSDictionary *item = [_allLogs objectAtIndex:(NSUInteger)rowIndex];
+		
+		return [[item objectForKey:TCLogsTitleKey] boolValue];
 	}
 	
 	return NO;
@@ -356,22 +315,15 @@
 {
 	if (tableView == _entriesView)
 	{
-		__block CGFloat result = [tableView rowHeight];
+		NSString *key;
 		
-		dispatch_sync(_localQueue, ^{
-			
-			NSString *key;
-			
-			if (rowIndex < 0 || rowIndex >= [_klogs count])
-				return;
-			
-			key = [_klogs objectAtIndex:(NSUInteger)rowIndex];
-			
-			if ([key isEqualToString:TCLogsSeparatorKey])
-				result = 2;
-		});
+		if (rowIndex < 0 || rowIndex >= [_klogs count])
+			return [tableView rowHeight];
 		
-		return result;
+		key = [_klogs objectAtIndex:(NSUInteger)rowIndex];
+		
+		if ([key isEqualToString:TCLogsSeparatorKey])
+			return 2;
 	}
 	
 	return [tableView rowHeight];
@@ -381,24 +333,17 @@
 {
 	if (tableView == _entriesView)
 	{
-		__block NSCell *result = _textCell;
+		NSString *key;
 		
-		dispatch_sync(_localQueue, ^{
-
-			NSString *key;
-			
-			if (rowIndex < 0 || rowIndex >= [_klogs count])
-				return;
-			
-			key = [_klogs objectAtIndex:(NSUInteger)rowIndex];
+		if (rowIndex < 0 || rowIndex >= [_klogs count])
+			return [tableColumn dataCell];
 		
-			if ([key isEqualToString:TCLogsSeparatorKey])
-				result = _separatorCell;
-			else
-				result = _textCell;
-		});
+		key = [_klogs objectAtIndex:(NSUInteger)rowIndex];
 		
-		return result;
+		if ([key isEqualToString:TCLogsSeparatorKey])
+			return _separatorCell;
+		else
+			return _textCell;
 	}
 	
 	return [tableColumn dataCell];
@@ -413,49 +358,35 @@
 {
 	if (aTableView == _entriesView)
 	{
-		__block BOOL result = YES;
+		NSString *key;
 		
-		dispatch_sync(_localQueue, ^{
-			
-			NSString *key;
-			
-			if (rowIndex < 0 || rowIndex >= [_klogs count])
-				return;
-			
-			key = [_klogs objectAtIndex:(NSUInteger)rowIndex];
+		if (rowIndex < 0 || rowIndex >= [_klogs count])
+			return YES;
 		
-			if ([key isEqualToString:TCLogsSeparatorKey])
-				result = NO;
-		});
+		key = [_klogs objectAtIndex:(NSUInteger)rowIndex];
 		
-		return result;
+		if ([key isEqualToString:TCLogsSeparatorKey])
+			return NO;
 	}
 	else if (aTableView == _logsView)
 	{
-		__block BOOL result = YES;
+		NSInteger	kindex = [_entriesView selectedRow];
+		NSString	*key;
 		
-		dispatch_sync(_localQueue, ^{
-			
-			NSInteger	kindex = [_entriesView selectedRow];
-			NSString	*key;
-			
-			if (kindex < 0 || kindex > [_klogs count])
-				return;
-			
-			key = [_klogs objectAtIndex:(NSUInteger)kindex];
-			
-			if ([key isEqualToString:TCLogsAllKey])
-			{
-				if (rowIndex < 0 || rowIndex >= [_allLogs count])
-					return;
-				
-				NSDictionary *item = [_allLogs objectAtIndex:(NSUInteger)rowIndex];
-				
-				result = ![[item objectForKey:TCLogsTitleKey] boolValue];
-			}
-		});
+		if (kindex < 0 || kindex > [_klogs count])
+			return YES;
 		
-		return result;
+		key = [_klogs objectAtIndex:(NSUInteger)kindex];
+		
+		if ([key isEqualToString:TCLogsAllKey])
+		{
+			if (rowIndex < 0 || rowIndex >= [_allLogs count])
+				return YES;
+			
+			NSDictionary *item = [_allLogs objectAtIndex:(NSUInteger)rowIndex];
+			
+			return ![[item objectForKey:TCLogsTitleKey] boolValue];
+		}
 	}
 	
 	return YES;
@@ -475,16 +406,30 @@
 }
 
 
+/*
+** TCLogsController - TCLogsObserver
+*/
+#pragma mark - TCLogsController - TCLogsObserver
+
+- (void)logManager:(TCLogsManager *)manager updateForKey:(NSString *)key withContent:(id)content
+{
+	if ([content isKindOfClass:[NSArray class]])
+		[self addLogEntries:content forKey:key];
+	else if ([content isKindOfClass:[NSString class]])
+		[self addLogEntries:@[ content ] forKey:key];
+}
+
+
 
 /*
-** TCLogsController - Tools
+** TCLogsController - Helpers
 */
-#pragma mark - TCLogsController - Tools
+#pragma mark - TCLogsController - Helpers
 
-- (void)addLogEntry:(NSString *)key withContent:(NSString *)text
+- (void)addLogEntries:(NSArray *)entries forKey:(NSString *)key
 {
 	// Hold it
-	dispatch_async(_localQueue, ^{
+	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		NSMutableArray *array = [_logs objectForKey:key];
 		
@@ -507,16 +452,14 @@
 			}
 		}
 		
-		
 		// -- Add the log in the array --
 		// > Remove first item if more than 500
 		if ([array count] > 500)
 			[array removeObjectAtIndex:0];
 		
 		// > Add
-		[array addObject:text];
-		
-		
+		for (NSString *text in entries)
+			[array addObject:text];
 		
 		// -- Add the item in the full log --
 		// > Remove the first item (and item until we reach a title) if more than 2000
@@ -540,120 +483,16 @@
 		{
 			_allLastKey = key;
 			
-			[_allLogs addObject:[NSDictionary dictionaryWithObjectsAndKeys:key, TCLogsContentKey, [NSNumber numberWithBool:YES], TCLogsTitleKey, nil]];
+			[_allLogs addObject:@{ TCLogsContentKey : key, TCLogsTitleKey : @YES }];
 		}
 		
 		// > Add
-		[_allLogs addObject:[NSDictionary dictionaryWithObject:text forKey:TCLogsContentKey]];
-		
-		// Give the item to the observer
-		NSDictionary	*observer = [_observers objectForKey:key];
-		id				oobject = [observer objectForKey:@"object"];
-		SEL				oselector = [[observer objectForKey:@"selector"] pointerValue];
-		
-		[oobject performSelector:oselector withObject:text];
-				
+		for (NSString *text in entries)
+			[_allLogs addObject:@{ TCLogsContentKey : text }];
+								
 		// Refresh
-		dispatch_async(dispatch_get_main_queue(), ^{
-			[_entriesView reloadData];
-			[_logsView reloadData];
-		});
-	});
-}
-
-- (void)addBuddyLogEntryFromAddress:(NSString *)address alias:(NSString *)alias andText:(NSString *)log, ...
-{
-	va_list		ap;
-	NSString	*msg;
-	
-	// Render string
-	va_start(ap, log);
-	
-	msg = [[NSString alloc] initWithFormat:NSLocalizedString(log, @"") arguments:ap];
-	
-	va_end(ap);
-	
-	// Add the alias
-	dispatch_async(_localQueue, ^{
-		[_kalias setObject:alias forKey:address];
-	});
-	
-	// Add the rendered log
-	[self addLogEntry:address withContent:msg];
-}
-
-- (void)addGlobalLogEntry:(NSString *)log, ...
-{
-	va_list		ap;
-	NSString	*msg;
-	
-	// Render the full string
-	va_start(ap, log);
-	
-	msg = [[NSString alloc] initWithFormat:NSLocalizedString(log, @"") arguments:ap];
-	
-	va_end(ap);
-	
-	// Add the log
-	[self addLogEntry:TCLogsGlobalKey withContent:msg];
-}
-
-- (void)addGlobalAlertLog:(NSString *)log, ...
-{
-	va_list		ap;
-	NSString	*msg;
-	
-	// Render the full string
-	va_start(ap, log);
-	
-	msg = [[NSString alloc] initWithFormat:NSLocalizedString(log, @"") arguments:ap];
-	
-	va_end(ap);
-	
-	// Add the log
-	[self addLogEntry:TCLogsGlobalKey withContent:msg];
-	
-	// Show alert
-	NSAlert *alert = [[NSAlert alloc] init];
-	
-	[alert setMessageText:NSLocalizedString(@"logs_error_title", @"")];
-	[alert setInformativeText:msg];
-	
-	[alert runModal];
-}
-
-
-
-/*
-** TCLogsController - Observer
-*/
-#pragma mark - TCLogsController - Observer
-
-- (void)setObserver:(id)object withSelector:(SEL)selector forKey:(NSString *)key
-{
-	if (!key || !object || !selector)
-		return;
-		
-	// Build obserever item
-	NSDictionary *observer = [[NSDictionary alloc] initWithObjectsAndKeys:object, @"object", [NSValue valueWithPointer:selector], @"selector", nil];
-	
-	dispatch_async(_localQueue, ^{
-		
-		// Add it for this address
-		[_observers setObject:observer forKey:key];
-		
-		// Give the current content
-		NSArray *items = [_logs objectForKey:key];
-		
-		if (items)
-			[object performSelector:selector withObject:items];
-	});
-}
-
-- (void)removeObserverForKey:(NSString *)key
-{	
-	dispatch_async(_localQueue, ^{
-		[_observers removeObjectForKey:key];
+		[_entriesView reloadData];
+		[_logsView reloadData];
 	});
 }
 

@@ -27,7 +27,7 @@
 #import "TCCocoaBuddy.h"
 
 #import "TCFilesController.h"
-#import "TCLogsController.h"
+#import "TCLogsManager.h"
 #import "TCBuddiesController.h"
 
 #import "TCBuddy.h"
@@ -441,7 +441,7 @@ static char gLocalQueueContext;
 - (void)buddy:(TCBuddy *)aBuddy event:(const TCInfo *)info
 {
 	// Add the error in the error manager
-	[[TCLogsController sharedController] addBuddyLogEntryFromAddress:[self address] alias:[self alias] andText:[info render]];
+	[[TCLogsManager sharedManager] addBuddyLogEntryFromAddress:[self address] alias:[self alias] andText:[info render]];
 	
 	dispatch_async(_localQueue, ^{
 		

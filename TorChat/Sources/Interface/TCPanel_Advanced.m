@@ -8,7 +8,7 @@
 
 #import "TCPanel_Advanced.h"
 
-#import "TCLogsController.h"
+#import "TCLogsManager.h"
 #import "TCCocoaConfig.h"
 
 
@@ -85,7 +85,8 @@
 	if (!aconfig)
 	{
 		// Log error
-		[[TCLogsController sharedController] addGlobalAlertLog:@"ac_err_write_file", path];
+		[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_err_write_file", path];
+		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_err_write_file", @""), path] runModal];
 		return nil;
 	}
 	
