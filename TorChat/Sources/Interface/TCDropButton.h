@@ -25,6 +25,27 @@
 #import <Foundation/Foundation.h>
 
 
+/*
+** Forward
+*/
+#pragma mark - Forward
+
+@class TCDropButton;
+
+
+
+/*
+** TCDropButtonDelegate
+*/
+#pragma mark - TCDropButtonDelegate
+
+@protocol TCDropButtonDelegate <NSObject>
+
+- (void)dropButton:(TCDropButton *)button doppedImage:(NSImage *)image;
+
+@end
+
+
 
 /*
 ** TCDropButton
@@ -32,12 +53,7 @@
 #pragma mark - TCDropButton
 
 @interface TCDropButton : NSButton
-{
-@private
-    SEL	dropSelector;
-	id	dropTarget;
-}
 
-- (void)setDropTarget:(id)target withSelector:(SEL)selector;
+@property (weak, atomic) id <TCDropButtonDelegate> delegate;
 
 @end
