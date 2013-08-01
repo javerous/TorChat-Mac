@@ -143,7 +143,7 @@
 	[result appendFormat:@" - [%i]: ", _infoCode];
 	
 	// Add the info string
-	if (_info)
+	if (_infoString)
 		[result appendString:_infoString];
 	
 	// Ad the sub-info
@@ -163,6 +163,8 @@
 	// Add the errcode and the info
 	[result appendFormat:@"{%i - ", _infoCode];
 	 
+	[result appendString:_infoString];
+	
 	 // Add the sub-info
 	 if (_info)
 	 {
