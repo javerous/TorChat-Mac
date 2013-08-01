@@ -741,17 +741,15 @@
 		return;
 	}
 	
-	
 	// if someone is pinging us with our own address and the
 	// random value is not from us, then someone is definitely
 	// trying to fake and we can close.
 	
-	if ([address isEqualToString:[_config selfAddress]] && abuddy && [[abuddy random] isEqualToString:random])
+	if ([address isEqualToString:[_config selfAddress]] && abuddy && [[abuddy random] isEqualToString:random] == NO)
 	{
 		[self _error:tcctrl_error_client_cmd_ping info:@"core_cctrl_err_masquerade" fatal:YES];
 		return;
 	}
-	
 	
 	// if the buddy don't exist, add it on the buddy list
 	if (!abuddy)
@@ -766,7 +764,7 @@
 			return;
 		}
 	}
-	
+		
 	// ping messages must be answered with pong messages
 	// the pong must contain the same random string as the ping.
 	[abuddy startHandshake:random status:[self status] avatar:[self profileAvatar] name:[self profileName] text:[self profileText]];
