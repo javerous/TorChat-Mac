@@ -296,7 +296,7 @@ static char gLocalQueueContext;
 				
 		for (i = 0; i < sizeof(rnd) - 1; i++)
 		{
-			index = arc4random_uniform(sizeof(charset));
+			index = arc4random_uniform(sizeof(charset) - 1);
 			rnd[i] = charset[index];
 		}
 		
