@@ -938,7 +938,10 @@ static char gLocalQueueContext;
 			
 			// Use this incomming connection
 			if (_inSocket)
+			{
+				_inSocket.delegate = nil;
 				[_inSocket stop];
+			}
 			
 			_inSocket = sock;
 			_inSocket.delegate = self;

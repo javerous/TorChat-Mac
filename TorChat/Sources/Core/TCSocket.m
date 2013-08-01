@@ -256,6 +256,9 @@
 		
 		// Hold delegate.
 		_delegate = delegate;
+		
+		if (!delegate)
+			return;
 
 		// Check if some data can send to the new delegate
 		if ([_readBuffer size] > 0)
