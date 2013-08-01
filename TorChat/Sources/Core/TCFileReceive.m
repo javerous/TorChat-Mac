@@ -108,13 +108,14 @@
 								
 				if (stat([tempPath UTF8String], &st) != 0)
 				{
-					_fileName = tempPath;
+					_filePath = tempPath;
 					_fileName = tempName;
 					
 					_file = fopen([tempPath UTF8String], "w");
 					
 					if (!_file)
 						return nil;
+					
 					break;
 				}
 				
