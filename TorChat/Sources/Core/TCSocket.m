@@ -115,6 +115,9 @@
 		_readBuffer = [[TCBuffer alloc] init];
 		_writeBuffer = [[TCBuffer alloc] init];
 		
+		// Create containers.
+		_operations = [[NSMutableArray alloc] init];
+		
 		// -- Create Queue --
 		_socketQueue = dispatch_queue_create("com.torchat.core.socket.main", DISPATCH_QUEUE_SERIAL);
 		_delegateQueue = dispatch_queue_create("com.torchat.core.socket.delegate", DISPATCH_QUEUE_SERIAL);
@@ -447,7 +450,7 @@
 - (void)_dataAvailable
 {
 	// > socketQueue <
-	
+		
 	// Check if we have a global operation, else execute scheduled operation.
 	if (_goperation)
 	{
