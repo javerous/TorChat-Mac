@@ -27,7 +27,7 @@
 #import "TCTorManager.h"
 
 #import "TCCocoaConfig.h"
-#import "TCLogsController.h"
+#import "TCLogsManager.h"
 
 #import "TCBuffer.h"
 
@@ -200,7 +200,7 @@ void catch_signal(int sig);
 		// Check conversion
 		if (!data_path || !hidden_path || !tor_path)
 		{
-			[[TCLogsController sharedController] addGlobalLogEntry:@"tor_err_build_path"];
+			[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_err_build_path"];
 			  
 			[self postNotification:TCTorManagerStatusChanged];
 			
@@ -271,7 +271,7 @@ void catch_signal(int sig);
 				{
 					NSString *string = [[NSString alloc] initWithData:line encoding:NSUTF8StringEncoding];
 					
-					[[TCLogsController sharedController] addGlobalLogEntry:@"tor_err_log", [string UTF8String]];
+					[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_err_log", [string UTF8String]];
 				}
 			}
 			else
@@ -301,7 +301,7 @@ void catch_signal(int sig);
 				{
 					NSString *string = [[NSString alloc] initWithData:line encoding:NSUTF8StringEncoding];
 
-					[[TCLogsController sharedController] addGlobalLogEntry:@"tor_out_log", [string UTF8String]];
+					[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_out_log", [string UTF8String]];
 				}
 			}
 			else
@@ -337,7 +337,7 @@ void catch_signal(int sig);
 		}
 		@catch (id error)
 		{
-			[[TCLogsController sharedController] addGlobalLogEntry:@"tor_err_launch"];
+			[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_err_launch"];
 			
 			[self postNotification:TCTorManagerStatusChanged];
 			return;
@@ -497,9 +497,9 @@ void catch_signal(int sig);
 																	nil];
 	
 	if (_running)
-		[[TCLogsController sharedController] addGlobalLogEntry:@"tor_is_running"];
+		[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_is_running"];
 	else
-		[[TCLogsController sharedController] addGlobalLogEntry:@"tor_is_not_running"];
+		[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_is_not_running"];
 	
 	// Notify
 	dispatch_async(dispatch_get_main_queue(), ^{
