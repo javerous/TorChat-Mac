@@ -42,8 +42,9 @@
 - (NSDragOperation)draggingEntered:(id < NSDraggingInfo >)sender
 {
 	NSPasteboard *pb = [sender draggingPasteboard];
-	
-	if (!dropSelector || !dropTarget)
+	id <TCDropButtonDelegate> delegate = _delegate;
+
+	if (!delegate)
 		return NSDragOperationNone;
 	
 	if ([NSImage canInitWithPasteboard:pb])
@@ -55,6 +56,7 @@
 - (BOOL)performDragOperation:(id < NSDraggingInfo >)sender
 {
 	NSPasteboard *pboard = [sender draggingPasteboard];
+	id <TCDropButtonDelegate> delegate = _delegate;
 
 	if ([[pboard types] containsObject:NSFilenamesPboardType])
 	{
@@ -68,26 +70,20 @@
 		if (!img)
 			return NO;
 		
-		[dropTarget performSelector:dropSelector withObject:img];
+		[delegate dropButton:self doppedImage:img];
 				
 		return YES;
 	}
 	else if ([NSImage canInitWithPasteboard:pboard])
 	{
 		NSImage *img = [[NSImage alloc] initWithPasteboard:pboard];
-				
-		[dropTarget performSelector:dropSelector withObject:img];
-				
+						
+		[delegate dropButton:self doppedImage:img];
+		
 		return YES;
 	}
 	
 	return NO;
-}
-
-- (void)setDropTarget:(id)target withSelector:(SEL)selector
-{
-	dropTarget = target;
-	dropSelector = selector;
 }
 
 @end
