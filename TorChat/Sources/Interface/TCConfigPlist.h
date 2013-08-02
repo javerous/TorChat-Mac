@@ -1,5 +1,5 @@
 /*
- *  TCCocoaConfig.h
+ *  TCConfigPlist.h
  *
  *  Copyright 2013 Avérous Julien-Pierre
  *
@@ -30,11 +30,11 @@
 
 
 /*
-** TCCocoaConfig
+** TCConfigPlist
 */
-#pragma mark - TCCocoaConfig
+#pragma mark - TCConfigPlist
 
-@interface TCCocoaConfig : NSObject <TCConfig>
+@interface TCConfigPlist : NSObject <TCConfig>
 
 // -- Instance --
 - (id)initWithFile:(NSString *)filepath;
@@ -47,8 +47,8 @@
 
 
 #if 0
-#ifndef _TCCOCOACONFIG_H_
-# define _TCCOCOACONFIG_H_
+#ifndef _TCConfigPlist_H_
+# define _TCConfigPlist_H_
 
 # import <Cocoa/Cocoa.h>
 
@@ -59,21 +59,21 @@
 
 
 /*
-** TCCocoaConfig
+** TCConfigPlist
 */
-#pragma mark - TCCocoaConfig
+#pragma mark - TCConfigPlist
 
-class TCCocoaConfig : public TCConfig
+class TCConfigPlist : public TCConfig
 {
 public:
 	// -- Instance
-	TCCocoaConfig(NSString *filepath);
+	TCConfigPlist(NSString *filepath);
 	
 #if defined(PROXY_ENABLED) && PROXY_ENABLED
-	TCCocoaConfig(id <TCConfigProxy> proxy);
+	TCConfigPlist(id <TCConfigProxy> proxy);
 #endif
 	
-	~TCCocoaConfig();
+	~TCConfigPlist();
 	
 	// -- Tor --
 	std::string		get_tor_address() const;

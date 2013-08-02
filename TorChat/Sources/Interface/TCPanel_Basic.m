@@ -9,7 +9,7 @@
 #import "TCPanel_Basic.h"
 
 #import "TCLogsManager.h"
-#import "TCCocoaConfig.h"
+#import "TCConfigPlist.h"
 #import "TCTorManager.h"
 
 
@@ -20,7 +20,7 @@
 
 @interface TCPanel_Basic ()
 {
-	TCCocoaConfig					*_config;
+	TCConfigPlist					*_config;
 	__weak id <TCAssistantProxy>	_proxy;
 }
 
@@ -111,7 +111,7 @@
 	}
 	
 	// Try to build a new config file
-	_config = [[TCCocoaConfig alloc] initWithFile:pth];
+	_config = [[TCConfigPlist alloc] initWithFile:pth];
 	
 	if (!_config)
 	{

@@ -8,7 +8,7 @@
 
 #import "TCPanel_Welcome.h"
 
-#import "TCCocoaConfig.h"
+#import "TCConfigPlist.h"
 #import "TCLogsManager.h"
 
 
@@ -22,7 +22,7 @@
 {
 	__weak id <TCAssistantProxy>	_proxy;
 	BOOL							_pathSet;
-	TCCocoaConfig					*_config;
+	TCConfigPlist					*_config;
 }
 
 @property (strong, nonatomic) IBOutlet NSTextField *confPathField;
@@ -130,7 +130,7 @@
 	{
 		NSArray			*urls = [openDlg URLs];
 		NSURL			*url = [urls objectAtIndex:0];
-		TCCocoaConfig	*aconfig = [[TCCocoaConfig alloc] initWithFile:[url path]];
+		TCConfigPlist	*aconfig = [[TCConfigPlist alloc] initWithFile:[url path]];
 		
 		if (!aconfig)
 		{

@@ -23,7 +23,7 @@
 
 #import "TCAssistantController.h"
 
-#import "TCCocoaConfig.h"
+#import "TCConfigPlist.h"
 #import "TCTorManager.h"
 #import "TCLogsController.h"
 
