@@ -39,7 +39,8 @@
 */
 #pragma mark - Globals
 
-static NSMutableArray *_windows = nil;
+static NSMutableArray	*gWindows = nil;
+static dispatch_queue_t	gQueue;
 
 
 
@@ -167,14 +168,23 @@ static NSMutableArray *_windows = nil;
 */
 #pragma mark - TCBuddyInfoController - Private Tools
 
++ (void)prepareGlobals
+{
+	static dispatch_once_t onceToken;
+	
+	dispatch_once(&onceToken, ^{
+		
+		gWindows = [[NSMutableArray alloc] init];
+		gQueue = dispatch_queue_create("com.torchat.cocoa.buddiesinfo.global", DISPATCH_QUEUE_SERIAL);
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddyRemoved:) name:TCBuddiesControllerRemovedBuddy object:nil];
+	});
+}
+
 + (TCBuddyInfoController *)buildController
 {
-	static dispatch_once_t		pred;
-	
-	// Alloc global controller array
-	dispatch_once(&pred, ^{
-		_windows = [[NSMutableArray alloc] init];
-	});
+	// Prepare globals.
+	[self prepareGlobals];
 	
 	// Alloc the controller
 	TCBuddyInfoController *result = [[TCBuddyInfoController alloc] initWithWindowNibName:@"BuddyInfoWindow"];
@@ -183,7 +193,9 @@ static NSMutableArray *_windows = nil;
 	[result.window setDelegate:result];
 
 	// Add the controller to the global array
-	[_windows addObject:result];
+	dispatch_async(gQueue, ^{
+		[gWindows addObject:result];
+	});
 	
 	return result;
 }
@@ -202,23 +214,33 @@ static NSMutableArray *_windows = nil;
 
 + (void)showInfoOnBuddy:(TCBuddy *)buddy
 {
-	NSUInteger	i, cnt = [_windows count];
-	NSString	*address = [buddy address];
+	// Prepare globals.
+	[self prepareGlobals];
 	
-	// Check that we don't have a controller already running for this buddy
-	for (i = 0; i < cnt; i++)
-	{
-		TCBuddyInfoController *ctrl = [_windows objectAtIndex:i];
-		
-		if ([ctrl.address isEqualToString:address])
+	__block TCBuddyInfoController *ctrl = nil;
+	NSString *address = [buddy address];
+
+	// Search if a controller already exist for this buddy.
+	dispatch_sync(gQueue, ^{
+
+		for (TCBuddyInfoController *aCtrl in gWindows)
 		{
-			[ctrl.window makeKeyAndOrderFront:nil];
-			return;
+			if ([aCtrl.address isEqualToString:address])
+			{
+				ctrl = aCtrl;
+				break;
+			}
 		}
+	});
+	
+	if (ctrl)
+	{
+		[ctrl.window makeKeyAndOrderFront:nil];
+		return;
 	}
 	
-	// Create new controller
-	TCBuddyInfoController *ctrl = [self buildController];
+	// Create new controller.
+	ctrl = [self buildController];
 	
 	// Retain buddy
 	ctrl.buddy = buddy;
@@ -267,7 +289,7 @@ static NSMutableArray *_windows = nil;
 	[[NSNotificationCenter defaultCenter] addObserver:ctrl selector:@selector(buddyVersionChanged:) name:TCCocoaBuddyChangedPeerVersionNotification object:buddy];
 
 	[[NSNotificationCenter defaultCenter] addObserver:ctrl selector:@selector(buddyBlockedChanged:) name:TCCocoaBuddyChangedBlockedNotification object:buddy];
-
+	
 	// Show the window
 	[ctrl showWindow:nil];
 	
@@ -275,26 +297,35 @@ static NSMutableArray *_windows = nil;
 	[ctrl->_avatarView setFilename:address];
 }
 
-+ (void)removingBuddy:(TCBuddy *)buddy
++ (void)buddyRemoved:(NSNotification *)notification;
 {
-	NSUInteger i, cnt = [_windows count];
+	// Prepare globals.
+	[self prepareGlobals];
 	
-	for (i = 0; i < cnt; i++)
-	{
-		TCBuddyInfoController *ctrl = [_windows objectAtIndex:i];
+	// Remove controller for this buddy.
+	TCBuddy *buddy = notification.userInfo[@"buddy"];
+	
+	dispatch_async(gQueue, ^{
 		
-		if (ctrl.buddy == buddy)
-		{			
-			[[TCLogsManager sharedManager] removeObserverForKey:ctrl.address];
+		NSUInteger i, cnt = [gWindows count];
+		
+		for (i = 0; i < cnt; i++)
+		{
+			TCBuddyInfoController *ctrl = [gWindows objectAtIndex:i];
 			
-			[[NSNotificationCenter defaultCenter] removeObserver:ctrl];
-			
-			[ctrl.window orderOut:nil];
-			[_windows removeObjectAtIndex:i];
-			
-			return;
+			if (ctrl.buddy == buddy)
+			{
+				[[TCLogsManager sharedManager] removeObserverForKey:ctrl.address];
+				
+				[[NSNotificationCenter defaultCenter] removeObserver:ctrl];
+				
+				[ctrl.window orderOut:nil];
+				[gWindows removeObjectAtIndex:i];
+				
+				return;
+			}
 		}
-	}
+	});
 }
 
 
@@ -308,7 +339,9 @@ static NSMutableArray *_windows = nil;
 {	
 	[[TCLogsManager sharedManager] removeObserverForKey:self.address];
 	
-	[_windows removeObject:self];
+	dispatch_async(gQueue, ^{
+		[gWindows removeObject:self];
+	});
 }
 
 - (void)windowDidResize:(NSNotification *)notification

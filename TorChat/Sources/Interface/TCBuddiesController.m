@@ -229,9 +229,10 @@
 	{
 		buddy.delegate = nil;
 		
-		// Inform the info controller that we un-hold this buddy
-#warning FIXME: use notification.
-		[TCBuddyInfoController removingBuddy:buddy];
+		// Inform the info controller that we un-hold this buddy.
+		dispatch_async(_noticeQueue, ^{
+			[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesControllerRemovedBuddy object:self userInfo:@{ @"buddy" : buddy }];
+		});
 	}
 	
 	[_buddies removeAllObjects];
@@ -248,7 +249,7 @@
 	}
 	
 	// Set status to offline
-	[_imStatus selectItemWithTag:-2];
+	[_imStatus selectItemWithTag:0];
 	[self updateTitleUI];
 	
 	// Update status
@@ -550,6 +551,11 @@
 				// Rebuid buddy list.
 				[self buddyStatusChanged];
 				
+				// Reload buddies table.
+				dispatch_async(dispatch_get_main_queue(), ^{
+					[_tableView reloadData];
+				});
+				
 				// Notify.
 				dispatch_async(_noticeQueue, ^{
 					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedStatusNotification object:aBuddy userInfo:@{ @"status" : @(tcstatus_offline) }];
@@ -587,6 +593,11 @@
 				}
 				
 				[[TCChatController sharedController] receiveStatus:statusStr forIdentifier:[aBuddy address]];
+				
+				// Reload buddies table.
+				dispatch_async(dispatch_get_main_queue(), ^{
+					[_tableView reloadData];
+				});
 				
 				// Notify.
 				dispatch_async(_noticeQueue, ^{
@@ -984,20 +995,20 @@
 	// Change status
 	switch ([_imStatus selectedTag])
 	{
-		case -2:
+		case 0:
 			[_control stop];
 			[self updateStatusUI:-2];
 			break;
 			
-		case 0:
+		case 1:
 			[_control setStatus:tcstatus_available];
 			break;
 			
-		case 1:
+		case 2:
 			[_control setStatus:tcstatus_away];
 			break;
 			
-		case 2:
+		case 3:
 			[_control setStatus:tcstatus_xa];
 			break;
 	}
@@ -1067,7 +1078,9 @@
 	address = [buddy address];
 	
 	// Inform the info controller that we are removing this buddy
-	[TCBuddyInfoController removingBuddy:buddy];
+	dispatch_async(_noticeQueue, ^{
+		[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesControllerRemovedBuddy object:self userInfo:@{ @"buddy" : buddy }];
+	});
 	
 	// Remove the buddy from interface side
 	buddy.delegate = nil;
