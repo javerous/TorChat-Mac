@@ -24,8 +24,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "TCCocoaBuddy.h"
-
 #import "TCConfig.h"
 
 
@@ -35,8 +33,8 @@
 #pragma mark - Forward
 
 @class TCController;
-
 @class TCDropButton;
+@class TCBuddy;
 
 
 
@@ -51,6 +49,18 @@
 #define TCBuddiesControllerAvatarChanged	@"TCBuddiesControllerAvatarChanged"
 #define TCBuddiesControllerNameChanged		@"TCBuddiesControllerNameChanged"
 #define TCBuddiesControllerTextChanged		@"TCBuddiesControllerTextChanged"
+
+#define TCCocoaBuddyChangedStatusNotification		@"TCCocoaBuddyChangedStatus"
+#define TCCocoaBuddyChangedAvatarNotification		@"TCCocoaBuddyChangedAvatar"
+#define TCCocoaBuddyChangedNameNotification			@"TCCocoaBuddyChangedName"
+#define TCCocoaBuddyChangedTextNotification			@"TCCocoaBuddyChangedText"
+#define TCCocoaBuddyChangedAliasNotification		@"TCCocoaBuddyChangedAlias"
+
+#define TCCocoaBuddyChangedPeerVersionNotification	@"TCCocoaBuddyChangedPeerVersion"
+#define TCCocoaBuddyChangedPeerClientNotification	@"TCCocoaBuddyChangedPeerClient"
+
+#define	TCCocoaBuddyChangedBlockedNotification		@"TCCocoaBuddyChangedBlocked"
+
 
 
 
@@ -103,7 +113,10 @@
 - (IBAction)showWindow:(id)sender;
 
 // -- Tools --
-- (TCCocoaBuddy *)selectedBuddy;
+- (void)buddyStatusChanged;
+- (void)startChatForBuddy:(TCBuddy *)buddy select:(BOOL)select;
+
+- (TCBuddy *)selectedBuddy;
 
 // -- Running --
 - (void)stop;

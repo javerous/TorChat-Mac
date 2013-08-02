@@ -962,6 +962,28 @@ static char gLocalQueueContext;
 */
 #pragma mark - Content
 
+- (NSString *)peerClient
+{
+	__block NSString * result = NULL;
+	
+	dispatch_sync(_localQueue, ^{
+		result = _peerClient;
+	});
+	
+	return result;
+}
+
+- (NSString *)peerVersion
+{
+	__block NSString * result = NULL;
+	
+	dispatch_sync(_localQueue, ^{
+		result = _peerVersion;
+	});
+	
+	return result;
+}
+
 - (NSString *)profileText
 {
 	__block NSString * result = NULL;

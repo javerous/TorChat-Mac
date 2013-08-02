@@ -29,6 +29,9 @@
 #import "TCDragImageView.h"
 #import "TCKeyedText.h"
 
+#import "TCBuddy.h"
+#import "TCImage.h"
+
 
 
 /*
@@ -72,8 +75,8 @@ static NSMutableArray *_windows = nil;
 
 - (void)updateStatus:(tcbuddy_status)status;
 
-@property (strong, nonatomic) TCCocoaBuddy	*buddy;
-@property (strong, nonatomic) NSString		*address;
+@property (strong, nonatomic) TCBuddy	*buddy;
+@property (strong, nonatomic) NSString	*address;
 
 @end
 
@@ -197,7 +200,7 @@ static NSMutableArray *_windows = nil;
 	[self showInfoOnBuddy:[[TCBuddiesController sharedController] selectedBuddy]];
 }
 
-+ (void)showInfoOnBuddy:(TCCocoaBuddy *)buddy
++ (void)showInfoOnBuddy:(TCBuddy *)buddy
 {
 	NSUInteger	i, cnt = [_windows count];
 	NSString	*address = [buddy address];
@@ -229,7 +232,7 @@ static NSMutableArray *_windows = nil;
 	if ([name length] == 0)
 		name = [buddy lastProfileName];
 	
-	[ctrl->_avatarView setImage:[buddy profileAvatar]];
+	[ctrl->_avatarView setImage:[[buddy profileAvatar] imageRepresentation]];
 	[ctrl->_addressField setStringValue:ctrl.address];
 	[ctrl->_aliasField setStringValue:[buddy alias]];
 	[[ctrl->_aliasField cell] setPlaceholderString:name];
@@ -272,7 +275,7 @@ static NSMutableArray *_windows = nil;
 	[ctrl->_avatarView setFilename:address];
 }
 
-+ (void)removingBuddy:(TCCocoaBuddy *)buddy
++ (void)removingBuddy:(TCBuddy *)buddy
 {
 	NSUInteger i, cnt = [_windows count];
 	
