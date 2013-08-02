@@ -134,8 +134,8 @@ typedef enum
 - (tccontroller_status)status;
 
 // -- Profile --
-- (void)setProfileAvatar:(TCImage *)avatar;
-- (TCImage *)profileAvatar;
+- (void)setProfileAvatar:(NSImage *)avatar;
+- (NSImage *)profileAvatar;
 
 
 - (void)setProfileName:(NSString *)name;

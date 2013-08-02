@@ -28,7 +28,6 @@
 #import "TCController.h"
 #import "TCConfig.h"
 #import "TCBuddy.h"
-#import "TCImage.h"
 
 // -- Interface --
 // > Controllers
@@ -154,8 +153,7 @@
 
 - (void)startWithConfiguration:(id <TCConfig>)configuration
 {
-	TCImage		*tavatar;
-	NSImage		*avatar;
+	NSImage *avatar;
 	
 	if (!configuration)
 	{
@@ -191,8 +189,7 @@
 	[self updateStatusUI:[_control status]];
 	
 	// > Init avatar
-	tavatar = [_control profileAvatar];
-	avatar = [tavatar imageRepresentation];
+	avatar = [_control profileAvatar];
 	
 	if ([[avatar representations] count] > 0)
 		[_imAvatar setImage:avatar];
@@ -457,7 +454,7 @@
 			
 		case tcctrl_notify_profile_avatar:
 		{
-			NSImage	*final = [(TCImage *)info.context imageRepresentation];
+			NSImage	*final = (NSImage *)info.context;
 			
 			if ([[final representations] count] == 0)
 			{
@@ -532,12 +529,10 @@
 
 - (void)dropButton:(TCDropButton *)button doppedImage:(NSImage *)avatar
 {
-	TCImage *image = [[TCImage alloc] initWithImage:avatar];
-	
-	if (!image)
+	if (!avatar)
 		return;
 	
-	[_control setProfileAvatar:image];
+	[_control setProfileAvatar:avatar];
 }
 
 
@@ -633,7 +628,7 @@
 				
 			case tcbuddy_notify_profile_avatar:
 			{
-				NSImage *avatar = [(TCImage *)info.context imageRepresentation];
+				NSImage *avatar = (NSImage *)info.context;
 				
 				if (!avatar)
 					return;
@@ -1276,7 +1271,7 @@
 	identifier = [buddy address];
 	
 	// Start chat.
-	[chatCtrl startChatWithIdentifier:identifier name:[buddy finalName] localAvatar:[_imAvatar image] remoteAvatar:[[buddy profileAvatar] imageRepresentation] context:buddy delegate:self];
+	[chatCtrl startChatWithIdentifier:identifier name:[buddy finalName] localAvatar:[_imAvatar image] remoteAvatar:[buddy profileAvatar] context:buddy delegate:self];
 	
 	// Select it.
 	if (select)
