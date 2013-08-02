@@ -78,7 +78,7 @@
 		E889F09A12531D07000C36B2 /* TCButton.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F09912531D07000C36B2 /* TCButton.m */; };
 		E889F09D12531D12000C36B2 /* TCTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F09C12531D12000C36B2 /* TCTableView.m */; };
 		E889F0A012531D1E000C36B2 /* TCTorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F09F12531D1E000C36B2 /* TCTorManager.m */; };
-		E889F0A312531D33000C36B2 /* TCCocoaConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0A212531D33000C36B2 /* TCCocoaConfig.m */; };
+		E889F0A312531D33000C36B2 /* TCConfigPlist.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0A212531D33000C36B2 /* TCConfigPlist.m */; };
 		E889F0A612531D3F000C36B2 /* TCBuddiesController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0A512531D3F000C36B2 /* TCBuddiesController.m */; };
 		E889F0A912531D48000C36B2 /* TCBuddyInfoController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0A812531D48000C36B2 /* TCBuddyInfoController.m */; };
 		E889F0AF12531D62000C36B2 /* TCChatController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0AE12531D62000C36B2 /* TCChatController.m */; };
@@ -212,8 +212,8 @@
 		E889F09C12531D12000C36B2 /* TCTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCTableView.m; path = Interface/TCTableView.m; sourceTree = "<group>"; };
 		E889F09E12531D1E000C36B2 /* TCTorManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCTorManager.h; path = Interface/TCTorManager.h; sourceTree = "<group>"; };
 		E889F09F12531D1E000C36B2 /* TCTorManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCTorManager.m; path = Interface/TCTorManager.m; sourceTree = "<group>"; };
-		E889F0A112531D33000C36B2 /* TCCocoaConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCCocoaConfig.h; path = Interface/TCCocoaConfig.h; sourceTree = "<group>"; };
-		E889F0A212531D33000C36B2 /* TCCocoaConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCCocoaConfig.m; path = Interface/TCCocoaConfig.m; sourceTree = "<group>"; };
+		E889F0A112531D33000C36B2 /* TCConfigPlist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCConfigPlist.h; path = Interface/TCConfigPlist.h; sourceTree = "<group>"; };
+		E889F0A212531D33000C36B2 /* TCConfigPlist.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCConfigPlist.m; path = Interface/TCConfigPlist.m; sourceTree = "<group>"; };
 		E889F0A412531D3F000C36B2 /* TCBuddiesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCBuddiesController.h; path = Interface/TCBuddiesController.h; sourceTree = "<group>"; };
 		E889F0A512531D3F000C36B2 /* TCBuddiesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCBuddiesController.m; path = Interface/TCBuddiesController.m; sourceTree = "<group>"; };
 		E889F0A712531D48000C36B2 /* TCBuddyInfoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCBuddyInfoController.h; path = Interface/TCBuddyInfoController.h; sourceTree = "<group>"; };
@@ -523,8 +523,8 @@
 			isa = PBXGroup;
 			children = (
 				E882D1AC1429DD0B009CCD01 /* TCConfigProxy.h */,
-				E889F0A112531D33000C36B2 /* TCCocoaConfig.h */,
-				E889F0A212531D33000C36B2 /* TCCocoaConfig.m */,
+				E889F0A112531D33000C36B2 /* TCConfigPlist.h */,
+				E889F0A212531D33000C36B2 /* TCConfigPlist.m */,
 				E8455D3B17A425F00046307B /* TCValue.h */,
 				E8455D3C17A425F00046307B /* TCValue.m */,
 				E8F15A78130425A4000593E1 /* TCKeyedText.h */,
@@ -959,7 +959,7 @@
 				E889F09A12531D07000C36B2 /* TCButton.m in Sources */,
 				E889F09D12531D12000C36B2 /* TCTableView.m in Sources */,
 				E889F0A012531D1E000C36B2 /* TCTorManager.m in Sources */,
-				E889F0A312531D33000C36B2 /* TCCocoaConfig.m in Sources */,
+				E889F0A312531D33000C36B2 /* TCConfigPlist.m in Sources */,
 				E889F0A612531D3F000C36B2 /* TCBuddiesController.m in Sources */,
 				E889F0A912531D48000C36B2 /* TCBuddyInfoController.m in Sources */,
 				E889F0AF12531D62000C36B2 /* TCChatController.m in Sources */,

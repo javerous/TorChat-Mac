@@ -9,7 +9,7 @@
 #import "TCPanel_Advanced.h"
 
 #import "TCLogsManager.h"
-#import "TCCocoaConfig.h"
+#import "TCConfigPlist.h"
 
 
 /*
@@ -75,12 +75,12 @@
 {
 	NSBundle		*bundle = [NSBundle mainBundle];
 	NSString		*path = nil;
-	TCCocoaConfig	*aconfig = nil;
+	TCConfigPlist	*aconfig = nil;
 	
 	// Configuration
 	path = [[[bundle bundlePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"];
 	
-	aconfig = [[TCCocoaConfig alloc] initWithFile:path];
+	aconfig = [[TCConfigPlist alloc] initWithFile:path];
 	
 	if (!aconfig)
 	{

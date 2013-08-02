@@ -1,5 +1,5 @@
 /*
- *  TCCocoaConfig.mm
+ *  TCConfigPlist.mm
  *
  *  Copyright 2013 Avérous Julien-Pierre
  *
@@ -21,7 +21,7 @@
  */
 
 
-#import "TCCocoaConfig.h"
+#import "TCConfigPlist.h"
 
 #import "NSString+TCExtension.h"
 
@@ -62,11 +62,11 @@
 
 
 /*
-** TCCocoaConfig - Private
+** TCConfigPlist - Private
 */
-#pragma mark - TCCocoaConfig - Private
+#pragma mark - TCConfigPlist - Private
 
-@interface TCCocoaConfig ()
+@interface TCConfigPlist ()
 {
 	// Vars
 	NSString			*_fpath;
@@ -85,17 +85,17 @@
 
 
 /*
-** TCCocoaConfig
+** TCConfigPlist
 */
-#pragma mark - TCCocoaConfig
+#pragma mark - TCConfigPlist
 
-@implementation TCCocoaConfig
+@implementation TCConfigPlist
 
 
 /*
-** TCCocoaConfig - Instance
+** TCConfigPlist - Instance
 */
-#pragma mark - TCCocoaConfig - Instance
+#pragma mark - TCConfigPlist - Instance
 
 - (id)initWithFile:(NSString *)filepath
 {
