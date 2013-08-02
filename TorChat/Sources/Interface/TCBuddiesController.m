@@ -931,7 +931,6 @@
 
 - (void)chatSendMessage:(NSString *)message identifier:(NSString *)identifier context:(id)context
 {
-	NSLog(@"Message:%@ COntext:%@", message, context);
 	TCBuddy *buddy = context;
 	
 	if (!buddy || !message)
