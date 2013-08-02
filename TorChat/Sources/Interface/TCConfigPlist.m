@@ -479,9 +479,24 @@
 	if (!notes)
 		notes = @"";
 	
-	NSDictionary *buddy = @{ TCConfigBuddyAddress : address, TCConfigBuddyAlias : alias, TCConfigBuddyNotes : notes, TCConfigBuddyLastName : @"" };
-
-	[[_fcontent objectForKey:TCCONF_KEY_BUDDIES] addObject:buddy];
+	// Get buddies list.
+	NSMutableArray *buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	
+	if (!buddies)
+	{
+		buddies = [[NSMutableArray alloc] init];
+		[_fcontent setObject:buddies forKey:TCCONF_KEY_BUDDIES];
+	}
+	
+	// Create buddy entry.
+	NSMutableDictionary *buddy = [[NSMutableDictionary alloc] init];
+	
+	[buddy setObject:address forKey:TCConfigBuddyAddress];
+	[buddy setObject:alias forKey:TCConfigBuddyAlias];
+	[buddy setObject:notes forKey:TCConfigBuddyNotes];
+	[buddy setObject:@"" forKey:TCConfigBuddyLastName];
+	
+	[buddies addObject:buddy];
 		
 	// Save & Release
 	[self saveConfig];
@@ -654,13 +669,18 @@
 - (BOOL)addBlockedBuddy:(NSString *)address
 {
 	// Add to cocoa version
-	NSMutableArray	*list = [_fcontent objectForKey:TCCONF_KEY_BLOCKED];
+	NSMutableArray *list = [_fcontent objectForKey:TCCONF_KEY_BLOCKED];
 	
 	if ([list indexOfObject:address] != NSNotFound)
 		return NO;
 	
-	[list addObject:address];
+	if (!list)
+	{
+		list = [[NSMutableArray alloc] init];
+		[_fcontent setObject:list forKey:TCCONF_KEY_BLOCKED];
+	}
 	
+	[list addObject:address];
 	
 	// Save & Release
 	[self saveConfig];

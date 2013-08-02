@@ -65,6 +65,4 @@
 + (void)showInfo;
 + (void)showInfoOnBuddy:(TCBuddy *)buddy;
 
-+ (void)removingBuddy:(TCBuddy *)buddy;
-
 @end
