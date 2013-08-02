@@ -50,6 +50,9 @@
 #define TCBuddiesControllerNameChanged		@"TCBuddiesControllerNameChanged"
 #define TCBuddiesControllerTextChanged		@"TCBuddiesControllerTextChanged"
 
+#define TCBuddiesControllerRemovedBuddy		@"TCBuddiesControllerRemovedBuddy"
+
+
 #define TCCocoaBuddyChangedStatusNotification		@"TCCocoaBuddyChangedStatus"
 #define TCCocoaBuddyChangedAvatarNotification		@"TCCocoaBuddyChangedAvatar"
 #define TCCocoaBuddyChangedNameNotification			@"TCCocoaBuddyChangedName"
