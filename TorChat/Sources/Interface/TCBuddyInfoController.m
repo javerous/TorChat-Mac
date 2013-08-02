@@ -73,7 +73,7 @@ static NSMutableArray *_windows = nil;
 - (void)setInfo:(NSString *)indo withKey:(NSString *)key;
 - (void)updateInfoView;
 
-- (void)updateStatus:(tcbuddy_status)status;
+- (void)updateStatus:(tcstatus)status;
 
 @property (strong, nonatomic) TCBuddy	*buddy;
 @property (strong, nonatomic) NSString	*address;
@@ -416,23 +416,23 @@ static NSMutableArray *_windows = nil;
 	[[_infoView textStorage] setAttributedString:[keyed renderedText]];
 }
 	 
-- (void)updateStatus:(tcbuddy_status)status
+- (void)updateStatus:(tcstatus)status
 {
 	switch (status)
 	{
-		case tcbuddy_status_available:
+		case tcstatus_available:
 			[_statusView setImage:[NSImage imageNamed:@"stat_online"]];
 			break;
 			
-		case tcbuddy_status_away:
+		case tcstatus_away:
 			[_statusView setImage:[NSImage imageNamed:@"stat_away"]];
 			break;
 			
-		case tcbuddy_status_offline:
+		case tcstatus_offline:
 			[_statusView setImage:[NSImage imageNamed:@"stat_offline"]];
 			break;
 			
-		case tcbuddy_status_xa:
+		case tcstatus_xa:
 			[_statusView setImage:[NSImage imageNamed:@"stat_xa"]];
 			break;
 	}
@@ -508,7 +508,7 @@ static NSMutableArray *_windows = nil;
 - (void)buddyStatusChanged:(NSNotification *)notice
 {
 	NSNumber		*status = [[notice userInfo] objectForKey:@"status"];
-	tcbuddy_status	istatus = (tcbuddy_status)[status intValue];
+	tcstatus	istatus = (tcstatus)[status intValue];
 	
 	// Build notification info
 	dispatch_async(dispatch_get_main_queue(), ^{

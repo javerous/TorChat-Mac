@@ -25,7 +25,7 @@
 #import "TCBuddiesController.h"
 
 // -- Core --
-#import "TCController.h"
+#import "TCCoreManager.h"
 #import "TCConfig.h"
 #import "TCBuddy.h"
 
@@ -56,10 +56,10 @@
 */
 #pragma mark - TCBuddiesController - Private
 
-@interface TCBuddiesController () <TCControllerDelegate, TCDropButtonDelegate, TCBuddyDelegate, TCChatControllerDelegate>
+@interface TCBuddiesController () <TCCoreManagerDelegate, TCDropButtonDelegate, TCBuddyDelegate, TCChatControllerDelegate>
 {
 	id <TCConfig>		_configuration;
-	TCController		*_control;
+	TCCoreManager		*_control;
 	
 	dispatch_queue_t	_localQueue;
 	dispatch_queue_t	_noticeQueue;
@@ -175,7 +175,7 @@
 		[[TCTorManager sharedManager] startWithConfiguration:_configuration];
 	
 	// Build controller
-	_control = [[TCController alloc] initWithConfiguration:_configuration];
+	_control = [[TCCoreManager alloc] initWithConfiguration:_configuration];
 	
 	
 	// -- Init window content --
@@ -301,16 +301,16 @@
 		
 		switch ([buddy status])
 		{
-			case tcbuddy_status_offline:
+			case tcstatus_offline:
 				return [NSImage imageNamed:@"stat_offline"];
 				
-			case tcbuddy_status_available:
+			case tcstatus_available:
 				return [NSImage imageNamed:@"stat_online"];
 				
-			case tcbuddy_status_away:
+			case tcstatus_away:
 				return [NSImage imageNamed:@"stat_away"];
 				
-			case tcbuddy_status_xa:
+			case tcstatus_xa:
 				return [NSImage imageNamed:@"stat_xa"];
 		}
 	}
@@ -411,11 +411,11 @@
 
 
 /*
-** TCBuddiesController - TCControllerDelegate
+** TCBuddiesController - TCCoreManagerDelegate
 */
-#pragma mark - TCBuddiesController - TCControllerDelegate
+#pragma mark - TCBuddiesController - TCCoreManagerDelegate
 
-- (void)torchatController:(TCController *)controller information:(TCInfo *)info
+- (void)torchatController:(TCCoreManager *)controller information:(TCInfo *)info
 {
 	// Log the item
 	[[TCLogsManager sharedManager] addGlobalLogEntry:[info render]];
@@ -423,7 +423,7 @@
 	// Action information
 	switch (info.infoCode)
 	{
-		case tcctrl_notify_started:
+		case tccore_notify_started:
 		{
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[_indicator stopAnimation:self];
@@ -432,7 +432,7 @@
 			break;
 		}
 			
-		case tcctrl_notify_stoped:
+		case tccore_notify_stoped:
 		{
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[self updateStatusUI:-2];
@@ -441,9 +441,9 @@
 			break;
 		}
 			
-		case tcctrl_notify_status:
+		case tccore_notify_status:
 		{
-			tccontroller_status	status = (tccontroller_status)[(NSNumber *)info.context intValue];
+			tcstatus	status = (tcstatus)[(NSNumber *)info.context intValue];
 			
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[self updateStatusUI:status];
@@ -452,7 +452,7 @@
 			break;
 		}
 			
-		case tcctrl_notify_profile_avatar:
+		case tccore_notify_profile_avatar:
 		{
 			NSImage	*final = (NSImage *)info.context;
 			
@@ -476,7 +476,7 @@
 			break;
 		}
 			
-		case tcctrl_notify_profile_name:
+		case tccore_notify_profile_name:
 		{
 			dispatch_async(dispatch_get_main_queue(), ^{
 				
@@ -490,10 +490,10 @@
 			break;
 		}
 			
-		case tcctrl_notify_profile_text:
+		case tccore_notify_profile_text:
 			break;
 			
-		case tcctrl_notify_buddy_new:
+		case tccore_notify_buddy_new:
 		{
 			TCBuddy *buddy = (TCBuddy *)info.context;
 			
@@ -511,13 +511,13 @@
 			break;
 		}
 			
-		case tcctrl_notify_client_new:
+		case tccore_notify_client_new:
 			break;
 			
-		case tcctrl_notify_client_started:
+		case tccore_notify_client_started:
 			break;
 			
-		case tcctrl_notify_client_stoped:
+		case tccore_notify_client_stoped:
 			break;
 	}
 }
@@ -552,7 +552,7 @@
 				
 				// Notify.
 				dispatch_async(_noticeQueue, ^{
-					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedStatusNotification object:aBuddy userInfo:@{ @"status" : @(tcbuddy_status_offline) }];
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedStatusNotification object:aBuddy userInfo:@{ @"status" : @(tcstatus_offline) }];
 				});
 				
 				break;
@@ -563,25 +563,25 @@
 				
 			case tcbuddy_notify_status:
 			{
-				tcbuddy_status  status = (tcbuddy_status)[(NSNumber *)info.context intValue];
+				tcstatus  status = (tcstatus)[(NSNumber *)info.context intValue];
 				NSString		*statusStr = @"";
 				
 				// Send status to chat window.
 				switch (status)
 				{
-					case tcbuddy_status_offline:
+					case tcstatus_offline:
 						statusStr = NSLocalizedString(@"bd_status_offline", @"");
 						break;
 						
-					case tcbuddy_status_available:
+					case tcstatus_available:
 						statusStr = NSLocalizedString(@"bd_status_available", @"");
 						break;
 						
-					case tcbuddy_status_away:
+					case tcstatus_away:
 						statusStr = NSLocalizedString(@"bd_status_away", @"");
 						break;
 						
-					case tcbuddy_status_xa:
+					case tcstatus_xa:
 						statusStr = NSLocalizedString(@"bd_status_xa", @"");
 						break;
 				}
@@ -991,15 +991,15 @@
 			break;
 			
 		case 0:
-			[_control setStatus:tccontroller_available];
+			[_control setStatus:tcstatus_available];
 			break;
 			
 		case 1:
-			[_control setStatus:tccontroller_away];
+			[_control setStatus:tcstatus_away];
 			break;
 			
 		case 2:
-			[_control setStatus:tccontroller_xa];
+			[_control setStatus:tcstatus_xa];
 			break;
 	}
 }
@@ -1233,19 +1233,19 @@
 			
 			switch ([buddy status])
 			{
-				case tcbuddy_status_offline:
+				case tcstatus_offline:
 					[temp_off addObject:buddy];
 					break;
 					
-				case tcbuddy_status_available:
+				case tcstatus_available:
 					[temp_av addObject:buddy];
 					break;
 					
-				case tcbuddy_status_away:
+				case tcstatus_away:
 					[temp_aw addObject:buddy];
 					break;
 					
-				case tcbuddy_status_xa:
+				case tcstatus_xa:
 					[temp_xa addObject:buddy];
 					break;
 			}
