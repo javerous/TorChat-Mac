@@ -232,7 +232,7 @@ static NSMutableArray *_windows = nil;
 	if ([name length] == 0)
 		name = [buddy lastProfileName];
 	
-	[ctrl->_avatarView setImage:[[buddy profileAvatar] imageRepresentation]];
+	[ctrl->_avatarView setImage:[buddy profileAvatar]];
 	[ctrl->_addressField setStringValue:ctrl.address];
 	[ctrl->_aliasField setStringValue:[buddy alias]];
 	[[ctrl->_aliasField cell] setPlaceholderString:name];
