@@ -81,7 +81,6 @@
 		E889F0A312531D33000C36B2 /* TCCocoaConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0A212531D33000C36B2 /* TCCocoaConfig.m */; };
 		E889F0A612531D3F000C36B2 /* TCBuddiesController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0A512531D3F000C36B2 /* TCBuddiesController.m */; };
 		E889F0A912531D48000C36B2 /* TCBuddyInfoController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0A812531D48000C36B2 /* TCBuddyInfoController.m */; };
-		E889F0AC12531D55000C36B2 /* TCCocoaBuddy.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0AB12531D55000C36B2 /* TCCocoaBuddy.m */; };
 		E889F0AF12531D62000C36B2 /* TCChatController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0AE12531D62000C36B2 /* TCChatController.m */; };
 		E889F0B212531D6B000C36B2 /* TCChatTalk.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0B112531D6B000C36B2 /* TCChatTalk.m */; };
 		E889F0B512531D73000C36B2 /* TCChatBubble.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0B412531D73000C36B2 /* TCChatBubble.m */; };
@@ -219,8 +218,6 @@
 		E889F0A512531D3F000C36B2 /* TCBuddiesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCBuddiesController.m; path = Interface/TCBuddiesController.m; sourceTree = "<group>"; };
 		E889F0A712531D48000C36B2 /* TCBuddyInfoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCBuddyInfoController.h; path = Interface/TCBuddyInfoController.h; sourceTree = "<group>"; };
 		E889F0A812531D48000C36B2 /* TCBuddyInfoController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCBuddyInfoController.m; path = Interface/TCBuddyInfoController.m; sourceTree = "<group>"; };
-		E889F0AA12531D55000C36B2 /* TCCocoaBuddy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCCocoaBuddy.h; path = Interface/TCCocoaBuddy.h; sourceTree = "<group>"; };
-		E889F0AB12531D55000C36B2 /* TCCocoaBuddy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCCocoaBuddy.m; path = Interface/TCCocoaBuddy.m; sourceTree = "<group>"; };
 		E889F0AD12531D62000C36B2 /* TCChatController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatController.h; path = Interface/TCChatController.h; sourceTree = "<group>"; };
 		E889F0AE12531D62000C36B2 /* TCChatController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCChatController.m; path = Interface/TCChatController.m; sourceTree = "<group>"; };
 		E889F0B012531D6B000C36B2 /* TCChatTalk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatTalk.h; path = Interface/TCChatTalk.h; sourceTree = "<group>"; };
@@ -525,8 +522,6 @@
 		E870BD7C17A8483500DFA076 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				E889F0AA12531D55000C36B2 /* TCCocoaBuddy.h */,
-				E889F0AB12531D55000C36B2 /* TCCocoaBuddy.m */,
 				E882D1AC1429DD0B009CCD01 /* TCConfigProxy.h */,
 				E889F0A112531D33000C36B2 /* TCCocoaConfig.h */,
 				E889F0A212531D33000C36B2 /* TCCocoaConfig.m */,
@@ -967,7 +962,6 @@
 				E889F0A312531D33000C36B2 /* TCCocoaConfig.m in Sources */,
 				E889F0A612531D3F000C36B2 /* TCBuddiesController.m in Sources */,
 				E889F0A912531D48000C36B2 /* TCBuddyInfoController.m in Sources */,
-				E889F0AC12531D55000C36B2 /* TCCocoaBuddy.m in Sources */,
 				E889F0AF12531D62000C36B2 /* TCChatController.m in Sources */,
 				E889F0B212531D6B000C36B2 /* TCChatTalk.m in Sources */,
 				E889F0B512531D73000C36B2 /* TCChatBubble.m in Sources */,

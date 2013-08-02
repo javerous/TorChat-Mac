@@ -31,7 +31,7 @@
 #import "TCLogsController.h"
 #import "TCPrefController.h"
 
-#import "TCCocoaBuddy.h"
+#import "TCBuddy.h"
 
 
 
@@ -150,7 +150,7 @@
 	NSDictionary	*ui = [notice userInfo];
 	id				buddy = [ui objectForKey:TCBuddiesControllerBuddyKey];
 		
-	if ([buddy isKindOfClass:[TCCocoaBuddy class]])
+	if ([buddy isKindOfClass:[TCBuddy class]])
 	{
 		[_buddyShowMenu setTarget:self];
 		[_buddyShowMenu setAction:@selector(doBuddyShowInfo:)];
@@ -196,7 +196,7 @@
 {
 	NSDictionary	*ui = [notice userInfo];
 	NSNumber		*blocked = [ui objectForKey:@"blocked"];
-	NSString		*buddy = [(TCCocoaBuddy *)[notice object] address];
+	NSString		*buddy = [(TCBuddy *)[notice object] address];
 	NSString		*selected = [[[TCBuddiesController sharedController] selectedBuddy] address];
 	
 	if ([buddy isEqualToString:selected])

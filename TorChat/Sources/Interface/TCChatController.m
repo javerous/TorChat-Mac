@@ -40,6 +40,7 @@
 // -- Row info --
 #define TCChatViewKey		@"view"
 #define TCChatDelegateKey	@"delegate"
+#define TCChatContextKey	@"context"
 #define TCChatAvatarKey		@"avatar"
 #define TCChatNameKey		@"name"
 #define TCChatLastChatKey	@"last_chat"
@@ -80,17 +81,17 @@
 
 @interface TCChatWindowController () <TCChatViewDelegate>
 {
-	BOOL				multiChatMode;
+	BOOL				_multiChatMode;
 	
-	NSMutableArray		*identifiers;
-	NSMutableDictionary	*identifiers_content;
+	NSMutableArray		*_identifiers;
+	NSMutableDictionary	*_identifiers_content;
 	
-	NSTrackingArea		*trakingArea;
-	NSInteger			trakingRow;
+	NSTrackingArea		*_trakingArea;
+	NSInteger			_trakingRow;
 	
-	TCButton			*closeButton;
+	TCButton			*_closeButton;
 	
-	NSString			*selectedIdentifier;
+	NSString			*_selectedIdentifier;
 }
 
 + (TCChatWindowController *)chatWindowController;
@@ -108,7 +109,7 @@
 - (void)moveIdentifier:(NSString *)identifier toWindowController:(TCChatWindowController *)controller atIndex:(NSUInteger)index;
 
 // -- Chat --
-- (void)startChatWithIdentifier:(NSString *)identifier name:(NSString *)name localAvatar:(NSImage *)lavatar remoteAvatar:(NSImage *)ravatar delegate:(id <TCChatControllerDelegate>)delegate;
+- (void)startChatWithIdentifier:(NSString *)identifier name:(NSString *)name localAvatar:(NSImage *)lavatar remoteAvatar:(NSImage *)ravatar context:(id)context delegate:(id <TCChatControllerDelegate>)delegate;
 - (void)selectChatWithIdentifier:(NSString *)identifier;
 - (void)stopChatWithIdentifier:(NSString *)identifier;
 
@@ -253,7 +254,7 @@
 */
 #pragma mark - TCChatController - Chat
 
-- (void)startChatWithIdentifier:(NSString *)identifier name:(NSString *)name localAvatar:(NSImage *)lavatar remoteAvatar:(NSImage *)ravatar delegate:(id <TCChatControllerDelegate>)delegate
+- (void)startChatWithIdentifier:(NSString *)identifier name:(NSString *)name localAvatar:(NSImage *)lavatar remoteAvatar:(NSImage *)ravatar context:(id)context delegate:(id <TCChatControllerDelegate>)delegate
 {
 	if (!identifier)
 		return;
@@ -289,7 +290,7 @@
 			[_identifiers setObject:ctrl forKey:identifier];
 			
 			// Start the chat in the controller
-			[ctrl startChatWithIdentifier:identifier name:name localAvatar:lavatar remoteAvatar:ravatar delegate:delegate];
+			[ctrl startChatWithIdentifier:identifier name:name localAvatar:lavatar remoteAvatar:ravatar context:context delegate:delegate];
 		}
 	});
 }
@@ -446,13 +447,13 @@
 	if (self)
 	{
 		// Inits
-		multiChatMode = YES;
+		_multiChatMode = YES;
 		
-		trakingRow = -1;
+		_trakingRow = -1;
 		
 		// Create containers
-		identifiers = [[NSMutableArray alloc] init];
-		identifiers_content = [[NSMutableDictionary alloc] init];
+		_identifiers = [[NSMutableArray alloc] init];
+		_identifiers_content = [[NSMutableDictionary alloc] init];
 	}
 
 	return self;
@@ -467,22 +468,22 @@
 	[self _setMultiChatMode:NO animated:NO];
 	
 	// Activate tracking on UserList
-	trakingArea= [[NSTrackingArea alloc] initWithRect:NSZeroRect options:(NSTrackingMouseEnteredAndExited | NSTrackingMouseMoved | NSTrackingActiveInKeyWindow | NSTrackingInVisibleRect) owner:self userInfo:nil];
+	_trakingArea= [[NSTrackingArea alloc] initWithRect:NSZeroRect options:(NSTrackingMouseEnteredAndExited | NSTrackingMouseMoved | NSTrackingActiveInKeyWindow | NSTrackingInVisibleRect) owner:self userInfo:nil];
 							   
-	[_userList addTrackingArea:trakingArea];
+	[_userList addTrackingArea:_trakingArea];
 	
 	// Build close button
-	closeButton = [[TCButton alloc] init];
+	_closeButton = [[TCButton alloc] init];
 	
-	[closeButton setImage:[NSImage imageNamed:@"file_stop"]];
-	[closeButton setRollOverImage:[NSImage imageNamed:@"file_stop_rollover"]];
-	[closeButton setPushImage:[NSImage imageNamed:@"file_stop_pushed"]];
-	[closeButton setTarget:self];
-	[closeButton setAction:@selector(closeAction:)];
-	[closeButton setHidden:YES];
-	[closeButton setFrame:NSMakeRect(0, 0, 14, 14)];
+	[_closeButton setImage:[NSImage imageNamed:@"file_stop"]];
+	[_closeButton setRollOverImage:[NSImage imageNamed:@"file_stop_rollover"]];
+	[_closeButton setPushImage:[NSImage imageNamed:@"file_stop_pushed"]];
+	[_closeButton setTarget:self];
+	[_closeButton setAction:@selector(closeAction:)];
+	[_closeButton setHidden:YES];
+	[_closeButton setFrame:NSMakeRect(0, 0, 14, 14)];
 	
-	[_userList addSubview:closeButton];
+	[_userList addSubview:_closeButton];
 	
 	// Activate pb type
 	[_userList registerForDraggedTypes:[NSArray arrayWithObject:TCChatPBType]];
@@ -494,7 +495,7 @@
 {
 	TCDebugLog("TCChatWindowController Dealloc");
 
-	[_userList removeTrackingArea:trakingArea];
+	[_userList removeTrackingArea:_trakingArea];
 }
 
 
@@ -524,31 +525,31 @@
 {
 	NSInteger lindex;
 	
-	if (index == trakingRow)
+	if (index == _trakingRow)
 		return;
 
-	lindex = trakingRow;
-	trakingRow = index;
+	lindex = _trakingRow;
+	_trakingRow = index;
 	
 	if (lindex != -1)
 		[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)lindex] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 	
-	if (trakingRow != -1)
+	if (_trakingRow != -1)
 	{		
-		[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)trakingRow] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
+		[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)_trakingRow] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 		
-		[closeButton setHidden:NO];
+		[_closeButton setHidden:NO];
 	}
 	else
-		[closeButton setHidden:YES];
+		[_closeButton setHidden:YES];
 }
 
 - (void)closeAction:(id)sender
 {	
-	if (trakingRow < 0 || trakingRow >= [identifiers count])
+	if (_trakingRow < 0 || _trakingRow >= [_identifiers count])
 		return;
 	
-	NSString *identifier = [identifiers objectAtIndex:(NSUInteger)trakingRow];
+	NSString *identifier = [_identifiers objectAtIndex:(NSUInteger)_trakingRow];
 	
 	[[TCChatController sharedController] stopChatWithIdentifier:identifier];
 }
@@ -576,10 +577,10 @@
 	NSRect	win_rect;
 	
 	// Check mode
-	if (multichat == multiChatMode)
+	if (multichat == _multiChatMode)
 		return;
 	
-	multiChatMode = multichat;
+	_multiChatMode = multichat;
 	
 	// Get current sizes
 	list_rect = [_userList frame];
@@ -643,12 +644,12 @@
 	NSString *dname = @"";
 	
 	// Get selection name
-	if (selectedIdentifier)
+	if (_selectedIdentifier)
 	{
 		NSDictionary	*content;
 		TCChatView		*view;
 
-		content = [identifiers_content objectForKey:selectedIdentifier];
+		content = [_identifiers_content objectForKey:_selectedIdentifier];
 		view = [content objectForKey:TCChatViewKey];
 		
 		name = view.name;
@@ -656,10 +657,10 @@
 	}
 	
 	// Update title
-	if ([identifiers count] <= 1)
+	if ([_identifiers count] <= 1)
 		[self.window setTitle:name];
 	else
-		[self.window setTitle:[NSString stringWithFormat:@"TorChat (%ld %@)%@", [identifiers count], NSLocalizedString(@"chats_count", @""), dname]];
+		[self.window setTitle:[NSString stringWithFormat:@"TorChat (%ld %@)%@", [_identifiers count], NSLocalizedString(@"chats_count", @""), dname]];
 
 }
 
@@ -687,8 +688,8 @@
 		nrect = NSMakeRect(frame.origin.x - dw / 2.0, frame.origin.y - dh / 2.0, frame.size.width + dw, frame.size.height + dh);
 		
 		// Add identifier
-		[identifiers_content setObject:content forKey:identifier];
-		[identifiers addObject:identifier];
+		[_identifiers_content setObject:content forKey:identifier];
+		[_identifiers addObject:identifier];
 		
 		// Reload table
 		[_userList reloadData];
@@ -720,15 +721,15 @@
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		NSDictionary	*content = [identifiers_content objectForKey:identifier];
+		NSDictionary	*content = [_identifiers_content objectForKey:identifier];
 		TCChatView		*view;
 		
 		if (!content)
 			return;
 		
 		// Add identifier to target controller
-		[controller->identifiers_content setObject:content forKey:identifier];
-		[controller->identifiers insertObject:identifier atIndex:index];
+		[controller->_identifiers_content setObject:content forKey:identifier];
+		[controller->_identifiers insertObject:identifier atIndex:index];
 		
 		// Update delegate
 		view = [content objectForKey:TCChatViewKey];
@@ -758,14 +759,15 @@
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		NSString						*identifier = chat.identifier;
-		TCValue							*vdelegate = [[identifiers_content objectForKey:identifier] objectForKey:TCChatDelegateKey];
+		NSString	*identifier = chat.identifier;
+		TCValue		*vdelegate = [[_identifiers_content objectForKey:identifier] objectForKey:TCChatDelegateKey];
+		id			context = [[_identifiers_content objectForKey:identifier] objectForKey:TCChatContextKey];
 		id <TCChatControllerDelegate>	delegate = [vdelegate object];
 
 		if (!delegate)
 			return;
 		
-		[delegate chatSendMessage:message forIdentifier:identifier];
+		[delegate chatSendMessage:message identifier:identifier context:context];
 	});
 }
 
@@ -776,22 +778,22 @@
 */
 #pragma mark - TCChatWindowController - Chat
 
-- (void)startChatWithIdentifier:(NSString *)identifier name:(NSString *)name localAvatar:(NSImage *)lavatar remoteAvatar:(NSImage *)ravatar delegate:(id <TCChatControllerDelegate>)delegate
+- (void)startChatWithIdentifier:(NSString *)identifier name:(NSString *)name localAvatar:(NSImage *)lavatar remoteAvatar:(NSImage *)ravatar context:(id)context delegate:(id <TCChatControllerDelegate>)delegate
 {
 	if (!identifier)
 		return;
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		NSMutableDictionary		*content = [identifiers_content objectForKey:identifier];
+		NSMutableDictionary		*content = [_identifiers_content objectForKey:identifier];
 		TCValue					*pdelegate = nil;
 		TCChatView				*view;
 		
-		// No need to start a chat if already started
+		// No need to start a chat if already started.
 		if (content)
 			return;
 		
-		// > Set weak delegate
+		// > Set weak delegate.
 		if (delegate)
 			pdelegate = [TCValue valueWithWeakObject:delegate];
 		
@@ -800,7 +802,11 @@
 		if (pdelegate)
 			[content setObject:pdelegate forKey:TCChatDelegateKey];
 		
-		// > Build chat view
+		// > Set context.
+		if (context)
+			[content setObject:context forKey:TCChatContextKey];
+
+		// > Build chat view.
 		view = [TCChatView chatViewWithIdentifier:identifier name:name delegate:self];
 		
 		if (!view)
@@ -808,29 +814,29 @@
 		
 		[content setObject:view forKey:TCChatViewKey];
 		
-		// > Hold name
+		// > Hold name.
 		if (name)
 			[content setObject:name forKey:TCChatNameKey];
 		
-		// > Hold avatar
+		// > Hold avatar.
 		[view setLocalAvatar:lavatar];
 		[view setRemoteAvatar:ravatar];
 	
 		if (ravatar)
 			[content setObject:ravatar forKey:TCChatAvatarKey];
 		
-		// Add identifier
-		[identifiers_content setObject:content forKey:identifier];
-		[identifiers addObject:identifier];
+		// Add identifier.
+		[_identifiers_content setObject:content forKey:identifier];
+		[_identifiers addObject:identifier];
 		
 		// Reload table
 		[_userList reloadData];
 		
-		// Activate multichat mode
-		if ([identifiers count] == 2)
+		// Activate multichat mode.
+		if ([_identifiers count] == 2)
 			[self _setMultiChatMode:YES animated:YES];
 		
-		// Update title
+		// Update title.
 		[self _updateTitle];
 	});
 }
@@ -856,8 +862,8 @@
 	NSMutableDictionary	*content;
 	NSUInteger			index;
 
-	content = [identifiers_content objectForKey:identifier];
-	index = [identifiers indexOfObject:identifier];
+	content = [_identifiers_content objectForKey:identifier];
+	index = [_identifiers indexOfObject:identifier];
 	
 	if (!content || index == NSNotFound)
 		return;
@@ -867,11 +873,11 @@
 		[_userList selectRowIndexes:[NSIndexSet indexSetWithIndex:index] byExtendingSelection:NO];
 	
 	// Check not already loaded
-	if ([identifier isEqualToString:selectedIdentifier])
+	if ([identifier isEqualToString:_selectedIdentifier])
 		return;
 	
 	// Hold selection
-	selectedIdentifier = identifier;
+	_selectedIdentifier = identifier;
 	
 	// Load view
 	[self _loadChatView:[content objectForKey:TCChatViewKey]];
@@ -888,19 +894,19 @@
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		if ([identifiers_content objectForKey:identifier] == nil)
+		if ([_identifiers_content objectForKey:identifier] == nil)
 			return;
 		
-		NSUInteger	index = [identifiers indexOfObject:identifier];
+		NSUInteger	index = [_identifiers indexOfObject:identifier];
 
 		if (index == NSNotFound)
 			return;
 				
 		// Remove item
-		[identifiers_content removeObjectForKey:identifier];
-		[identifiers removeObject:identifier];
+		[_identifiers_content removeObjectForKey:identifier];
+		[_identifiers removeObject:identifier];
 				
-		if ([identifiers count] == 0)
+		if ([_identifiers count] == 0)
 			[self.window close];
 		else
 		{
@@ -910,20 +916,20 @@
 			[_userList reloadData];
 			
 			// Update selection
-			if ([selectedIdentifier isEqualToString:identifier])
+			if ([_selectedIdentifier isEqualToString:identifier])
 			{
 				nindex = index;
 			
-				if (nindex >= [identifiers count])
-					nindex = [identifiers count] - 1;
+				if (nindex >= [_identifiers count])
+					nindex = [_identifiers count] - 1;
 			
-				[self _selectChatWithIdentifier:[identifiers objectAtIndex:nindex]];
+				[self _selectChatWithIdentifier:[_identifiers objectAtIndex:nindex]];
 			}
 			else
-				[self _selectChatWithIdentifier:selectedIdentifier];
+				[self _selectChatWithIdentifier:_selectedIdentifier];
 			
 			// Deactivate multichat mode
-			if ([identifiers count] == 1)
+			if ([_identifiers count] == 1)
 				[self _setMultiChatMode:NO animated:YES];
 			
 			// Update tracking
@@ -949,7 +955,7 @@
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		TCChatView	*view = [[identifiers_content objectForKey:identifier] objectForKey:TCChatViewKey];
+		TCChatView	*view = [[_identifiers_content objectForKey:identifier] objectForKey:TCChatViewKey];
 		NSInteger	index = [_userList selectedRow];
 		BOOL		setUnread = NO;
 		
@@ -960,7 +966,7 @@
 		[view receiveMessage:message];
 		
 		// Show as unread if needed
-		if (index >= 0 && index < [identifiers count] && [[identifiers objectAtIndex:(NSUInteger)index] isEqualToString:identifier] == NO)
+		if (index >= 0 && index < [_identifiers count] && [[_identifiers objectAtIndex:(NSUInteger)index] isEqualToString:identifier] == NO)
 		{
 			setUnread = YES;
 		}
@@ -971,8 +977,8 @@
 			
 		if (setUnread)
 		{
-			NSMutableDictionary	*content = [identifiers_content objectForKey:identifier];
-			NSUInteger			cindex = [identifiers indexOfObject:identifier];
+			NSMutableDictionary	*content = [_identifiers_content objectForKey:identifier];
+			NSUInteger			cindex = [_identifiers indexOfObject:identifier];
 			
 			[content setObject:message forKey:TCChatLastChatKey];
 			
@@ -985,7 +991,7 @@
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		TCChatView *view = [[identifiers_content objectForKey:identifier] objectForKey:TCChatViewKey];
+		TCChatView *view = [[_identifiers_content objectForKey:identifier] objectForKey:TCChatViewKey];
 		
 		if (!view)
 			return;
@@ -998,7 +1004,7 @@
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		TCChatView *view = [[identifiers_content objectForKey:identifier] objectForKey:TCChatViewKey];
+		TCChatView *view = [[_identifiers_content objectForKey:identifier] objectForKey:TCChatViewKey];
 		
 		if (!view)
 			return;
@@ -1011,7 +1017,7 @@
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		TCChatView *view = [[identifiers_content objectForKey:identifier] objectForKey:TCChatViewKey];
+		TCChatView *view = [[_identifiers_content objectForKey:identifier] objectForKey:TCChatViewKey];
 		
 		if (!view)
 			return;
@@ -1025,7 +1031,7 @@
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		NSMutableDictionary	*content = [identifiers_content objectForKey:identifier];
+		NSMutableDictionary	*content = [_identifiers_content objectForKey:identifier];
 		TCChatView			*view = [content objectForKey:TCChatViewKey];
 		
 		if (!content)
@@ -1109,10 +1115,10 @@
 {
 	NSAlert *alert;
 	
-	if ([identifiers count] <= 1)
+	if ([_identifiers count] <= 1)
 		return YES;
 	
-	alert = [NSAlert alertWithMessageText:NSLocalizedString(@"chat_want_close", @"") defaultButton:NSLocalizedString(@"chat_close", @"") alternateButton:NSLocalizedString(@"chat_cancel", @"") otherButton:nil informativeTextWithFormat:NSLocalizedString(@"chat_want_close_info", @""), [identifiers count]];
+	alert = [NSAlert alertWithMessageText:NSLocalizedString(@"chat_want_close", @"") defaultButton:NSLocalizedString(@"chat_close", @"") alternateButton:NSLocalizedString(@"chat_cancel", @"") otherButton:nil informativeTextWithFormat:NSLocalizedString(@"chat_want_close_info", @""), [_identifiers count]];
 
 	[alert beginSheetModalForWindow:self.window modalDelegate:self didEndSelector:@selector(alertDidEnd:returnCode:contextInfo:) contextInfo:NULL];
 
@@ -1140,13 +1146,13 @@
 	// Clean the selected unread messages content
 	index = [_userList selectedRow];
 	
-	if (index >= 0 && index < [identifiers count])
+	if (index >= 0 && index < [_identifiers count])
 	{
 		NSString			*identifier;
 		NSMutableDictionary	*content;
 		
-		identifier = [identifiers objectAtIndex:(NSUInteger)index];
-		content = [identifiers_content objectForKey:identifier];
+		identifier = [_identifiers objectAtIndex:(NSUInteger)index];
+		content = [_identifiers_content objectForKey:identifier];
 
 		// Clean unread
 		[content removeObjectForKey:TCChatLastChatKey];
@@ -1163,7 +1169,7 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
-	return (NSInteger)[identifiers count];
+	return (NSInteger)[_identifiers count];
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
@@ -1173,17 +1179,17 @@
 	NSMutableDictionary *cell;
 	id					value;
 
-	if (rowIndex < 0 || rowIndex >= [identifiers count])
+	if (rowIndex < 0 || rowIndex >= [_identifiers count])
 		return nil;
 		
 	// Get row identifier
-	identifier = [identifiers objectAtIndex:(NSUInteger)rowIndex];
+	identifier = [_identifiers objectAtIndex:(NSUInteger)rowIndex];
 	
 	if (!identifier)
 		return nil;
 	
 	// Get row content
-	content = [identifiers_content objectForKey:identifier];
+	content = [_identifiers_content objectForKey:identifier];
 	
 	// Build cell content
 	cell = [NSMutableDictionary dictionary];
@@ -1207,10 +1213,10 @@
 		[cell setObject:value forKey:TCChatCellChatTextKey];
 	
 	// > Mouse Over
-	if (trakingRow == rowIndex)
+	if (_trakingRow == rowIndex)
 	{
 		[cell setObject:[NSNumber numberWithBool:YES] forKey:TCChatCellMouseOverKey];
-		[cell setObject:closeButton forKey:TCChatCellAccessoryKey];
+		[cell setObject:_closeButton forKey:TCChatCellAccessoryKey];
 	}
 	
 	return cell;
@@ -1226,10 +1232,10 @@
 	NSInteger			index = [_userList selectedRow];
 	NSString			*identifier;
 
-	if (index < 0 || index >= [identifiers count])
+	if (index < 0 || index >= [_identifiers count])
 		return;
 	
-	identifier = [identifiers objectAtIndex:(NSUInteger)index];
+	identifier = [_identifiers objectAtIndex:(NSUInteger)index];
 	
 	[self selectChatWithIdentifier:identifier];
 }
@@ -1237,7 +1243,7 @@
 - (BOOL)tableView:(NSTableView *)tv writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard *)pboard
 {
 	NSUInteger	index = [rowIndexes firstIndex];
-	NSString	*identifier = [identifiers objectAtIndex:index];
+	NSString	*identifier = [_identifiers objectAtIndex:index];
 	
     [pboard declareTypes:[NSArray arrayWithObject:TCChatPBType] owner:self];
     [pboard setString:identifier forType:TCChatPBType];
@@ -1257,7 +1263,7 @@
 {
 	NSPasteboard	*pboard = [info draggingPasteboard];
     NSString		*identifier = [pboard stringForType:TCChatPBType];
-	NSUInteger		index = [identifiers indexOfObject:identifier];
+	NSUInteger		index = [_identifiers indexOfObject:identifier];
 	
 	if (index == NSNotFound)
 	{
@@ -1269,12 +1275,12 @@
 	{
 		// Exchanging items
 		
-		[identifiers insertObject:identifier atIndex:(NSUInteger)row];
+		[_identifiers insertObject:identifier atIndex:(NSUInteger)row];
 		
 		if (row <= index)
-			[identifiers removeObjectAtIndex:(index + 1)];
+			[_identifiers removeObjectAtIndex:(index + 1)];
 		else
-			[identifiers removeObjectAtIndex:index];
+			[_identifiers removeObjectAtIndex:index];
 		
 		[self _selectChatWithIdentifier:identifier];
 		[_userList mouseMoved:[NSApp currentEvent]];
@@ -1291,12 +1297,12 @@
 	NSData				*pdfContent;
 	NSImage				*result;
 	
-	if (row >= [identifiers count])
+	if (row >= [_identifiers count])
 		return [[NSImage alloc] initWithSize:NSMakeSize(1, 1)];
 	
 	// Get the chat view
-	identifier = [identifiers objectAtIndex:row];
-	content = [identifiers_content objectForKey:identifier];
+	identifier = [_identifiers objectAtIndex:row];
+	content = [_identifiers_content objectForKey:identifier];
 	view = [content objectForKey:TCChatViewKey];
 	
 	// Generate snapshot (use of initWithFocusedViewRect is a problem when the view is not showed)
@@ -1326,11 +1332,11 @@
 	NSString		*identifier;
 	NSDictionary	*content;
 	
-	if (row >= [identifiers count])
+	if (row >= [_identifiers count])
 		return;
 	
-	identifier = [identifiers objectAtIndex:row];
-	content = [identifiers_content objectForKey:identifier];
+	identifier = [_identifiers objectAtIndex:row];
+	content = [_identifiers_content objectForKey:identifier];
 	
 	// Drop the new window
 	[[TCChatController sharedController] popChatContent:content withIdentifier:identifier fromFrame:frame];
