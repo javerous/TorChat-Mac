@@ -75,7 +75,7 @@
 	dispatch_queue_t		_delegateQueue;
 	
 	// > Profile
-	TCImage					*_profileAvatar;
+	NSImage					*_profileAvatar;
 	NSString				*_profileName;
 	NSString				*_profileText;
 }
@@ -126,10 +126,7 @@
 
 		// Get profile avatar
 		_profileAvatar = [config profileAvatar];
-		
-		if (!_profileAvatar)
-			_profileAvatar = [[TCImage alloc] initWithWidth:64 andHeight:64];
-		
+
 		// Get profile name & text
 		_profileName = [config profileName];
 		_profileText = [config profileText];
@@ -418,7 +415,7 @@
 */
 #pragma mark - TCController - Profile
 
-- (void)setProfileAvatar:(TCImage *)avatar
+- (void)setProfileAvatar:(NSImage *)avatar
 {
 	if (!avatar)
 		return;

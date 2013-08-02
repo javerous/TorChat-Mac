@@ -170,8 +170,9 @@ static char gLocalQueueContext;
 	// > Profile
 	NSString					*_profileName;
 	NSString					*_profileText;
-	TCImage						*_profileAvatar;
-	
+	NSImage						*_profileAvatar;
+	TCImage						*_tcProfileAvatar;
+
 	// > Peer
 	NSString					*_peerClient;
 	NSString					*_peerVersion;
@@ -282,7 +283,7 @@ static char gLocalQueueContext;
 		// Init profiles
 		_profileName = @"";
 		_profileText = @"";
-		_profileAvatar = [[TCImage alloc] initWithWidth:64 andHeight:64];
+		_tcProfileAvatar = [[TCImage alloc] initWithWidth:64 andHeight:64];
 		
 		// Init remotes
 		_peerClient = @"";
@@ -787,15 +788,17 @@ static char gLocalQueueContext;
 	});
 }
 
-- (void)sendAvatar:(TCImage *)avatar
+- (void)sendAvatar:(NSImage *)avatar
 {
-	if (!avatar)
+	TCImage *tcAvatar = [[TCImage alloc] initWithImage:avatar];
+	
+	if (!tcAvatar)
 		return;
 	
 	dispatch_async(_localQueue, ^{
 		
 		if (_pongSent && _ponged && !_blocked)
-			[self _sendAvatar:avatar];
+			[self _sendAvatar:tcAvatar];
 	});
 }
 
@@ -897,7 +900,7 @@ static char gLocalQueueContext;
 */
 #pragma mark - Action
 
-- (void)startHandshake:(NSString *)remoteRandom status:(tccontroller_status)status avatar:(TCImage *)avatar name:(NSString *)name text:(NSString *)text
+- (void)startHandshake:(NSString *)remoteRandom status:(tccontroller_status)status avatar:(NSImage *)avatar name:(NSString *)name text:(NSString *)text
 {
 	if (!remoteRandom || !avatar || !name || !text)
 		return;
@@ -907,12 +910,14 @@ static char gLocalQueueContext;
 		if (_blocked)
 			return;
 		
+		TCImage *tcAvatar = [[TCImage alloc] initWithImage:avatar];
+		
 		[self _sendPong:remoteRandom];
 		[self _sendClient];
 		[self _sendVersion];
 		[self _sendProfileName:name];
 		[self _sendProfileText:text];
-		[self _sendAvatar:avatar];
+		[self _sendAvatar:tcAvatar];
 		[self _sendAddMe];
 		[self _sendStatus:status];
 		
@@ -995,12 +1000,12 @@ static char gLocalQueueContext;
 	return result;
 }
 
-- (TCImage *)profileAvatar
+- (NSImage *)profileAvatar
 {
-	__block TCImage * result = NULL;
+	__block NSImage * result = NULL;
 	
 	dispatch_sync(_localQueue, ^{
-		result = [_profileAvatar copy];
+		result = _profileAvatar;
 	});
 	
 	return result;
@@ -1249,8 +1254,10 @@ static char gLocalQueueContext;
 	
 	if (_blocked)
 		return;
-
-	[_profileAvatar setBitmap:bitmap];
+	
+	[_tcProfileAvatar setBitmap:bitmap];
+	
+	_profileAvatar = [_tcProfileAvatar imageRepresentation];
 	
 	// Notify it
 	[self _notify:tcbuddy_notify_profile_avatar info:@"core_bd_note_new_profile_avatar" context:_profileAvatar];
@@ -1263,7 +1270,7 @@ static char gLocalQueueContext;
 	if (_blocked)
 		return;
 
-	[_profileAvatar setBitmapAlpha:bitmap];
+	[_tcProfileAvatar setBitmapAlpha:bitmap];
 }
 
 - (void)parserParsedAddMe:(TCParser *)parser

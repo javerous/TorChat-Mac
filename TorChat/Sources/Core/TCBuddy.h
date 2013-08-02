@@ -34,7 +34,6 @@
 
 @class TCBuddy;
 @class TCSocket;
-@class TCImage;
 @class TCInfo;
 
 
@@ -180,14 +179,14 @@ typedef enum
 
 // -- Send Command --
 - (void)sendStatus:(tccontroller_status)status;
-- (void)sendAvatar:(TCImage *)avatar;
+- (void)sendAvatar:(NSImage *)avatar;
 - (void)sendProfileName:(NSString *)name;
 - (void)sendProfileText:(NSString *)text;
 - (void)sendMessage:(NSString *)message;
 - (void)sendFile:(NSString *)filepath;
 
 // -- Action --
-- (void)startHandshake:(NSString *)remoteRandom status:(tccontroller_status)status avatar:(TCImage *)avatar name:(NSString *)name text:(NSString *)text;
+- (void)startHandshake:(NSString *)remoteRandom status:(tccontroller_status)status avatar:(NSImage *)avatar name:(NSString *)name text:(NSString *)text;
 - (void)setInputConnection:(TCSocket *)sock;
 
 // -- Content --
@@ -195,7 +194,7 @@ typedef enum
 - (NSString *)peerVersion;
 
 - (NSString *)profileText;
-- (TCImage *)profileAvatar;
+- (NSImage *)profileAvatar;
 - (NSString *)profileName;		// Current profile name
 
 - (NSString *)lastProfileName;	// Last know profile name

@@ -24,8 +24,8 @@
 #import "TCCocoaConfig.h"
 
 #import "NSString+TCExtension.h"
-#import "TCImage.h"
 
+#import "TCImage.h"
 
 
 /*
@@ -395,30 +395,46 @@
 
 }
 
-- (TCImage *)profileAvatar
+- (NSImage *)profileAvatar
 {
-	NSDictionary	*avatar = [_fcontent objectForKey:TCCONF_KEY_PROFILE_AVATAR];
-	NSNumber		*width = [avatar objectForKey:@"width"];
-	NSNumber		*height = [avatar objectForKey:@"width"];
-	NSData			*bitmap = [avatar objectForKey:@"bitmap"];
-	NSData			*bitmapAlpha = [avatar objectForKey:@"bitmap_alpha"];
-	TCImage			*image;
+	id		avatar = [_fcontent objectForKey:TCCONF_KEY_PROFILE_AVATAR];
+	NSImage *image = nil;
 	
-	if ([width unsignedIntValue] == 0 || [height unsignedIntValue] == 0)
-		return NULL;
-	
-	// Build TorChat core image
-	image = [[TCImage alloc] initWithWidth:[width unsignedIntValue] andHeight:[height unsignedIntValue]];
-	
-	[image setBitmap:bitmap];
-	[image setBitmapAlpha:bitmapAlpha];
-	
+	if ([avatar isKindOfClass:[NSDictionary class]])
+	{
+		NSDictionary *describe = avatar;
+		
+		NSNumber		*width = [describe objectForKey:@"width"];
+		NSNumber		*height = [describe objectForKey:@"width"];
+		NSData			*bitmap = [describe objectForKey:@"bitmap"];
+		NSData			*bitmapAlpha = [describe objectForKey:@"bitmap_alpha"];
+		
+		if ([width unsignedIntValue] == 0 || [height unsignedIntValue] == 0)
+			return NULL;
+		
+		// Build TorChat core image
+		TCImage *tcImage = [[TCImage alloc] initWithWidth:[width unsignedIntValue] andHeight:[height unsignedIntValue]];
+		
+		[tcImage setBitmap:bitmap];
+		[tcImage setBitmapAlpha:bitmapAlpha];
+		
+		image = [tcImage imageRepresentation];
+		
+		if (image)
+			[self setProfileAvatar:image]; // Replace by the new format.
+	}
+	if ([avatar isKindOfClass:[NSData class]])
+	{
+		image = [[NSImage alloc] initWithData:avatar];
+	}
+
 	return image;
 }
 
-- (void)setProfileAvatar:(TCImage *)picture
+- (void)setProfileAvatar:(NSImage *)picture
 {
-	if ([picture width] == 0 || [picture height] == 0 || [picture bitmap] == nil)
+	// Remove avatar.
+	if (!picture)
 	{
 		[_fcontent removeObjectForKey:TCCONF_KEY_PROFILE_AVATAR];
 		
@@ -428,18 +444,19 @@
 		return;
 	}
 	
-	NSMutableDictionary *avatar = [[NSMutableDictionary alloc] initWithCapacity:4];
+	// Create PNG representation.
+	NSData *tiffData = [picture TIFFRepresentation];
+	NSData *pngData;
 	
-	[avatar setObject:@([picture width]) forKey:@"width"];
-	[avatar setObject:@([picture height]) forKey:@"height"];
+	if (!tiffData)
+		return;
 	
-	if ([picture bitmap])
-		[avatar setObject:[picture bitmap] forKey:@"bitmap"];
+	pngData = [[[NSBitmapImageRep alloc] initWithData:tiffData] representationUsingType:NSPNGFileType properties:nil];
 	
-	if ([picture bitmapAlpha])
-		[avatar setObject:[picture bitmapAlpha] forKey:@"bitmap_alpha"];
-	
-	[_fcontent setObject:avatar forKey:TCCONF_KEY_PROFILE_AVATAR];
+	if(!pngData)
+		return;
+
+	[_fcontent setObject:pngData forKey:TCCONF_KEY_PROFILE_AVATAR];
 	
 	// Save
 	[self saveConfig];
