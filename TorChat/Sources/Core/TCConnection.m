@@ -22,6 +22,8 @@
 
 #import "TCConnection.h"
 
+#import "TCCoreManager.h"
+
 #import "TCParser.h"
 #import "TCSocket.h"
 #import "TCInfo.h"
@@ -58,11 +60,11 @@
 }
 
 // -- Helpers --
-- (void)error:(tcctrl_info)code info:(NSString *)info fatal:(BOOL)fatal;
-- (void)error:(tcctrl_info)code info:(NSString *)info contextObj:(id)ctx fatal:(BOOL)fatal;
-- (void)error:(tcctrl_info)code info:(NSString *)info contextInfo:(TCInfo *)serr fatal:(BOOL)fatal;
+- (void)error:(tccore_info)code info:(NSString *)info fatal:(BOOL)fatal;
+- (void)error:(tccore_info)code info:(NSString *)info contextObj:(id)ctx fatal:(BOOL)fatal;
+- (void)error:(tccore_info)code info:(NSString *)info contextInfo:(TCInfo *)serr fatal:(BOOL)fatal;
 
-- (void)notify:(tcctrl_info)notice info:(NSString *)info;
+- (void)notify:(tccore_info)notice info:(NSString *)info;
 
 @end
 
@@ -139,7 +141,7 @@
 			[_sock scheduleOperation:tcsocket_op_line withSize:1 andTag:0];
 			
 			// Notify
-			[self notify:tcctrl_notify_client_started info:@"core_cctrl_note_started"];
+			[self notify:tccore_notify_client_started info:@"core_cctrl_note_started"];
 		}
 	});
 }
@@ -189,7 +191,7 @@
 			fprintf(stderr, "(1) Will disconnect incoming connection from fake '%s'\n", [address UTF8String]);
 			
 			// Notify
-			[self error:tcctrl_error_client_cmd_ping info:@"core_cctrl_err_fake_ping" fatal:YES];
+			[self error:tccore_error_client_cmd_ping info:@"core_cctrl_err_fake_ping" fatal:YES];
 			
 			return;
 		}
@@ -228,85 +230,85 @@
 
 - (void)parser:(TCParser *)parser errorWithCode:(tcrec_error)error andInformation:(NSString *)information
 {
-	tcctrl_info nerr = tcctrl_error_client_unknown_command;
+	tccore_info nerr = tccore_error_client_unknown_command;
 	
 	// Convert parser error to controller errors
 	switch (error)
 	{
 		case tcrec_unknown_command:
-			nerr = tcctrl_error_client_unknown_command;
+			nerr = tccore_error_client_unknown_command;
 			break;
 			
 		case tcrec_cmd_ping:
-			nerr = tcctrl_error_client_cmd_ping;
+			nerr = tccore_error_client_cmd_ping;
 			break;
 			
 		case tcrec_cmd_pong:
-			nerr = tcctrl_error_client_cmd_pong;
+			nerr = tccore_error_client_cmd_pong;
 			break;
 			
 		case tcrec_cmd_status:
-			nerr = tcctrl_error_client_cmd_status;
+			nerr = tccore_error_client_cmd_status;
 			break;
 			
 		case tcrec_cmd_version:
-			nerr = tcctrl_error_client_cmd_version;
+			nerr = tccore_error_client_cmd_version;
 			break;
 			
 		case tcrec_cmd_client:
-			nerr = tcctrl_error_client_cmd_client;
+			nerr = tccore_error_client_cmd_client;
 			break;
 			
 		case tcrec_cmd_profile_text:
-			nerr = tcctrl_error_client_cmd_profile_text;
+			nerr = tccore_error_client_cmd_profile_text;
 			break;
 			
 		case tcrec_cmd_profile_name:
-			nerr = tcctrl_error_client_cmd_profile_name;
+			nerr = tccore_error_client_cmd_profile_name;
 			break;
 			
 		case tcrec_cmd_profile_avatar:
-			nerr = tcctrl_error_client_cmd_profile_avatar;
+			nerr = tccore_error_client_cmd_profile_avatar;
 			break;
 			
 		case tcrec_cmd_profile_avatar_alpha:
-			nerr = tcctrl_error_client_cmd_profile_avatar_alpha;
+			nerr = tccore_error_client_cmd_profile_avatar_alpha;
 			break;
 			
 		case tcrec_cmd_message:
-			nerr = tcctrl_error_client_cmd_message;
+			nerr = tccore_error_client_cmd_message;
 			break;
 			
 		case tcrec_cmd_addme:
-			nerr = tcctrl_error_client_cmd_addme;
+			nerr = tccore_error_client_cmd_addme;
 			break;
 			
 		case tcrec_cmd_removeme:
-			nerr = tcctrl_error_client_cmd_removeme;
+			nerr = tccore_error_client_cmd_removeme;
 			break;
 			
 		case tcrec_cmd_filename:
-			nerr = tcctrl_error_client_cmd_filename;
+			nerr = tccore_error_client_cmd_filename;
 			break;
 			
 		case tcrec_cmd_filedata:
-			nerr = tcctrl_error_client_cmd_filedata;
+			nerr = tccore_error_client_cmd_filedata;
 			break;
 			
 		case tcrec_cmd_filedataok:
-			nerr = tcctrl_error_client_cmd_filedataok;
+			nerr = tccore_error_client_cmd_filedataok;
 			break;
 			
 		case tcrec_cmd_filedataerror:
-			nerr = tcctrl_error_client_cmd_filedataerror;
+			nerr = tccore_error_client_cmd_filedataerror;
 			break;
 			
 		case tcrec_cmd_filestopsending:
-			nerr = tcctrl_error_client_cmd_filestopsending;
+			nerr = tccore_error_client_cmd_filestopsending;
 			break;
 			
 		case tcrec_cmd_filestopreceiving:
-			nerr = tcctrl_error_client_cmd_filestopreceiving;
+			nerr = tccore_error_client_cmd_filestopreceiving;
 			break;
 	}
 	
@@ -339,7 +341,7 @@
 - (void)socket:(TCSocket *)socket error:(TCInfo *)error
 {
 	// Fallback Error
-	[self error:tcctrl_error_socket info:@"core_cctrl_err_socket" contextInfo:error fatal:YES];
+	[self error:tccore_error_socket info:@"core_cctrl_err_socket" contextInfo:error fatal:YES];
 }
 
 
@@ -349,7 +351,7 @@
 */
 #pragma mark - TCConnection - Helpers
 
-- (void)error:(tcctrl_info)code info:(NSString *)info fatal:(BOOL)fatal
+- (void)error:(tccore_info)code info:(NSString *)info fatal:(BOOL)fatal
 {
 	id <TCConnectionDelegate> delegate = _delegate;
 	
@@ -360,7 +362,7 @@
 		[self stop];
 }
 
-- (void)error:(tcctrl_info)code info:(NSString *)info contextObj:(id)ctx fatal:(BOOL)fatal
+- (void)error:(tccore_info)code info:(NSString *)info contextObj:(id)ctx fatal:(BOOL)fatal
 {
 	id <TCConnectionDelegate> delegate = _delegate;
 	
@@ -371,7 +373,7 @@
 		[self stop];
 }
 
-- (void)error:(tcctrl_info)code info:(NSString *)info contextInfo:(TCInfo *)serr fatal:(BOOL)fatal
+- (void)error:(tccore_info)code info:(NSString *)info contextInfo:(TCInfo *)serr fatal:(BOOL)fatal
 {
 	id <TCConnectionDelegate> delegate = _delegate;
 
@@ -382,7 +384,7 @@
 		[self stop];
 }
 
-- (void)notify:(tcctrl_info)notice info:(NSString *)info
+- (void)notify:(tccore_info)notice info:(NSString *)info
 {
 	id <TCConnectionDelegate> delegate = _delegate;
 

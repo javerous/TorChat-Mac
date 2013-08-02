@@ -32,7 +32,7 @@
 */
 #pragma mark - Forward
 
-@class TCController;
+@class TCCoreManager;
 @class TCDropButton;
 @class TCBuddy;
 
