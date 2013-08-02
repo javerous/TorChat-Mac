@@ -26,7 +26,7 @@
 
 #import "TCTorManager.h"
 
-#import "TCCocoaConfig.h"
+#import "TCConfigPlist.h"
 #import "TCLogsManager.h"
 
 #import "TCBuffer.h"
@@ -174,7 +174,7 @@ void catch_signal(int sig);
 
 - (void)startWithConfiguration:(id <TCConfig>)configuration
 {
-	//return;
+	return;
 	if (!configuration)
 		return;
 

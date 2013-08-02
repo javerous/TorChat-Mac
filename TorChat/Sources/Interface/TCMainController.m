@@ -24,7 +24,7 @@
 
 #import "TCMainController.h"
 
-#import "TCCocoaConfig.h"
+#import "TCConfigPlist.h"
 #import "TCLogsManager.h"
 #import "TCBuddiesController.h"
 
@@ -103,7 +103,7 @@
 {
 	static BOOL		running = NO;
 
-	TCCocoaConfig	*conf = nil;
+	TCConfigPlist	*conf = nil;
 
 	// Can't have more than one instance of this controller
 	if (running)
@@ -126,7 +126,7 @@
 			// Load
 			try
 			{
-				conf = new TCCocoaConfig((id <TCConfigProxy>)proxy);
+				conf = new TCConfigPlist((id <TCConfigProxy>)proxy);
 			}
 			catch (const char *err)
 			{
@@ -176,7 +176,7 @@
 		// > Try to open the file
 		if (path)
 		{
-			conf = [[TCCocoaConfig alloc] initWithFile:path];
+			conf = [[TCConfigPlist alloc] initWithFile:path];
 			
 			if (!conf)
 			{
@@ -192,7 +192,7 @@
 		NSArray *panels = @[ [TCPanel_Welcome class], [TCPanel_Mode class], [TCPanel_Advanced class], [TCPanel_Basic class] ];
 		
 		_assistant = [TCAssistantController startAssistantWithPanels:panels andCallback:^(id context) {
-			TCCocoaConfig *config = (TCCocoaConfig *)context;
+			TCConfigPlist *config = (TCConfigPlist *)context;
 			
 			// Hold the config
 			_configuration = config;
