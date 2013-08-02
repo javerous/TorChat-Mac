@@ -36,14 +36,6 @@
 #define TCConfigBuddyLastName	@"lname"
 
 
-/*
-** Forward
-*/
-#pragma mark - Forward
-
-@class TCImage;
-
-
 
 /*
 ** Types
@@ -112,8 +104,8 @@ typedef enum
 - (NSString *)profileText;
 - (void)setProfileText:(NSString *)text;
 
-- (TCImage *)profileAvatar;
-- (void)setProfileAvatar:(TCImage *)picture;
+- (NSImage *)profileAvatar;
+- (void)setProfileAvatar:(NSImage *)picture;
 
 // -- Buddies --
 - (NSArray *)buddies; // Array of dictionary.
