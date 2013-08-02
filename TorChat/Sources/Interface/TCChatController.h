@@ -44,7 +44,7 @@
 
 @protocol TCChatControllerDelegate <NSObject>
 
-- (void)chatSendMessage:(NSString *)message forIdentifier:(NSString *)identifier;
+- (void)chatSendMessage:(NSString *)message identifier:(NSString *)identifier context:(id)context;
 
 @end
 
@@ -61,7 +61,7 @@
 + (TCChatController *)sharedController;
 
 // -- Chat --
-- (void)startChatWithIdentifier:(NSString *)identifier name:(NSString *)name localAvatar:(NSImage *)lavatar remoteAvatar:(NSImage *)ravatar delegate:(id <TCChatControllerDelegate>)delegate;
+- (void)startChatWithIdentifier:(NSString *)identifier name:(NSString *)name localAvatar:(NSImage *)lavatar remoteAvatar:(NSImage *)ravatar context:(id)context delegate:(id <TCChatControllerDelegate>)delegate;
 - (void)selectChatWithIdentifier:(NSString *)identifier;
 - (void)stopChatWithIdentifier:(NSString *)identifier;
 
