@@ -411,9 +411,9 @@
 
 
 /*
-** TCBuddiesController - TControllerDelegate
+** TCBuddiesController - TCControllerDelegate
 */
-#pragma mark - TCBuddiesController - TControllerDelegate
+#pragma mark - TCBuddiesController - TCControllerDelegate
 
 - (void)torchatController:(TCController *)controller information:(TCInfo *)info
 {
@@ -497,6 +497,8 @@
 		{
 			TCBuddy *buddy = (TCBuddy *)info.context;
 			
+			buddy.delegate = self;
+			
 			dispatch_async(dispatch_get_main_queue(), ^{
 				
 				[_buddies addObject:buddy];
@@ -518,38 +520,6 @@
 		case tcctrl_notify_client_stoped:
 			break;
 	}
-}
-
-
-
-/*
-** TCBuddiesController - TCDropButtonDelegate
-*/
-#pragma mark - TCBuddiesController - TCDropButtonDelegate
-
-- (void)dropButton:(TCDropButton *)button doppedImage:(NSImage *)avatar
-{
-	if (!avatar)
-		return;
-	
-	[_control setProfileAvatar:avatar];
-}
-
-
-
-/*
-** TCBuddiesController - TCDropButtonDelegate
-*/
-#pragma mark - TCBuddiesController - TCDropButtonDelegate
-
-- (void)chatSendMessage:(NSString *)message identifier:(NSString *)identifier context:(id)context
-{
-	TCBuddy *buddy = context;
-	
-	if (!buddy || !message)
-		return;
-	
-	[buddy sendMessage:message];
 }
 
 
@@ -579,7 +549,7 @@
 			{
 				// Rebuid buddy list.
 				[self buddyStatusChanged];
-
+				
 				// Notify.
 				dispatch_async(_noticeQueue, ^{
 					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedStatusNotification object:aBuddy userInfo:@{ @"status" : @(tcbuddy_status_offline) }];
@@ -595,7 +565,7 @@
 			{
 				tcbuddy_status  status = (tcbuddy_status)[(NSNumber *)info.context intValue];
 				NSString		*statusStr = @"";
-												
+				
 				// Send status to chat window.
 				switch (status)
 				{
@@ -632,12 +602,12 @@
 				
 				if (!avatar)
 					return;
-
+				
 				// Reload table.
 				dispatch_async(dispatch_get_main_queue(), ^{
 					[_tableView reloadData];
 				});
-
+				
 				// Set the new avatar to the chat window.
 				[[TCChatController sharedController] setRemoteAvatar:avatar forIdentifier:[aBuddy address]];
 				
@@ -729,7 +699,7 @@
 				dispatch_async(dispatch_get_main_queue(), ^{
 					[_tableView reloadData];
 				});
-
+				
 				// Notify.
 				dispatch_async(_noticeQueue, ^{
 					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedBlockedNotification object:aBuddy userInfo:@{ @"blocked" : blocked }];
@@ -935,6 +905,39 @@
 				break;
 		}
 	});
+}
+
+
+
+/*
+** TCBuddiesController - TCDropButtonDelegate
+*/
+#pragma mark - TCBuddiesController - TCDropButtonDelegate
+
+- (void)dropButton:(TCDropButton *)button doppedImage:(NSImage *)avatar
+{
+	if (!avatar)
+		return;
+	
+	[_control setProfileAvatar:avatar];
+}
+
+
+
+/*
+** TCBuddiesController - TCDropButtonDelegate
+*/
+#pragma mark - TCBuddiesController - TCDropButtonDelegate
+
+- (void)chatSendMessage:(NSString *)message identifier:(NSString *)identifier context:(id)context
+{
+	NSLog(@"Message:%@ COntext:%@", message, context);
+	TCBuddy *buddy = context;
+	
+	if (!buddy || !message)
+		return;
+	
+	[buddy sendMessage:message];
 }
 
 
