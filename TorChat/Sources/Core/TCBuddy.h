@@ -191,10 +191,13 @@ typedef enum
 - (void)setInputConnection:(TCSocket *)sock;
 
 // -- Content --
+- (NSString *)peerClient;
+- (NSString *)peerVersion;
+
 - (NSString *)profileText;
 - (TCImage *)profileAvatar;
-
 - (NSString *)profileName;		// Current profile name
+
 - (NSString *)lastProfileName;	// Last know profile name
 - (NSString *)finalName;		// Best name representation (alias / profile name / last know profile name)
 

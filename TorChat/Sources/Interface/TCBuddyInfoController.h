@@ -31,7 +31,7 @@
 */
 #pragma mark - Forward
 
-@class TCCocoaBuddy;
+@class TCBuddy;
 @class TCDragImageView;
 
 
@@ -63,8 +63,8 @@
 
 // -- Tools --
 + (void)showInfo;
-+ (void)showInfoOnBuddy:(TCCocoaBuddy *)buddy;
++ (void)showInfoOnBuddy:(TCBuddy *)buddy;
 
-+ (void)removingBuddy:(TCCocoaBuddy *)buddy;
++ (void)removingBuddy:(TCBuddy *)buddy;
 
 @end

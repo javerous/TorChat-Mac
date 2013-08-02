@@ -105,7 +105,7 @@ typedef enum
 // -- Delegate --
 @protocol TCControllerDelegate <NSObject>
 
-- (void)torchatController:(TCController *)controller information:(const TCInfo *)info;
+- (void)torchatController:(TCController *)controller information:(TCInfo *)info;
 
 @end
 
