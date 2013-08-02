@@ -24,7 +24,7 @@
 #import <Foundation/Foundation.h>
 
 #import "TCConfig.h"
-#import "TCController.h"
+#import "TCConstants.h"
 
 
 /*
@@ -42,16 +42,6 @@
 ** Types
 */
 #pragma mark - Types
-
-// == Status ==
-typedef enum
-{
-	tcbuddy_status_offline,
-	tcbuddy_status_available,
-	tcbuddy_status_away,
-	tcbuddy_status_xa,
-	
-} tcbuddy_status;
 
 // == Info Codes ==
 typedef enum
@@ -166,7 +156,7 @@ typedef enum
 - (BOOL)blocked;
 - (void)setBlocked:(BOOL)blocked;
 
-- (tcbuddy_status)status;
+- (tcstatus)status;
 
 - (NSString *)address;
 - (NSString *)random;
@@ -178,7 +168,7 @@ typedef enum
 - (void)fileCancelOfUUID:(NSString *)uuid way:(tcbuddy_file_way)way;
 
 // -- Send Command --
-- (void)sendStatus:(tccontroller_status)status;
+- (void)sendStatus:(tcstatus)status;
 - (void)sendAvatar:(NSImage *)avatar;
 - (void)sendProfileName:(NSString *)name;
 - (void)sendProfileText:(NSString *)text;
@@ -186,7 +176,7 @@ typedef enum
 - (void)sendFile:(NSString *)filepath;
 
 // -- Action --
-- (void)startHandshake:(NSString *)remoteRandom status:(tccontroller_status)status avatar:(NSImage *)avatar name:(NSString *)name text:(NSString *)text;
+- (void)startHandshake:(NSString *)remoteRandom status:(tcstatus)status avatar:(NSImage *)avatar name:(NSString *)name text:(NSString *)text;
 - (void)setInputConnection:(TCSocket *)sock;
 
 // -- Content --

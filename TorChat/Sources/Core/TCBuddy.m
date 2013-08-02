@@ -151,8 +151,8 @@ static char gLocalQueueContext;
 	NSString					*_notes;
 	NSString					*_random;
 	
-	tcbuddy_status				_status;
-	tccontroller_status			_cstatus;
+	tcstatus				_status;
+	tcstatus			_cstatus;
 	
 	// > Dispatch
 	dispatch_queue_t			_localQueue;
@@ -192,7 +192,7 @@ static char gLocalQueueContext;
 - (void)_sendAvatar:(TCImage *)avatar;
 - (void)_sendAddMe;
 - (void)_sendRemoveMe;
-- (void)_sendStatus:(tccontroller_status)status;
+- (void)_sendStatus:(tcstatus)status;
 - (void)_sendMessage:(NSString *)message;
 - (void)_sendFileName:(TCFileSend *)file;
 - (void)_sendFileData:(TCFileSend *)file;
@@ -278,7 +278,7 @@ static char gLocalQueueContext;
 		
 		// Init status
 		_socksstate = socks_nostate;
-		_status = tcbuddy_status_offline;
+		_status = tcstatus_offline;
 		
 		// Init profiles
 		_profileName = @"";
@@ -413,7 +413,7 @@ static char gLocalQueueContext;
 		
 		if (_running)
 		{
-			tcbuddy_status lstatus;
+			tcstatus lstatus;
 			
 			// Realease out socket
 			if (_outSocket)
@@ -437,7 +437,7 @@ static char gLocalQueueContext;
 			
 			// Reset status
 			lstatus = _status;
-			_status = tcbuddy_status_offline;
+			_status = tcstatus_offline;
 			
 			_socksstate = socks_nostate;
 			_ponged = false;
@@ -445,7 +445,7 @@ static char gLocalQueueContext;
 			_running = false;
 			
 			// Notify
-			if (lstatus != tcbuddy_status_offline)
+			if (lstatus != tcstatus_offline)
 				[self _notify:tcbuddy_notify_status info:@"core_bd_note_status_changed" context:[self _status]];
 			
 			[self _notify:tcbuddy_notify_disconnected info:@"core_bd_note_stoped"];
@@ -588,16 +588,16 @@ static char gLocalQueueContext;
 	});
 }
 
-- (tcbuddy_status)status
+- (tcstatus)status
 {
-	__block tcbuddy_status res = tcbuddy_status_offline;
+	__block tcstatus res = tcstatus_offline;
 	
 	dispatch_sync(_localQueue, ^{
 		
 		if (_pongSent && _ponged)
 			res = _status;
 		else
-			res = tcbuddy_status_offline;
+			res = tcstatus_offline;
 	});
 	
 	return res;
@@ -778,7 +778,7 @@ static char gLocalQueueContext;
 */
 #pragma mark - Send Command
 
-- (void)sendStatus:(tccontroller_status)status
+- (void)sendStatus:(tcstatus)status
 {
 	dispatch_async(_localQueue, ^{
 		
@@ -900,7 +900,7 @@ static char gLocalQueueContext;
 */
 #pragma mark - Action
 
-- (void)startHandshake:(NSString *)remoteRandom status:(tccontroller_status)status avatar:(NSImage *)avatar name:(NSString *)name text:(NSString *)text
+- (void)startHandshake:(NSString *)remoteRandom status:(tcstatus)status avatar:(NSImage *)avatar name:(NSString *)name text:(NSString *)text
 {
 	if (!remoteRandom || !avatar || !name || !text)
 		return;
@@ -1163,14 +1163,14 @@ static char gLocalQueueContext;
 	if (_blocked)
 		return;
 	
-	tcbuddy_status nstatus = tcbuddy_status_offline;
+	tcstatus nstatus = tcstatus_offline;
 	
 	if ([status isEqualToString:@"available"])
-		nstatus = tcbuddy_status_available;
+		nstatus = tcstatus_available;
 	else if ([status isEqualToString:@"away"])
-		nstatus = tcbuddy_status_away;
+		nstatus = tcstatus_away;
 	else if ([status isEqualToString:@"xa"])
-		nstatus = tcbuddy_status_xa;
+		nstatus = tcstatus_xa;
 	
 	if (nstatus != _status)
 	{
@@ -1625,7 +1625,7 @@ static char gLocalQueueContext;
 	// not-implemented
 }
 
-- (void)_sendStatus:(tccontroller_status)status
+- (void)_sendStatus:(tcstatus)status
 {
 	// > localQueue <
 	
@@ -1633,15 +1633,18 @@ static char gLocalQueueContext;
 	
 	switch (status)
 	{
-		case tccontroller_available:
+		case tcstatus_offline:
+			return;
+			
+		case tcstatus_available:
 			[self _sendCommand:@"status" string:@"available" channel:tcbuddy_channel_out];
 			break;
 			
-		case tccontroller_away:
+		case tcstatus_away:
 			[self _sendCommand:@"status" string:@"away" channel:tcbuddy_channel_out];
 			break;
 			
-		case tccontroller_xa:
+		case tcstatus_xa:
 			[self _sendCommand:@"status" string:@"xa" channel:tcbuddy_channel_out];
 			break;
 	}
@@ -2063,12 +2066,12 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	tcbuddy_status res;
+	tcstatus res;
 	
 	if (_pongSent && _ponged)
 		res = _status;
 	else
-		res = tcbuddy_status_offline;
+		res = tcstatus_offline;
 	
 	return @(res);
 }
