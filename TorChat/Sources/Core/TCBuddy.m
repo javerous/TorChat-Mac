@@ -902,7 +902,7 @@ static char gLocalQueueContext;
 
 - (void)startHandshake:(NSString *)remoteRandom status:(tcstatus)status avatar:(NSImage *)avatar name:(NSString *)name text:(NSString *)text
 {
-	if (!remoteRandom || !avatar || !name || !text)
+	if (!remoteRandom || !name || !text)
 		return;
 	
 	dispatch_async(_localQueue, ^{

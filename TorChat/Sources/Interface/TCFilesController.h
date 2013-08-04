@@ -27,6 +27,13 @@
 #import "TCFilesCommon.h"
 
 
+/*
+** Defines
+*/
+#pragma mark - Defines
+
+
+
 
 /*
 ** TCFilesController
@@ -45,7 +52,6 @@
 + (TCFilesController *)sharedController;
 
 // -- Interface --
-- (IBAction)doClear:(id)sender;
 - (IBAction)showWindow:(id)sender;
 
 // -- Actions --

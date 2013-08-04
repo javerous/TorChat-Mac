@@ -24,6 +24,8 @@
 
 #import "TCFilesController.h"
 
+#import "TCFileCellView.h"
+
 
 
 /*
@@ -36,6 +38,15 @@
 	NSMutableArray *_files;
 }
 
+// -- IBAction --
+- (IBAction)doShowTransfer:(id)sender;
+- (IBAction)doCancelTransfer:(id)sender;
+- (IBAction)doOpenTransfer:(id)sender;
+
+- (IBAction)doClear:(id)sender;
+
+
+// -- Helpers --
 - (void)_updateCount;
 
 @end
@@ -73,42 +84,72 @@
 	
     if (self)
 	{
-		// Alloc files array
+		// Alloc files array.
 		_files =  [[NSMutableArray alloc] init];
 		
-		// Register notification
-		NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-		
-		[center addObserver:self selector:@selector(fileReveal:) name:TCFileCellRevealNotify object:nil];
-		[center addObserver:self selector:@selector(fileOpen:) name:TCFileCellOpenNotify object:nil];
-
-		// Load the nib
+		// Load the nib.
 		[[NSBundle mainBundle] loadNibNamed:@"FilesWindow" owner:self topLevelObjects:nil];
+		
+		// Update window.
+		[_mainWindow center];
+		[_mainWindow setFrameAutosaveName:@"FilesWindow"];
+		
+		[self _updateCount];
     }
     
     return self;
 }
 
-- (void)awakeFromNib
-{
-	[_mainWindow center];
-	[_mainWindow setFrameAutosaveName:@"FilesWindow"];
-
-	[self _updateCount];
-}
-
 
 
 /*
-** TCFilesController - Interface
+** TCFilesController - IBAction
 */
-#pragma mark - TCFilesController - Interface
+#pragma mark - TCFilesController - IBAction
+
+- (IBAction)doShowTransfer:(id)sender
+{
+	NSInteger row = [_filesView rowForView:sender];
+	
+	if (row < 0 || row >= [_files count])
+		return;
+	
+	NSDictionary	*file = _files[(NSUInteger)row];
+	NSString		*path = file[TCFileFilePathKey];
+		
+	[[NSWorkspace sharedWorkspace] selectFile:path inFileViewerRootedAtPath:nil];
+}
+
+- (IBAction)doCancelTransfer:(id)sender
+{
+	NSInteger row = [_filesView rowForView:sender];
+	
+	if (row < 0 || row >= [_files count])
+		return;
+	
+	NSDictionary *file = _files[(NSUInteger)row];
+	NSDictionary *dict = @{ @"uuid" : file[TCFileUUIDKey], @"address" : file[TCFileBuddyAddressKey], @"way" : file[TCFileWayKey] };
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:TCFileCancelNotification object:nil userInfo:dict];
+}
+
+- (IBAction)doOpenTransfer:(id)sender
+{
+	NSInteger row = [_filesView rowForView:sender];
+	
+	if (row < 0 || row >= [_files count])
+		return;
+	
+	NSDictionary	*file = _files[(NSUInteger)row];
+	NSString		*path = file[TCFileFilePathKey];
+			
+	[[NSWorkspace sharedWorkspace] openFile:path];
+}
 
 - (IBAction)doClear:(id)sender
 {
-	NSNotificationCenter	*center = [NSNotificationCenter defaultCenter];
-	NSMutableIndexSet		*indSet = [NSMutableIndexSet indexSet];
-	NSUInteger				i, cnt = [_files count];
+	NSMutableIndexSet	*indSet = [NSMutableIndexSet indexSet];
+	NSUInteger			i, cnt = [_files count];
 	
 	for (i = 0; i < cnt; i++)
 	{
@@ -116,15 +157,7 @@
 		tcfile_status	status = (tcfile_status)[[file objectForKey:TCFileStatusKey] intValue];
 
 		if (status != tcfile_status_running)
-		{
-			NSString		*uuid = [file objectForKey:TCFileUUIDKey];
-			NSNumber		*way = [file objectForKey:TCFileWayKey];
-			NSDictionary	*info = [[NSDictionary alloc] initWithObjectsAndKeys:uuid, @"uuid", way, @"way", nil];
-
-			[center postNotificationName:TCFileRemovingNotify object:self userInfo:info];
-			
 			[indSet addIndex:i];
-		}
 	}
 	
 	[_files removeObjectsAtIndexes:indSet];
@@ -240,7 +273,7 @@
 			
 			if (away == way && [auuid isEqualToString:uuid])
 			{
-				[file setObject:[NSNumber numberWithUnsignedLongLong:size] forKey:TCFileCompletedKey];
+				[file setObject:@(size) forKey:TCFileCompletedKey];
 				
 				[_filesView reloadData];
 				[self _updateCount];
@@ -262,6 +295,24 @@
 	return (NSInteger)[_files count];
 }
 
+- (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)rowIndex
+{
+	TCFileCellView	*cellView = nil;
+	NSDictionary	*file = [_files objectAtIndex:(NSUInteger)rowIndex];
+	tcfile_status	status = (tcfile_status)[[file objectForKey:TCFileStatusKey] intValue];
+
+	if (status == tcfile_status_finish || status == tcfile_status_cancel || status == tcfile_status_stoped || status == tcfile_status_error)
+		cellView = [tableView makeViewWithIdentifier:@"transfers_end" owner:self];
+	else
+		cellView = [tableView makeViewWithIdentifier:@"transfers_progress" owner:self];
+
+	[cellView setContent:file];
+	
+	return cellView;
+}
+
+	
+/*
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
 	if (rowIndex < 0 || rowIndex >= [_files count])
@@ -311,55 +362,7 @@
 	
 	return YES;
 }
-
-
-
-/*
-** TCFilesController - Cell Notification
-*/
-#pragma mark - TCFilesController - Cell Notification
-
-- (void)fileReveal:(NSNotification *)notice
-{
-	NSDictionary	*info = [notice userInfo];
-	NSString		*uuid = [info objectForKey:@"uuid"];
-	tcfile_way		way = (tcfile_way)[[info objectForKey:@"way"] intValue];
-	
-	for (NSMutableDictionary *file in _files)
-	{
-		NSString	*auuid = [file objectForKey:TCFileUUIDKey];
-		tcfile_way	away = (tcfile_way)[[file objectForKey:TCFileWayKey] intValue];
-		
-		if (away == way && [auuid isEqualToString:uuid])
-		{
-			NSString *path = [file objectForKey:TCFileFilePathKey];
-			
-			[[NSWorkspace sharedWorkspace] selectFile:path inFileViewerRootedAtPath:nil];			
-			break;
-		}
-	}
-}
-
-- (void)fileOpen:(NSNotification *)notice
-{
-	NSDictionary	*info = [notice userInfo];
-	NSString		*uuid = [info objectForKey:@"uuid"];
-	tcfile_way		way = (tcfile_way)[[info objectForKey:@"way"] intValue];
-		
-	for (NSMutableDictionary *file in _files)
-	{
-		NSString	*auuid = [file objectForKey:TCFileUUIDKey];
-		tcfile_way	away = (tcfile_way)[[file objectForKey:TCFileWayKey] intValue];
-		
-		if (away == way && [auuid isEqualToString:uuid])
-		{
-			NSString *path = [file objectForKey:TCFileFilePathKey];
-			
-			[[NSWorkspace sharedWorkspace] openFile:path];
-			break;
-		}
-	}
-}
+ */
 
 
 

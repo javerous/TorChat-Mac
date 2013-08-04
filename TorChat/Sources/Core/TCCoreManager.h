@@ -98,7 +98,7 @@ typedef enum
 // -- Delegate --
 @protocol TCCoreManagerDelegate <NSObject>
 
-- (void)torchatController:(TCCoreManager *)controller information:(TCInfo *)info;
+- (void)torchatManager:(TCCoreManager *)manager information:(TCInfo *)info;
 
 @end
 
@@ -129,7 +129,6 @@ typedef enum
 // -- Profile --
 - (void)setProfileAvatar:(NSImage *)avatar;
 - (NSImage *)profileAvatar;
-
 
 - (void)setProfileName:(NSString *)name;
 - (NSString *)profileName;

@@ -254,7 +254,13 @@ static dispatch_queue_t	gQueue;
 	if ([name length] == 0)
 		name = [buddy lastProfileName];
 	
-	[ctrl->_avatarView setImage:[buddy profileAvatar]];
+	NSImage *image = [buddy profileAvatar];
+	
+	if (!image)
+		image = [NSImage imageNamed:NSImageNameUser];
+	
+	
+	[ctrl->_avatarView setImage:image];
 	[ctrl->_addressField setStringValue:ctrl.address];
 	[ctrl->_aliasField setStringValue:[buddy alias]];
 	[[ctrl->_aliasField cell] setPlaceholderString:name];

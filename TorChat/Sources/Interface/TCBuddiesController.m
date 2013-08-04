@@ -118,7 +118,7 @@
 		_buddies = [[NSMutableArray alloc] init];
 		
 		// Observe file events
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(fileCancel:) name:TCFileCellCancelNotify object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(fileCancel:) name:TCFileCancelNotification object:nil];
 		
 		// Load interface bundle
 		[[NSBundle mainBundle] loadNibNamed:@"BuddiesWindow" owner:self topLevelObjects:nil];
@@ -325,7 +325,12 @@
 	}
 	else if ([identifier isEqualToString:@"avatar"])
 	{
-		return [buddy profileAvatar];
+		NSImage *image = [buddy profileAvatar];
+		
+		if (image)
+			return image;
+		else
+			return [NSImage imageNamed:NSImageNameUser];
 	}
 
 	return nil;
@@ -416,7 +421,7 @@
 */
 #pragma mark - TCBuddiesController - TCCoreManagerDelegate
 
-- (void)torchatController:(TCCoreManager *)controller information:(TCInfo *)info
+- (void)torchatManager:(TCCoreManager *)manager information:(TCInfo *)info
 {
 	// Log the item
 	[[TCLogsManager sharedManager] addGlobalLogEntry:[info render]];
@@ -457,21 +462,20 @@
 		{
 			NSImage	*final = (NSImage *)info.context;
 			
-			if ([[final representations] count] == 0)
-			{
+			if (!final)
 				final = [NSImage imageNamed:NSImageNameUser];
-				
-				[final setSize:NSMakeSize(64, 64)];
-			}
-			
+						
 			// Change image.
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[_imAvatar setImage:final];
 			});
 			
+			// Set the new avatar to the chat window.
+			[[TCChatController sharedController] setLocalAvatar:final forIdentifier:[_configuration selfAddress]];
+			
 			// Notify the change.
 			dispatch_async(_noticeQueue, ^{
-				[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesControllerAvatarChanged object:controller userInfo:@{ @"avatar" : final }];
+				[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesControllerAvatarChanged object:manager userInfo:@{ @"avatar" : final }];
 			});
 			
 			break;
@@ -1286,7 +1290,12 @@
 	identifier = [buddy address];
 	
 	// Start chat.
-	[chatCtrl startChatWithIdentifier:identifier name:[buddy finalName] localAvatar:[_imAvatar image] remoteAvatar:[buddy profileAvatar] context:buddy delegate:self];
+	NSImage *image = [buddy profileAvatar];
+	
+	if (!image)
+		image = [NSImage imageNamed:NSImageNameUser];
+	
+	[chatCtrl startChatWithIdentifier:identifier name:[buddy finalName] localAvatar:[_imAvatar image] remoteAvatar:image context:buddy delegate:self];
 	
 	// Select it.
 	if (select)
