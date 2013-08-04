@@ -453,7 +453,7 @@
 	
 	pngData = [[[NSBitmapImageRep alloc] initWithData:tiffData] representationUsingType:NSPNGFileType properties:nil];
 	
-	if(!pngData)
+	if (!pngData)
 		return;
 
 	[_fcontent setObject:pngData forKey:TCCONF_KEY_PROFILE_AVATAR];
@@ -612,6 +612,69 @@
 	[self saveConfig];
 }
 
+- (void)setBuddy:(NSString *)address lastProfileText:(NSString *)lastText
+{
+	if (!address)
+		return;
+	
+	if (!lastText)
+		lastText = @"";
+	
+	// Change from Cocoa version
+	NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	NSUInteger		i, cnt = [array count];
+	
+	for (i = 0; i < cnt; i++)
+	{
+		NSMutableDictionary *buddy = [array objectAtIndex:i];
+		
+		if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
+		{
+			[buddy setObject:lastText forKey:TCConfigBuddyLastText];
+			break;
+		}
+	}
+	
+	// Save
+	[self saveConfig];
+}
+
+- (void)setBuddy:(NSString *)address lastProfileAvatar:(NSImage *)lastAvatar
+{
+	if (!address || !lastAvatar)
+		return;
+	
+	// Create PNG representation.
+	NSData *tiffData = [lastAvatar TIFFRepresentation];
+	NSData *pngData;
+	
+	if (!tiffData)
+		return;
+	
+	pngData = [[[NSBitmapImageRep alloc] initWithData:tiffData] representationUsingType:NSPNGFileType properties:nil];
+	
+	if (!pngData)
+		return;
+	
+	// Change item.
+	NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	NSUInteger		i, cnt = [array count];
+	
+	for (i = 0; i < cnt; i++)
+	{
+		NSMutableDictionary *buddy = [array objectAtIndex:i];
+		
+		if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
+		{
+			[buddy setObject:pngData forKey:TCConfigBuddyLastAvatar];
+			break;
+		}
+	}
+	
+	// Save
+	[self saveConfig];
+}
+
 - (NSString *)getBuddyAlias:(NSString *)address
 {
 	if (!address)
@@ -658,6 +721,45 @@
 	}
 	
 	return @"";
+}
+
+- (NSString *)getBuddyLastProfileText:(NSString *)address
+{
+	if (!address)
+		return @"";
+	
+	NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	
+	for (NSDictionary *buddy in buddies)
+	{
+		if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
+			return buddy[TCConfigBuddyLastText];
+	}
+	
+	return @"";
+}
+
+- (NSImage *)getBuddyLastProfileAvatar:(NSString *)address
+{
+	if (!address)
+		return nil;
+	
+	NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	
+	for (NSDictionary *buddy in buddies)
+	{
+		if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
+		{
+			NSData *data = buddy[TCConfigBuddyLastAvatar];
+			
+			if (data)
+				return [[NSImage alloc] initWithData:data];
+			else
+				return nil;
+		}
+	}
+	
+	return nil;
 }
 
 // -- Blocked --
