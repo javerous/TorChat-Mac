@@ -259,7 +259,6 @@ static dispatch_queue_t	gQueue;
 	if (!image)
 		image = [NSImage imageNamed:NSImageNameUser];
 	
-	
 	[ctrl->_avatarView setImage:image];
 	[ctrl->_addressField setStringValue:ctrl.address];
 	[ctrl->_aliasField setStringValue:[buddy alias]];
@@ -269,7 +268,7 @@ static dispatch_queue_t	gQueue;
 	[ctrl updateStatus:[buddy status]];
 	
 	// Set info
-	[ctrl setInfo:[buddy profileName] withKey:BICInfoProfileName];
+	[ctrl setInfo:name withKey:BICInfoProfileName];
 	[ctrl setInfo:[buddy profileText] withKey:BICInfoProfileText];
 	
 	[ctrl setInfo:[buddy peerClient] withKey:BICInfoPeerClient];
