@@ -74,15 +74,4 @@ typedef enum
 */
 #pragma mark - File Dictionary Keys
 
-#define TCFileRemovingNotify	@"TCFileRemovingNotify"
-
-
-
-/*
-** File Cell Notify
-*/
-#pragma mark - File Cell Notify
-
-#define TCFileCellCancelNotify	@"TCFileCellCancelNotify"
-#define TCFileCellRevealNotify	@"TCFileCellRevealNotify"
-#define TCFileCellOpenNotify	@"TCFileCellOpenNotify"
+#define TCFileCancelNotification	@"TCFileCancelNotification"
