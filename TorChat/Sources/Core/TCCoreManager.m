@@ -437,14 +437,12 @@
 	});
 }
 
-- (TCImage *)profileAvatar
+- (NSImage *)profileAvatar
 {
-	__block TCImage *result = NULL;
+	__block NSImage *result = NULL;
 	
 	dispatch_sync(_localQueue, ^{
-		
-		if (_profileAvatar)
-			result = [_profileAvatar copy];
+		result = _profileAvatar;
 	});
 	
 	return result;
@@ -901,7 +899,7 @@
 	if (delegate)
 	{
 		dispatch_async(_delegateQueue, ^{
-			[delegate torchatController:self information:info];
+			[delegate torchatManager:self information:info];
 		});
 	}
 }

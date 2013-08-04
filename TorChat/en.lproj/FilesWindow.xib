@@ -1,486 +1,316 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="8.00">
-	<data>
-		<int key="IBDocument.SystemTarget">1060</int>
-		<string key="IBDocument.SystemVersion">10F569</string>
-		<string key="IBDocument.InterfaceBuilderVersion">1197</string>
-		<string key="IBDocument.AppKitVersion">1038.29</string>
-		<array key="IBDocument.IntegratedClassDependencies">
-			<string>NSScroller</string>
-			<string>NSButton</string>
-			<string>NSTextFieldCell</string>
-			<string>NSScrollView</string>
-			<string>NSButtonCell</string>
-			<string>NSTableView</string>
-			<string>NSCell</string>
-			<string>NSCustomObject</string>
-			<string>NSView</string>
-			<string>NSWindowTemplate</string>
-			<string>NSTextField</string>
-			<string>NSTableColumn</string>
-		</array>
-		<array key="IBDocument.PluginDependencies">
-			<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-		</array>
-		<dictionary class="NSMutableDictionary" key="IBDocument.Metadata"/>
-		<array class="NSMutableArray" key="IBDocument.RootObjects" id="1000">
-			<object class="NSCustomObject" id="1001">
-				<string key="NSClassName">TCFilesController</string>
-			</object>
-			<object class="NSCustomObject" id="1003">
-				<string key="NSClassName">FirstResponder</string>
-			</object>
-			<object class="NSCustomObject" id="1004">
-				<string key="NSClassName">NSApplication</string>
-			</object>
-			<object class="NSWindowTemplate" id="1005">
-				<int key="NSWindowStyleMask">15</int>
-				<int key="NSWindowBacking">2</int>
-				<string key="NSWindowRect">{{196, 240}, {480, 270}}</string>
-				<int key="NSWTFlags">1618477056</int>
-				<string key="NSWindowTitle">File Transfers</string>
-				<string key="NSWindowClass">NSWindow</string>
-				<nil key="NSViewClass"/>
-				<string key="NSWindowContentMinSize">{480, 270}</string>
-				<object class="NSView" key="NSWindowView" id="1006">
-					<reference key="NSNextResponder"/>
-					<int key="NSvFlags">256</int>
-					<array class="NSMutableArray" key="NSSubviews">
-						<object class="NSButton" id="352421923">
-							<reference key="NSNextResponder" ref="1006"/>
-							<int key="NSvFlags">292</int>
-							<string key="NSFrame">{{6, 3}, {46, 20}}</string>
-							<reference key="NSSuperview" ref="1006"/>
-							<reference key="NSWindow"/>
-							<reference key="NSNextKeyView" ref="830927203"/>
-							<bool key="NSEnabled">YES</bool>
-							<object class="NSButtonCell" key="NSCell" id="801556473">
-								<int key="NSCellFlags">67239424</int>
-								<int key="NSCellFlags2">134348800</int>
-								<string key="NSContents">Clear</string>
-								<object class="NSFont" key="NSSupport" id="26">
-									<string key="NSName">LucidaGrande</string>
-									<double key="NSSize">11</double>
-									<int key="NSfFlags">3088</int>
-								</object>
-								<reference key="NSControlView" ref="352421923"/>
-								<int key="NSButtonFlags">-2033434369</int>
-								<int key="NSButtonFlags2">162</int>
-								<string key="NSAlternateContents"/>
-								<string key="NSKeyEquivalent"/>
-								<int key="NSPeriodicDelay">400</int>
-								<int key="NSPeriodicInterval">75</int>
-							</object>
-						</object>
-						<object class="NSTextField" id="830927203">
-							<reference key="NSNextResponder" ref="1006"/>
-							<int key="NSvFlags">290</int>
-							<string key="NSFrame">{{57, 5}, {369, 17}}</string>
-							<reference key="NSSuperview" ref="1006"/>
-							<reference key="NSWindow"/>
-							<reference key="NSNextKeyView"/>
-							<bool key="NSEnabled">YES</bool>
-							<object class="NSTextFieldCell" key="NSCell" id="231812843">
-								<int key="NSCellFlags">68288064</int>
-								<int key="NSCellFlags2">138413056</int>
-								<string key="NSContents">x transfers</string>
-								<object class="NSFont" key="NSSupport" id="257304426">
-									<string key="NSName">LucidaGrande</string>
-									<double key="NSSize">13</double>
-									<int key="NSfFlags">1040</int>
-								</object>
-								<reference key="NSControlView" ref="830927203"/>
-								<object class="NSColor" key="NSBackgroundColor">
-									<int key="NSColorSpace">6</int>
-									<string key="NSCatalogName">System</string>
-									<string key="NSColorName">controlColor</string>
-									<object class="NSColor" key="NSColor" id="308593885">
-										<int key="NSColorSpace">3</int>
-										<bytes key="NSWhite">MC42NjY2NjY2NjY3AA</bytes>
-									</object>
-								</object>
-								<object class="NSColor" key="NSTextColor">
-									<int key="NSColorSpace">6</int>
-									<string key="NSCatalogName">System</string>
-									<string key="NSColorName">controlTextColor</string>
-									<object class="NSColor" key="NSColor" id="262682469">
-										<int key="NSColorSpace">3</int>
-										<bytes key="NSWhite">MAA</bytes>
-									</object>
-								</object>
-							</object>
-						</object>
-						<object class="NSScrollView" id="155921445">
-							<reference key="NSNextResponder" ref="1006"/>
-							<int key="NSvFlags">274</int>
-							<array class="NSMutableArray" key="NSSubviews">
-								<object class="NSClipView" id="636060695">
-									<reference key="NSNextResponder" ref="155921445"/>
-									<int key="NSvFlags">2304</int>
-									<array class="NSMutableArray" key="NSSubviews">
-										<object class="NSTableView" id="120654366">
-											<reference key="NSNextResponder" ref="636060695"/>
-											<int key="NSvFlags">256</int>
-											<string key="NSFrameSize">{480, 243}</string>
-											<reference key="NSSuperview" ref="636060695"/>
-											<reference key="NSWindow"/>
-											<reference key="NSNextKeyView" ref="76013628"/>
-											<bool key="NSEnabled">YES</bool>
-											<object class="_NSCornerView" key="NSCornerView">
-												<nil key="NSNextResponder"/>
-												<int key="NSvFlags">-2147483392</int>
-												<string key="NSFrame">{{224, 0}, {16, 17}}</string>
-											</object>
-											<array class="NSMutableArray" key="NSTableColumns">
-												<object class="NSTableColumn" id="541884856">
-													<double key="NSWidth">477</double>
-													<double key="NSMinWidth">40</double>
-													<double key="NSMaxWidth">3000</double>
-													<object class="NSTableHeaderCell" key="NSHeaderCell">
-														<int key="NSCellFlags">75628096</int>
-														<int key="NSCellFlags2">2048</int>
-														<string key="NSContents"/>
-														<reference key="NSSupport" ref="26"/>
-														<object class="NSColor" key="NSBackgroundColor">
-															<int key="NSColorSpace">3</int>
-															<bytes key="NSWhite">MC4zMzMzMzI5ODU2AA</bytes>
-														</object>
-														<object class="NSColor" key="NSTextColor">
-															<int key="NSColorSpace">6</int>
-															<string key="NSCatalogName">System</string>
-															<string key="NSColorName">headerTextColor</string>
-															<reference key="NSColor" ref="262682469"/>
-														</object>
-													</object>
-													<object class="NSCell" key="NSDataCell" id="1013601501">
-														<int key="NSCellFlags">67239424</int>
-														<int key="NSCellFlags2">0</int>
-														<reference key="NSSupport" ref="257304426"/>
-														<reference key="NSControlView" ref="120654366"/>
-													</object>
-													<int key="NSResizingMask">3</int>
-													<bool key="NSIsResizeable">YES</bool>
-													<bool key="NSIsEditable">YES</bool>
-													<reference key="NSTableView" ref="120654366"/>
-												</object>
-											</array>
-											<double key="NSIntercellSpacingWidth">3</double>
-											<double key="NSIntercellSpacingHeight">2</double>
-											<object class="NSColor" key="NSBackgroundColor">
-												<int key="NSColorSpace">3</int>
-												<bytes key="NSWhite">MQA</bytes>
-											</object>
-											<object class="NSColor" key="NSGridColor">
-												<int key="NSColorSpace">6</int>
-												<string key="NSCatalogName">System</string>
-												<string key="NSColorName">gridColor</string>
-												<object class="NSColor" key="NSColor">
-													<int key="NSColorSpace">3</int>
-													<bytes key="NSWhite">MC41AA</bytes>
-												</object>
-											</object>
-											<double key="NSRowHeight">70</double>
-											<int key="NSTvFlags">-557842432</int>
-											<reference key="NSDelegate"/>
-											<reference key="NSDataSource"/>
-											<int key="NSColumnAutoresizingStyle">4</int>
-											<int key="NSDraggingSourceMaskForLocal">15</int>
-											<int key="NSDraggingSourceMaskForNonLocal">0</int>
-											<bool key="NSAllowsTypeSelect">YES</bool>
-											<int key="NSTableViewDraggingDestinationStyle">0</int>
-										</object>
-									</array>
-									<string key="NSFrame">{{1, 1}, {480, 243}}</string>
-									<reference key="NSSuperview" ref="155921445"/>
-									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView" ref="120654366"/>
-									<reference key="NSDocView" ref="120654366"/>
-									<object class="NSColor" key="NSBGColor">
-										<int key="NSColorSpace">6</int>
-										<string key="NSCatalogName">System</string>
-										<string key="NSColorName">controlBackgroundColor</string>
-										<reference key="NSColor" ref="308593885"/>
-									</object>
-									<int key="NScvFlags">4</int>
-								</object>
-								<object class="NSScroller" id="76013628">
-									<reference key="NSNextResponder" ref="155921445"/>
-									<int key="NSvFlags">-2147483392</int>
-									<string key="NSFrame">{{224, 17}, {15, 102}}</string>
-									<reference key="NSSuperview" ref="155921445"/>
-									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView" ref="130920327"/>
-									<reference key="NSTarget" ref="155921445"/>
-									<string key="NSAction">_doScroller:</string>
-									<double key="NSPercent">0.99590163934426235</double>
-								</object>
-								<object class="NSScroller" id="130920327">
-									<reference key="NSNextResponder" ref="155921445"/>
-									<int key="NSvFlags">-2147483392</int>
-									<string key="NSFrame">{{1, 119}, {223, 15}}</string>
-									<reference key="NSSuperview" ref="155921445"/>
-									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView" ref="352421923"/>
-									<int key="NSsFlags">1</int>
-									<reference key="NSTarget" ref="155921445"/>
-									<string key="NSAction">_doScroller:</string>
-									<double key="NSPercent">0.99792099792099798</double>
-								</object>
-							</array>
-							<string key="NSFrame">{{-1, 26}, {482, 245}}</string>
-							<reference key="NSSuperview" ref="1006"/>
-							<reference key="NSWindow"/>
-							<reference key="NSNextKeyView" ref="636060695"/>
-							<int key="NSsFlags">562</int>
-							<reference key="NSVScroller" ref="76013628"/>
-							<reference key="NSHScroller" ref="130920327"/>
-							<reference key="NSContentView" ref="636060695"/>
-							<bytes key="NSScrollAmts">QSAAAEEgAABCkAAAQpAAAA</bytes>
-						</object>
-					</array>
-					<string key="NSFrame">{{7, 11}, {480, 270}}</string>
-					<reference key="NSSuperview"/>
-					<reference key="NSWindow"/>
-					<reference key="NSNextKeyView" ref="155921445"/>
-				</object>
-				<string key="NSScreenRect">{{0, 0}, {1440, 878}}</string>
-				<string key="NSMinSize">{480, 292}</string>
-				<string key="NSMaxSize">{1e+13, 1e+13}</string>
-				<string key="NSFrameAutosaveName"/>
-			</object>
-		</array>
-		<object class="IBObjectContainer" key="IBDocument.Objects">
-			<array key="connectionRecords">
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">mainWindow</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="1005"/>
-					</object>
-					<int key="connectionID">23</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">countField</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="830927203"/>
-					</object>
-					<int key="connectionID">29</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">clearButton</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="352421923"/>
-					</object>
-					<int key="connectionID">30</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">doClear:</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="352421923"/>
-					</object>
-					<int key="connectionID">31</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">dataSource</string>
-						<reference key="source" ref="120654366"/>
-						<reference key="destination" ref="1001"/>
-					</object>
-					<int key="connectionID">42</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">delegate</string>
-						<reference key="source" ref="120654366"/>
-						<reference key="destination" ref="1001"/>
-					</object>
-					<int key="connectionID">43</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">filesView</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="120654366"/>
-					</object>
-					<int key="connectionID">44</int>
-				</object>
-			</array>
-			<object class="IBMutableOrderedSet" key="objectRecords">
-				<array key="orderedObjects">
-					<object class="IBObjectRecord">
-						<int key="objectID">0</int>
-						<array key="object" id="0"/>
-						<reference key="children" ref="1000"/>
-						<nil key="parent"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">-2</int>
-						<reference key="object" ref="1001"/>
-						<reference key="parent" ref="0"/>
-						<string key="objectName">File's Owner</string>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">-1</int>
-						<reference key="object" ref="1003"/>
-						<reference key="parent" ref="0"/>
-						<string key="objectName">First Responder</string>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">-3</int>
-						<reference key="object" ref="1004"/>
-						<reference key="parent" ref="0"/>
-						<string key="objectName">Application</string>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">1</int>
-						<reference key="object" ref="1005"/>
-						<array class="NSMutableArray" key="children">
-							<reference ref="1006"/>
-						</array>
-						<reference key="parent" ref="0"/>
-						<string key="objectName">Window - File Transfers</string>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">2</int>
-						<reference key="object" ref="1006"/>
-						<array class="NSMutableArray" key="children">
-							<reference ref="830927203"/>
-							<reference ref="155921445"/>
-							<reference ref="352421923"/>
-						</array>
-						<reference key="parent" ref="1005"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">13</int>
-						<reference key="object" ref="352421923"/>
-						<array class="NSMutableArray" key="children">
-							<reference ref="801556473"/>
-						</array>
-						<reference key="parent" ref="1006"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">14</int>
-						<reference key="object" ref="801556473"/>
-						<reference key="parent" ref="352421923"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">15</int>
-						<reference key="object" ref="830927203"/>
-						<array class="NSMutableArray" key="children">
-							<reference ref="231812843"/>
-						</array>
-						<reference key="parent" ref="1006"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">16</int>
-						<reference key="object" ref="231812843"/>
-						<reference key="parent" ref="830927203"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">32</int>
-						<reference key="object" ref="155921445"/>
-						<array class="NSMutableArray" key="children">
-							<reference ref="76013628"/>
-							<reference ref="130920327"/>
-							<reference ref="120654366"/>
-						</array>
-						<reference key="parent" ref="1006"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">33</int>
-						<reference key="object" ref="76013628"/>
-						<reference key="parent" ref="155921445"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">35</int>
-						<reference key="object" ref="130920327"/>
-						<reference key="parent" ref="155921445"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">36</int>
-						<reference key="object" ref="120654366"/>
-						<array class="NSMutableArray" key="children">
-							<reference ref="541884856"/>
-						</array>
-						<reference key="parent" ref="155921445"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">37</int>
-						<reference key="object" ref="541884856"/>
-						<array class="NSMutableArray" key="children">
-							<reference ref="1013601501"/>
-						</array>
-						<reference key="parent" ref="120654366"/>
-						<string key="objectName">Table Column</string>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">41</int>
-						<reference key="object" ref="1013601501"/>
-						<reference key="parent" ref="541884856"/>
-					</object>
-				</array>
-			</object>
-			<dictionary class="NSMutableDictionary" key="flattenedProperties">
-				<string key="-1.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="-2.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="-3.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="1.IBEditorWindowLastContentRect">{{787, 501}, {480, 270}}</string>
-				<string key="1.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="1.IBWindowTemplateEditedContentRect">{{787, 501}, {480, 270}}</string>
-				<boolean value="NO" key="1.NSWindowTemplate.visibleAtLaunch"/>
-				<string key="1.WindowOrigin">{196, 240}</string>
-				<string key="1.editorWindowContentRectSynchronizationRect">{{357, 418}, {480, 270}}</string>
-				<string key="2.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="32.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="33.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="35.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="36.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="41.CustomClassName">TCFileViewCell</string>
-				<string key="41.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			</dictionary>
-			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
-			<nil key="activeLocalization"/>
-			<dictionary class="NSMutableDictionary" key="localizations"/>
-			<nil key="sourceID"/>
-			<int key="maxID">44</int>
-		</object>
-		<object class="IBClassDescriber" key="IBDocument.Classes">
-			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
-				<object class="IBPartialClassDescription">
-					<string key="className">TCFileViewCell</string>
-					<string key="superclassName">NSCell</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./classes-xjh84/TCFileViewCell.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">TCFilesController</string>
-					<string key="superclassName">NSObject</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="doClear:">id</string>
-						<string key="showWindow:">id</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="clearButton">NSButton</string>
-						<string key="countField">NSTextField</string>
-						<string key="filesView">NSTableView</string>
-						<string key="mainWindow">NSWindow</string>
-					</dictionary>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./classes-xjh84/TCFilesController.h</string>
-					</object>
-				</object>
-			</array>
-		</object>
-		<int key="IBDocument.localizationMode">0</int>
-		<string key="IBDocument.TargetRuntimeIdentifier">IBCocoaFramework</string>
-		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
-		<nil key="IBDocument.LastKnownRelativeProjectPath"/>
-		<int key="IBDocument.defaultPropertyAccessControl">3</int>
-	</data>
-</archive>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4488.1" systemVersion="12E55" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment defaultVersion="1080" identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4488.1"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="TCFilesController">
+            <connections>
+                <outlet property="clearButton" destination="13" id="30"/>
+                <outlet property="countField" destination="15" id="29"/>
+                <outlet property="filesView" destination="36" id="44"/>
+                <outlet property="mainWindow" destination="1" id="23"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application"/>
+        <window title="File Transfers" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" wantsToBeColor="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="1" userLabel="Window - File Transfers">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="196" y="240" width="480" height="270"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
+            <value key="minSize" type="size" width="480" height="270"/>
+            <view key="contentView" id="2">
+                <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="13">
+                        <rect key="frame" x="6" y="3" width="46" height="20"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="46" id="8HW-Re-ciA"/>
+                            <constraint firstAttribute="height" constant="18" id="BCm-fT-1To"/>
+                        </constraints>
+                        <buttonCell key="cell" type="smallSquare" title="Clear" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="14">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="doClear:" target="-2" id="31"/>
+                        </connections>
+                    </button>
+                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="15">
+                        <rect key="frame" x="202" y="5" width="77" height="17"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="x transfers" id="16">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <scrollView autohidesScrollers="YES" horizontalLineScroll="72" horizontalPageScroll="10" verticalLineScroll="72" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="32">
+                        <rect key="frame" x="-1" y="26" width="482" height="245"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <clipView key="contentView" id="YpS-dA-ine">
+                            <rect key="frame" x="1" y="1" width="480" height="243"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveColumns="NO" rowHeight="70" viewBased="YES" id="36">
+                                    <rect key="frame" x="0.0" y="0.0" width="480" height="243"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <size key="intercellSpacing" width="3" height="2"/>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
+                                    <tableColumns>
+                                        <tableColumn width="477" minWidth="40" maxWidth="3000" id="37" userLabel="Table Column">
+                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
+                                            </tableHeaderCell>
+                                            <cell key="dataCell" alignment="left" id="41">
+                                                <font key="font" metaFont="system"/>
+                                            </cell>
+                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                            <prototypeCellViews>
+                                                <tableCellView identifier="transfers_progress" id="oNF-Rj-bf9" customClass="TCFileCellView">
+                                                    <rect key="frame" x="1" y="1" width="477" height="70"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                    <subviews>
+                                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="taV-6t-lMn">
+                                                            <rect key="frame" x="60" y="50" width="88" height="16"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="height" constant="16" id="wSV-PF-8Gk"/>
+                                                            </constraints>
+                                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="MonFichier.txt" id="I32-aV-XN4">
+                                                                <font key="font" metaFont="cellTitle"/>
+                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                        </textField>
+                                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="JJP-tg-TNf">
+                                                            <rect key="frame" x="60" y="33" width="203" height="14"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="To: toto (kjfskfsjdlfdslkjfsdkl) - 10 Ko of 50 Ko" id="xd9-ZR-bHg">
+                                                                <font key="font" size="10" name="ArialMT"/>
+                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                        </textField>
+                                                        <progressIndicator maxValue="1" controlSize="small" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="FHg-Eb-qac">
+                                                            <rect key="frame" x="63" y="18" width="352" height="12"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                        </progressIndicator>
+                                                        <button translatesAutoresizingMaskIntoConstraints="NO" id="gR2-Us-1NH" customClass="TCButton">
+                                                            <rect key="frame" x="443" y="17" width="14" height="14"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="height" constant="14" id="w4j-Li-Wj4"/>
+                                                                <constraint firstAttribute="width" constant="14" id="xk7-mq-ySt"/>
+                                                            </constraints>
+                                                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="file_reveal" imagePosition="overlaps" alignment="center" inset="2" id="hQ8-Gy-4yW">
+                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                <font key="font" metaFont="system"/>
+                                                            </buttonCell>
+                                                            <connections>
+                                                                <action selector="doShowTransfer:" target="-2" id="dC8-22-6DN"/>
+                                                            </connections>
+                                                        </button>
+                                                        <button translatesAutoresizingMaskIntoConstraints="NO" id="en4-xh-Paa" customClass="TCButton">
+                                                            <rect key="frame" x="423" y="17" width="14" height="14"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" constant="14" id="78t-sS-bhC"/>
+                                                                <constraint firstAttribute="height" constant="14" id="YB0-wF-hGN"/>
+                                                            </constraints>
+                                                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="file_stop" imagePosition="only" alignment="center" inset="2" id="rjk-zV-rgC">
+                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                <font key="font" metaFont="system"/>
+                                                            </buttonCell>
+                                                            <connections>
+                                                                <action selector="doCancelTransfer:" target="-2" id="rBO-jV-DOC"/>
+                                                            </connections>
+                                                        </button>
+                                                        <button translatesAutoresizingMaskIntoConstraints="NO" id="C33-kj-lUM">
+                                                            <rect key="frame" x="5" y="10" width="50" height="50"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" constant="50" id="Akr-6c-n0v"/>
+                                                                <constraint firstAttribute="height" constant="50" id="Qjx-4j-R5e"/>
+                                                            </constraints>
+                                                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="NSFolder" imagePosition="overlaps" alignment="center" state="on" imageScaling="proportionallyUpOrDown" inset="2" id="bc3-BD-Gid">
+                                                                <behavior key="behavior" lightByContents="YES"/>
+                                                                <font key="font" metaFont="system"/>
+                                                            </buttonCell>
+                                                            <connections>
+                                                                <action selector="doOpenTransfer:" target="-2" id="XeV-RV-YmL"/>
+                                                            </connections>
+                                                        </button>
+                                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9YV-Gv-0CT">
+                                                            <rect key="frame" x="60" y="5" width="53" height="13"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Uploading..." id="x9y-Jx-b7n">
+                                                                <font key="font" size="9" name="ArialMT"/>
+                                                                <color key="textColor" white="0.5" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                        </textField>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstItem="JJP-tg-TNf" firstAttribute="top" secondItem="taV-6t-lMn" secondAttribute="bottom" constant="3" id="0i9-Gb-00v"/>
+                                                        <constraint firstItem="gR2-Us-1NH" firstAttribute="centerY" secondItem="en4-xh-Paa" secondAttribute="centerY" id="8xn-54-oZa"/>
+                                                        <constraint firstItem="FHg-Eb-qac" firstAttribute="leading" secondItem="C33-kj-lUM" secondAttribute="trailing" constant="8" symbolic="YES" id="BL3-J0-M6Q"/>
+                                                        <constraint firstAttribute="centerY" secondItem="C33-kj-lUM" secondAttribute="centerY" id="Bvk-bm-6QA"/>
+                                                        <constraint firstItem="taV-6t-lMn" firstAttribute="top" secondItem="oNF-Rj-bf9" secondAttribute="top" constant="4" id="LNP-u6-r40"/>
+                                                        <constraint firstItem="9YV-Gv-0CT" firstAttribute="top" secondItem="FHg-Eb-qac" secondAttribute="bottom" id="PC5-e6-w3H"/>
+                                                        <constraint firstAttribute="trailing" secondItem="gR2-Us-1NH" secondAttribute="trailing" constant="20" symbolic="YES" id="PyL-vx-ngj"/>
+                                                        <constraint firstItem="FHg-Eb-qac" firstAttribute="leading" secondItem="taV-6t-lMn" secondAttribute="leading" id="Ugb-FL-4A4"/>
+                                                        <constraint firstItem="C33-kj-lUM" firstAttribute="leading" secondItem="oNF-Rj-bf9" secondAttribute="leading" constant="5" id="Zab-3d-GSi"/>
+                                                        <constraint firstItem="FHg-Eb-qac" firstAttribute="leading" secondItem="9YV-Gv-0CT" secondAttribute="leading" id="cOb-EL-jVi"/>
+                                                        <constraint firstItem="FHg-Eb-qac" firstAttribute="leading" secondItem="JJP-tg-TNf" secondAttribute="leading" id="fmm-jo-Dpf"/>
+                                                        <constraint firstItem="gR2-Us-1NH" firstAttribute="leading" secondItem="en4-xh-Paa" secondAttribute="trailing" constant="6" id="tVU-4n-pmj"/>
+                                                        <constraint firstItem="FHg-Eb-qac" firstAttribute="top" secondItem="JJP-tg-TNf" secondAttribute="bottom" constant="3" id="ujo-rd-LK6"/>
+                                                        <constraint firstItem="en4-xh-Paa" firstAttribute="leading" secondItem="FHg-Eb-qac" secondAttribute="trailing" constant="8" symbolic="YES" id="xJy-6B-r4f"/>
+                                                        <constraint firstItem="en4-xh-Paa" firstAttribute="centerY" secondItem="FHg-Eb-qac" secondAttribute="centerY" id="y5f-HW-Ie8"/>
+                                                    </constraints>
+                                                    <connections>
+                                                        <outlet property="cancelButton" destination="en4-xh-Paa" id="Gh2-f9-2n1"/>
+                                                        <outlet property="fileNameField" destination="taV-6t-lMn" id="79x-Xn-7vu"/>
+                                                        <outlet property="iconButton" destination="C33-kj-lUM" id="TZR-JH-RO6"/>
+                                                        <outlet property="showButton" destination="gR2-Us-1NH" id="jNe-LU-YAa"/>
+                                                        <outlet property="textField" destination="taV-6t-lMn" id="jYa-gA-LWP"/>
+                                                        <outlet property="transferDirectionField" destination="9YV-Gv-0CT" id="Z9M-oo-KXg"/>
+                                                        <outlet property="transferIndicator" destination="FHg-Eb-qac" id="QhQ-qK-2lR"/>
+                                                        <outlet property="transferStatusField" destination="JJP-tg-TNf" id="EDp-3b-Bw0"/>
+                                                    </connections>
+                                                </tableCellView>
+                                                <tableCellView identifier="transfers_end" id="MeD-NZ-wgZ" customClass="TCFileCellView">
+                                                    <rect key="frame" x="1" y="73" width="477" height="70"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                    <subviews>
+                                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="JiK-DF-LO9">
+                                                            <rect key="frame" x="60" y="47" width="88" height="16"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="height" constant="16" id="Q1w-v1-J7a"/>
+                                                            </constraints>
+                                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="MonFichier.txt" id="dkK-pO-ZmA">
+                                                                <font key="font" metaFont="cellTitle"/>
+                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                        </textField>
+                                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="bzE-Ni-6Mv">
+                                                            <rect key="frame" x="60" y="28" width="203" height="14"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="To: toto (kjfskfsjdlfdslkjfsdkl) - 10 Ko of 50 Ko" id="9SA-IR-kMM">
+                                                                <font key="font" size="10" name="ArialMT"/>
+                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                        </textField>
+                                                        <button translatesAutoresizingMaskIntoConstraints="NO" id="2C6-If-hDz" customClass="TCButton">
+                                                            <rect key="frame" x="443" y="28" width="14" height="14"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" constant="14" id="eil-Bm-pnm"/>
+                                                                <constraint firstAttribute="height" constant="14" id="h18-JS-Bwc"/>
+                                                            </constraints>
+                                                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="file_reveal" imagePosition="only" alignment="center" inset="2" id="rSW-4t-ux8">
+                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                <font key="font" metaFont="system"/>
+                                                            </buttonCell>
+                                                            <connections>
+                                                                <action selector="doShowTransfer:" target="-2" id="nhm-7t-9lz"/>
+                                                            </connections>
+                                                        </button>
+                                                        <button translatesAutoresizingMaskIntoConstraints="NO" id="yAb-Aq-Jlz">
+                                                            <rect key="frame" x="5" y="10" width="50" height="50"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" constant="50" id="0Eg-T2-Fcl"/>
+                                                                <constraint firstAttribute="height" constant="50" id="bKy-xL-mVk"/>
+                                                            </constraints>
+                                                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="NSFolder" imagePosition="overlaps" alignment="center" state="on" imageScaling="proportionallyUpOrDown" inset="2" id="6SO-Xx-IxY">
+                                                                <behavior key="behavior" lightByContents="YES"/>
+                                                                <font key="font" metaFont="system"/>
+                                                            </buttonCell>
+                                                            <connections>
+                                                                <action selector="doOpenTransfer:" target="-2" id="SzS-cQ-qrd"/>
+                                                            </connections>
+                                                        </button>
+                                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mRR-ki-JaO">
+                                                            <rect key="frame" x="60" y="10" width="58" height="13"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Upload done." id="p4h-ix-yZk">
+                                                                <font key="font" size="9" name="ArialMT"/>
+                                                                <color key="textColor" white="0.5" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                        </textField>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstItem="JiK-DF-LO9" firstAttribute="leading" secondItem="bzE-Ni-6Mv" secondAttribute="leading" id="1nl-P6-yMH"/>
+                                                        <constraint firstItem="mRR-ki-JaO" firstAttribute="top" secondItem="bzE-Ni-6Mv" secondAttribute="bottom" constant="5" id="3g8-ed-OBS"/>
+                                                        <constraint firstItem="yAb-Aq-Jlz" firstAttribute="leading" secondItem="MeD-NZ-wgZ" secondAttribute="leading" constant="5" id="D83-XJ-McU"/>
+                                                        <constraint firstItem="bzE-Ni-6Mv" firstAttribute="top" secondItem="JiK-DF-LO9" secondAttribute="bottom" constant="5" id="EoP-Pc-a9c"/>
+                                                        <constraint firstAttribute="trailing" secondItem="2C6-If-hDz" secondAttribute="trailing" constant="20" symbolic="YES" id="G64-cv-vtB"/>
+                                                        <constraint firstItem="bzE-Ni-6Mv" firstAttribute="leading" secondItem="yAb-Aq-Jlz" secondAttribute="trailing" constant="8" symbolic="YES" id="GK2-Qw-j6F"/>
+                                                        <constraint firstItem="bzE-Ni-6Mv" firstAttribute="leading" secondItem="mRR-ki-JaO" secondAttribute="leading" id="KiD-5s-dPm"/>
+                                                        <constraint firstAttribute="centerY" secondItem="bzE-Ni-6Mv" secondAttribute="centerY" id="d47-k0-N8B"/>
+                                                        <constraint firstAttribute="centerY" secondItem="2C6-If-hDz" secondAttribute="centerY" id="kQY-hh-1Wl"/>
+                                                        <constraint firstAttribute="centerY" secondItem="yAb-Aq-Jlz" secondAttribute="centerY" id="kwT-N5-hPw"/>
+                                                    </constraints>
+                                                    <connections>
+                                                        <outlet property="fileNameField" destination="JiK-DF-LO9" id="b6a-ZS-X3a"/>
+                                                        <outlet property="iconButton" destination="yAb-Aq-Jlz" id="fZp-t9-ehr"/>
+                                                        <outlet property="showButton" destination="2C6-If-hDz" id="QsO-hS-W4W"/>
+                                                        <outlet property="textField" destination="JiK-DF-LO9" id="ofN-Zm-9U8"/>
+                                                        <outlet property="transferDirectionField" destination="mRR-ki-JaO" id="j55-1X-zkb"/>
+                                                        <outlet property="transferStatusField" destination="bzE-Ni-6Mv" id="3DJ-iW-ijd"/>
+                                                    </connections>
+                                                </tableCellView>
+                                            </prototypeCellViews>
+                                        </tableColumn>
+                                    </tableColumns>
+                                    <connections>
+                                        <outlet property="dataSource" destination="-2" id="42"/>
+                                        <outlet property="delegate" destination="-2" id="43"/>
+                                    </connections>
+                                </tableView>
+                            </subviews>
+                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </clipView>
+                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" id="35">
+                            <rect key="frame" x="1" y="119" width="223" height="15"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </scroller>
+                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" id="33">
+                            <rect key="frame" x="224" y="17" width="15" height="102"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </scroller>
+                    </scrollView>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="bottom" secondItem="15" secondAttribute="bottom" constant="5" id="JD9-2d-6p0"/>
+                    <constraint firstAttribute="bottom" secondItem="13" secondAttribute="bottom" constant="4" id="RYC-Io-rk1"/>
+                    <constraint firstItem="13" firstAttribute="top" secondItem="32" secondAttribute="bottom" constant="4" id="Ug3-4t-AmC"/>
+                    <constraint firstItem="13" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="6" id="Wgf-M9-Hdf"/>
+                    <constraint firstItem="15" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="13" secondAttribute="trailing" constant="8" id="cbx-nb-e0v"/>
+                    <constraint firstItem="32" firstAttribute="top" secondItem="2" secondAttribute="top" constant="-1" id="ewr-Z3-i4l"/>
+                    <constraint firstAttribute="centerX" secondItem="15" secondAttribute="centerX" id="fj6-iS-X1Q"/>
+                    <constraint firstItem="32" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="-1" id="jdb-YU-dyx"/>
+                    <constraint firstAttribute="trailing" secondItem="32" secondAttribute="trailing" constant="-1" id="lAV-Gy-eDF"/>
+                    <constraint firstItem="15" firstAttribute="top" secondItem="32" secondAttribute="bottom" constant="4" id="zAZ-dS-ZIA"/>
+                </constraints>
+            </view>
+        </window>
+    </objects>
+    <resources>
+        <image name="NSFolder" width="32" height="32"/>
+        <image name="file_reveal" width="14" height="14"/>
+        <image name="file_stop" width="14" height="14"/>
+    </resources>
+</document>
