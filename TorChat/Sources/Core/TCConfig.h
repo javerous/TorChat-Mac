@@ -34,6 +34,8 @@
 #define TCConfigBuddyNotes		@"notes"
 
 #define TCConfigBuddyLastName	@"lname"
+#define TCConfigBuddyLastText	@"ltext"
+#define TCConfigBuddyLastAvatar	@"lavatar"
 
 
 
@@ -115,10 +117,14 @@ typedef enum
 - (void)setBuddy:(NSString *)address alias:(NSString *)alias;
 - (void)setBuddy:(NSString *)address notes:(NSString *)notes;
 - (void)setBuddy:(NSString *)address lastProfileName:(NSString *)lastName;
+- (void)setBuddy:(NSString *)address lastProfileText:(NSString *)lastText;
+- (void)setBuddy:(NSString *)address lastProfileAvatar:(NSImage *)lastAvatar;
 
 - (NSString *)getBuddyAlias:(NSString *)address;
 - (NSString *)getBuddyNotes:(NSString *)address;
 - (NSString *)getBuddyLastProfileName:(NSString *)address;
+- (NSString *)getBuddyLastProfileText:(NSString *)address;
+- (NSImage *)getBuddyLastProfileAvatar:(NSString *)address;
 
 // -- Blocked --
 - (NSArray *)blockedBuddies;

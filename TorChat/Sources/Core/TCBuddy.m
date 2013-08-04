@@ -904,7 +904,7 @@ static char gLocalQueueContext;
 {
 	if (!remoteRandom || !name || !text)
 		return;
-	
+		
 	dispatch_async(_localQueue, ^{
 		
 		if (_blocked)
@@ -994,7 +994,11 @@ static char gLocalQueueContext;
 	__block NSString * result = NULL;
 	
 	dispatch_sync(_localQueue, ^{
-		result = _profileText;
+		
+		if ([_profileText length] > 0)
+			result = _profileText;
+		else
+			result = [_config getBuddyLastProfileText:_address];
 	});
 	
 	return result;
@@ -1005,7 +1009,11 @@ static char gLocalQueueContext;
 	__block NSImage * result = NULL;
 	
 	dispatch_sync(_localQueue, ^{
-		result = _profileAvatar;
+	
+		if (_profileAvatar)
+			result = _profileAvatar;
+		else
+			result = [_config getBuddyLastProfileAvatar:_address];
 	});
 	
 	return result;
@@ -1225,7 +1233,11 @@ static char gLocalQueueContext;
 	if (_blocked)
 		return;
 	
+	// Hold profile text.
 	_profileText = text;
+	
+	// Store profile name.
+	[_config setBuddy:_address lastProfileText:text];
 	
 	// Notify it
 	[self _notify:tcbuddy_notify_profile_text info:@"core_bd_note_new_profile_text" context:text];
@@ -1234,17 +1246,16 @@ static char gLocalQueueContext;
 - (void)parser:(TCParser *)parser parsedProfileName:(NSString *)name
 {
 	// > localQueue <
-
 	if (_blocked)
 		return;
 	
-	// Hold profile name
+	// Hold profile name.
 	_profileName = name;
 	
-	// Store profile name
+	// Store profile name.
 	[_config setBuddy:_address lastProfileName:name];
 	
-	// Notify it
+	// Notify it.
 	[self _notify:tcbuddy_notify_profile_name info:@"core_bd_note_new_profile_name" context:name];
 }
 
@@ -1255,11 +1266,15 @@ static char gLocalQueueContext;
 	if (_blocked)
 		return;
 	
+	// Hold & convert avatar.
 	[_tcProfileAvatar setBitmap:bitmap];
 	
 	_profileAvatar = [_tcProfileAvatar imageRepresentation];
 	
-	// Notify it
+	// Store profile avatar.
+	[_config setBuddy:_address lastProfileAvatar:_profileAvatar];
+	
+	// Notify it.
 	[self _notify:tcbuddy_notify_profile_avatar info:@"core_bd_note_new_profile_avatar" context:_profileAvatar];
 }
 
@@ -1574,7 +1589,7 @@ static char gLocalQueueContext;
 	
 	if (!name)
 		return;
-	
+
 	[self _sendCommand:@"profile_name" string:name channel:tcbuddy_channel_out];
 }
 
@@ -1806,7 +1821,7 @@ static char gLocalQueueContext;
 
 - (BOOL)_sendCommand:(NSString *)command string:(NSString *)data channel:(tcbuddy_channel)channel
 {
-	return [self _sendCommand:command data:[data dataUsingEncoding:NSASCIIStringEncoding] channel:channel];
+	return [self _sendCommand:command data:[data dataUsingEncoding:NSUTF8StringEncoding] channel:channel];
 }
 
 - (BOOL)_sendCommand:(NSString *)command data:(NSData *)data channel:(tcbuddy_channel)channel
