@@ -23,7 +23,7 @@
 	NSHashTable				*_allObserver;
 
 	NSMutableDictionary		*_logs;
-	NSMutableDictionary		*_alias;
+	NSMutableDictionary		*_names;
 }
 
 @end
@@ -71,7 +71,7 @@
 		
 		// Build containers.
 		_logs = [[NSMutableDictionary alloc] init];
-		_alias = [[NSMutableDictionary alloc] init];
+		_names = [[NSMutableDictionary alloc] init];
     }
 	
     return self;
@@ -127,7 +127,7 @@
 	});
 }
 
-- (void)addBuddyLogEntryFromAddress:(NSString *)address alias:(NSString *)alias andText:(NSString *)log, ...
+- (void)addBuddyLogEntryFromAddress:(NSString *)address name:(NSString *)name andText:(NSString *)log, ...
 {
 	va_list		ap;
 	NSString	*msg;
@@ -141,9 +141,9 @@
 	
 	// Add the alias
 	dispatch_async(dispatch_get_main_queue(), ^{
-		[_alias setObject:alias forKey:address];
+		[_names setObject:name forKey:address];
 	});
-	
+		
 	// Add the rendered log
 	[self addLogEntry:address withContent:msg];
 }
@@ -212,7 +212,7 @@
 */
 #pragma mark - TCLogsController - Properties
 
-- (NSString *)aliasForKey:(NSString *)key
+- (NSString *)nameForKey:(NSString *)key
 {
 	if (!key)
 		return nil;
@@ -220,7 +220,7 @@
 	__block NSString *result = nil;
 	
 	dispatch_sync(_localQueue, ^{
-		result = _alias[key];
+		result = _names[key];
 	});
 	
 	return result;

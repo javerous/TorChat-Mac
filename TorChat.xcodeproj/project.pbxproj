@@ -42,7 +42,6 @@
 		E8455D4617A4386C0046307B /* NSData+TCTools.m in Sources */ = {isa = PBXBuildFile; fileRef = E8455D4517A438660046307B /* NSData+TCTools.m */; };
 		E849F93711F5E8F300193F06 /* engrenage.png in Resources */ = {isa = PBXBuildFile; fileRef = E849F93611F5E8F300193F06 /* engrenage.png */; };
 		E85310F812F8170E009FC05B /* logs.png in Resources */ = {isa = PBXBuildFile; fileRef = E85310F712F8170E009FC05B /* logs.png */; };
-		E854FDFC12F8082C009C2E5E /* TCBuddyCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E854FDFB12F8082C009C2E5E /* TCBuddyCell.m */; };
 		E85903B211EC9877005CE53F /* TCTools.m in Sources */ = {isa = PBXBuildFile; fileRef = E85903B011EC9877005CE53F /* TCTools.m */; };
 		E85923F7120A9E060035C420 /* FilesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E85923F5120A9E060035C420 /* FilesWindow.xib */; };
 		E861274911F59E3C00901B29 /* stat_away.png in Resources */ = {isa = PBXBuildFile; fileRef = E861274511F59E3C00901B29 /* stat_away.png */; };
@@ -69,6 +68,7 @@
 		E868537B11F9D7740064C0CC /* chat_graybubble_topright.png in Resources */ = {isa = PBXBuildFile; fileRef = E868536911F9D7740064C0CC /* chat_graybubble_topright.png */; };
 		E86B5A1817AE7C6C00C715CA /* TCFileCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E86B5A1717AE7C6C00C715CA /* TCFileCellView.m */; };
 		E874146B12FAE0C200BD4862 /* TCDropButton.m in Sources */ = {isa = PBXBuildFile; fileRef = E874146A12FAE0C200BD4862 /* TCDropButton.m */; };
+		E878981617AFCC0900DB7709 /* TCBuddyCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E878981517AFCC0900DB7709 /* TCBuddyCellView.m */; };
 		E87CB84E12508B8600A75686 /* person.png in Resources */ = {isa = PBXBuildFile; fileRef = E87CB84D12508B8600A75686 /* person.png */; };
 		E87CB85012508CB600A75686 /* notes.png in Resources */ = {isa = PBXBuildFile; fileRef = E87CB84F12508CB600A75686 /* notes.png */; };
 		E87CB85312508F7A00A75686 /* BuddyInfoWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E87CB85112508F7A00A75686 /* BuddyInfoWindow.xib */; };
@@ -164,8 +164,6 @@
 		E8455D4517A438660046307B /* NSData+TCTools.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+TCTools.m"; sourceTree = "<group>"; };
 		E849F93611F5E8F300193F06 /* engrenage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = engrenage.png; path = ../Medias/engrenage.png; sourceTree = "<group>"; };
 		E85310F712F8170E009FC05B /* logs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = logs.png; path = ../Medias/logs.png; sourceTree = "<group>"; };
-		E854FDFA12F8082C009C2E5E /* TCBuddyCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCBuddyCell.h; path = Interface/TCBuddyCell.h; sourceTree = "<group>"; };
-		E854FDFB12F8082C009C2E5E /* TCBuddyCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCBuddyCell.m; path = Interface/TCBuddyCell.m; sourceTree = "<group>"; };
 		E85903B011EC9877005CE53F /* TCTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCTools.m; sourceTree = "<group>"; };
 		E85903B111EC9877005CE53F /* TCTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCTools.h; sourceTree = "<group>"; };
 		E85923F6120A9E060035C420 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = TorChat/en.lproj/FilesWindow.xib; sourceTree = "<group>"; };
@@ -198,6 +196,8 @@
 		E86B5A1717AE7C6C00C715CA /* TCFileCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCFileCellView.m; path = Interface/TCFileCellView.m; sourceTree = "<group>"; };
 		E874146912FAE0C200BD4862 /* TCDropButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCDropButton.h; path = Interface/TCDropButton.h; sourceTree = "<group>"; };
 		E874146A12FAE0C200BD4862 /* TCDropButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCDropButton.m; path = Interface/TCDropButton.m; sourceTree = "<group>"; };
+		E878981417AFCC0900DB7709 /* TCBuddyCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCBuddyCellView.h; path = Interface/TCBuddyCellView.h; sourceTree = "<group>"; };
+		E878981517AFCC0900DB7709 /* TCBuddyCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCBuddyCellView.m; path = Interface/TCBuddyCellView.m; sourceTree = "<group>"; };
 		E87CB84D12508B8600A75686 /* person.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = person.png; path = ../Medias/person.png; sourceTree = "<group>"; };
 		E87CB84F12508CB600A75686 /* notes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = notes.png; path = ../Medias/notes.png; sourceTree = "<group>"; };
 		E87CB85212508F7A00A75686 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = TorChat/en.lproj/BuddyInfoWindow.xib; sourceTree = "<group>"; };
@@ -560,8 +560,8 @@
 		E870BD8317A8490500DFA076 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				E854FDFA12F8082C009C2E5E /* TCBuddyCell.h */,
-				E854FDFB12F8082C009C2E5E /* TCBuddyCell.m */,
+				E878981417AFCC0900DB7709 /* TCBuddyCellView.h */,
+				E878981517AFCC0900DB7709 /* TCBuddyCellView.m */,
 				E874146912FAE0C200BD4862 /* TCDropButton.h */,
 				E874146A12FAE0C200BD4862 /* TCDropButton.m */,
 				E88879FD1303EA9600C7D60E /* TCDragImageView.h */,
@@ -969,6 +969,7 @@
 				E889F0B512531D73000C36B2 /* TCChatBubble.m in Sources */,
 				E889F0B812531D7E000C36B2 /* TCChatPage.m in Sources */,
 				E889F0BB12531D92000C36B2 /* TCAssistantController.m in Sources */,
+				E878981617AFCC0900DB7709 /* TCBuddyCellView.m in Sources */,
 				E8A6FE2C17A993FC00C4DEAB /* TCPanel_Welcome.m in Sources */,
 				E889F0BE12531D9C000C36B2 /* TCAssistantBack.m in Sources */,
 				E889F0C212531DB2000C36B2 /* TCFilesController.m in Sources */,
@@ -979,7 +980,6 @@
 				E835491917A810E1003C08BB /* TCInfo.m in Sources */,
 				E8C1EFF312F7169400E24C42 /* TCImage.m in Sources */,
 				E8EDBCD417AA4C6500172B9C /* TCLogsManager.m in Sources */,
-				E854FDFC12F8082C009C2E5E /* TCBuddyCell.m in Sources */,
 				E874146B12FAE0C200BD4862 /* TCDropButton.m in Sources */,
 				E88879FF1303EA9F00C7D60E /* TCDragImageView.m in Sources */,
 				E8F15A7A130425A4000593E1 /* TCKeyedText.m in Sources */,

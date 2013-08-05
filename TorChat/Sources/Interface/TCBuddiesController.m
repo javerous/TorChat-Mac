@@ -36,7 +36,7 @@
 #import "TCFilesController.h"
 
 // > Cells
-#import "TCBuddyCell.h"
+#import "TCBuddyCellView.h"
 
 // > Views
 #import "TCButton.h"
@@ -122,6 +122,14 @@
 		
 		// Load interface bundle
 		[[NSBundle mainBundle] loadNibNamed:@"BuddiesWindow" owner:self topLevelObjects:nil];
+		
+		// Place Window.
+		[_mainWindow center];
+		[_mainWindow setFrameAutosaveName:@"BuddiesWindow"];
+		
+		// Configure table view.
+		[_tableView setTarget:self];
+		[_tableView setDoubleAction:@selector(tableViewDoubleClick:)];
 	}
 	return self;
 }
@@ -131,17 +139,6 @@
 	TCDebugLog("TCBuddieController dealloc");
 	
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)awakeFromNib
-{	
-	// Place Window
-	[_mainWindow center];
-	[_mainWindow setFrameAutosaveName:@"BuddiesWindow"];
-	
-	// Configure table view
-	[_tableView setTarget:self];
-	[_tableView setDoubleAction:@selector(tableViewDoubleClick:)];
 }
 
 
@@ -287,53 +284,20 @@
 	return (NSInteger)[_buddies count];
 }
 
-- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
+- (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)rowIndex
 {
-	if (rowIndex < 0 || rowIndex >= [_buddies count])
-		return nil;
+	TCBuddyCellView	*cellView = nil;
+	TCBuddy			*buddy = [_buddies objectAtIndex:(NSUInteger)rowIndex];
+	NSString		*name = [buddy finalName];
 	
-	NSString	*identifier = [aTableColumn identifier];
-	TCBuddy		*buddy = [_buddies objectAtIndex:(NSUInteger)rowIndex];
+	if ([name length] > 0)
+		cellView = [tableView makeViewWithIdentifier:@"buddy_name" owner:self];
+	else
+		cellView = [tableView makeViewWithIdentifier:@"buddy_address" owner:self];
 	
-	if ([identifier isEqualToString:@"state"])
-	{
-		if ([buddy blocked])
-			return [NSImage imageNamed:@"blocked_buddy"];
-		
-		switch ([buddy status])
-		{
-			case tcstatus_offline:
-				return [NSImage imageNamed:@"stat_offline"];
-				
-			case tcstatus_available:
-				return [NSImage imageNamed:@"stat_online"];
-				
-			case tcstatus_away:
-				return [NSImage imageNamed:@"stat_away"];
-				
-			case tcstatus_xa:
-				return [NSImage imageNamed:@"stat_xa"];
-		}
-	}
-	else if ([identifier isEqualToString:@"name"])
-	{
-		return [NSDictionary dictionaryWithObjectsAndKeys:	[buddy address],	TCBuddyCellAddressKey,
-															[buddy finalName],	TCBuddyCellNameKey,
-															nil];
-		
-		
-	}
-	else if ([identifier isEqualToString:@"avatar"])
-	{
-		NSImage *image = [buddy profileAvatar];
-		
-		if (image)
-			return image;
-		else
-			return [NSImage imageNamed:NSImageNameUser];
-	}
-
-	return nil;
+	[cellView setBuddy:buddy];
+	
+	return cellView;
 }
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
@@ -537,7 +501,7 @@
 - (void)buddy:(TCBuddy *)aBuddy event:(const TCInfo *)info
 {
 	// Add the error in the error manager
-	[[TCLogsManager sharedManager] addBuddyLogEntryFromAddress:[aBuddy address] alias:[aBuddy alias] andText:[info render]];
+	[[TCLogsManager sharedManager] addBuddyLogEntryFromAddress:[aBuddy address] name:[aBuddy finalName] andText:[info render]];
 	
 	dispatch_async(_localQueue, ^{
 		
@@ -1330,14 +1294,6 @@
 		[select setState:NSOnState];
 		
 		[_imStatusImage setImage:[select image]];
-
-		// Update popup-size
-		NSSize	sz = [[select title] sizeWithAttributes:[NSDictionary dictionaryWithObject:[_imStatus font] forKey:NSFontAttributeName]];
-		NSRect	rect = [_imStatus frame];
-		
-		rect.size.width = sz.width + 25;
-		
-		[_imStatus setFrame:rect];
 	}
 }
 
@@ -1380,14 +1336,6 @@
 	
 	// Update popup-title
 	[[_imTitle itemAtIndex:0] setTitle:content];
-	
-	// Update popup-size
-	NSSize	sz = [content sizeWithAttributes:[NSDictionary dictionaryWithObject:[_imTitle font] forKey:NSFontAttributeName]];
-	NSRect	rect = [_imTitle frame];
-	
-	rect.size.width = sz.width + 14;
-	
-	[_imTitle setFrame:rect];
 }
 
 @end

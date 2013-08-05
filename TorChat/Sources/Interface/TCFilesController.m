@@ -311,24 +311,13 @@
 	return cellView;
 }
 
-	
-/*
-- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
-{
-	if (rowIndex < 0 || rowIndex >= [_files count])
-		return nil;
-	
-	NSMutableDictionary *file = [_files objectAtIndex:(NSUInteger)rowIndex];
-	
-	return file;
-}
+
 
 - (BOOL)doDeleteKeyInTableView:(NSTableView *)aTableView
 {
-	NSIndexSet				*set = [_filesView selectedRowIndexes];
-	NSMutableIndexSet		*final = [NSMutableIndexSet indexSet];
-	NSNotificationCenter	*center = [NSNotificationCenter defaultCenter];
-    NSUInteger				currentIndex = [set firstIndex];
+	NSIndexSet			*set = [_filesView selectedRowIndexes];
+	NSMutableIndexSet	*final = [NSMutableIndexSet indexSet];
+    NSUInteger			currentIndex = [set firstIndex];
 	
     while (currentIndex != NSNotFound)
 	{
@@ -336,16 +325,7 @@
 		tcfile_status	status = (tcfile_status)[[file objectForKey:TCFileStatusKey] intValue];
 
 		if (status != tcfile_status_running)
-		{
-			NSString		*uuid = [file objectForKey:TCFileUUIDKey];
-			NSNumber		*way = [file objectForKey:TCFileWayKey];
-			NSDictionary	*info = [[NSDictionary alloc] initWithObjectsAndKeys:uuid, @"uuid", way, @"way", nil];
-			
-			// Inform of the remove
-			[center postNotificationName:TCFileRemovingNotify object:self userInfo:info];
-					
 			[final addIndex:currentIndex];
-		}
 
         currentIndex = [set indexGreaterThanIndex:currentIndex];
     }
@@ -362,7 +342,6 @@
 	
 	return YES;
 }
- */
 
 
 
