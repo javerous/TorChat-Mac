@@ -1,0 +1,27 @@
+
+/* Class = "NSWindow"; title = "File Transfers"; ObjectID = "1"; */
+"1.title" = "File Transfers";
+
+/* Class = "NSButtonCell"; title = "Clear"; ObjectID = "14"; */
+"14.title" = "Clear";
+
+/* Class = "NSTextFieldCell"; title = "x transfers"; ObjectID = "16"; */
+"16.title" = "x transfers";
+
+/* Class = "NSTextFieldCell"; title = "To: toto (kjfskfsjdlfdslkjfsdkl) - 10 Ko of 50 Ko"; ObjectID = "9SA-IR-kMM"; */
+"9SA-IR-kMM.title" = "To: toto (kjfskfsjdlfdslkjfsdkl) - 10 Ko of 50 Ko";
+
+/* Class = "NSTextFieldCell"; title = "MonFichier.txt"; ObjectID = "I32-aV-XN4"; */
+"I32-aV-XN4.title" = "MonFichier.txt";
+
+/* Class = "NSTextFieldCell"; title = "MonFichier.txt"; ObjectID = "dkK-pO-ZmA"; */
+"dkK-pO-ZmA.title" = "MonFichier.txt";
+
+/* Class = "NSTextFieldCell"; title = "Upload done."; ObjectID = "p4h-ix-yZk"; */
+"p4h-ix-yZk.title" = "Upload done.";
+
+/* Class = "NSTextFieldCell"; title = "Uploading..."; ObjectID = "x9y-Jx-b7n"; */
+"x9y-Jx-b7n.title" = "Uploading...";
+
+/* Class = "NSTextFieldCell"; title = "To: toto (kjfskfsjdlfdslkjfsdkl) - 10 Ko of 50 Ko"; ObjectID = "xd9-ZR-bHg"; */
+"xd9-ZR-bHg.title" = "To: toto (kjfskfsjdlfdslkjfsdkl) - 10 Ko of 50 Ko";
