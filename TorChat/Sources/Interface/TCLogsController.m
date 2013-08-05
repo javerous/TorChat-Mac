@@ -233,7 +233,7 @@
 		else if ([key isEqualToString:TCLogsGlobalKey])
 			return NSLocalizedString(@"logs_global_logs", @"");
 		else
-			return [[TCLogsManager sharedManager] aliasForKey:key];
+			return [[TCLogsManager sharedManager] nameForKey:key];
 	}
 	else if (aTableView == _logsView)
 	{
@@ -257,7 +257,7 @@
 				if ([str isEqualToString:TCLogsGlobalKey])
 					return NSLocalizedString(@"logs_global_logs", @"");
 				else
-					return [NSString stringWithFormat:@"%@ (%@)", [[TCLogsManager sharedManager] aliasForKey:str], str];
+					return [NSString stringWithFormat:@"%@ (%@)", [[TCLogsManager sharedManager] nameForKey:str], str];
 			}
 			
 			return str;
