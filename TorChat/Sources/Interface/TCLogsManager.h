@@ -50,14 +50,14 @@
 + (TCLogsManager *)sharedManager;
 
 // -- Logs --
-- (void)addBuddyLogEntryFromAddress:(NSString *)address alias:(NSString *)alias andText:(NSString *)log, ...;
+- (void)addBuddyLogEntryFromAddress:(NSString *)address name:(NSString *)name andText:(NSString *)log, ...;
 - (void)addGlobalLogEntry:(NSString *)log, ...;
 - (void)addGlobalAlertLog:(NSString *)log, ...;
 
 
 
 // -- Properties --
-- (NSString *)aliasForKey:(NSString *)key;
+- (NSString *)nameForKey:(NSString *)key;
 
 // -- Observer --
 - (void)addObserver:(id <TCLogsObserver>)observer forKey:(NSString *)key; // observer is weak referenced.
