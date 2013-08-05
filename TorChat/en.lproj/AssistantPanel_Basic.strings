@@ -1,0 +1,21 @@
+
+/* Class = "NSTextFieldCell"; title = "Download Folder :"; ObjectID = "099-Q4-nzo"; */
+"099-Q4-nzo.title" = "Download Folder :";
+
+/* Class = "NSButtonCell"; title = "Select"; ObjectID = "BNr-Ox-Soj"; */
+"BNr-Ox-Soj.title" = "Select";
+
+/* Class = "NSTextFieldCell"; title = "The file received from your buddies will be saved on this folder."; ObjectID = "KYR-YN-XaI"; */
+"KYR-YN-XaI.title" = "The file received from your buddies will be saved on this folder.";
+
+/* Class = "NSTextFieldCell"; title = "TorChat IM Address :"; ObjectID = "XPC-c6-X6m"; */
+"XPC-c6-X6m.title" = "TorChat IM Address :";
+
+/* Class = "NSTextFieldCell"; title = "Waiting for tor..."; ObjectID = "cIw-gC-I31"; */
+"cIw-gC-I31.title" = "Waiting for tor...";
+
+/* Class = "NSTextFieldCell"; title = "Please specify your setting bellow :"; ObjectID = "qpy-aS-rWl"; */
+"qpy-aS-rWl.title" = "Please specify your setting bellow :";
+
+/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "wGA-Lf-M2Z"; */
+"wGA-Lf-M2Z.title" = "Downloads";

@@ -1,0 +1,12 @@
+
+/* Class = "NSWindow"; title = "Logs"; ObjectID = "1"; */
+"1.title" = "Logs";
+
+/* Class = "NSTableColumn"; headerCell.title = "Buddies"; ObjectID = "8"; */
+"8.headerCell.title" = "Buddies";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "11"; */
+"11.title" = "Text Cell";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "22"; */
+"22.title" = "Text Cell";
