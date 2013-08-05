@@ -17,11 +17,11 @@
             <rect key="frame" x="0.0" y="0.0" width="420" height="327"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <matrix verticalHuggingPriority="750" fixedFrame="YES" allowsEmptySelection="NO" translatesAutoresizingMaskIntoConstraints="NO" id="T27-Bf-x3R">
-                    <rect key="frame" x="44" y="180" width="356" height="38"/>
+                <matrix verticalHuggingPriority="750" allowsEmptySelection="NO" translatesAutoresizingMaskIntoConstraints="NO" id="T27-Bf-x3R">
+                    <rect key="frame" x="44" y="181" width="187" height="38"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    <size key="cellSize" width="356" height="18"/>
+                    <size key="cellSize" width="187" height="18"/>
                     <size key="intercellSpacing" width="4" height="2"/>
                     <buttonCell key="prototype" type="radio" title="Radio" imagePosition="left" alignment="left" inset="2" id="KB8-7w-3PR">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -43,16 +43,16 @@
                         <action selector="selectChange:" target="-2" id="rzy-3b-HP2"/>
                     </connections>
                 </matrix>
-                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zoy-1f-syz">
-                    <rect key="frame" x="17" y="290" width="386" height="17"/>
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="zoy-1f-syz">
+                    <rect key="frame" x="17" y="290" width="191" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Welcome on TorChat for Mac." id="i0a-sg-LOk">
+                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Welcome on TorChat for Mac." usesSingleLineMode="YES" id="i0a-sg-LOk">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2xu-TJ-jaE">
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="2xu-TJ-jaE">
                     <rect key="frame" x="17" y="254" width="386" height="28"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="You need to setup a new configuration, or select an existing configuration file." id="vtj-cp-OAD">
@@ -61,8 +61,8 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PSa-1x-c1P">
-                    <rect key="frame" x="74" y="148" width="96" height="28"/>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="PSa-1x-c1P">
+                    <rect key="frame" x="74" y="149" width="68" height="28"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="push" title="Select..." bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="hSi-ve-dYR">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -72,16 +72,32 @@
                         <action selector="selectFile:" target="-2" id="beA-xf-uFf"/>
                     </connections>
                 </button>
-                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Lfd-R1-Tq3">
-                    <rect key="frame" x="170" y="156" width="233" height="14"/>
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Lfd-R1-Tq3">
+                    <rect key="frame" x="142" y="156" width="93" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="File Not Selected" id="na7-jD-3py">
+                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="File Not Selected" usesSingleLineMode="YES" id="na7-jD-3py">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
             </subviews>
+            <constraints>
+                <constraint firstItem="T27-Bf-x3R" firstAttribute="leading" secondItem="PSa-1x-c1P" secondAttribute="leading" constant="-35" id="53t-EF-NB5"/>
+                <constraint firstItem="PSa-1x-c1P" firstAttribute="top" secondItem="T27-Bf-x3R" secondAttribute="bottom" constant="8" symbolic="YES" id="8j4-cf-vCc"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Lfd-R1-Tq3" secondAttribute="trailing" constant="20" symbolic="YES" id="Dmq-3W-a7d"/>
+                <constraint firstItem="Lfd-R1-Tq3" firstAttribute="centerY" secondItem="PSa-1x-c1P" secondAttribute="centerY" constant="1" id="FYn-ix-swB"/>
+                <constraint firstAttribute="trailing" secondItem="2xu-TJ-jaE" secondAttribute="trailing" constant="20" symbolic="YES" id="JYi-Cg-LVh"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="zoy-1f-syz" secondAttribute="trailing" constant="20" symbolic="YES" id="aK6-HA-TH9"/>
+                <constraint firstItem="T27-Bf-x3R" firstAttribute="leading" secondItem="qbQ-Um-bCG" secondAttribute="leading" constant="44" id="cf9-mQ-9GV"/>
+                <constraint firstItem="zoy-1f-syz" firstAttribute="top" secondItem="qbQ-Um-bCG" secondAttribute="top" constant="20" symbolic="YES" id="d42-A0-QlW"/>
+                <constraint firstItem="Lfd-R1-Tq3" firstAttribute="leading" secondItem="PSa-1x-c1P" secondAttribute="trailing" constant="8" symbolic="YES" id="e5f-eA-i0u"/>
+                <constraint firstItem="zoy-1f-syz" firstAttribute="leading" secondItem="qbQ-Um-bCG" secondAttribute="leading" constant="20" symbolic="YES" id="gFG-26-u4h"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="T27-Bf-x3R" secondAttribute="trailing" constant="20" symbolic="YES" id="jwZ-PU-16o"/>
+                <constraint firstItem="T27-Bf-x3R" firstAttribute="top" secondItem="2xu-TJ-jaE" secondAttribute="bottom" constant="35" id="pLb-hY-gMV"/>
+                <constraint firstItem="2xu-TJ-jaE" firstAttribute="top" secondItem="zoy-1f-syz" secondAttribute="bottom" constant="8" symbolic="YES" id="qRZ-zA-2Qd"/>
+                <constraint firstItem="2xu-TJ-jaE" firstAttribute="leading" secondItem="qbQ-Um-bCG" secondAttribute="leading" constant="20" symbolic="YES" id="uSo-B4-ytM"/>
+            </constraints>
             <connections>
                 <outlet property="confPathField" destination="Lfd-R1-Tq3" id="Hk2-7u-BR8"/>
             </connections>

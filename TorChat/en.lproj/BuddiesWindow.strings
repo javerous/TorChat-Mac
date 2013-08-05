@@ -1,0 +1,78 @@
+
+/* Class = "NSWindow"; title = "Buddy List"; ObjectID = "1"; */
+"1.title" = "Buddy List";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "52"; */
+"52.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = "Offline"; ObjectID = "53"; */
+"53.title" = "Offline";
+
+/* Class = "NSMenuItem"; title = "Available"; ObjectID = "54"; */
+"54.title" = "Available";
+
+/* Class = "NSMenuItem"; title = "Away"; ObjectID = "55"; */
+"55.title" = "Away";
+
+/* Class = "NSMenuItem"; title = "Extended Away"; ObjectID = "56"; */
+"56.title" = "Extended Away";
+
+/* Class = "NSWindow"; title = "Add Buddy"; ObjectID = "65"; */
+"65.title" = "Add Buddy";
+
+/* Class = "NSTextFieldCell"; title = "Name: "; ObjectID = "68"; */
+"68.title" = "Name: ";
+
+/* Class = "NSTextFieldCell"; title = "Address: "; ObjectID = "72"; */
+"72.title" = "Address: ";
+
+/* Class = "NSTextFieldCell"; title = "Notes:"; ObjectID = "78"; */
+"78.title" = "Notes:";
+
+/* Class = "NSButtonCell"; title = "Add"; ObjectID = "82"; */
+"82.title" = "Add";
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "84"; */
+"84.title" = "Cancel";
+
+/* Class = "NSMenuItem"; title = "Offline"; ObjectID = "200"; */
+"200.title" = "Offline";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "209"; */
+"209.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = "<<Address>>"; ObjectID = "210"; */
+"210.title" = "<<Address>>";
+
+/* Class = "NSMenuItem"; title = "View as Name"; ObjectID = "211"; */
+"211.title" = "View as Name";
+
+/* Class = "NSMenuItem"; title = "View as Address"; ObjectID = "212"; */
+"212.title" = "View as Address";
+
+/* Class = "NSMenuItem"; title = "Edit Profile …"; ObjectID = "214"; */
+"214.title" = "Edit Profile …";
+
+/* Class = "NSWindow"; title = "Profile"; ObjectID = "223"; */
+"223.title" = "Profile";
+
+/* Class = "NSTextFieldCell"; title = "Profile Name:"; ObjectID = "228"; */
+"228.title" = "Profile Name:";
+
+/* Class = "NSTextFieldCell"; title = "Profile Text:"; ObjectID = "230"; */
+"230.title" = "Profile Text:";
+
+/* Class = "NSButtonCell"; title = "OK"; ObjectID = "238"; */
+"238.title" = "OK";
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "240"; */
+"240.title" = "Cancel";
+
+/* Class = "NSTextFieldCell"; title = "Name"; ObjectID = "JZ4-BS-rcf"; */
+"JZ4-BS-rcf.title" = "Name";
+
+/* Class = "NSTextFieldCell"; title = "Address"; ObjectID = "OT1-51-0xY"; */
+"OT1-51-0xY.title" = "Address";
+
+/* Class = "NSTextFieldCell"; title = "Address"; ObjectID = "yeE-ii-lkT"; */
+"yeE-ii-lkT.title" = "Address";

@@ -18,7 +18,7 @@
             <rect key="frame" x="0.0" y="0.0" width="420" height="327"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pZK-el-7aq">
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="pZK-el-7aq">
                     <rect key="frame" x="41" y="155" width="138" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="TorChat IM Address :" id="XPC-c6-X6m">
@@ -27,7 +27,7 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dpl-CL-F0d">
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dpl-CL-F0d">
                     <rect key="frame" x="41" y="244" width="119" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Download Folder :" id="099-Q4-nzo">
@@ -36,8 +36,8 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0EH-bM-eNg">
-                    <rect key="frame" x="254" y="245" width="149" height="14"/>
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0EH-bM-eNg">
+                    <rect key="frame" x="235" y="245" width="63" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Downloads" id="wGA-Lf-M2Z">
                         <font key="font" metaFont="smallSystem"/>
@@ -45,8 +45,8 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="v4h-Lj-whe">
-                    <rect key="frame" x="159" y="234" width="96" height="32"/>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="v4h-Lj-whe">
+                    <rect key="frame" x="159" y="234" width="77" height="32"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="push" title="Select" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BNr-Ox-Soj">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -56,8 +56,8 @@
                         <action selector="selectFolder:" target="-2" id="m43-Dd-kea"/>
                     </connections>
                 </button>
-                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eh9-dQ-ju9">
-                    <rect key="frame" x="17" y="290" width="386" height="17"/>
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="eh9-dQ-ju9">
+                    <rect key="frame" x="17" y="290" width="225" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Please specify your setting bellow :" id="qpy-aS-rWl">
                         <font key="font" metaFont="system"/>
@@ -65,8 +65,8 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qSy-Z0-Oon">
-                    <rect key="frame" x="41" y="208" width="324" height="28"/>
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qSy-Z0-Oon">
+                    <rect key="frame" x="41" y="222" width="362" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="The file received from your buddies will be saved on this folder." id="KYR-YN-XaI">
                         <font key="font" metaFont="smallSystem"/>
@@ -74,8 +74,8 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GHr-U0-flY">
-                    <rect key="frame" x="181" y="156" width="222" height="14"/>
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GHr-U0-flY">
+                    <rect key="frame" x="181" y="156" width="92" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" sendsActionOnEndEditing="YES" title="Waiting for tor..." id="cIw-gC-I31">
                         <font key="font" metaFont="smallSystem"/>
@@ -83,11 +83,34 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="WOp-RE-bKE">
+                <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="WOp-RE-bKE">
                     <rect key="frame" x="20" y="20" width="16" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                 </progressIndicator>
             </subviews>
+            <constraints>
+                <constraint firstItem="v4h-Lj-whe" firstAttribute="leading" secondItem="dpl-CL-F0d" secondAttribute="trailing" constant="8" symbolic="YES" id="0Fe-bt-DQw"/>
+                <constraint firstAttribute="bottom" secondItem="WOp-RE-bKE" secondAttribute="bottom" constant="20" id="5Ba-oE-GOa"/>
+                <constraint firstItem="GHr-U0-flY" firstAttribute="leading" secondItem="pZK-el-7aq" secondAttribute="trailing" constant="8" symbolic="YES" id="8ao-9R-cNe"/>
+                <constraint firstItem="0EH-bM-eNg" firstAttribute="leading" secondItem="v4h-Lj-whe" secondAttribute="trailing" constant="8" symbolic="YES" id="B2X-10-ufq"/>
+                <constraint firstItem="v4h-Lj-whe" firstAttribute="centerY" secondItem="0EH-bM-eNg" secondAttribute="centerY" constant="0.5" id="EAT-Oz-gDe"/>
+                <constraint firstItem="pZK-el-7aq" firstAttribute="top" secondItem="1nx-rV-LC9" secondAttribute="top" constant="155" id="FDr-pD-H41"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="GHr-U0-flY" secondAttribute="trailing" constant="20" symbolic="YES" id="MHo-MT-OQZ"/>
+                <constraint firstItem="eh9-dQ-ju9" firstAttribute="top" secondItem="1nx-rV-LC9" secondAttribute="top" constant="20" id="Mnf-J7-9zv"/>
+                <constraint firstItem="WOp-RE-bKE" firstAttribute="leading" secondItem="1nx-rV-LC9" secondAttribute="leading" constant="20" id="Rqr-4K-hhD"/>
+                <constraint firstItem="pZK-el-7aq" firstAttribute="leading" secondItem="1nx-rV-LC9" secondAttribute="leading" constant="44" id="V3J-Z6-Zgw"/>
+                <constraint firstItem="pZK-el-7aq" firstAttribute="top" relation="greaterThanOrEqual" secondItem="qSy-Z0-Oon" secondAttribute="bottom" constant="8" symbolic="YES" id="Wng-gz-gWw"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="0EH-bM-eNg" secondAttribute="trailing" constant="20" symbolic="YES" id="aFT-o6-O6g"/>
+                <constraint firstItem="eh9-dQ-ju9" firstAttribute="leading" secondItem="1nx-rV-LC9" secondAttribute="leading" constant="20" id="aW5-b8-Ed7"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="eh9-dQ-ju9" secondAttribute="trailing" constant="20" symbolic="YES" id="eC7-ry-EjU"/>
+                <constraint firstItem="v4h-Lj-whe" firstAttribute="top" secondItem="1nx-rV-LC9" secondAttribute="top" constant="65" id="h3f-fp-ljZ"/>
+                <constraint firstItem="qSy-Z0-Oon" firstAttribute="top" secondItem="v4h-Lj-whe" secondAttribute="bottom" constant="5" id="nY3-jf-gxv"/>
+                <constraint firstAttribute="trailing" secondItem="qSy-Z0-Oon" secondAttribute="trailing" constant="20" symbolic="YES" id="ooL-SX-gtb"/>
+                <constraint firstItem="qSy-Z0-Oon" firstAttribute="leading" secondItem="dpl-CL-F0d" secondAttribute="leading" id="p3y-Xe-h3N"/>
+                <constraint firstItem="GHr-U0-flY" firstAttribute="centerY" secondItem="pZK-el-7aq" secondAttribute="centerY" constant="0.5" id="rG9-LU-cqj"/>
+                <constraint firstItem="dpl-CL-F0d" firstAttribute="leading" secondItem="1nx-rV-LC9" secondAttribute="leading" constant="44" id="szP-0p-30A"/>
+                <constraint firstItem="v4h-Lj-whe" firstAttribute="centerY" secondItem="dpl-CL-F0d" secondAttribute="centerY" constant="1" id="t5O-F1-Am0"/>
+            </constraints>
             <connections>
                 <outlet property="imAddressField" destination="GHr-U0-flY" id="u4M-eE-U4J"/>
                 <outlet property="loadingIndicator" destination="WOp-RE-bKE" id="Cv5-kP-1yN"/>

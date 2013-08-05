@@ -16,8 +16,8 @@
             <rect key="frame" x="0.0" y="0.0" width="420" height="327"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wrj-Cp-BS7">
-                    <rect key="frame" x="17" y="290" width="386" height="17"/>
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wrj-Cp-BS7">
+                    <rect key="frame" x="17" y="290" width="199" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Please specify the mode to use" id="orc-zu-V4h">
                         <font key="font" metaFont="system"/>
@@ -25,8 +25,8 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nQc-qs-6PX">
-                    <rect key="frame" x="17" y="246" width="386" height="42"/>
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="nQc-qs-6PX">
+                    <rect key="frame" x="17" y="240" width="386" height="42"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" id="MdA-og-otk">
                         <font key="font" metaFont="smallSystem"/>
@@ -35,11 +35,11 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <matrix verticalHuggingPriority="750" fixedFrame="YES" allowsEmptySelection="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xdg-SH-cGA">
-                    <rect key="frame" x="54" y="169" width="329" height="38"/>
+                <matrix verticalHuggingPriority="750" allowsEmptySelection="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xdg-SH-cGA">
+                    <rect key="frame" x="54" y="169" width="122" height="38"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    <size key="cellSize" width="329" height="18"/>
+                    <size key="cellSize" width="122" height="18"/>
                     <size key="intercellSpacing" width="4" height="2"/>
                     <buttonCell key="prototype" type="radio" title="Radio" imagePosition="left" alignment="left" inset="2" id="zae-RN-vxA">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -62,6 +62,17 @@
                     </connections>
                 </matrix>
             </subviews>
+            <constraints>
+                <constraint firstItem="wrj-Cp-BS7" firstAttribute="leading" secondItem="nfa-Yn-Y4a" secondAttribute="leading" constant="20" id="2eI-3h-Xhr"/>
+                <constraint firstItem="xdg-SH-cGA" firstAttribute="leading" secondItem="nQc-qs-6PX" secondAttribute="leading" constant="34" id="8hX-kk-pkT"/>
+                <constraint firstItem="nQc-qs-6PX" firstAttribute="leading" secondItem="nfa-Yn-Y4a" secondAttribute="leading" constant="20" id="Bfm-50-NMr"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="xdg-SH-cGA" secondAttribute="trailing" constant="20" symbolic="YES" id="Cgx-GE-5OO"/>
+                <constraint firstItem="nQc-qs-6PX" firstAttribute="top" secondItem="wrj-Cp-BS7" secondAttribute="bottom" constant="8" symbolic="YES" id="Hcz-aI-1JX"/>
+                <constraint firstItem="wrj-Cp-BS7" firstAttribute="top" secondItem="nfa-Yn-Y4a" secondAttribute="top" constant="20" id="Kqd-cB-G1T"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="wrj-Cp-BS7" secondAttribute="trailing" constant="20" symbolic="YES" id="RGY-Mq-Mmf"/>
+                <constraint firstItem="xdg-SH-cGA" firstAttribute="top" secondItem="nQc-qs-6PX" secondAttribute="bottom" constant="33" id="Vhg-dA-BKa"/>
+                <constraint firstAttribute="trailing" secondItem="nQc-qs-6PX" secondAttribute="trailing" constant="20" symbolic="YES" id="lc9-5a-9zK"/>
+            </constraints>
         </customView>
     </objects>
 </document>
