@@ -15,7 +15,7 @@
 "cIw-gC-I31.title" = "En attente de tor…";
 
 /* Class = "NSTextFieldCell"; title = "Please specify your setting bellow :"; ObjectID = "qpy-aS-rWl"; */
-"qpy-aS-rWl.title" = "Entrez vos réglages ci-dessous :";
+"qpy-aS-rWl.title" = "Entrez vos réglages ci-dessous.";
 
 /* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "wGA-Lf-M2Z"; */
 "wGA-Lf-M2Z.title" = "Téléchargement";
