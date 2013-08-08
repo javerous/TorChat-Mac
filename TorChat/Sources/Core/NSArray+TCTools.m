@@ -39,7 +39,7 @@
 {
 	NSMutableData	*result = [[NSMutableData alloc] init];
 	NSUInteger		i, count = [self count];
-	size_t			str_len;
+	size_t			str_len = 0;
 	
 	if (str)
 		str_len = strlen(str);
