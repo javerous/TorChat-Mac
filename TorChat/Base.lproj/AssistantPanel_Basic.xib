@@ -22,7 +22,7 @@
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="pZK-el-7aq">
                     <rect key="frame" x="41" y="155" width="138" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="TorChat IM Address :" id="XPC-c6-X6m">
+                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="TorChat IM Address :" usesSingleLineMode="YES" id="XPC-c6-X6m">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -31,16 +31,16 @@
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dpl-CL-F0d">
                     <rect key="frame" x="41" y="244" width="119" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Download Folder :" id="099-Q4-nzo">
+                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Download Folder :" usesSingleLineMode="YES" id="099-Q4-nzo">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="eh9-dQ-ju9">
-                    <rect key="frame" x="17" y="290" width="225" height="17"/>
+                    <rect key="frame" x="17" y="290" width="221" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Please specify your setting bellow :" id="qpy-aS-rWl">
+                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Please specify your setting bellow." usesSingleLineMode="YES" id="qpy-aS-rWl">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -58,7 +58,7 @@
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GHr-U0-flY">
                     <rect key="frame" x="181" y="156" width="92" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" sendsActionOnEndEditing="YES" title="Waiting for tor..." id="cIw-gC-I31">
+                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingTail" selectable="YES" sendsActionOnEndEditing="YES" title="Waiting for tor..." usesSingleLineMode="YES" id="cIw-gC-I31">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -100,6 +100,7 @@
                 <constraint firstItem="Kji-cb-3dl" firstAttribute="centerY" secondItem="dpl-CL-F0d" secondAttribute="centerY" constant="-2" id="pjU-oa-Pbg"/>
                 <constraint firstItem="GHr-U0-flY" firstAttribute="centerY" secondItem="pZK-el-7aq" secondAttribute="centerY" constant="0.5" id="rG9-LU-cqj"/>
                 <constraint firstItem="dpl-CL-F0d" firstAttribute="leading" secondItem="1nx-rV-LC9" secondAttribute="leading" constant="44" id="szP-0p-30A"/>
+                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="pZK-el-7aq" secondAttribute="bottom" constant="20" symbolic="YES" id="v3D-6F-iPT"/>
             </constraints>
             <connections>
                 <outlet property="imAddressField" destination="GHr-U0-flY" id="u4M-eE-U4J"/>
