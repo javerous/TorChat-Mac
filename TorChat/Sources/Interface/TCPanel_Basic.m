@@ -25,10 +25,10 @@
 }
 
 @property (strong, nonatomic)	IBOutlet NSTextField			*imAddressField;
-@property (strong, nonatomic)	IBOutlet NSTextField			*imDownloadField;
+@property (strong, nonatomic)	IBOutlet NSPathControl			*imDownloadPath;
 @property (strong, nonatomic)	IBOutlet NSProgressIndicator	*loadingIndicator;
 
-- (IBAction)selectFolder:(id)sender;
+- (IBAction)pathChanged:(id)sender;
 
 @end
 
@@ -96,10 +96,10 @@
 	if (_config)
 		return;
 	
-	// Obserse tor status changes
+	// Obserse tor status changes.
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(torChanged:) name:TCTorManagerStatusChanged object:nil];
 	
-	// Get the default tor config path
+	// Get the default tor config path.
 	NSString *bpath = [[NSBundle mainBundle] bundlePath];
 	NSString *pth = [[bpath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"];
 	
@@ -110,7 +110,7 @@
 		return;
 	}
 	
-	// Try to build a new config file
+	// Try to build a new config file.
 	_config = [[TCConfigPlist alloc] initWithFile:pth];
 	
 	if (!_config)
@@ -123,7 +123,15 @@
 		return;
 	}
 	
-	// Start manager
+	// Set download path.
+	NSString *path = [_config realPath:[_config downloadFolder]];
+	
+	if ([[NSFileManager defaultManager] fileExistsAtPath:path] == NO)
+		[[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+	
+	[_imDownloadPath setURL:[NSURL fileURLWithPath:path]];
+	
+	// Start manager.
 	[[TCTorManager sharedManager] startWithConfiguration:_config];
 }
 
@@ -163,27 +171,17 @@
 */
 #pragma mark - TCPanel_Basic - IBAction
 
-- (IBAction)selectFolder:(id)sender
+- (IBAction)pathChanged:(id)sender
 {
 	if (!_config)
 		return;
 	
-	NSOpenPanel	*openDlg = [NSOpenPanel openPanel];
+	NSString *path = [[_imDownloadPath URL] path];
 	
-	// Ask for a file
-	[openDlg setCanChooseFiles:NO];
-	[openDlg setCanChooseDirectories:YES];
-	[openDlg setCanCreateDirectories:YES];
-	[openDlg setAllowsMultipleSelection:NO];
-	
-	if ([openDlg runModal] == NSOKButton)
-	{
-		NSArray	*urls = [openDlg URLs];
-		NSURL	*url = [urls objectAtIndex:0];
-		
-		[_imDownloadField setStringValue:[url path]];
-		[_config setDownloadFolder:[url path]];
-	}
+	if (path)
+		[_config setDownloadFolder:path];
+	else
+		NSBeep();
 }
 
 @end

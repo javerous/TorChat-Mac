@@ -141,7 +141,7 @@
 			[_sock scheduleOperation:tcsocket_op_line withSize:1 andTag:0];
 			
 			// Notify
-			[self notify:tccore_notify_client_started info:@"core_cctrl_note_started"];
+			[self notify:tccore_notify_client_started info:@"core_cnx_note_started"];
 		}
 	});
 }
@@ -191,7 +191,7 @@
 			fprintf(stderr, "(1) Will disconnect incoming connection from fake '%s'\n", [address UTF8String]);
 			
 			// Notify
-			[self error:tccore_error_client_cmd_ping info:@"core_cctrl_err_fake_ping" fatal:YES];
+			[self error:tccore_error_client_cmd_ping info:@"core_cnx_err_fake_ping" fatal:YES];
 			
 			return;
 		}
@@ -341,7 +341,7 @@
 - (void)socket:(TCSocket *)socket error:(TCInfo *)error
 {
 	// Fallback Error
-	[self error:tccore_error_socket info:@"core_cctrl_err_socket" contextInfo:error fatal:YES];
+	[self error:tccore_error_socket info:@"core_cnx_err_socket" contextInfo:error fatal:YES];
 }
 
 
