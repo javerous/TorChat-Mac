@@ -191,7 +191,7 @@
 				[_buddies addObject:buddy];
 				
 				// Notify
-				[self _notify:tccore_notify_buddy_new info:@"core_ctrl_note_new_buddy" context:buddy];
+				[self _notify:tccore_notify_buddy_new info:@"core_mng_note_new_buddy" context:buddy];
 			}
 			
 			// -- Check that we are on the buddy list --
@@ -209,7 +209,7 @@
 			}
 			
 			if (!found)
-				[self addBuddy:[_config localized:@"core_ctrl_myself"] address:selfAddress];
+				[self addBuddy:[_config localized:@"core_mng_myself"] address:selfAddress];
 			
 			// -- Buddy are loaded --
 			_buddiesLoaded = true;
@@ -228,28 +228,28 @@
 		// > Instanciate the listening socket
 		if ((_sock = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 		{
-			[self _error:tccore_error_serv_socket info:@"core_ctrl_err_socket" fatal:YES];
+			[self _error:tccore_error_serv_socket info:@"core_mng_err_socket" fatal:YES];
 			return;
 		}
 		
 		// > Reuse the port
 		if (setsockopt(_sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
 		{
-			[self _error:tccore_error_serv_socket info:@"core_ctrl_err_setsockopt" fatal:YES];
+			[self _error:tccore_error_serv_socket info:@"core_mng_err_setsockopt" fatal:YES];
 			return;
 		}
 		
 		// > Bind the socket to the configuration perviously set
 		if (bind(_sock, (struct sockaddr *)&my_addr, sizeof(struct sockaddr)) == -1)
 		{
-			[self _error:tccore_error_serv_socket info:@"core_ctrl_err_bind" fatal:YES];
+			[self _error:tccore_error_serv_socket info:@"core_mng_err_bind" fatal:YES];
 			return;
 		}
 		
 		// > Set the socket as a listening socket
 		if (listen(_sock, 10) == -1)
 		{
-			[self _error:tccore_error_serv_socket info:@"core_ctrl_err_listen" fatal:YES];
+			[self _error:tccore_error_serv_socket info:@"core_mng_err_listen" fatal:YES];
 			return;
 		}
 		
@@ -268,7 +268,7 @@
 			if (csock == -1)
 			{
 				dispatch_async(_localQueue, ^{
-					[self _error:tccore_error_serv_accept info:@"core_ctrl_err_accept" fatal:YES];
+					[self _error:tccore_error_serv_accept info:@"core_mng_err_accept" fatal:YES];
 				});
 			}
 			else
@@ -277,7 +277,7 @@
 				if (!doAsyncSocket(csock))
 				{
 					dispatch_async(_localQueue, ^{
-						[self _error:tccore_error_serv_accept info:@"core_ctrl_err_async" fatal:YES];
+						[self _error:tccore_error_serv_accept info:@"core_mng_err_async" fatal:YES];
 					});
 					
 					return;
@@ -325,7 +325,7 @@
 		[self setStatus:_mstatus];
 		
 		// Notify
-		[self _notify:tccore_notify_started info:@"core_ctrl_note_started"];
+		[self _notify:tccore_notify_started info:@"core_mng_note_started"];
 		
 		// We are running !
 		_running = YES;
@@ -360,7 +360,7 @@
 			[buddy stop];
 		
 		// Notify
-		[self _notify:tccore_notify_stoped info:@"core_ctrl_note_stoped"];
+		[self _notify:tccore_notify_stoped info:@"core_mng_note_stoped"];
 		
 		_running = false;
 	});
@@ -433,7 +433,7 @@
 			[buddy sendAvatar:_profileAvatar];
 		
 		// Notify
-		[self _notify:tccore_notify_profile_avatar info:@"core_ctrl_note_profile_avatar" context:_profileAvatar];
+		[self _notify:tccore_notify_profile_avatar info:@"core_mng_note_profile_avatar" context:_profileAvatar];
 	});
 }
 
@@ -468,7 +468,7 @@
 			[buddy sendProfileName:_profileName];
 		
 		// Notify
-		[self _notify:tccore_notify_profile_name info:@"core_ctrl_note_profile_name" context:_profileName];
+		[self _notify:tccore_notify_profile_name info:@"core_mng_note_profile_name" context:_profileName];
 	});
 }
 
@@ -502,7 +502,7 @@
 			[buddy sendProfileText:_profileText];
 
 		// Notify
-		[self _notify:tccore_notify_profile_text info:@"core_ctrl_note_profile_name" context:_profileText];
+		[self _notify:tccore_notify_profile_text info:@"core_mng_note_profile_name" context:_profileText];
 	});
 }
 
@@ -550,7 +550,7 @@
 		[_buddies addObject:buddy];
 		
 		// Notify
-		[self _notify:tccore_notify_buddy_new info:@"core_ctrl_note_new_buddy" context:buddy];
+		[self _notify:tccore_notify_buddy_new info:@"core_mng_note_new_buddy" context:buddy];
 		
         // Start it
 		[buddy start];
@@ -732,7 +732,7 @@
 
 	if ([abuddy isPonged])
 	{
-		[self _error:tccore_error_client_cmd_ping info:@"core_cctrl_err_already_pinged" fatal:YES];
+		[self _error:tccore_error_client_cmd_ping info:@"core_cnx_err_already_pinged" fatal:YES];
 		return;
 	}
 	
@@ -742,20 +742,20 @@
 	
 	if ([address isEqualToString:[_config selfAddress]] && abuddy && [[abuddy random] isEqualToString:random] == NO)
 	{
-		[self _error:tccore_error_client_cmd_ping info:@"core_cctrl_err_masquerade" fatal:YES];
+		[self _error:tccore_error_client_cmd_ping info:@"core_cnx_err_masquerade" fatal:YES];
 		return;
 	}
 	
 	// if the buddy don't exist, add it on the buddy list
 	if (!abuddy)
 	{
-		[self addBuddy:[_config localized:@"core_cctrl_new_buddy"] address:address];
+		[self addBuddy:[_config localized:@"core_cnx_new_buddy"] address:address];
 		
 		abuddy = [self buddyWithAddress:address];
 		
 		if (!abuddy)
 		{
-			[self _error:tccore_error_client_cmd_ping info:@"core_cctrl_err_add_buddy" fatal:YES];
+			[self _error:tccore_error_client_cmd_ping info:@"core_cnx_err_add_buddy" fatal:YES];
 			return;
 		}
 	}
@@ -787,7 +787,7 @@
 		}
 	}
 	else
-		[self _error:tccore_error_client_cmd_pong info:@"core_cctrl_err_pong" fatal:YES];
+		[self _error:tccore_error_client_cmd_pong info:@"core_cnx_err_pong" fatal:YES];
 	
 	// We don't need the connection at this time: simply remove it.
 	[self removeConnection:connection];

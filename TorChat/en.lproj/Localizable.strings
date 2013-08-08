@@ -152,7 +152,7 @@
 
 "core_bd_err_socks_request" = "Can't send the SOCKS request.";
 "core_bd_err_socks_91" = "SOCKS request rejected or failed.";
-"core_bd_err_socks_92" = "SOCKS request rejected becasue SOCKS server cannot connect to identd on the client.";
+"core_bd_err_socks_92" = "SOCKS request rejected because SOCKS server cannot connect to identd on the client.";
 "core_bd_err_socks_93" = "SOCKS request rejected because the client program and identd report different user-ids.";
 "core_bd_err_socks_unknown" = "SOCKS request failed for an unknown reason.";
 "core_bd_err_socket" = "Buddy socket error.";
@@ -165,37 +165,37 @@
 "core_bd_note_new_profile_avatar" = "Buddy profile avatar received";
 
 
-/* Core - Controller */
-"core_ctrl_note_new_buddy" = "A new buddy was added on your buddy list.";
-"core_ctrl_myself" = "myself";
+/* Core - Manager */
+"core_mng_note_new_buddy" = "A new buddy was added on your buddy list.";
+"core_mng_myself" = "myself";
 
-"core_ctrl_err_socket" = "Can't build a system socket object.";
-"core_ctrl_err_setsockopt" = "Can't change system socket option.";
-"core_ctrl_err_bind" = "Can't set system socket address.";
-"core_ctrl_err_listen" = "Can't listen on the system socket.";
-"core_ctrl_err_accept" = "Can't accept new client because of a system error.";
-"core_ctrl_err_async" = "Can't use async I/O on system socket.";
-"core_ctrl_note_started" = "TorChat controller is started.";
-"core_ctrl_note_stoped" = "TorChat controller is stoped.";
+"core_mng_err_socket" = "Can't build a system socket object.";
+"core_mng_err_setsockopt" = "Can't change system socket option.";
+"core_mng_err_bind" = "Can't set system socket address.";
+"core_mng_err_listen" = "Can't listen on the system socket.";
+"core_mng_err_accept" = "Can't accept new client because of a system error.";
+"core_mng_err_async" = "Can't use async I/O on system socket.";
+"core_mng_note_started" = "TorChat controller is started.";
+"core_mng_note_stoped" = "TorChat controller is stoped.";
 
-"core_ctrl_note_profile_avatar" = "Profile avatar changed.";
-"core_ctrl_note_profile_text" = "Profile text changed.";
-"core_ctrl_note_profile_name" = "Profile name changed.";
+"core_mng_note_profile_avatar" = "Profile avatar changed.";
+"core_mng_note_profile_text" = "Profile text changed.";
+"core_mng_note_profile_name" = "Profile name changed.";
 
 
-/* Core - Client Controller */
-"core_cctrl_note_started" = "Connection controller was started.";
+/* Core - Connection */
+"core_cnx_note_started" = "Connection controller was started.";
 
-"core_cctrl_err_fake_ping" = "A remote peer sent a faked ping hostname. It was killed.";
-"core_cctrl_err_already_pinged" = "A remote peer try to ping a buddy already pinged. It was killed.";
-"core_cctrl_err_masquerade" = "A remote peer try a masquerade with our address. It was killed.";
-"core_cctrl_err_pong" = "A remote peer try to do a pong, but the buddy can't be found. It was killed.";
+"core_cnx_err_fake_ping" = "A remote peer sent a faked ping hostname. It was killed.";
+"core_cnx_err_already_pinged" = "A remote peer try to ping a buddy already pinged. It was killed.";
+"core_cnx_err_masquerade" = "A remote peer try a masquerade with our address. It was killed.";
+"core_cnx_err_pong" = "A remote peer try to do a pong, but the buddy can't be found. It was killed.";
 
-"core_cctrl_err_socket" = "Client controller socket error.";
+"core_cnx_err_socket" = "Client controller socket error.";
 
-"core_cctrl_err_add_buddy" = "Can't add a new buddy on TorChat controller.";
+"core_cnx_err_add_buddy" = "Can't add a new buddy on TorChat controller.";
 
-"core_cctrl_new_buddy" = "unknown";
+"core_cnx_new_buddy" = "unknown";
 
 
 /* Core - File Send */

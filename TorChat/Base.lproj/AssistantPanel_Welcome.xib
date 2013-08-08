@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4488.1" systemVersion="12E55" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4488.2" systemVersion="12E55" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment defaultVersion="1080" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4488.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4488.2"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCPanel_Welcome">
             <connections>
+                <outlet property="buttonMatrix" destination="T27-Bf-x3R" id="bOO-9M-2rg"/>
                 <outlet property="confPathField" destination="Lfd-R1-Tq3" id="u56-er-DTY"/>
+                <outlet property="matrixButtons" destination="T27-Bf-x3R" id="o4F-xm-rTK"/>
                 <outlet property="view" destination="qbQ-Um-bCG" id="n3k-0f-8ad"/>
             </connections>
         </customObject>
@@ -86,12 +88,12 @@
                 <constraint firstItem="T27-Bf-x3R" firstAttribute="leading" secondItem="PSa-1x-c1P" secondAttribute="leading" constant="-35" id="53t-EF-NB5"/>
                 <constraint firstItem="PSa-1x-c1P" firstAttribute="top" secondItem="T27-Bf-x3R" secondAttribute="bottom" constant="8" symbolic="YES" id="8j4-cf-vCc"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Lfd-R1-Tq3" secondAttribute="trailing" constant="20" symbolic="YES" id="Dmq-3W-a7d"/>
-                <constraint firstItem="Lfd-R1-Tq3" firstAttribute="centerY" secondItem="PSa-1x-c1P" secondAttribute="centerY" constant="1" id="FYn-ix-swB"/>
                 <constraint firstAttribute="trailing" secondItem="2xu-TJ-jaE" secondAttribute="trailing" constant="20" symbolic="YES" id="JYi-Cg-LVh"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="zoy-1f-syz" secondAttribute="trailing" constant="20" symbolic="YES" id="aK6-HA-TH9"/>
                 <constraint firstItem="T27-Bf-x3R" firstAttribute="leading" secondItem="qbQ-Um-bCG" secondAttribute="leading" constant="44" id="cf9-mQ-9GV"/>
                 <constraint firstItem="zoy-1f-syz" firstAttribute="top" secondItem="qbQ-Um-bCG" secondAttribute="top" constant="20" symbolic="YES" id="d42-A0-QlW"/>
                 <constraint firstItem="Lfd-R1-Tq3" firstAttribute="leading" secondItem="PSa-1x-c1P" secondAttribute="trailing" constant="8" symbolic="YES" id="e5f-eA-i0u"/>
+                <constraint firstItem="PSa-1x-c1P" firstAttribute="centerY" secondItem="Lfd-R1-Tq3" secondAttribute="centerY" constant="-1" id="eMF-kJ-mhH"/>
                 <constraint firstItem="zoy-1f-syz" firstAttribute="leading" secondItem="qbQ-Um-bCG" secondAttribute="leading" constant="20" symbolic="YES" id="gFG-26-u4h"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="T27-Bf-x3R" secondAttribute="trailing" constant="20" symbolic="YES" id="jwZ-PU-16o"/>
                 <constraint firstItem="T27-Bf-x3R" firstAttribute="top" secondItem="2xu-TJ-jaE" secondAttribute="bottom" constant="35" id="pLb-hY-gMV"/>

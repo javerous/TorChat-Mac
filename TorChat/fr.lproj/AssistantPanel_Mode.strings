@@ -1,0 +1,15 @@
+
+/* Class = "NSTextFieldCell"; title = "Use basic mode to use TorChat with a pre-configured tor, or use advanced mode to use an existing running tor with a TorChat service configured."; ObjectID = "MdA-og-otk"; */
+"MdA-og-otk.title" = "Sélectionnez le mode basique pour utiliser TorChat avec une instance de tor préconfiguré, ou sélectionnez le mode avancé pour utiliser une instance de tor déjà configuré avec un service TorChat.";
+
+/* Class = "NSButtonCell"; title = "Basic Mode"; ObjectID = "bXA-QU-WSD"; */
+"bXA-QU-WSD.title" = "Mode basique";
+
+/* Class = "NSTextFieldCell"; title = "Please specify the mode to use"; ObjectID = "orc-zu-V4h"; */
+"orc-zu-V4h.title" = "Sélectionnez le mode à utiliser";
+
+/* Class = "NSButtonCell"; title = "Advanced Mode"; ObjectID = "te8-ma-4hL"; */
+"te8-ma-4hL.title" = "Mode avancé";
+
+/* Class = "NSButtonCell"; title = "Radio"; ObjectID = "zae-RN-vxA"; */
+"zae-RN-vxA.title" = "Radio";

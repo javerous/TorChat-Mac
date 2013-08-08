@@ -24,12 +24,11 @@
 
 @property (strong, nonatomic)	IBOutlet NSTextField	*imAddressField;
 @property (strong, nonatomic)	IBOutlet NSTextField	*imInPortField;
-@property (strong, nonatomic)	IBOutlet NSTextField	*imDownloadField;
+@property (strong, nonatomic)	IBOutlet NSPathControl	*imDownloadPath;
+
 
 @property (strong, nonatomic)	IBOutlet NSTextField	*torAddressField;
 @property (strong, nonatomic)	IBOutlet NSTextField	*torPortField;
-
-- (IBAction)selectFolder:(id)sender;
 
 @end
 
@@ -93,7 +92,7 @@
 	// Set up the config with the fields
 	[aconfig setTorAddress:[_torAddressField stringValue]];
 	[aconfig setSelfAddress:[_imAddressField stringValue]];
-	[aconfig setDownloadFolder:[_imDownloadField stringValue]];
+	[aconfig setDownloadFolder:[[_imDownloadPath URL] path]];
 	
 	[aconfig setTorPort:(uint16_t)[_torPortField intValue]];
 	[aconfig setClientPort:(uint16_t)[_imInPortField intValue]];
@@ -105,35 +104,18 @@
 
 - (void)showPanel
 {
+	// Configure assistant.
 	id <TCAssistantProxy> proxy = _proxy;
 	
 	[proxy setIsLastPanel:YES];
-}
-
-
-
-/*
-** TCPanel_Advanced - IBAction
-*/
-#pragma mark - TCPanel_Advanced - IBAction
-
-- (IBAction)selectFolder:(id)sender
-{
-	NSOpenPanel	*openDlg = [NSOpenPanel openPanel];
 	
-	// Ask for a file
-	[openDlg setCanChooseFiles:NO];
-	[openDlg setCanChooseDirectories:YES];
-	[openDlg setCanCreateDirectories:YES];
-	[openDlg setAllowsMultipleSelection:NO];
+	// Download path.
+	NSString *path = [[[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:NSLocalizedString(@"conf_download", @"")];
 	
-	if ([openDlg runModal] == NSOKButton)
-	{
-		NSArray		*urls = [openDlg URLs];
-		NSURL		*url = [urls objectAtIndex:0];
-		
-		[_imDownloadField setStringValue:[url path]];
-	}
+	if ([[NSFileManager defaultManager] fileExistsAtPath:path] == NO)
+		[[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+	
+	[_imDownloadPath setURL:[NSURL fileURLWithPath:path]];
 }
 
 @end
