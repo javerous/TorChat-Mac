@@ -1331,7 +1331,7 @@ static char gLocalQueueContext;
 	// Get the download folder
 	NSString *downPath = [[_config realPath:[_config downloadFolder]] stringByAppendingPathComponent:_address];
 	
-	[[NSFileManager defaultManager] createDirectoryAtPath:downPath withIntermediateDirectories:YES attributes:Nil error:nil];
+	[[NSFileManager defaultManager] createDirectoryAtPath:downPath withIntermediateDirectories:YES attributes:nil error:nil];
 	
 	// Parse values
 	uint64_t		ifsize = strtoull([fileSize cStringUsingEncoding:NSASCIIStringEncoding], NULL, 10);

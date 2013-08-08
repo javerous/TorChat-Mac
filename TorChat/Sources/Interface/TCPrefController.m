@@ -32,27 +32,11 @@
 
 
 /*
-** TCPrefController - Private
+** TCPrefView
 */
-#pragma mark - TCPrefController - Private
+#pragma mark - TCPrefView
 
-@interface TCPrefController ()
-{
-	TCPrefView	*_currentView;
-}
-
-- (void)loadViewIdentifier:(NSString *)identifier animated:(BOOL)animated;
-
-@end
-
-
-
-/*
-** TCPrefView - Private
-*/
-#pragma mark - TCPrefView - Private
-
-@interface TCPrefView ()
+@interface TCPrefView : NSView
 
 @property (strong, nonatomic) id <TCConfig> config;
 
@@ -64,15 +48,89 @@
 
 
 /*
-** TCPrefView_Network - Private
+** TCPrefController - Private
 */
-#pragma mark - TCPrefView_Network - Private
+#pragma mark - TCPrefController - Private
 
-@interface TCPrefView_Network ()
+@interface TCPrefController ()
 {
-	BOOL changes;
+	TCPrefView	*_currentView;
 }
 
+@property (strong, nonatomic) IBOutlet NSWindow	*mainWindow;
+
+@property (strong, nonatomic) IBOutlet TCPrefView	*generalView;
+@property (strong, nonatomic) IBOutlet TCPrefView	*networkView;
+@property (strong, nonatomic) IBOutlet TCPrefView	*buddiesView;
+
+// -- IBAction --
+- (IBAction)doToolbarItem:(id)sender;
+
+// -- Helpers --
+- (void)loadViewIdentifier:(NSString *)identifier animated:(BOOL)animated;
+
+@end
+
+
+
+/*
+** TCPrefView_General
+*/
+#pragma mark - TCPrefView_General
+
+@interface TCPrefView_General : TCPrefView
+
+// -- Properties --
+@property (strong, nonatomic) IBOutlet NSPathControl	*downloadPath;
+
+@property (strong, nonatomic) IBOutlet NSTextField		*clientNameField;
+@property (strong, nonatomic) IBOutlet NSTextField		*clientVersionField;
+
+
+// -- IBAction --
+- (IBAction)pathChanged:(id)sender;
+
+@end
+
+
+
+/*
+** TCPrefView_Network
+*/
+#pragma mark - TCPrefView_Network
+
+@interface TCPrefView_Network : TCPrefView
+{
+		BOOL changes;
+}
+
+@property (strong, nonatomic) IBOutlet NSTextField	*imAddressField;
+@property (strong, nonatomic) IBOutlet NSTextField	*imPortField;
+@property (strong, nonatomic) IBOutlet NSTextField	*torAddressField;
+@property (strong, nonatomic) IBOutlet NSTextField	*torPortField;
+
+@end
+
+
+
+/*
+** TCPrefView_Buddies
+*/
+#pragma mark - TCPrefView_Buddies
+
+@interface TCPrefView_Buddies : TCPrefView
+
+@property (strong, nonatomic) IBOutlet NSTableView	*tableView;
+@property (strong, nonatomic) IBOutlet NSButton		*removeButton;
+
+@property (strong, nonatomic) IBOutlet NSWindow		*addBlockedWindow;
+@property (strong, nonatomic) IBOutlet NSTextField	*addBlockedField;
+
+- (IBAction)doAddBlockedUser:(id)sender;
+- (IBAction)doRemoveBlockedUser:(id)sender;
+
+- (IBAction)doAddBlockedCancel:(id)sender;
+- (IBAction)doAddBlockedOK:(id)sender;
 @end
 
 
@@ -272,30 +330,14 @@
 */
 #pragma mark - TCPrefView_General - IBAction
 
-- (IBAction)doDownload:(id)sender
-{	
-	NSOpenPanel	*openDlg = [NSOpenPanel openPanel];
-	
-	// Ask for a file
-	[openDlg setCanChooseFiles:NO];
-	[openDlg setCanChooseDirectories:YES];
-	[openDlg setCanCreateDirectories:YES];
-	[openDlg setAllowsMultipleSelection:NO];
-	
-	if ([openDlg runModal] == NSOKButton)
-	{
-		NSArray		*urls = [openDlg URLs];
-		NSURL		*url = [urls objectAtIndex:0];
-		
-		if (self.config)
-		{
-			[_downloadField setStringValue:[[url path] lastPathComponent]];
-			
-			[self.config setDownloadFolder:[url path]];
-		}
-		else
-			NSBeep();
-	}
+- (IBAction)pathChanged:(id)sender
+{
+	NSString *path = [[_downloadPath URL] path];
+
+	if (path)
+		[self.config setDownloadFolder:path];
+	else
+		NSBeep();
 }
 
 
@@ -309,9 +351,16 @@
 {
 	if (!self.config)
 		return;
-		
-	[_downloadField setStringValue:[[self.config downloadFolder] lastPathComponent]];
+
+	// Download path.
+	NSString *path = [self.config realPath:[self.config downloadFolder]];
+
+	if ([[NSFileManager defaultManager] fileExistsAtPath:path] == NO)
+		[[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
 	
+	[_downloadPath setURL:[NSURL fileURLWithPath:path]];
+	
+	// Client info.
 	[[_clientNameField cell] setPlaceholderString:[self.config clientName:tc_config_get_default]];
 	[[_clientVersionField cell] setPlaceholderString:[self.config clientVersion:tc_config_get_default]];
 
@@ -466,7 +515,7 @@
 
 - (IBAction)doAddBlockedOK:(id)sender
 {
-	NSString	*address;
+	NSString *address;
 	
 	if (!self.config)
 		return;

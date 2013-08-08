@@ -25,7 +25,8 @@
 	TCConfigPlist					*_config;
 }
 
-@property (strong, nonatomic) IBOutlet NSTextField *confPathField;
+@property (strong, nonatomic) IBOutlet NSMatrix		*buttonMatrix;
+@property (strong, nonatomic) IBOutlet NSTextField	*confPathField;
 
 - (IBAction)selectChange:(id)sender;
 - (IBAction)selectFile:(id)sender;
@@ -41,10 +42,17 @@
 
 @implementation TCPanel_Welcome
 
+- (void)awakeFromNib
+{
+	[_buttonMatrix setAutorecalculatesCellSize:YES];
+}
+
 - (void)dealloc
 {
     TCDebugLog("TCPanel_Welcome dealloc");
 }
+
+
 
 /*
 ** TCPanel_Welcome - TCAssistantPanel

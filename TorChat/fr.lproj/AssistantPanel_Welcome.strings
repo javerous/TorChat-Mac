@@ -1,0 +1,21 @@
+
+/* Class = "NSButtonCell"; title = "Select a configuration file"; ObjectID = "GuM-nw-rLw"; */
+"GuM-nw-rLw.title" = "Sélectionner un fichier de configuration existant";
+
+/* Class = "NSButtonCell"; title = "Radio"; ObjectID = "KB8-7w-3PR"; */
+"KB8-7w-3PR.title" = "Radio";
+
+/* Class = "NSButtonCell"; title = "Select..."; ObjectID = "hSi-ve-dYR"; */
+"hSi-ve-dYR.title" = "Sélectionner...";
+
+/* Class = "NSTextFieldCell"; title = "Welcome on TorChat for Mac."; ObjectID = "i0a-sg-LOk"; */
+"i0a-sg-LOk.title" = "Bienvenue dans TorChat pour Mac.";
+
+/* Class = "NSTextFieldCell"; title = "File Not Selected"; ObjectID = "na7-jD-3py"; */
+"na7-jD-3py.title" = "Aucun fichier sélectionné";
+
+/* Class = "NSButtonCell"; title = "Setup a new configuration"; ObjectID = "rU1-ds-dhC"; */
+"rU1-ds-dhC.title" = "Paramétrer une nouvelle configuration";
+
+/* Class = "NSTextFieldCell"; title = "You need to setup a new configuration, or select an existing configuration file."; ObjectID = "vtj-cp-OAD"; */
+"vtj-cp-OAD.title" = "Vous devez paramétrer une nouvelle configuration, ou sélectionner un fichier de configuration existant.";

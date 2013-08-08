@@ -1,0 +1,12 @@
+
+/* Class = "NSWindow"; title = "Configuration Assistant"; ObjectID = "1"; */
+"1.title" = "Assistant de configuration";
+
+/* Class = "NSButtonCell"; title = "Continue"; ObjectID = "15"; */
+"15.title" = "Continuer";
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "17"; */
+"17.title" = "Annuler";
+
+/* Class = "NSTextFieldCell"; title = "<< Title >>"; ObjectID = "22"; */
+"22.title" = "<< Title >>";

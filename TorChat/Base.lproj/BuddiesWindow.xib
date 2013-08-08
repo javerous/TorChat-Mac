@@ -467,12 +467,14 @@ Gw
                 </subviews>
                 <constraints>
                     <constraint firstItem="169" firstAttribute="top" secondItem="75" secondAttribute="top" id="7Oq-AV-mSK"/>
+                    <constraint firstItem="71" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="66" secondAttribute="leading" constant="20" symbolic="YES" id="7P8-b9-RYp"/>
                     <constraint firstAttribute="trailing" secondItem="73" secondAttribute="trailing" constant="20" symbolic="YES" id="9Z6-tm-sec"/>
                     <constraint firstItem="81" firstAttribute="leading" secondItem="83" secondAttribute="trailing" constant="12" symbolic="YES" id="APO-xB-pA4"/>
                     <constraint firstItem="67" firstAttribute="centerY" secondItem="69" secondAttribute="centerY" id="JcG-CD-x1a"/>
                     <constraint firstItem="71" firstAttribute="centerY" secondItem="73" secondAttribute="centerY" id="KVQ-IH-qdm"/>
                     <constraint firstAttribute="trailing" secondItem="81" secondAttribute="trailing" constant="20" symbolic="YES" id="LHe-oS-caS"/>
                     <constraint firstItem="73" firstAttribute="leading" secondItem="66" secondAttribute="leading" constant="92" id="Mon-MB-W3G"/>
+                    <constraint firstItem="67" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="66" secondAttribute="leading" constant="20" symbolic="YES" id="PQL-vJ-pCn"/>
                     <constraint firstItem="169" firstAttribute="top" secondItem="73" secondAttribute="bottom" constant="8" symbolic="YES" id="Ty4-go-7St"/>
                     <constraint firstAttribute="trailing" secondItem="69" secondAttribute="trailing" constant="20" symbolic="YES" id="XEe-aC-nlr"/>
                     <constraint firstItem="69" firstAttribute="top" secondItem="66" secondAttribute="top" constant="20" symbolic="YES" id="XmD-0c-rl7"/>
@@ -484,6 +486,7 @@ Gw
                     <constraint firstItem="169" firstAttribute="leading" secondItem="75" secondAttribute="trailing" constant="8" symbolic="YES" id="sGf-m3-zmp"/>
                     <constraint firstItem="83" firstAttribute="top" secondItem="169" secondAttribute="bottom" constant="20" symbolic="YES" id="uDV-On-JSD"/>
                     <constraint firstItem="73" firstAttribute="top" secondItem="69" secondAttribute="bottom" constant="10" symbolic="YES" id="xPD-Yu-Xyl"/>
+                    <constraint firstItem="75" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="66" secondAttribute="leading" constant="20" symbolic="YES" id="xmp-Uu-TwU"/>
                     <constraint firstAttribute="trailing" secondItem="169" secondAttribute="trailing" constant="20" symbolic="YES" id="yer-1b-Nqc"/>
                     <constraint firstItem="69" firstAttribute="leading" secondItem="66" secondAttribute="leading" constant="92" id="z7a-Kh-Jrd"/>
                 </constraints>

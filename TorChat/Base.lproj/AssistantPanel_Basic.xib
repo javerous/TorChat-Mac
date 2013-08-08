@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4488.1" systemVersion="12E55" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4488.2" systemVersion="12E55" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment defaultVersion="1080" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4488.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4488.2"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCPanel_Basic">
             <connections>
                 <outlet property="imAddressField" destination="GHr-U0-flY" id="GL5-Fp-Iz4"/>
-                <outlet property="imDownloadField" destination="0EH-bM-eNg" id="bAU-oO-iSJ"/>
+                <outlet property="imDownloadPath" destination="Kji-cb-3dl" id="2bM-jB-wBm"/>
+                <outlet property="loadingIndicator" destination="WOp-RE-bKE" id="qa6-EG-rGH"/>
                 <outlet property="view" destination="1nx-rV-LC9" id="8vC-SW-wbN"/>
             </connections>
         </customObject>
@@ -36,26 +37,6 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0EH-bM-eNg">
-                    <rect key="frame" x="235" y="245" width="63" height="14"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Downloads" id="wGA-Lf-M2Z">
-                        <font key="font" metaFont="smallSystem"/>
-                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="v4h-Lj-whe">
-                    <rect key="frame" x="159" y="234" width="77" height="32"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="push" title="Select" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BNr-Ox-Soj">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <connections>
-                        <action selector="selectFolder:" target="-2" id="m43-Dd-kea"/>
-                    </connections>
-                </button>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="eh9-dQ-ju9">
                     <rect key="frame" x="17" y="290" width="225" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -87,29 +68,38 @@
                     <rect key="frame" x="20" y="20" width="16" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                 </progressIndicator>
+                <pathControl focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Kji-cb-3dl">
+                    <rect key="frame" x="162" y="242" width="124" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <pathCell key="cell" controlSize="small" selectable="YES" editable="YES" focusRingType="none" alignment="left" pathStyle="popUp" id="SrL-6L-NuB">
+                        <font key="font" metaFont="smallSystem"/>
+                        <url key="url" string="file://localhost/Applications/"/>
+                    </pathCell>
+                    <connections>
+                        <action selector="pathChanged:" target="-2" id="3Ih-W3-PVT"/>
+                    </connections>
+                </pathControl>
             </subviews>
             <constraints>
-                <constraint firstItem="v4h-Lj-whe" firstAttribute="leading" secondItem="dpl-CL-F0d" secondAttribute="trailing" constant="8" symbolic="YES" id="0Fe-bt-DQw"/>
+                <constraint firstItem="Kji-cb-3dl" firstAttribute="leading" secondItem="dpl-CL-F0d" secondAttribute="trailing" constant="8" symbolic="YES" id="1qy-dq-D5H"/>
                 <constraint firstAttribute="bottom" secondItem="WOp-RE-bKE" secondAttribute="bottom" constant="20" id="5Ba-oE-GOa"/>
                 <constraint firstItem="GHr-U0-flY" firstAttribute="leading" secondItem="pZK-el-7aq" secondAttribute="trailing" constant="8" symbolic="YES" id="8ao-9R-cNe"/>
-                <constraint firstItem="0EH-bM-eNg" firstAttribute="leading" secondItem="v4h-Lj-whe" secondAttribute="trailing" constant="8" symbolic="YES" id="B2X-10-ufq"/>
-                <constraint firstItem="v4h-Lj-whe" firstAttribute="centerY" secondItem="0EH-bM-eNg" secondAttribute="centerY" constant="0.5" id="EAT-Oz-gDe"/>
+                <constraint firstItem="qSy-Z0-Oon" firstAttribute="top" secondItem="dpl-CL-F0d" secondAttribute="bottom" constant="8" id="EAy-U0-Mon"/>
                 <constraint firstItem="pZK-el-7aq" firstAttribute="top" secondItem="1nx-rV-LC9" secondAttribute="top" constant="155" id="FDr-pD-H41"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="GHr-U0-flY" secondAttribute="trailing" constant="20" symbolic="YES" id="MHo-MT-OQZ"/>
                 <constraint firstItem="eh9-dQ-ju9" firstAttribute="top" secondItem="1nx-rV-LC9" secondAttribute="top" constant="20" id="Mnf-J7-9zv"/>
                 <constraint firstItem="WOp-RE-bKE" firstAttribute="leading" secondItem="1nx-rV-LC9" secondAttribute="leading" constant="20" id="Rqr-4K-hhD"/>
                 <constraint firstItem="pZK-el-7aq" firstAttribute="leading" secondItem="1nx-rV-LC9" secondAttribute="leading" constant="44" id="V3J-Z6-Zgw"/>
+                <constraint firstItem="dpl-CL-F0d" firstAttribute="top" secondItem="eh9-dQ-ju9" secondAttribute="bottom" constant="29" id="ViX-vL-MhJ"/>
                 <constraint firstItem="pZK-el-7aq" firstAttribute="top" relation="greaterThanOrEqual" secondItem="qSy-Z0-Oon" secondAttribute="bottom" constant="8" symbolic="YES" id="Wng-gz-gWw"/>
-                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="0EH-bM-eNg" secondAttribute="trailing" constant="20" symbolic="YES" id="aFT-o6-O6g"/>
                 <constraint firstItem="eh9-dQ-ju9" firstAttribute="leading" secondItem="1nx-rV-LC9" secondAttribute="leading" constant="20" id="aW5-b8-Ed7"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Kji-cb-3dl" secondAttribute="trailing" constant="20" symbolic="YES" id="dfR-Xx-JN1"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="eh9-dQ-ju9" secondAttribute="trailing" constant="20" symbolic="YES" id="eC7-ry-EjU"/>
-                <constraint firstItem="v4h-Lj-whe" firstAttribute="top" secondItem="1nx-rV-LC9" secondAttribute="top" constant="65" id="h3f-fp-ljZ"/>
-                <constraint firstItem="qSy-Z0-Oon" firstAttribute="top" secondItem="v4h-Lj-whe" secondAttribute="bottom" constant="5" id="nY3-jf-gxv"/>
                 <constraint firstAttribute="trailing" secondItem="qSy-Z0-Oon" secondAttribute="trailing" constant="20" symbolic="YES" id="ooL-SX-gtb"/>
                 <constraint firstItem="qSy-Z0-Oon" firstAttribute="leading" secondItem="dpl-CL-F0d" secondAttribute="leading" id="p3y-Xe-h3N"/>
+                <constraint firstItem="Kji-cb-3dl" firstAttribute="centerY" secondItem="dpl-CL-F0d" secondAttribute="centerY" constant="-2" id="pjU-oa-Pbg"/>
                 <constraint firstItem="GHr-U0-flY" firstAttribute="centerY" secondItem="pZK-el-7aq" secondAttribute="centerY" constant="0.5" id="rG9-LU-cqj"/>
                 <constraint firstItem="dpl-CL-F0d" firstAttribute="leading" secondItem="1nx-rV-LC9" secondAttribute="leading" constant="44" id="szP-0p-30A"/>
-                <constraint firstItem="v4h-Lj-whe" firstAttribute="centerY" secondItem="dpl-CL-F0d" secondAttribute="centerY" constant="1" id="t5O-F1-Am0"/>
             </constraints>
             <connections>
                 <outlet property="imAddressField" destination="GHr-U0-flY" id="u4M-eE-U4J"/>

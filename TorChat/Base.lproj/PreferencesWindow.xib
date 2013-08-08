@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4488.1" systemVersion="12E55" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4488.2" systemVersion="12E55" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment defaultVersion="1080" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4488.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4488.2"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCPrefController">
@@ -74,38 +74,27 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="89">
-                                <rect key="frame" x="209" y="17" width="63" height="14"/>
+                            <pathControl focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Su8-kG-L50">
+                                <rect key="frame" x="136" y="12" width="133" height="22"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Downloads" id="106">
+                                <pathCell key="cell" controlSize="small" selectable="YES" editable="YES" focusRingType="none" alignment="left" pathStyle="popUp" id="UhG-Cc-tKN">
                                     <font key="font" metaFont="smallSystem"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="87">
-                                <rect key="frame" x="133" y="6" width="77" height="32"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="push" title="Select" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="108">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
+                                    <url key="url" string="file://localhost/"/>
+                                    <color key="backgroundColor" red="0.89803921568627454" green="0.92549019607843142" blue="0.97254901960784312" alpha="0.0" colorSpace="deviceRGB"/>
+                                </pathCell>
                                 <connections>
-                                    <action selector="doDownload:" target="86" id="185"/>
+                                    <action selector="pathChanged:" target="86" id="2kO-Qt-Aah"/>
                                 </connections>
-                            </button>
+                            </pathControl>
                         </subviews>
                     </view>
                     <constraints>
-                        <constraint firstItem="87" firstAttribute="top" secondItem="138" secondAttribute="top" constant="25" id="3uY-NC-DAp"/>
                         <constraint firstAttribute="height" constant="56" id="9qQ-9P-GYr"/>
-                        <constraint firstItem="89" firstAttribute="leading" secondItem="87" secondAttribute="trailing" constant="8" symbolic="YES" id="Avp-f0-uZT"/>
-                        <constraint firstAttribute="bottom" secondItem="87" secondAttribute="bottom" constant="10" id="Ckp-Cf-D4t"/>
-                        <constraint firstItem="87" firstAttribute="leading" secondItem="90" secondAttribute="trailing" constant="8" symbolic="YES" id="Hdg-lt-Kh8"/>
-                        <constraint firstItem="87" firstAttribute="centerY" secondItem="89" secondAttribute="centerY" constant="0.5" id="NxQ-Xh-P6P"/>
+                        <constraint firstItem="90" firstAttribute="top" secondItem="138" secondAttribute="top" constant="26" id="K0V-WR-o0p"/>
+                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Su8-kG-L50" secondAttribute="trailing" constant="10" id="ODh-uX-fhe"/>
                         <constraint firstItem="90" firstAttribute="leading" secondItem="138" secondAttribute="leading" constant="16" id="URb-vQ-bzx"/>
-                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="89" secondAttribute="trailing" constant="16" id="hww-6W-Cqu"/>
-                        <constraint firstItem="87" firstAttribute="centerY" secondItem="90" secondAttribute="centerY" constant="1" id="yaW-su-Cw3"/>
+                        <constraint firstItem="Su8-kG-L50" firstAttribute="centerY" secondItem="90" secondAttribute="centerY" id="ida-b2-tUi"/>
+                        <constraint firstItem="Su8-kG-L50" firstAttribute="leading" secondItem="90" secondAttribute="trailing" constant="8" symbolic="YES" id="jAW-U2-Ezp"/>
                     </constraints>
                     <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                     <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -183,7 +172,7 @@
             <connections>
                 <outlet property="clientNameField" destination="142" id="186"/>
                 <outlet property="clientVersionField" destination="145" id="187"/>
-                <outlet property="downloadField" destination="89" id="184"/>
+                <outlet property="downloadPath" destination="Su8-kG-L50" id="qhg-Yp-icw"/>
             </connections>
         </view>
         <view id="114" userLabel="Network" customClass="TCPrefView_Network">

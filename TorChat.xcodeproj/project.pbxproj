@@ -215,6 +215,21 @@
 		E878984617B05C0B00DB7709 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = TorChat/Base.lproj/AssistantPanel_Mode.xib; sourceTree = "<group>"; };
 		E87CB84D12508B8600A75686 /* person.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = person.png; path = ../Medias/person.png; sourceTree = "<group>"; };
 		E87CB84F12508CB600A75686 /* notes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = notes.png; path = ../Medias/notes.png; sourceTree = "<group>"; };
+		E87E205A17B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = TorChat/fr.lproj/BuddiesWindow.strings; sourceTree = "<group>"; };
+		E87E205B17B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = TorChat/fr.lproj/BuddyInfoWindow.strings; sourceTree = "<group>"; };
+		E87E205C17B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = TorChat/fr.lproj/ChatWindow.strings; sourceTree = "<group>"; };
+		E87E205D17B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = TorChat/fr.lproj/ChatView.strings; sourceTree = "<group>"; };
+		E87E205E17B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = TorChat/fr.lproj/AssistantWindow.strings; sourceTree = "<group>"; };
+		E87E205F17B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = TorChat/fr.lproj/AssistantPanel_Mode.strings; sourceTree = "<group>"; };
+		E87E206017B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = TorChat/fr.lproj/AssistantPanel_Advanced.strings; sourceTree = "<group>"; };
+		E87E206117B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = TorChat/fr.lproj/AssistantPanel_Basic.strings; sourceTree = "<group>"; };
+		E87E206217B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = TorChat/fr.lproj/AssistantPanel_Welcome.strings; sourceTree = "<group>"; };
+		E87E206317B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = TorChat/fr.lproj/FilesWindow.strings; sourceTree = "<group>"; };
+		E87E206417B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = TorChat/fr.lproj/LogsWindow.strings; sourceTree = "<group>"; };
+		E87E206517B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = TorChat/fr.lproj/PreferencesWindow.strings; sourceTree = "<group>"; };
+		E87E206617B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = TorChat/fr.lproj/MainMenu.strings; sourceTree = "<group>"; };
+		E87E206717B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = TorChat/fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		E87E206817B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = TorChat/fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		E881CD7811F5891B008D6F55 /* add.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; name = add.tiff; path = ../Medias/add.tiff; sourceTree = "<group>"; };
 		E881CD7A11F5891B008D6F55 /* remove.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; name = remove.tiff; path = ../Medias/remove.tiff; sourceTree = "<group>"; };
 		E882D1AC1429DD0B009CCD01 /* TCConfigProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCConfigProxy.h; path = Shared/TCConfigProxy.h; sourceTree = SOURCE_ROOT; };
@@ -876,6 +891,7 @@
 			knownRegions = (
 				en,
 				Base,
+				fr,
 			);
 			mainGroup = E81FD9E511E7259B000614D5;
 			productRefGroup = E81FD9F511E7259B000614D5 /* Products */;
@@ -1019,6 +1035,7 @@
 			children = (
 				E878982117B0581B00DB7709 /* Base */,
 				E878983517B058A700DB7709 /* en */,
+				E87E206417B1084A00FAB545 /* fr */,
 			);
 			name = LogsWindow.xib;
 			path = ../..;
@@ -1028,6 +1045,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				E81FD9FC11E7259B000614D5 /* en */,
+				E87E206717B1084A00FAB545 /* fr */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -1037,6 +1055,7 @@
 			children = (
 				E878982317B0581B00DB7709 /* Base */,
 				E84FE49617B06357006E2D12 /* en */,
+				E87E206617B1084A00FAB545 /* fr */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";
@@ -1046,6 +1065,7 @@
 			children = (
 				E878982217B0581B00DB7709 /* Base */,
 				E878983717B058AE00DB7709 /* en */,
+				E87E206517B1084A00FAB545 /* fr */,
 			);
 			name = PreferencesWindow.xib;
 			path = ../..;
@@ -1055,6 +1075,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				E83423EB11F6F97B00922152 /* en */,
+				E87E206817B1084A00FAB545 /* fr */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -1064,6 +1085,7 @@
 			children = (
 				E878982017B0581B00DB7709 /* Base */,
 				E878982517B0585700DB7709 /* en */,
+				E87E206317B1084A00FAB545 /* fr */,
 			);
 			name = FilesWindow.xib;
 			path = ../..;
@@ -1074,6 +1096,7 @@
 			children = (
 				E878981B17B0581B00DB7709 /* Base */,
 				E878982F17B0588A00DB7709 /* en */,
+				E87E205E17B1084A00FAB545 /* fr */,
 			);
 			name = AssistantWindow.xib;
 			path = ../..;
@@ -1084,6 +1107,7 @@
 			children = (
 				E878981917B0581B00DB7709 /* Base */,
 				E84FE49717B06375006E2D12 /* en */,
+				E87E205C17B1084A00FAB545 /* fr */,
 			);
 			name = ChatWindow.xib;
 			path = ../..;
@@ -1094,6 +1118,7 @@
 			children = (
 				E878981717B0581B00DB7709 /* Base */,
 				E878983317B0589C00DB7709 /* en */,
+				E87E205A17B1084A00FAB545 /* fr */,
 			);
 			name = BuddiesWindow.xib;
 			path = ../..;
@@ -1104,6 +1129,7 @@
 			children = (
 				E878983917B05BC800DB7709 /* Base */,
 				E8C4CEE917B05EC600014783 /* en */,
+				E87E206217B1084A00FAB545 /* fr */,
 			);
 			name = AssistantPanel_Welcome.xib;
 			path = ../..;
@@ -1114,6 +1140,7 @@
 			children = (
 				E878984217B05C0B00DB7709 /* Base */,
 				E8C4CEEC17B0605800014783 /* en */,
+				E87E206017B1084A00FAB545 /* fr */,
 			);
 			name = AssistantPanel_Advanced.xib;
 			path = ../..;
@@ -1124,6 +1151,7 @@
 			children = (
 				E878984417B05C0B00DB7709 /* Base */,
 				E8C4CEEE17B0605800014783 /* en */,
+				E87E206117B1084A00FAB545 /* fr */,
 			);
 			name = AssistantPanel_Basic.xib;
 			path = ../..;
@@ -1134,6 +1162,7 @@
 			children = (
 				E878984617B05C0B00DB7709 /* Base */,
 				E8C4CEF017B0605800014783 /* en */,
+				E87E205F17B1084A00FAB545 /* fr */,
 			);
 			name = AssistantPanel_Mode.xib;
 			path = ../..;
@@ -1144,6 +1173,7 @@
 			children = (
 				E878981817B0581B00DB7709 /* Base */,
 				E878983117B0589500DB7709 /* en */,
+				E87E205B17B1084A00FAB545 /* fr */,
 			);
 			name = BuddyInfoWindow.xib;
 			path = ../..;
@@ -1154,6 +1184,7 @@
 			children = (
 				E878981A17B0581B00DB7709 /* Base */,
 				E84FE49817B0637C006E2D12 /* en */,
+				E87E205D17B1084A00FAB545 /* fr */,
 			);
 			name = ChatView.xib;
 			path = ../..;
