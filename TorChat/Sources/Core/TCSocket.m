@@ -163,6 +163,8 @@
 					[self _dataAvailable];
 				}
 			}
+			else
+				free(buffer);
 		});
 		
 		// Set the read handler
