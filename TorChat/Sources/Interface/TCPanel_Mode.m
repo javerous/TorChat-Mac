@@ -20,6 +20,8 @@
     __weak id <TCAssistantProxy> _proxy;
 }
 
+@property (strong, nonatomic) IBOutlet NSMatrix *buttonMatrix;
+
 - (IBAction)selectChange:(id)sender;
 
 @end
@@ -33,10 +35,17 @@
 
 @implementation TCPanel_Mode
 
+- (void)awakeFromNib
+{
+	[_buttonMatrix setAutorecalculatesCellSize:YES];
+}
+
 - (void)dealloc
 {
     TCDebugLog("TCPanel_Mode dealloc");
 }
+
+
 
 /*
 ** TCPanel_Mode - TCAssistantPanel
