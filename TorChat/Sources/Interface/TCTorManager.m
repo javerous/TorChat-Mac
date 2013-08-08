@@ -266,7 +266,7 @@ void catch_signal(int sig);
 				
 				[_errBuffer appendBytes:data ofSize:(NSUInteger)res copy:NO];
 
-				line = [_errBuffer dataUpToCStr:"\n" includeSearch:NO];
+				[_errBuffer dataUpToCStr:"\n" includeSearch:NO];
 				
 				while ((line = [_outBuffer dataUpToCStr:"\n" includeSearch:NO]))
 				{
