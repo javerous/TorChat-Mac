@@ -47,11 +47,11 @@
 	
 	[textStorage addAttribute:NSFontAttributeName value:font range:NSMakeRange(0, [textStorage length])];
 	[textContainer setLineFragmentPadding:0];
-	[layoutManager setTypesetterBehavior:NSTypesetterBehavior_10_2_WithCompatibility] ;
+	[layoutManager setTypesetterBehavior:NSTypesetterLatestBehavior];
 	
 	(void) [layoutManager glyphRangeForTextContainer:textContainer];
 	
-	return [layoutManager usedRectForTextContainer:textContainer].size.height;
+	return [layoutManager usedRectForTextContainer:textContainer].size.height + 6.0; // This value is empiric. Why it's always so hard to have a good computation of a text size ?
 }
 
 - (NSString *)realPath

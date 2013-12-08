@@ -43,6 +43,7 @@
 - (IBAction)showTransfers:(id)sender;
 - (IBAction)showBuddies:(id)sender;
 - (IBAction)showLogs:(id)sender;
+- (IBAction)showMessages:(id)sender;
 
 - (IBAction)doBuddyShowInfo:(id)sender;
 - (IBAction)doBuddyAdd:(id)sender;
