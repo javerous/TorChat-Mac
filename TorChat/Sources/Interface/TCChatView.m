@@ -34,7 +34,7 @@
 */
 #pragma mark - TCChatView - Private
 
-@interface TCChatView () <NSTextFieldDelegate>
+@interface TCChatView ()
 {
 }
 
@@ -105,6 +105,7 @@
 	[_talkView appendToConversation:[_userField stringValue] fromUser:tcchat_local];
 	
 	id <TCChatViewDelegate> delegate = _delegate;
+	
 	[delegate chat:self sendMessage:[_userField stringValue]];
 	
 	[_userField setStringValue:@""];
