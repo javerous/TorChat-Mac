@@ -229,3 +229,6 @@
 
 /* Class = "NSMenuItem"; title = "Block Buddy"; ObjectID = "729"; */
 "729.title" = "Bloquer le contact";
+
+/* Class = "NSMenuItem"; title = "Messages"; ObjectID = "thd-He-6ir"; */
+"thd-He-6ir.title" = "Messages";

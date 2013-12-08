@@ -24,9 +24,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "TCChatsTableView.h"
-
-
 
 /*
 ** Forward
@@ -72,22 +69,5 @@
 
 - (void)setLocalAvatar:(NSImage *)image forIdentifier:(NSString *)identifier;
 - (void)setRemoteAvatar:(NSImage *)image forIdentifier:(NSString *)identifier;
-
-@end
-
-
-
-/*
-** TCChatWindowController - Interface
-*/
-#pragma mark - TCChatWindowController - Interface
-
-@interface TCChatWindowController : NSWindowController <TCChatsTableViewDropDelegate>
-
-// -- Property --
-@property (strong, nonatomic) IBOutlet NSSplitView		*splitView;
-@property (strong, nonatomic) IBOutlet TCChatsTableView	*userList;
-@property (strong, nonatomic) IBOutlet NSView			*userView;
-@property (strong, nonatomic) IBOutlet NSView			*chatView;
 
 @end

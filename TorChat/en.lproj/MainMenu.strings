@@ -1,4 +1,4 @@
-﻿
+
 /* Class = "NSMenuItem"; title = "Bring All to Front"; ObjectID = "5"; */
 "5.title" = "Bring All to Front";
 
@@ -229,3 +229,6 @@
 
 /* Class = "NSMenuItem"; title = "Block Buddy"; ObjectID = "729"; */
 "729.title" = "Block Buddy";
+
+/* Class = "NSMenuItem"; title = "Messages"; ObjectID = "thd-He-6ir"; */
+"thd-He-6ir.title" = "Messages";
