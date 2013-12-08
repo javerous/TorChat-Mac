@@ -72,9 +72,9 @@
 	NSString	*text = content[TCChatCellChatTextKey];
 	
 	if (avatar)
-		self.imageView.image = avatar;
+		_avatarView.image = avatar;
 	else
-		self.imageView.image = [NSImage imageNamed:NSImageNameUser];
+		_avatarView.image = [NSImage imageNamed:NSImageNameUser];
 	
 	if ([name length] > 0)
 		self.textField.stringValue = name;
