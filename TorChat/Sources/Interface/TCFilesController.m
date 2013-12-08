@@ -311,8 +311,6 @@
 	return cellView;
 }
 
-
-
 - (BOOL)doDeleteKeyInTableView:(NSTableView *)aTableView
 {
 	NSIndexSet			*set = [_filesView selectedRowIndexes];

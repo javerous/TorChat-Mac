@@ -30,6 +30,7 @@
 #import "TCBuddyInfoController.h"
 #import "TCLogsController.h"
 #import "TCPrefController.h"
+#import "TCChatController.h"
 
 #import "TCBuddy.h"
 
@@ -101,6 +102,11 @@
 - (IBAction)showLogs:(id)sender
 {
 	[[TCLogsController sharedController] showWindow:sender];
+}
+
+- (IBAction)showMessages:(id)sender
+{
+	[[TCChatController sharedController] showWindow:sender];
 }
 
 

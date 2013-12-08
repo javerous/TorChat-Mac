@@ -34,16 +34,12 @@
 */
 #pragma mark - TCChatView - Private
 
-@interface TCChatView ()
+@interface TCChatView () <NSTextFieldDelegate>
 {
-	NSRect	_baseRect;
 }
 
 // -- Property --
 @property (strong, nonatomic) NSString *identifier;
-
-// -- Functions --
-- (void)_resizeUserField;
 
 @end
 
@@ -97,15 +93,6 @@
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)awakeFromNib
-{
-	// "Mark" field size
-	_baseRect = [_userField frame];
-	
-	// Install notification
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowDidResize:) name:NSWindowDidResizeNotification object:_view.window];
-}
-
 
 
 /*
@@ -121,8 +108,8 @@
 	[delegate chat:self sendMessage:[_userField stringValue]];
 	
 	[_userField setStringValue:@""];
-	[self _resizeUserField];
 }
+
 
 
 /*
@@ -154,81 +141,6 @@
 - (void)setRemoteAvatar:(NSImage *)image
 {
 	[_talkView setRemoteAvatar:image];
-}
-
-
-
-/*
-** TCChatView - Events
-*/
-#pragma mark - TCChatView - Events
-
-- (void)controlTextDidChange:(NSNotification *)aNotification
-{
-	[self _resizeUserField];
-}
-
-
-- (void)windowDidResize:(NSNotification *)notification
-{
-	[self _resizeUserField];
-}
-
-
-
-/*
-** TCChatView - Tools
-*/
-#pragma mark - TCChatView - Tools
-
-- (void)_resizeUserField
-{
-	NSString *text = [_userField stringValue];
-
-	if ([text length] == 0)
-		text = @" ";
-
-	NSRect	r = [_userField frame];
-	NSFont	*font = [_userField font];
-	CGFloat	height = [text heightForDrawingWithFont:font andWidth:(r.size.width - 8)];
-	CGFloat	lheight = [@" " heightForDrawingWithFont:font andWidth:100];
-
-	height += (_baseRect.size.height - lheight);
-
-	if (height != r.size.height)
-	{
-		NSRect rect;
-		
-		// > Update talkView size
-		rect = [_talkView frame];
-	
-		rect.origin.y += (height - r.size.height);
-		rect.size.height -= (height - r.size.height);
-	
-		if (rect.size.height < 150)
-			return;
-	
-		[_talkView setFrame:rect];
-		
-		// > Update back size
-		rect = [_backView frame];
-		
-		rect.size.height += (height - r.size.height);
-
-		[_backView setFrame:rect];
-	
-		// > Update line position
-		rect = [_lineView frame];
-		
-		rect.origin.y += (height - r.size.height);
-
-		[_lineView setFrame:rect];
-
-		// > Update user field size
-		r.size.height = height;
-
-		[_userField setFrame:r];
-	}
 }
 
 @end

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4488.2" systemVersion="12E55" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4514" systemVersion="13A603" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment defaultVersion="1080" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4488.2"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4514"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCBuddiesController">
@@ -77,7 +77,7 @@
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="oq1-kh-KnK">
-                                                            <rect key="frame" x="23" y="21" width="41" height="17"/>
+                                                            <rect key="frame" x="24" y="21" width="41" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Name" id="JZ4-BS-rcf">
                                                                 <font key="font" metaFont="system"/>
@@ -86,7 +86,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="BUr-Hc-2iY">
-                                                            <rect key="frame" x="23" y="4" width="48" height="14"/>
+                                                            <rect key="frame" x="24" y="4" width="48" height="14"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Address" id="OT1-51-0xY">
                                                                 <font key="font" size="11" name="LucidaGrande"/>
@@ -137,7 +137,7 @@
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="5xm-xg-tqe">
-                                                            <rect key="frame" x="23" y="13" width="48" height="14"/>
+                                                            <rect key="frame" x="24" y="13" width="48" height="14"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Address" id="yeE-ii-lkT">
                                                                 <font key="font" size="11" name="LucidaGrande"/>
@@ -190,11 +190,11 @@
                             </subviews>
                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </clipView>
-                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" controlSize="small" id="16">
+                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" controlSize="small" horizontal="YES" id="16">
                             <rect key="frame" x="-100" y="-100" width="192" height="15"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
-                        <scroller key="verticalScroller" verticalHuggingPriority="750" controlSize="small" id="15">
+                        <scroller key="verticalScroller" verticalHuggingPriority="750" controlSize="small" horizontal="NO" id="15">
                             <rect key="frame" x="267" y="1" width="14" height="235"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
@@ -356,7 +356,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="67">
-                        <rect key="frame" x="38" y="198" width="49" height="17"/>
+                        <rect key="frame" x="37" y="198" width="49" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Name: " usesSingleLineMode="YES" id="68">
                             <font key="font" metaFont="system"/>
@@ -365,7 +365,7 @@
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="71">
-                        <rect key="frame" x="23" y="166" width="64" height="17"/>
+                        <rect key="frame" x="23" y="166" width="63" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Address: " usesSingleLineMode="YES" id="72">
                             <font key="font" metaFont="system"/>
@@ -392,7 +392,7 @@
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="75">
-                        <rect key="frame" x="42" y="138" width="45" height="17"/>
+                        <rect key="frame" x="42" y="138" width="44" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Notes:" usesSingleLineMode="YES" id="78">
                             <font key="font" metaFont="system"/>
@@ -457,11 +457,11 @@ Gw
                         <constraints>
                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="197" id="B1b-pM-UWk"/>
                         </constraints>
-                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" id="171">
+                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="171">
                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
-                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" id="170">
+                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="170">
                             <rect key="frame" x="182" y="1" width="16" height="12"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
@@ -504,7 +504,7 @@ Gw
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="227">
-                        <rect key="frame" x="17" y="243" width="89" height="17"/>
+                        <rect key="frame" x="18" y="243" width="89" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Profile Name:" usesSingleLineMode="YES" id="228">
                             <font key="font" metaFont="system"/>
@@ -513,7 +513,7 @@ Gw
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="229">
-                        <rect key="frame" x="17" y="188" width="81" height="17"/>
+                        <rect key="frame" x="18" y="188" width="79" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Profile Text:" usesSingleLineMode="YES" id="230">
                             <font key="font" metaFont="system"/>
@@ -541,11 +541,11 @@ Gw
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         </clipView>
-                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" id="233">
+                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="233">
                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
-                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" id="232">
+                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="232">
                             <rect key="frame" x="-100" y="-100" width="15" height="101"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
@@ -622,9 +622,9 @@ Gw
         <image name="add" width="32" height="23"/>
         <image name="bar" width="1" height="35"/>
         <image name="remove" width="32" height="23"/>
-        <image name="stat_away" width="12.801423072814941" height="12.801423072814941"/>
+        <image name="stat_away" width="12.800000190734863" height="12.800000190734863"/>
         <image name="stat_offline" width="16" height="16"/>
-        <image name="stat_online" width="12.801423072814941" height="12.801423072814941"/>
-        <image name="stat_xa" width="12.801423072814941" height="12.801423072814941"/>
+        <image name="stat_online" width="12.800000190734863" height="12.800000190734863"/>
+        <image name="stat_xa" width="12.800000190734863" height="12.800000190734863"/>
     </resources>
 </document>
