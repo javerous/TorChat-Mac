@@ -1,5 +1,5 @@
 /*
- *  TCStringExtension.h
+ *  NSString+TCExtension.h
  *
  *  Copyright 2013 Avérous Julien-Pierre
  *
