@@ -7,16 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E80367CC14E056200089CE80 /* balloon_rigth.png in Resources */ = {isa = PBXBuildFile; fileRef = E80367C914E056200089CE80 /* balloon_rigth.png */; };
-		E80367CD14E056200089CE80 /* balloon_left.png in Resources */ = {isa = PBXBuildFile; fileRef = E80367CA14E056200089CE80 /* balloon_left.png */; };
-		E80367CE14E056200089CE80 /* balloon_center.png in Resources */ = {isa = PBXBuildFile; fileRef = E80367CB14E056200089CE80 /* balloon_center.png */; };
 		E80414C917A557B7008220C9 /* NSArray+TCTools.m in Sources */ = {isa = PBXBuildFile; fileRef = E80414C817A557B7008220C9 /* NSArray+TCTools.m */; };
 		E80414CB17A57722008220C9 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E80414CA17A57722008220C9 /* Security.framework */; };
 		E807B4B2124FB52700FDC769 /* LogsWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E807B4B0124FB52700FDC769 /* LogsWindow.xib */; };
 		E809B1451859C593001664E1 /* TCChatTranscriptViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E809B1441859C593001664E1 /* TCChatTranscriptViewController.m */; };
 		E809B1481859C5BC001664E1 /* NSImage+TCExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = E809B1471859C5BC001664E1 /* NSImage+TCExtension.m */; };
-		E809B14B1859C697001664E1 /* balloon_aqua.tiff in Resources */ = {isa = PBXBuildFile; fileRef = E809B1491859C697001664E1 /* balloon_aqua.tiff */; };
-		E809B14C1859C697001664E1 /* balloon_graphite.tiff in Resources */ = {isa = PBXBuildFile; fileRef = E809B14A1859C697001664E1 /* balloon_graphite.tiff */; };
 		E809B14E1859C6F9001664E1 /* ChatTemplate.plist in Resources */ = {isa = PBXBuildFile; fileRef = E809B14D1859C6F9001664E1 /* ChatTemplate.plist */; };
 		E809B1A51859CC4B001664E1 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E809B1A41859CC4B001664E1 /* WebKit.framework */; };
 		E809B1E71859F186001664E1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E809B1E61859F186001664E1 /* Images.xcassets */; };
@@ -24,14 +19,6 @@
 		E81FD9F811E7259B000614D5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81FD9F711E7259B000614D5 /* Cocoa.framework */; };
 		E81FD9FD11E7259B000614D5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E81FD9FB11E7259B000614D5 /* InfoPlist.strings */; };
 		E81FDA0211E7259C000614D5 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = E81FDA0011E7259C000614D5 /* MainMenu.xib */; };
-		E826C10B120D94F000AF9A5E /* file_down.png in Resources */ = {isa = PBXBuildFile; fileRef = E826C109120D94F000AF9A5E /* file_down.png */; };
-		E826C10C120D94F000AF9A5E /* file_up.png in Resources */ = {isa = PBXBuildFile; fileRef = E826C10A120D94F000AF9A5E /* file_up.png */; };
-		E826C116120D99E500AF9A5E /* file_stop_rollover.tif in Resources */ = {isa = PBXBuildFile; fileRef = E826C114120D99E500AF9A5E /* file_stop_rollover.tif */; };
-		E826C117120D99E500AF9A5E /* file_stop.tif in Resources */ = {isa = PBXBuildFile; fileRef = E826C115120D99E500AF9A5E /* file_stop.tif */; };
-		E826C12D120D9D6F00AF9A5E /* file_reveal_rollover.tif in Resources */ = {isa = PBXBuildFile; fileRef = E826C12B120D9D6F00AF9A5E /* file_reveal_rollover.tif */; };
-		E826C12E120D9D6F00AF9A5E /* file_reveal.tif in Resources */ = {isa = PBXBuildFile; fileRef = E826C12C120D9D6F00AF9A5E /* file_reveal.tif */; };
-		E826C190120DB0C400AF9A5E /* file_stop_pushed.tif in Resources */ = {isa = PBXBuildFile; fileRef = E826C18F120DB0C400AF9A5E /* file_stop_pushed.tif */; };
-		E826C192120DB11B00AF9A5E /* file_reveal_pushed.tif in Resources */ = {isa = PBXBuildFile; fileRef = E826C191120DB11B00AF9A5E /* file_reveal_pushed.tif */; };
 		E82B7D7A125A08A800B7BA8A /* TCPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E82B7D79125A08A800B7BA8A /* TCPreferencesWindowController.m */; };
 		E82B7D7D125A098000B7BA8A /* PreferencesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E82B7D7B125A098000B7BA8A /* PreferencesWindow.xib */; };
 		E82B7D8F125A115400B7BA8A /* TCMainController.m in Sources */ = {isa = PBXBuildFile; fileRef = E82B7D8E125A115400B7BA8A /* TCMainController.m */; };
@@ -46,15 +33,9 @@
 		E837DAE311E7739D004BC524 /* TCCoreManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E837DADB11E7739D004BC524 /* TCCoreManager.m */; };
 		E8455D3D17A425F00046307B /* TCValue.m in Sources */ = {isa = PBXBuildFile; fileRef = E8455D3C17A425F00046307B /* TCValue.m */; };
 		E8455D4617A4386C0046307B /* NSData+TCTools.m in Sources */ = {isa = PBXBuildFile; fileRef = E8455D4517A438660046307B /* NSData+TCTools.m */; };
-		E849F93711F5E8F300193F06 /* engrenage.png in Resources */ = {isa = PBXBuildFile; fileRef = E849F93611F5E8F300193F06 /* engrenage.png */; };
 		E852235217B504CA00C6F585 /* TCChatCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E852235117B504CA00C6F585 /* TCChatCellView.m */; };
-		E85310F812F8170E009FC05B /* logs.png in Resources */ = {isa = PBXBuildFile; fileRef = E85310F712F8170E009FC05B /* logs.png */; };
 		E85903B211EC9877005CE53F /* TCTools.m in Sources */ = {isa = PBXBuildFile; fileRef = E85903B011EC9877005CE53F /* TCTools.m */; };
 		E85923F7120A9E060035C420 /* FilesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E85923F5120A9E060035C420 /* FilesWindow.xib */; };
-		E861274911F59E3C00901B29 /* stat_away.png in Resources */ = {isa = PBXBuildFile; fileRef = E861274511F59E3C00901B29 /* stat_away.png */; };
-		E861274A11F59E3C00901B29 /* stat_offline.png in Resources */ = {isa = PBXBuildFile; fileRef = E861274611F59E3C00901B29 /* stat_offline.png */; };
-		E861274B11F59E3C00901B29 /* stat_online.png in Resources */ = {isa = PBXBuildFile; fileRef = E861274711F59E3C00901B29 /* stat_online.png */; };
-		E861274C11F59E3C00901B29 /* stat_xa.png in Resources */ = {isa = PBXBuildFile; fileRef = E861274811F59E3C00901B29 /* stat_xa.png */; };
 		E86B5A1817AE7C6C00C715CA /* TCFileCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E86B5A1717AE7C6C00C715CA /* TCFileCellView.m */; };
 		E874146B12FAE0C200BD4862 /* TCDropButton.m in Sources */ = {isa = PBXBuildFile; fileRef = E874146A12FAE0C200BD4862 /* TCDropButton.m */; };
 		E878981617AFCC0900DB7709 /* TCBuddyCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E878981517AFCC0900DB7709 /* TCBuddyCellView.m */; };
@@ -62,11 +43,7 @@
 		E878984717B05C0B00DB7709 /* AssistantPanel_Advanced.xib in Resources */ = {isa = PBXBuildFile; fileRef = E878984117B05C0B00DB7709 /* AssistantPanel_Advanced.xib */; };
 		E878984817B05C0B00DB7709 /* AssistantPanel_Basic.xib in Resources */ = {isa = PBXBuildFile; fileRef = E878984317B05C0B00DB7709 /* AssistantPanel_Basic.xib */; };
 		E878984917B05C0B00DB7709 /* AssistantPanel_Mode.xib in Resources */ = {isa = PBXBuildFile; fileRef = E878984517B05C0B00DB7709 /* AssistantPanel_Mode.xib */; };
-		E87CB84E12508B8600A75686 /* person.png in Resources */ = {isa = PBXBuildFile; fileRef = E87CB84D12508B8600A75686 /* person.png */; };
-		E87CB85012508CB600A75686 /* notes.png in Resources */ = {isa = PBXBuildFile; fileRef = E87CB84F12508CB600A75686 /* notes.png */; };
 		E87CB85312508F7A00A75686 /* BuddyInfoWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E87CB85112508F7A00A75686 /* BuddyInfoWindow.xib */; };
-		E881CD7D11F5891B008D6F55 /* add.tiff in Resources */ = {isa = PBXBuildFile; fileRef = E881CD7811F5891B008D6F55 /* add.tiff */; };
-		E881CD7F11F5891B008D6F55 /* remove.tiff in Resources */ = {isa = PBXBuildFile; fileRef = E881CD7A11F5891B008D6F55 /* remove.tiff */; };
 		E88879FF1303EA9F00C7D60E /* TCDragImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = E88879FE1303EA9900C7D60E /* TCDragImageView.m */; };
 		E889F09712531CFB000C36B2 /* NSString+TCExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F09612531CFB000C36B2 /* NSString+TCExtension.m */; };
 		E889F09A12531D07000C36B2 /* TCButton.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F09912531D07000C36B2 /* TCButton.m */; };
@@ -82,7 +59,6 @@
 		E889F0C812531DC9000C36B2 /* TCLogsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0C712531DC9000C36B2 /* TCLogsWindowController.m */; };
 		E889F0CB12531DD6000C36B2 /* TorChatAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0CA12531DD6000C36B2 /* TorChatAppDelegate.m */; };
 		E88AE83711EDE9D50037D808 /* TCConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = E88AE83511EDE9D50037D808 /* TCConnection.m */; };
-		E8A5C5E214F690630096367C /* blocked_buddy.png in Resources */ = {isa = PBXBuildFile; fileRef = E8A5C5E114F690630096367C /* blocked_buddy.png */; };
 		E8A6FE2C17A993FC00C4DEAB /* TCPanel_Welcome.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A6FE2B17A993FC00C4DEAB /* TCPanel_Welcome.m */; };
 		E8A6FE3217A995AB00C4DEAB /* TCPanel_Mode.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A6FE3117A995AB00C4DEAB /* TCPanel_Mode.m */; };
 		E8A6FE3517A995D100C4DEAB /* TCPanel_Advanced.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A6FE3417A995D100C4DEAB /* TCPanel_Advanced.m */; };
@@ -92,8 +68,6 @@
 		E8C3982B1205D51000B9307B /* TCSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C398291205D51000B9307B /* TCSocket.m */; };
 		E8CCCD7211FEE70E00C8EEFF /* TCFileSend.m in Sources */ = {isa = PBXBuildFile; fileRef = E8CCCD7011FEE70E00C8EEFF /* TCFileSend.m */; };
 		E8CCCD7511FEE72500C8EEFF /* TCFileReceive.m in Sources */ = {isa = PBXBuildFile; fileRef = E8CCCD7311FEE72500C8EEFF /* TCFileReceive.m */; };
-		E8D249C812F82C4700B476E3 /* bar.png in Resources */ = {isa = PBXBuildFile; fileRef = E8D249C712F82C4700B476E3 /* bar.png */; };
-		E8D5E25F14DA98B800973297 /* back_send_field.png in Resources */ = {isa = PBXBuildFile; fileRef = E8D5E25E14DA98B800973297 /* back_send_field.png */; };
 		E8D5E26214DAA0B400973297 /* TCSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = E8D5E26114DAA0B400973297 /* TCSplitView.m */; };
 		E8D5E26514DACFA200973297 /* ChatView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E8D5E26314DACFA200973297 /* ChatView.xib */; };
 		E8D5E26B14DAD3E200973297 /* TCChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E8D5E26A14DAD3E200973297 /* TCChatViewController.m */; };
@@ -103,9 +77,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		E80367C914E056200089CE80 /* balloon_rigth.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = balloon_rigth.png; path = Balloon/balloon_rigth.png; sourceTree = "<group>"; };
-		E80367CA14E056200089CE80 /* balloon_left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = balloon_left.png; path = Balloon/balloon_left.png; sourceTree = "<group>"; };
-		E80367CB14E056200089CE80 /* balloon_center.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = balloon_center.png; path = Balloon/balloon_center.png; sourceTree = "<group>"; };
 		E80414C717A557B7008220C9 /* NSArray+TCTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+TCTools.h"; sourceTree = "<group>"; };
 		E80414C817A557B7008220C9 /* NSArray+TCTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+TCTools.m"; sourceTree = "<group>"; };
 		E80414CA17A57722008220C9 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -113,8 +84,6 @@
 		E809B1441859C593001664E1 /* TCChatTranscriptViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCChatTranscriptViewController.m; path = Interface/TCChatTranscriptViewController.m; sourceTree = "<group>"; };
 		E809B1461859C5BC001664E1 /* NSImage+TCExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSImage+TCExtension.h"; path = "Interface/NSImage+TCExtension.h"; sourceTree = "<group>"; };
 		E809B1471859C5BC001664E1 /* NSImage+TCExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSImage+TCExtension.m"; path = "Interface/NSImage+TCExtension.m"; sourceTree = "<group>"; };
-		E809B1491859C697001664E1 /* balloon_aqua.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = balloon_aqua.tiff; sourceTree = "<group>"; };
-		E809B14A1859C697001664E1 /* balloon_graphite.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = balloon_graphite.tiff; sourceTree = "<group>"; };
 		E809B14D1859C6F9001664E1 /* ChatTemplate.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = ChatTemplate.plist; path = TorChat/Resources/ChatTemplate.plist; sourceTree = SOURCE_ROOT; };
 		E809B1A41859CC4B001664E1 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		E809B1E61859F186001664E1 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = TorChat/Medias/Images.xcassets; sourceTree = "<group>"; };
@@ -123,14 +92,6 @@
 		E81FD9F411E7259B000614D5 /* TorChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TorChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E81FD9F711E7259B000614D5 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		E81FD9FC11E7259B000614D5 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = TorChat/en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		E826C109120D94F000AF9A5E /* file_down.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = file_down.png; path = ../Medias/file_down.png; sourceTree = "<group>"; };
-		E826C10A120D94F000AF9A5E /* file_up.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = file_up.png; path = ../Medias/file_up.png; sourceTree = "<group>"; };
-		E826C114120D99E500AF9A5E /* file_stop_rollover.tif */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = file_stop_rollover.tif; sourceTree = "<group>"; };
-		E826C115120D99E500AF9A5E /* file_stop.tif */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = file_stop.tif; sourceTree = "<group>"; };
-		E826C12B120D9D6F00AF9A5E /* file_reveal_rollover.tif */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; name = file_reveal_rollover.tif; path = ../Medias/file_reveal_rollover.tif; sourceTree = "<group>"; };
-		E826C12C120D9D6F00AF9A5E /* file_reveal.tif */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; name = file_reveal.tif; path = ../Medias/file_reveal.tif; sourceTree = "<group>"; };
-		E826C18F120DB0C400AF9A5E /* file_stop_pushed.tif */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = file_stop_pushed.tif; sourceTree = "<group>"; };
-		E826C191120DB11B00AF9A5E /* file_reveal_pushed.tif */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; name = file_reveal_pushed.tif; path = ../Medias/file_reveal_pushed.tif; sourceTree = "<group>"; };
 		E82B7D72125A074600B7BA8A /* TCPreferencesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCPreferencesWindowController.h; path = Interface/TCPreferencesWindowController.h; sourceTree = "<group>"; };
 		E82B7D79125A08A800B7BA8A /* TCPreferencesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCPreferencesWindowController.m; path = Interface/TCPreferencesWindowController.m; sourceTree = "<group>"; };
 		E82B7D88125A0EA700B7BA8A /* TCMainController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCMainController.h; path = Interface/TCMainController.h; sourceTree = "<group>"; };
@@ -152,19 +113,13 @@
 		E8455D3C17A425F00046307B /* TCValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCValue.m; path = Interface/TCValue.m; sourceTree = "<group>"; };
 		E8455D4417A438660046307B /* NSData+TCTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+TCTools.h"; sourceTree = "<group>"; };
 		E8455D4517A438660046307B /* NSData+TCTools.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+TCTools.m"; sourceTree = "<group>"; };
-		E849F93611F5E8F300193F06 /* engrenage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = engrenage.png; path = ../Medias/engrenage.png; sourceTree = "<group>"; };
 		E84FE49617B06357006E2D12 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = TorChat/en.lproj/MainMenu.strings; sourceTree = "<group>"; };
 		E84FE49717B06375006E2D12 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = TorChat/en.lproj/ChatWindow.strings; sourceTree = "<group>"; };
 		E84FE49817B0637C006E2D12 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = TorChat/en.lproj/ChatView.strings; sourceTree = "<group>"; };
 		E852235017B504CA00C6F585 /* TCChatCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatCellView.h; path = Interface/TCChatCellView.h; sourceTree = "<group>"; };
 		E852235117B504CA00C6F585 /* TCChatCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCChatCellView.m; path = Interface/TCChatCellView.m; sourceTree = "<group>"; };
-		E85310F712F8170E009FC05B /* logs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = logs.png; path = ../Medias/logs.png; sourceTree = "<group>"; };
 		E85903B011EC9877005CE53F /* TCTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCTools.m; sourceTree = "<group>"; };
 		E85903B111EC9877005CE53F /* TCTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCTools.h; sourceTree = "<group>"; };
-		E861274511F59E3C00901B29 /* stat_away.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = stat_away.png; path = ../Medias/stat_away.png; sourceTree = "<group>"; };
-		E861274611F59E3C00901B29 /* stat_offline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = stat_offline.png; path = ../Medias/stat_offline.png; sourceTree = "<group>"; };
-		E861274711F59E3C00901B29 /* stat_online.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = stat_online.png; path = ../Medias/stat_online.png; sourceTree = "<group>"; };
-		E861274811F59E3C00901B29 /* stat_xa.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = stat_xa.png; path = ../Medias/stat_xa.png; sourceTree = "<group>"; };
 		E86B5A1617AE7C6C00C715CA /* TCFileCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCFileCellView.h; path = Interface/TCFileCellView.h; sourceTree = "<group>"; };
 		E86B5A1717AE7C6C00C715CA /* TCFileCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCFileCellView.m; path = Interface/TCFileCellView.m; sourceTree = "<group>"; };
 		E874146912FAE0C200BD4862 /* TCDropButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCDropButton.h; path = Interface/TCDropButton.h; sourceTree = "<group>"; };
@@ -190,8 +145,6 @@
 		E878984217B05C0B00DB7709 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = TorChat/Base.lproj/AssistantPanel_Advanced.xib; sourceTree = "<group>"; };
 		E878984417B05C0B00DB7709 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = TorChat/Base.lproj/AssistantPanel_Basic.xib; sourceTree = "<group>"; };
 		E878984617B05C0B00DB7709 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = TorChat/Base.lproj/AssistantPanel_Mode.xib; sourceTree = "<group>"; };
-		E87CB84D12508B8600A75686 /* person.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = person.png; path = ../Medias/person.png; sourceTree = "<group>"; };
-		E87CB84F12508CB600A75686 /* notes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = notes.png; path = ../Medias/notes.png; sourceTree = "<group>"; };
 		E87E205A17B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = TorChat/fr.lproj/BuddiesWindow.strings; sourceTree = "<group>"; };
 		E87E205B17B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = TorChat/fr.lproj/BuddyInfoWindow.strings; sourceTree = "<group>"; };
 		E87E205C17B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = TorChat/fr.lproj/ChatWindow.strings; sourceTree = "<group>"; };
@@ -207,8 +160,6 @@
 		E87E206617B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = TorChat/fr.lproj/MainMenu.strings; sourceTree = "<group>"; };
 		E87E206717B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = TorChat/fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		E87E206817B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = TorChat/fr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		E881CD7811F5891B008D6F55 /* add.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; name = add.tiff; path = ../Medias/add.tiff; sourceTree = "<group>"; };
-		E881CD7A11F5891B008D6F55 /* remove.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; name = remove.tiff; path = ../Medias/remove.tiff; sourceTree = "<group>"; };
 		E882D1AC1429DD0B009CCD01 /* TCConfigProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCConfigProxy.h; path = Shared/TCConfigProxy.h; sourceTree = SOURCE_ROOT; };
 		E88879FD1303EA9600C7D60E /* TCDragImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCDragImageView.h; path = Interface/TCDragImageView.h; sourceTree = "<group>"; };
 		E88879FE1303EA9900C7D60E /* TCDragImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCDragImageView.m; path = Interface/TCDragImageView.m; sourceTree = "<group>"; };
@@ -241,7 +192,6 @@
 		E889F0CA12531DD6000C36B2 /* TorChatAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TorChatAppDelegate.m; path = Interface/TorChatAppDelegate.m; sourceTree = "<group>"; };
 		E88AE83511EDE9D50037D808 /* TCConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCConnection.m; sourceTree = "<group>"; };
 		E88AE83611EDE9D50037D808 /* TCConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCConnection.h; sourceTree = "<group>"; };
-		E8A5C5E114F690630096367C /* blocked_buddy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = blocked_buddy.png; path = ../Medias/blocked_buddy.png; sourceTree = "<group>"; };
 		E8A6FE2A17A993FC00C4DEAB /* TCPanel_Welcome.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCPanel_Welcome.h; path = Interface/TCPanel_Welcome.h; sourceTree = "<group>"; };
 		E8A6FE2B17A993FC00C4DEAB /* TCPanel_Welcome.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCPanel_Welcome.m; path = Interface/TCPanel_Welcome.m; sourceTree = "<group>"; };
 		E8A6FE2D17A9942700C4DEAB /* TCPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCPanel.h; path = Interface/TCPanel.h; sourceTree = "<group>"; };
@@ -265,8 +215,6 @@
 		E8CCCD7111FEE70E00C8EEFF /* TCFileSend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCFileSend.h; sourceTree = "<group>"; };
 		E8CCCD7311FEE72500C8EEFF /* TCFileReceive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCFileReceive.m; sourceTree = "<group>"; };
 		E8CCCD7411FEE72500C8EEFF /* TCFileReceive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCFileReceive.h; sourceTree = "<group>"; };
-		E8D249C712F82C4700B476E3 /* bar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bar.png; path = ../Medias/bar.png; sourceTree = "<group>"; };
-		E8D5E25E14DA98B800973297 /* back_send_field.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = back_send_field.png; path = ../Medias/back_send_field.png; sourceTree = "<group>"; };
 		E8D5E26014DAA0B400973297 /* TCSplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCSplitView.h; path = Interface/TCSplitView.h; sourceTree = "<group>"; };
 		E8D5E26114DAA0B400973297 /* TCSplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCSplitView.m; path = Interface/TCSplitView.m; sourceTree = "<group>"; };
 		E8D5E26914DAD3E200973297 /* TCChatViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatViewController.h; path = Interface/TCChatViewController.h; sourceTree = "<group>"; };
@@ -293,17 +241,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		E80367C714E055C40089CE80 /* Balloon */ = {
-			isa = PBXGroup;
-			children = (
-				E80367CA14E056200089CE80 /* balloon_left.png */,
-				E80367CB14E056200089CE80 /* balloon_center.png */,
-				E80367C914E056200089CE80 /* balloon_rigth.png */,
-			);
-			name = Balloon;
-			path = ../Medias;
-			sourceTree = "<group>";
-		};
 		E81FD9E511E7259B000614D5 = {
 			isa = PBXGroup;
 			children = (
@@ -328,12 +265,11 @@
 			isa = PBXGroup;
 			children = (
 				E82D3F7F142D2AB400A33C7A /* TorChat-Info.plist */,
-				E809B1E61859F186001664E1 /* Images.xcassets */,
 				E8BE843B124254BD0013968B /* tor */,
 				E81FD9FB11E7259B000614D5 /* InfoPlist.strings */,
 				E81FDA0011E7259C000614D5 /* MainMenu.xib */,
 				E83423EA11F6F97B00922152 /* Localizable.strings */,
-				E881CD7711F5891B008D6F55 /* Medias */,
+				E809B1E61859F186001664E1 /* Images.xcassets */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -480,16 +416,6 @@
 			name = Categories;
 			sourceTree = "<group>";
 		};
-		E868535711F9D7740064C0CC /* Chat */ = {
-			isa = PBXGroup;
-			children = (
-				E809B1491859C697001664E1 /* balloon_aqua.tiff */,
-				E809B14A1859C697001664E1 /* balloon_graphite.tiff */,
-			);
-			name = Chat;
-			path = ../Medias/Chat;
-			sourceTree = "<group>";
-		};
 		E870BD7B17A8482300DFA076 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -590,7 +516,6 @@
 			isa = PBXGroup;
 			children = (
 				E870BD9117A84A9600DFA076 /* XIB */,
-				E870BD9217A84AA700DFA076 /* Media */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -600,7 +525,6 @@
 			children = (
 				E809B14D1859C6F9001664E1 /* ChatTemplate.plist */,
 				E870BD8D17A84A3B00DFA076 /* XIB */,
-				E870BD8E17A84A4300DFA076 /* Media */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -609,7 +533,6 @@
 			isa = PBXGroup;
 			children = (
 				E870BD8F17A84A6900DFA076 /* XIB */,
-				E870BD9017A84A6E00DFA076 /* Medias */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -618,7 +541,6 @@
 			isa = PBXGroup;
 			children = (
 				E870BD9317A84AC500DFA076 /* XIB */,
-				E870BD9417A84ACA00DFA076 /* Medias */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -648,15 +570,6 @@
 			name = XIB;
 			sourceTree = "<group>";
 		};
-		E870BD8E17A84A4300DFA076 /* Media */ = {
-			isa = PBXGroup;
-			children = (
-				E80367C714E055C40089CE80 /* Balloon */,
-				E868535711F9D7740064C0CC /* Chat */,
-			);
-			name = Media;
-			sourceTree = "<group>";
-		};
 		E870BD8F17A84A6900DFA076 /* XIB */ = {
 			isa = PBXGroup;
 			children = (
@@ -669,14 +582,6 @@
 			name = XIB;
 			sourceTree = "<group>";
 		};
-		E870BD9017A84A6E00DFA076 /* Medias */ = {
-			isa = PBXGroup;
-			children = (
-				E849F93611F5E8F300193F06 /* engrenage.png */,
-			);
-			name = Medias;
-			sourceTree = "<group>";
-		};
 		E870BD9117A84A9600DFA076 /* XIB */ = {
 			isa = PBXGroup;
 			children = (
@@ -684,21 +589,6 @@
 				E87CB85112508F7A00A75686 /* BuddyInfoWindow.xib */,
 			);
 			name = XIB;
-			sourceTree = "<group>";
-		};
-		E870BD9217A84AA700DFA076 /* Media */ = {
-			isa = PBXGroup;
-			children = (
-				E8A5C5E114F690630096367C /* blocked_buddy.png */,
-				E861274511F59E3C00901B29 /* stat_away.png */,
-				E861274611F59E3C00901B29 /* stat_offline.png */,
-				E861274711F59E3C00901B29 /* stat_online.png */,
-				E861274811F59E3C00901B29 /* stat_xa.png */,
-				E87CB84D12508B8600A75686 /* person.png */,
-				E87CB84F12508CB600A75686 /* notes.png */,
-				E85310F712F8170E009FC05B /* logs.png */,
-			);
-			name = Media;
 			sourceTree = "<group>";
 		};
 		E870BD9317A84AC500DFA076 /* XIB */ = {
@@ -709,35 +599,11 @@
 			name = XIB;
 			sourceTree = "<group>";
 		};
-		E870BD9417A84ACA00DFA076 /* Medias */ = {
-			isa = PBXGroup;
-			children = (
-				E826C109120D94F000AF9A5E /* file_down.png */,
-				E826C10A120D94F000AF9A5E /* file_up.png */,
-				E826C12C120D9D6F00AF9A5E /* file_reveal.tif */,
-				E826C12B120D9D6F00AF9A5E /* file_reveal_rollover.tif */,
-				E826C191120DB11B00AF9A5E /* file_reveal_pushed.tif */,
-			);
-			name = Medias;
-			sourceTree = "<group>";
-		};
 		E870BD9517A84AFC00DFA076 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				E870BD9617A84B0500DFA076 /* Medias */,
 			);
 			name = Resources;
-			sourceTree = "<group>";
-		};
-		E870BD9617A84B0500DFA076 /* Medias */ = {
-			isa = PBXGroup;
-			children = (
-				E8D249C712F82C4700B476E3 /* bar.png */,
-				E881CD7811F5891B008D6F55 /* add.tiff */,
-				E881CD7A11F5891B008D6F55 /* remove.tiff */,
-				E8D5E25E14DA98B800973297 /* back_send_field.png */,
-			);
-			name = Medias;
 			sourceTree = "<group>";
 		};
 		E870BD9717A84B4100DFA076 /* Views */ = {
@@ -762,17 +628,6 @@
 				E809B1471859C5BC001664E1 /* NSImage+TCExtension.m */,
 			);
 			name = Categories;
-			sourceTree = "<group>";
-		};
-		E881CD7711F5891B008D6F55 /* Medias */ = {
-			isa = PBXGroup;
-			children = (
-				E826C115120D99E500AF9A5E /* file_stop.tif */,
-				E826C114120D99E500AF9A5E /* file_stop_rollover.tif */,
-				E826C18F120DB0C400AF9A5E /* file_stop_pushed.tif */,
-			);
-			name = Medias;
-			path = TorChat/Medias;
 			sourceTree = "<group>";
 		};
 		E8A6FE2917A993A700C4DEAB /* Panels */ = {
@@ -868,44 +723,18 @@
 				E82FA259121583A800106C47 /* AssistantWindow.xib in Resources */,
 				E85923F7120A9E060035C420 /* FilesWindow.xib in Resources */,
 				E82FA25A121583B300106C47 /* ChatWindow.xib in Resources */,
-				E881CD7D11F5891B008D6F55 /* add.tiff in Resources */,
-				E881CD7F11F5891B008D6F55 /* remove.tiff in Resources */,
 				E878983A17B05BC800DB7709 /* AssistantPanel_Welcome.xib in Resources */,
-				E861274911F59E3C00901B29 /* stat_away.png in Resources */,
-				E861274A11F59E3C00901B29 /* stat_offline.png in Resources */,
-				E861274B11F59E3C00901B29 /* stat_online.png in Resources */,
 				E878984717B05C0B00DB7709 /* AssistantPanel_Advanced.xib in Resources */,
-				E861274C11F59E3C00901B29 /* stat_xa.png in Resources */,
-				E849F93711F5E8F300193F06 /* engrenage.png in Resources */,
 				E83423F111F6FA2100922152 /* Localizable.strings in Resources */,
 				E878984817B05C0B00DB7709 /* AssistantPanel_Basic.xib in Resources */,
-				E826C10B120D94F000AF9A5E /* file_down.png in Resources */,
-				E826C10C120D94F000AF9A5E /* file_up.png in Resources */,
 				E878984917B05C0B00DB7709 /* AssistantPanel_Mode.xib in Resources */,
 				E809B14E1859C6F9001664E1 /* ChatTemplate.plist in Resources */,
-				E809B14B1859C697001664E1 /* balloon_aqua.tiff in Resources */,
-				E826C116120D99E500AF9A5E /* file_stop_rollover.tif in Resources */,
-				E826C117120D99E500AF9A5E /* file_stop.tif in Resources */,
-				E826C12D120D9D6F00AF9A5E /* file_reveal_rollover.tif in Resources */,
-				E826C12E120D9D6F00AF9A5E /* file_reveal.tif in Resources */,
-				E826C190120DB0C400AF9A5E /* file_stop_pushed.tif in Resources */,
-				E826C192120DB11B00AF9A5E /* file_reveal_pushed.tif in Resources */,
 				E8BE843C124254BE0013968B /* tor in Resources */,
 				E807B4B2124FB52700FDC769 /* LogsWindow.xib in Resources */,
-				E87CB84E12508B8600A75686 /* person.png in Resources */,
-				E87CB85012508CB600A75686 /* notes.png in Resources */,
 				E87CB85312508F7A00A75686 /* BuddyInfoWindow.xib in Resources */,
 				E82B7D7D125A098000B7BA8A /* PreferencesWindow.xib in Resources */,
-				E85310F812F8170E009FC05B /* logs.png in Resources */,
 				E809B1E71859F186001664E1 /* Images.xcassets in Resources */,
-				E8D249C812F82C4700B476E3 /* bar.png in Resources */,
-				E8D5E25F14DA98B800973297 /* back_send_field.png in Resources */,
 				E8D5E26514DACFA200973297 /* ChatView.xib in Resources */,
-				E809B14C1859C697001664E1 /* balloon_graphite.tiff in Resources */,
-				E80367CC14E056200089CE80 /* balloon_rigth.png in Resources */,
-				E80367CD14E056200089CE80 /* balloon_left.png in Resources */,
-				E80367CE14E056200089CE80 /* balloon_center.png in Resources */,
-				E8A5C5E214F690630096367C /* blocked_buddy.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
