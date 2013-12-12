@@ -1,5 +1,5 @@
 /*
- *  TCTorManager.mm
+ *  TCTorManager.m
  *
  *  Copyright 2013 Avérous Julien-Pierre
  *
@@ -38,7 +38,7 @@
 */
 #pragma mark - Globals
 
-static pid_t torPid = -1;
+static pid_t gTorPid = -1;
 
 
 
@@ -126,7 +126,7 @@ void catch_signal(int sig);
 	[_task waitUntilExit];
 	
 	_task = nil;
-	torPid = -1;
+	gTorPid = -1;
 	
 	// Close out source
 	if (_outSource)
@@ -161,7 +161,7 @@ void catch_signal(int sig);
 		[_task waitUntilExit];
 		
 		_task = nil;
-		torPid = -1;
+		gTorPid = -1;
 	}
 }
 
@@ -344,7 +344,7 @@ void catch_signal(int sig);
 			return;
 		}
 		
-		torPid = [_task processIdentifier];
+		gTorPid = [_task processIdentifier];
 		
 		// Check the existence of the hostname file
 		NSString *htname = [configuration realPath:[[configuration torDataPath] stringByAppendingPathComponent:@"hidden/hostname"]];
@@ -423,7 +423,7 @@ void catch_signal(int sig);
 			[_task waitUntilExit];
 			
 			_task = nil;
-			torPid = -1;
+			gTorPid = -1;
 		}
 		
 		// Close error pipe handling
@@ -519,6 +519,6 @@ void catch_signal(int sig);
 
 void catch_signal(int sig)
 {
-	if (torPid > 0)
-		kill(torPid, SIGINT);
+	if (gTorPid > 0)
+		kill(gTorPid, SIGINT);
 }

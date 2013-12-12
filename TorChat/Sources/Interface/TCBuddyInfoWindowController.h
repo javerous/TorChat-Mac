@@ -1,7 +1,7 @@
 /*
- *  main.m
+ *  TCBuddyInfoController.h
  *
- *  Copyright 2013 Avrous Julien-Pierre
+ *  Copyright 2013 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -22,17 +22,29 @@
 
 
 
-#import "TCChatWindowController.h"
-
 #import <Cocoa/Cocoa.h>
 
 
 
-int main(int argc, char *argv[])
-{
-	// Ignore sigpipe
-	signal(SIGPIPE, SIG_IGN);
+/*
+** Forward
+*/
+#pragma mark - Forward
 
-	// Run
-	return NSApplicationMain(argc,  (const char **) argv);
-}
+@class TCBuddy;
+@class TCDragImageView;
+
+
+
+/*
+** TCBuddyInfoController
+*/
+#pragma mark - TCBuddyInfoController
+
+@interface TCBuddyInfoWindowController : NSWindowController <NSWindowDelegate>
+
+// -- Tools --
++ (void)showInfo;
++ (void)showInfoOnBuddy:(TCBuddy *)buddy;
+
+@end

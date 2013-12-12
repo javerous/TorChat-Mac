@@ -75,6 +75,11 @@
 	return result;
 }
 
+- (NSString *)stringByEscapingXMLEntities
+{
+	return (__bridge_transfer NSString *)CFXMLCreateStringByEscapingEntities(kCFAllocatorDefault, (__bridge CFStringRef)self, NULL);
+}
+
 @end
 
 

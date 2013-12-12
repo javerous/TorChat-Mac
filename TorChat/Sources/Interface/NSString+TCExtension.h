@@ -36,6 +36,8 @@
 
 - (NSString *)realPath;
 
+- (NSString *)stringByEscapingXMLEntities;
+
 @end
 
 
