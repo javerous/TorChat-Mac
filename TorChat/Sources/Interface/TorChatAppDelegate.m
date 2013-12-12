@@ -1,5 +1,5 @@
 /*
- *  TorChatAppDelegate.mm
+ *  TorChatAppDelegate.m
  *
  *  Copyright 2013 Avérous Julien-Pierre
  *
@@ -25,14 +25,49 @@
 #import "TorChatAppDelegate.h"
 
 #import "TCMainController.h"
-#import "TCBuddiesController.h"
-#import "TCFilesController.h"
-#import "TCBuddyInfoController.h"
-#import "TCLogsController.h"
-#import "TCPrefController.h"
-#import "TCChatController.h"
+#import "TCBuddiesWindowController.h"
+#import "TCFilesWindowController.h"
+#import "TCBuddyInfoWindowController.h"
+#import "TCLogsWindowController.h"
+#import "TCPreferencesWindowController.h"
+#import "TCChatWindowController.h"
 
 #import "TCBuddy.h"
+
+
+
+
+/*
+** TorChatAppDelegate - Private
+*/
+#pragma mark - TorChatAppDelegate - Private
+
+@interface TorChatAppDelegate ()
+
+@property (strong, nonatomic) IBOutlet NSMenuItem	*buddyShowMenu;
+@property (strong, nonatomic) IBOutlet NSMenuItem	*buddyDeleteMenu;
+@property (strong, nonatomic) IBOutlet NSMenuItem	*buddyChatMenu;
+@property (strong, nonatomic) IBOutlet NSMenuItem	*buddyBlockMenu;
+@property (strong, nonatomic) IBOutlet NSMenuItem	*buddyFileMenu;
+
+
+- (IBAction)showPreferences:(id)sender;
+
+- (IBAction)showTransfers:(id)sender;
+- (IBAction)showBuddies:(id)sender;
+- (IBAction)showLogs:(id)sender;
+- (IBAction)showMessages:(id)sender;
+
+- (IBAction)doBuddyShowInfo:(id)sender;
+- (IBAction)doBuddyAdd:(id)sender;
+- (IBAction)doBuddyRemove:(id)sender;
+- (IBAction)doBuddyChat:(id)sender;
+- (IBAction)doBuddyToggleBlocked:(id)sender;
+- (IBAction)doBuddySendFile:(id)sender;
+
+- (IBAction)doEditProfile:(id)sender;
+
+@end
 
 
 
@@ -45,15 +80,6 @@
 
 
 /*
-** TorChatAppDelegate - Properties
-*/
-#pragma mark - TorChatAppDelegate - Properties
-
-@synthesize window;
-
-
-
-/*
 ** TorChatAppDelegate - Launch
 */
 #pragma mark - TorChatAppDelegate - Launch
@@ -61,7 +87,7 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 	// Observe buddy select change
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddySelectChanged:) name:TCBuddiesControllerSelectChanged object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddySelectChanged:) name: TCBuddiesWindowControllerSelectChanged object:nil];
 
 	// Observe buddy blocked change
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddyBlockedChanged:) name:TCCocoaBuddyChangedBlockedNotification object:nil];
@@ -79,7 +105,7 @@
 
 - (IBAction)showPreferences:(id)sender
 {
-	[[TCPrefController sharedController] showWindow];
+	[[TCPreferencesWindowController sharedController] showWindow:nil];
 }
 
 
@@ -91,22 +117,22 @@
 
 - (IBAction)showTransfers:(id)sender
 {
-	[[TCFilesController sharedController] showWindow:sender];
+	[[TCFilesWindowController sharedController] showWindow:sender];
 }
 
 - (IBAction)showBuddies:(id)sender
 {
-	[[TCBuddiesController sharedController] showWindow:sender];
+	[[TCBuddiesWindowController sharedController] showWindow:sender];
 }
 
 - (IBAction)showLogs:(id)sender
 {
-	[[TCLogsController sharedController] showWindow:sender];
+	[[TCLogsWindowController sharedController] showWindow:sender];
 }
 
 - (IBAction)showMessages:(id)sender
 {
-	[[TCChatController sharedController] showWindow:sender];
+	[[TCChatWindowController sharedController] showWindow:sender];
 }
 
 
@@ -118,43 +144,43 @@
 
 - (IBAction)doBuddyShowInfo:(id)sender
 {
-	[TCBuddyInfoController showInfo];
+	[TCBuddyInfoWindowController showInfo];
 }
 
 - (IBAction)doBuddyAdd:(id)sender
 {
-	[[TCBuddiesController sharedController] doAdd:sender];
+	[[TCBuddiesWindowController sharedController] doAdd:sender];
 }
 
 - (IBAction)doBuddyRemove:(id)sender
 {
-	[[TCBuddiesController sharedController] doRemove:sender];
+	[[TCBuddiesWindowController sharedController] doRemove:sender];
 }
 
 - (IBAction)doBuddyChat:(id)sender
 {
-	[[TCBuddiesController sharedController] doChat:sender];
+	[[TCBuddiesWindowController sharedController] doChat:sender];
 }
 
 - (IBAction)doBuddySendFile:(id)sender
 {
-	[[TCBuddiesController sharedController] doSendFile:sender];
+	[[TCBuddiesWindowController sharedController] doSendFile:sender];
 }
 
 - (IBAction)doBuddyToggleBlocked:(id)sender
 {
-	[[TCBuddiesController sharedController] doToggleBlock:sender];
+	[[TCBuddiesWindowController sharedController] doToggleBlock:sender];
 }
 
 - (IBAction)doEditProfile:(id)sender
 {
-	[[TCBuddiesController sharedController] doEditProfile:sender];
+	[[TCBuddiesWindowController sharedController] doEditProfile:sender];
 }
 
 - (void)buddySelectChanged:(NSNotification *)notice
 {
 	NSDictionary	*ui = [notice userInfo];
-	id				buddy = [ui objectForKey:TCBuddiesControllerBuddyKey];
+	id				buddy = [ui objectForKey: TCBuddiesWindowControllerBuddyKey];
 		
 	if ([buddy isKindOfClass:[TCBuddy class]])
 	{
@@ -203,7 +229,7 @@
 	NSDictionary	*ui = [notice userInfo];
 	NSNumber		*blocked = [ui objectForKey:@"blocked"];
 	NSString		*buddy = [(TCBuddy *)[notice object] address];
-	NSString		*selected = [[[TCBuddiesController sharedController] selectedBuddy] address];
+	NSString		*selected = [[[TCBuddiesWindowController sharedController] selectedBuddy] address];
 	
 	if ([buddy isEqualToString:selected])
 	{

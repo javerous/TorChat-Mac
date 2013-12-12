@@ -1,7 +1,7 @@
 /*
- *  main.m
+ *  TCChatTranscriptViewController.h
  *
- *  Copyright 2013 Avrous Julien-Pierre
+ *  Copyright 2013 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -22,17 +22,23 @@
 
 
 
-#import "TCChatWindowController.h"
-
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 
+/*
+** TCChatTranscriptViewController
+*/
+#pragma mark - TCChatTranscriptViewController
 
-int main(int argc, char *argv[])
-{
-	// Ignore sigpipe
-	signal(SIGPIPE, SIG_IGN);
+@interface TCChatTranscriptViewController : NSViewController
 
-	// Run
-	return NSApplicationMain(argc,  (const char **) argv);
-}
+- (void)appendLocalMessage:(NSString *)message;
+- (void)appendRemoteMessage:(NSString *)message;
+
+- (void)appendError:(NSString *)error;
+- (void)appendStatus:(NSString *)status;
+
+- (void)setLocalAvatar:(NSImage *)image;
+- (void)setRemoteAvatar:(NSImage *)image;
+
+@end

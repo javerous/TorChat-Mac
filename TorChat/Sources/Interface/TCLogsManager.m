@@ -80,9 +80,9 @@
 
 
 /*
-** TCLogsController - Logs
+** TCLogsWindowController - Logs
 */
-#pragma mark - TCLogsController - Logs
+#pragma mark - TCLogsWindowController - Logs
 
 - (void)addLogEntry:(NSString *)key withContent:(NSString *)text
 {
@@ -208,9 +208,9 @@
 
 
 /*
-** TCLogsController - Properties
+** TCLogsWindowController - Properties
 */
-#pragma mark - TCLogsController - Properties
+#pragma mark - TCLogsWindowController - Properties
 
 - (NSString *)nameForKey:(NSString *)key
 {
@@ -229,9 +229,9 @@
 
 
 /*
-** TCLogsController - Observer
+** TCLogsWindowController - Observer
 */
-#pragma mark - TCLogsController - Observer
+#pragma mark - TCLogsWindowController - Observer
 
 - (void)addObserver:(id <TCLogsObserver>)observer forKey:(NSString *)key
 {

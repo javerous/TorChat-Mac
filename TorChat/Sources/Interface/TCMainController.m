@@ -1,5 +1,5 @@
 /*
- *  TCMainController.mm
+ *  TCMainController.m
  *
  *  Copyright 2013 Avérous Julien-Pierre
  *
@@ -26,9 +26,9 @@
 
 #import "TCConfigPlist.h"
 #import "TCLogsManager.h"
-#import "TCBuddiesController.h"
+#import "TCBuddiesWindowController.h"
 
-#import "TCAssistantController.h"
+#import "TCAssistantWindowController.h"
 #import "TCPanel_Welcome.h"
 #import "TCPanel_Mode.h"
 #import "TCPanel_Advanced.h"
@@ -49,7 +49,7 @@
 {
 	id <TCConfig> _configuration;
 	
-	TCAssistantController	*_assistant;
+	TCAssistantWindowController	*_assistant;
 }
 
 @end
@@ -191,14 +191,14 @@
 	{
 		NSArray *panels = @[ [TCPanel_Welcome class], [TCPanel_Mode class], [TCPanel_Advanced class], [TCPanel_Basic class] ];
 		
-		_assistant = [TCAssistantController startAssistantWithPanels:panels andCallback:^(id context) {
+		_assistant = [TCAssistantWindowController startAssistantWithPanels:panels andCallback:^(id context) {
 			TCConfigPlist *config = (TCConfigPlist *)context;
 			
 			// Hold the config
 			_configuration = config;
 			
 			// Start buddy controller
-			[[TCBuddiesController sharedController] startWithConfiguration:_configuration];
+			[[TCBuddiesWindowController sharedController] startWithConfiguration:_configuration];
 			
 			// Remove instance.
 			_assistant = nil;
@@ -210,7 +210,7 @@
 		_configuration = conf;
 		
 		// > Start buddy controller
-		[[TCBuddiesController sharedController] startWithConfiguration:conf];
+		[[TCBuddiesWindowController sharedController] startWithConfiguration:conf];
 	}
 }
 
