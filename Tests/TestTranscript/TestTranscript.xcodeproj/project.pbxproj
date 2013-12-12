@@ -13,14 +13,12 @@
 		E809B1701859CAFE001664E1 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = E809B16E1859CAFE001664E1 /* Credits.rtf */; };
 		E809B1731859CAFE001664E1 /* TCAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E809B1721859CAFE001664E1 /* TCAppDelegate.m */; };
 		E809B1761859CAFE001664E1 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = E809B1741859CAFE001664E1 /* MainMenu.xib */; };
-		E809B1781859CAFF001664E1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E809B1771859CAFF001664E1 /* Images.xcassets */; };
 		E809B1991859CB46001664E1 /* TCChatTranscriptViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E809B1941859CB46001664E1 /* TCChatTranscriptViewController.m */; };
 		E809B19A1859CB46001664E1 /* NSImage+TCExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = E809B1961859CB46001664E1 /* NSImage+TCExtension.m */; };
 		E809B19B1859CB46001664E1 /* NSString+TCExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = E809B1981859CB46001664E1 /* NSString+TCExtension.m */; };
-		E809B19F1859CB4F001664E1 /* balloon_aqua.tiff in Resources */ = {isa = PBXBuildFile; fileRef = E809B19C1859CB4F001664E1 /* balloon_aqua.tiff */; };
-		E809B1A01859CB4F001664E1 /* balloon_graphite.tiff in Resources */ = {isa = PBXBuildFile; fileRef = E809B19D1859CB4F001664E1 /* balloon_graphite.tiff */; };
 		E809B1A11859CB4F001664E1 /* ChatTemplate.plist in Resources */ = {isa = PBXBuildFile; fileRef = E809B19E1859CB4F001664E1 /* ChatTemplate.plist */; };
 		E809B1A31859CB8D001664E1 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E809B1A21859CB8D001664E1 /* WebKit.framework */; };
+		E812A5CA1859FE1700B0D248 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E812A5C91859FE1700B0D248 /* Images.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,17 +35,15 @@
 		E809B1711859CAFE001664E1 /* TCAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TCAppDelegate.h; sourceTree = "<group>"; };
 		E809B1721859CAFE001664E1 /* TCAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TCAppDelegate.m; sourceTree = "<group>"; };
 		E809B1751859CAFE001664E1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		E809B1771859CAFF001664E1 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		E809B1931859CB46001664E1 /* TCChatTranscriptViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatTranscriptViewController.h; path = ../../../TorChat/Sources/Interface/TCChatTranscriptViewController.h; sourceTree = "<group>"; };
 		E809B1941859CB46001664E1 /* TCChatTranscriptViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCChatTranscriptViewController.m; path = ../../../TorChat/Sources/Interface/TCChatTranscriptViewController.m; sourceTree = "<group>"; };
 		E809B1951859CB46001664E1 /* NSImage+TCExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSImage+TCExtension.h"; path = "../../../TorChat/Sources/Interface/NSImage+TCExtension.h"; sourceTree = "<group>"; };
 		E809B1961859CB46001664E1 /* NSImage+TCExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSImage+TCExtension.m"; path = "../../../TorChat/Sources/Interface/NSImage+TCExtension.m"; sourceTree = "<group>"; };
 		E809B1971859CB46001664E1 /* NSString+TCExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+TCExtension.h"; path = "../../../TorChat/Sources/Interface/NSString+TCExtension.h"; sourceTree = "<group>"; };
 		E809B1981859CB46001664E1 /* NSString+TCExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+TCExtension.m"; path = "../../../TorChat/Sources/Interface/NSString+TCExtension.m"; sourceTree = "<group>"; };
-		E809B19C1859CB4F001664E1 /* balloon_aqua.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; name = balloon_aqua.tiff; path = ../../../TorChat/Medias/Chat/balloon_aqua.tiff; sourceTree = "<group>"; };
-		E809B19D1859CB4F001664E1 /* balloon_graphite.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; name = balloon_graphite.tiff; path = ../../../TorChat/Medias/Chat/balloon_graphite.tiff; sourceTree = "<group>"; };
 		E809B19E1859CB4F001664E1 /* ChatTemplate.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = ChatTemplate.plist; path = ../../../TorChat/Resources/ChatTemplate.plist; sourceTree = "<group>"; };
 		E809B1A21859CB8D001664E1 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		E812A5C91859FE1700B0D248 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ../../../TorChat/Medias/Images.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,7 +108,7 @@
 				E809B1971859CB46001664E1 /* NSString+TCExtension.h */,
 				E809B1981859CB46001664E1 /* NSString+TCExtension.m */,
 				E809B1741859CAFE001664E1 /* MainMenu.xib */,
-				E809B1771859CAFF001664E1 /* Images.xcassets */,
+				E812A5C91859FE1700B0D248 /* Images.xcassets */,
 				E809B1661859CAFE001664E1 /* Supporting Files */,
 			);
 			path = TestTranscript;
@@ -121,8 +117,6 @@
 		E809B1661859CAFE001664E1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				E809B19C1859CB4F001664E1 /* balloon_aqua.tiff */,
-				E809B19D1859CB4F001664E1 /* balloon_graphite.tiff */,
 				E809B19E1859CB4F001664E1 /* ChatTemplate.plist */,
 				E809B1671859CAFE001664E1 /* TestTranscript-Info.plist */,
 				E809B1681859CAFE001664E1 /* InfoPlist.strings */,
@@ -187,11 +181,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				E809B1A11859CB4F001664E1 /* ChatTemplate.plist in Resources */,
+				E812A5CA1859FE1700B0D248 /* Images.xcassets in Resources */,
 				E809B16A1859CAFE001664E1 /* InfoPlist.strings in Resources */,
-				E809B1781859CAFF001664E1 /* Images.xcassets in Resources */,
-				E809B1A01859CB4F001664E1 /* balloon_graphite.tiff in Resources */,
 				E809B1701859CAFE001664E1 /* Credits.rtf in Resources */,
-				E809B19F1859CB4F001664E1 /* balloon_aqua.tiff in Resources */,
 				E809B1761859CAFE001664E1 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -354,6 +346,7 @@
 				E809B18F1859CAFF001664E1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
