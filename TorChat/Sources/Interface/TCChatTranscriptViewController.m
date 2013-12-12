@@ -527,15 +527,13 @@ NSMutableDictionary	*gAvatarCache;
 	
 	if ([side isEqualToString:@"left-balloon"])
 	{
-		NSString *path = [[NSBundle mainBundle] pathForResource:@"balloon_graphite" ofType:@"tiff"];
+		NSImage *image = [NSImage imageNamed:@"balloon_graphite"];
 		
-		data = [NSData dataWithContentsOfFile:path];
+		data = [image TIFFRepresentation];
 	}
 	else if ([side isEqualToString:@"right-balloon"])
 	{
-		NSString	*path = [[NSBundle mainBundle] pathForResource:@"balloon_aqua" ofType:@"tiff"];
-		NSData		*tdata = [NSData dataWithContentsOfFile:path];
-		NSImage		*image = [[[NSImage alloc] initWithData:tdata] flipHorizontally];
+		NSImage *image = [[NSImage imageNamed:@"balloon_aqua"] flipHorizontally];
 		
 		data = [image TIFFRepresentation];
 	}
