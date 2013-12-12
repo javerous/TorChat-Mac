@@ -14,6 +14,12 @@
 		E80414C917A557B7008220C9 /* NSArray+TCTools.m in Sources */ = {isa = PBXBuildFile; fileRef = E80414C817A557B7008220C9 /* NSArray+TCTools.m */; };
 		E80414CB17A57722008220C9 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E80414CA17A57722008220C9 /* Security.framework */; };
 		E807B4B2124FB52700FDC769 /* LogsWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E807B4B0124FB52700FDC769 /* LogsWindow.xib */; };
+		E809B1451859C593001664E1 /* TCChatTranscriptViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E809B1441859C593001664E1 /* TCChatTranscriptViewController.m */; };
+		E809B1481859C5BC001664E1 /* NSImage+TCExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = E809B1471859C5BC001664E1 /* NSImage+TCExtension.m */; };
+		E809B14B1859C697001664E1 /* balloon_aqua.tiff in Resources */ = {isa = PBXBuildFile; fileRef = E809B1491859C697001664E1 /* balloon_aqua.tiff */; };
+		E809B14C1859C697001664E1 /* balloon_graphite.tiff in Resources */ = {isa = PBXBuildFile; fileRef = E809B14A1859C697001664E1 /* balloon_graphite.tiff */; };
+		E809B14E1859C6F9001664E1 /* ChatTemplate.plist in Resources */ = {isa = PBXBuildFile; fileRef = E809B14D1859C6F9001664E1 /* ChatTemplate.plist */; };
+		E809B1A51859CC4B001664E1 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E809B1A41859CC4B001664E1 /* WebKit.framework */; };
 		E8127AA91854CB1100FEDA7F /* TCChatTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = E8127AA81854CB1100FEDA7F /* TCChatTextField.m */; };
 		E81FD9F811E7259B000614D5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81FD9F711E7259B000614D5 /* Cocoa.framework */; };
 		E81FD9FD11E7259B000614D5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E81FD9FB11E7259B000614D5 /* InfoPlist.strings */; };
@@ -26,7 +32,7 @@
 		E826C12E120D9D6F00AF9A5E /* file_reveal.tif in Resources */ = {isa = PBXBuildFile; fileRef = E826C12C120D9D6F00AF9A5E /* file_reveal.tif */; };
 		E826C190120DB0C400AF9A5E /* file_stop_pushed.tif in Resources */ = {isa = PBXBuildFile; fileRef = E826C18F120DB0C400AF9A5E /* file_stop_pushed.tif */; };
 		E826C192120DB11B00AF9A5E /* file_reveal_pushed.tif in Resources */ = {isa = PBXBuildFile; fileRef = E826C191120DB11B00AF9A5E /* file_reveal_pushed.tif */; };
-		E82B7D7A125A08A800B7BA8A /* TCPrefController.m in Sources */ = {isa = PBXBuildFile; fileRef = E82B7D79125A08A800B7BA8A /* TCPrefController.m */; };
+		E82B7D7A125A08A800B7BA8A /* TCPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E82B7D79125A08A800B7BA8A /* TCPreferencesWindowController.m */; };
 		E82B7D7D125A098000B7BA8A /* PreferencesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E82B7D7B125A098000B7BA8A /* PreferencesWindow.xib */; };
 		E82B7D8F125A115400B7BA8A /* TCMainController.m in Sources */ = {isa = PBXBuildFile; fileRef = E82B7D8E125A115400B7BA8A /* TCMainController.m */; };
 		E82D3F83142D2AF300A33C7A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E82D3F82142D2AF300A33C7A /* main.m */; };
@@ -49,24 +55,6 @@
 		E861274A11F59E3C00901B29 /* stat_offline.png in Resources */ = {isa = PBXBuildFile; fileRef = E861274611F59E3C00901B29 /* stat_offline.png */; };
 		E861274B11F59E3C00901B29 /* stat_online.png in Resources */ = {isa = PBXBuildFile; fileRef = E861274711F59E3C00901B29 /* stat_online.png */; };
 		E861274C11F59E3C00901B29 /* stat_xa.png in Resources */ = {isa = PBXBuildFile; fileRef = E861274811F59E3C00901B29 /* stat_xa.png */; };
-		E868536A11F9D7740064C0CC /* chat_bluebubble_bottomleft.png in Resources */ = {isa = PBXBuildFile; fileRef = E868535811F9D7740064C0CC /* chat_bluebubble_bottomleft.png */; };
-		E868536B11F9D7740064C0CC /* chat_bluebubble_bottommiddle.png in Resources */ = {isa = PBXBuildFile; fileRef = E868535911F9D7740064C0CC /* chat_bluebubble_bottommiddle.png */; };
-		E868536C11F9D7740064C0CC /* chat_bluebubble_bottomright.png in Resources */ = {isa = PBXBuildFile; fileRef = E868535A11F9D7740064C0CC /* chat_bluebubble_bottomright.png */; };
-		E868536D11F9D7740064C0CC /* chat_bluebubble_left.png in Resources */ = {isa = PBXBuildFile; fileRef = E868535B11F9D7740064C0CC /* chat_bluebubble_left.png */; };
-		E868536E11F9D7740064C0CC /* chat_bluebubble_middle.png in Resources */ = {isa = PBXBuildFile; fileRef = E868535C11F9D7740064C0CC /* chat_bluebubble_middle.png */; };
-		E868536F11F9D7740064C0CC /* chat_bluebubble_right.png in Resources */ = {isa = PBXBuildFile; fileRef = E868535D11F9D7740064C0CC /* chat_bluebubble_right.png */; };
-		E868537011F9D7740064C0CC /* chat_bluebubble_topleft.png in Resources */ = {isa = PBXBuildFile; fileRef = E868535E11F9D7740064C0CC /* chat_bluebubble_topleft.png */; };
-		E868537111F9D7740064C0CC /* chat_bluebubble_topmiddle.png in Resources */ = {isa = PBXBuildFile; fileRef = E868535F11F9D7740064C0CC /* chat_bluebubble_topmiddle.png */; };
-		E868537211F9D7740064C0CC /* chat_bluebubble_topright.png in Resources */ = {isa = PBXBuildFile; fileRef = E868536011F9D7740064C0CC /* chat_bluebubble_topright.png */; };
-		E868537311F9D7740064C0CC /* chat_graybubble_bottomleft.png in Resources */ = {isa = PBXBuildFile; fileRef = E868536111F9D7740064C0CC /* chat_graybubble_bottomleft.png */; };
-		E868537411F9D7740064C0CC /* chat_graybubble_bottommiddle.png in Resources */ = {isa = PBXBuildFile; fileRef = E868536211F9D7740064C0CC /* chat_graybubble_bottommiddle.png */; };
-		E868537511F9D7740064C0CC /* chat_graybubble_bottomright.png in Resources */ = {isa = PBXBuildFile; fileRef = E868536311F9D7740064C0CC /* chat_graybubble_bottomright.png */; };
-		E868537611F9D7740064C0CC /* chat_graybubble_left.png in Resources */ = {isa = PBXBuildFile; fileRef = E868536411F9D7740064C0CC /* chat_graybubble_left.png */; };
-		E868537711F9D7740064C0CC /* chat_graybubble_middle.png in Resources */ = {isa = PBXBuildFile; fileRef = E868536511F9D7740064C0CC /* chat_graybubble_middle.png */; };
-		E868537811F9D7740064C0CC /* chat_graybubble_right.png in Resources */ = {isa = PBXBuildFile; fileRef = E868536611F9D7740064C0CC /* chat_graybubble_right.png */; };
-		E868537911F9D7740064C0CC /* chat_graybubble_topleft.png in Resources */ = {isa = PBXBuildFile; fileRef = E868536711F9D7740064C0CC /* chat_graybubble_topleft.png */; };
-		E868537A11F9D7740064C0CC /* chat_graybubble_topmiddle.png in Resources */ = {isa = PBXBuildFile; fileRef = E868536811F9D7740064C0CC /* chat_graybubble_topmiddle.png */; };
-		E868537B11F9D7740064C0CC /* chat_graybubble_topright.png in Resources */ = {isa = PBXBuildFile; fileRef = E868536911F9D7740064C0CC /* chat_graybubble_topright.png */; };
 		E86B5A1817AE7C6C00C715CA /* TCFileCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E86B5A1717AE7C6C00C715CA /* TCFileCellView.m */; };
 		E874146B12FAE0C200BD4862 /* TCDropButton.m in Sources */ = {isa = PBXBuildFile; fileRef = E874146A12FAE0C200BD4862 /* TCDropButton.m */; };
 		E878981617AFCC0900DB7709 /* TCBuddyCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E878981517AFCC0900DB7709 /* TCBuddyCellView.m */; };
@@ -85,16 +73,13 @@
 		E889F09D12531D12000C36B2 /* TCTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F09C12531D12000C36B2 /* TCTableView.m */; };
 		E889F0A012531D1E000C36B2 /* TCTorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F09F12531D1E000C36B2 /* TCTorManager.m */; };
 		E889F0A312531D33000C36B2 /* TCConfigPlist.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0A212531D33000C36B2 /* TCConfigPlist.m */; };
-		E889F0A612531D3F000C36B2 /* TCBuddiesController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0A512531D3F000C36B2 /* TCBuddiesController.m */; };
-		E889F0A912531D48000C36B2 /* TCBuddyInfoController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0A812531D48000C36B2 /* TCBuddyInfoController.m */; };
-		E889F0AF12531D62000C36B2 /* TCChatController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0AE12531D62000C36B2 /* TCChatController.m */; };
-		E889F0B212531D6B000C36B2 /* TCChatTalk.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0B112531D6B000C36B2 /* TCChatTalk.m */; };
-		E889F0B512531D73000C36B2 /* TCChatBubble.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0B412531D73000C36B2 /* TCChatBubble.m */; };
-		E889F0B812531D7E000C36B2 /* TCChatPage.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0B712531D7E000C36B2 /* TCChatPage.m */; };
-		E889F0BB12531D92000C36B2 /* TCAssistantController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0BA12531D92000C36B2 /* TCAssistantController.m */; };
+		E889F0A612531D3F000C36B2 /* TCBuddiesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0A512531D3F000C36B2 /* TCBuddiesWindowController.m */; };
+		E889F0A912531D48000C36B2 /* TCBuddyInfoWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0A812531D48000C36B2 /* TCBuddyInfoWindowController.m */; };
+		E889F0AF12531D62000C36B2 /* TCChatWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0AE12531D62000C36B2 /* TCChatWindowController.m */; };
+		E889F0BB12531D92000C36B2 /* TCAssistantWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0BA12531D92000C36B2 /* TCAssistantWindowController.m */; };
 		E889F0BE12531D9C000C36B2 /* TCAssistantBack.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0BD12531D9C000C36B2 /* TCAssistantBack.m */; };
-		E889F0C212531DB2000C36B2 /* TCFilesController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0C112531DB2000C36B2 /* TCFilesController.m */; };
-		E889F0C812531DC9000C36B2 /* TCLogsController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0C712531DC9000C36B2 /* TCLogsController.m */; };
+		E889F0C212531DB2000C36B2 /* TCFilesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0C112531DB2000C36B2 /* TCFilesWindowController.m */; };
+		E889F0C812531DC9000C36B2 /* TCLogsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0C712531DC9000C36B2 /* TCLogsWindowController.m */; };
 		E889F0CB12531DD6000C36B2 /* TorChatAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0CA12531DD6000C36B2 /* TorChatAppDelegate.m */; };
 		E88AE83711EDE9D50037D808 /* TCConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = E88AE83511EDE9D50037D808 /* TCConnection.m */; };
 		E8A5C5E214F690630096367C /* blocked_buddy.png in Resources */ = {isa = PBXBuildFile; fileRef = E8A5C5E114F690630096367C /* blocked_buddy.png */; };
@@ -111,7 +96,7 @@
 		E8D5E25F14DA98B800973297 /* back_send_field.png in Resources */ = {isa = PBXBuildFile; fileRef = E8D5E25E14DA98B800973297 /* back_send_field.png */; };
 		E8D5E26214DAA0B400973297 /* TCSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = E8D5E26114DAA0B400973297 /* TCSplitView.m */; };
 		E8D5E26514DACFA200973297 /* ChatView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E8D5E26314DACFA200973297 /* ChatView.xib */; };
-		E8D5E26B14DAD3E200973297 /* TCChatView.m in Sources */ = {isa = PBXBuildFile; fileRef = E8D5E26A14DAD3E200973297 /* TCChatView.m */; };
+		E8D5E26B14DAD3E200973297 /* TCChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E8D5E26A14DAD3E200973297 /* TCChatViewController.m */; };
 		E8EDBCD417AA4C6500172B9C /* TCLogsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E8EDBCD317AA4C6500172B9C /* TCLogsManager.m */; };
 		E8F15A7A130425A4000593E1 /* TCKeyedText.m in Sources */ = {isa = PBXBuildFile; fileRef = E8F15A79130425A4000593E1 /* TCKeyedText.m */; };
 		E8F16D3411FF7E9700DFA05F /* TCParser.m in Sources */ = {isa = PBXBuildFile; fileRef = E8F16D3211FF7E9700DFA05F /* TCParser.m */; };
@@ -125,6 +110,14 @@
 		E80414C717A557B7008220C9 /* NSArray+TCTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+TCTools.h"; sourceTree = "<group>"; };
 		E80414C817A557B7008220C9 /* NSArray+TCTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+TCTools.m"; sourceTree = "<group>"; };
 		E80414CA17A57722008220C9 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		E809B1431859C593001664E1 /* TCChatTranscriptViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatTranscriptViewController.h; path = Interface/TCChatTranscriptViewController.h; sourceTree = "<group>"; };
+		E809B1441859C593001664E1 /* TCChatTranscriptViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCChatTranscriptViewController.m; path = Interface/TCChatTranscriptViewController.m; sourceTree = "<group>"; };
+		E809B1461859C5BC001664E1 /* NSImage+TCExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSImage+TCExtension.h"; path = "Interface/NSImage+TCExtension.h"; sourceTree = "<group>"; };
+		E809B1471859C5BC001664E1 /* NSImage+TCExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSImage+TCExtension.m"; path = "Interface/NSImage+TCExtension.m"; sourceTree = "<group>"; };
+		E809B1491859C697001664E1 /* balloon_aqua.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = balloon_aqua.tiff; sourceTree = "<group>"; };
+		E809B14A1859C697001664E1 /* balloon_graphite.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = balloon_graphite.tiff; sourceTree = "<group>"; };
+		E809B14D1859C6F9001664E1 /* ChatTemplate.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = ChatTemplate.plist; path = TorChat/Resources/ChatTemplate.plist; sourceTree = SOURCE_ROOT; };
+		E809B1A41859CC4B001664E1 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		E8127AA71854CB1100FEDA7F /* TCChatTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatTextField.h; path = Interface/TCChatTextField.h; sourceTree = "<group>"; };
 		E8127AA81854CB1100FEDA7F /* TCChatTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCChatTextField.m; path = Interface/TCChatTextField.m; sourceTree = "<group>"; };
 		E81FD9F411E7259B000614D5 /* TorChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TorChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -138,8 +131,8 @@
 		E826C12C120D9D6F00AF9A5E /* file_reveal.tif */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; name = file_reveal.tif; path = ../Medias/file_reveal.tif; sourceTree = "<group>"; };
 		E826C18F120DB0C400AF9A5E /* file_stop_pushed.tif */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = file_stop_pushed.tif; sourceTree = "<group>"; };
 		E826C191120DB11B00AF9A5E /* file_reveal_pushed.tif */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; name = file_reveal_pushed.tif; path = ../Medias/file_reveal_pushed.tif; sourceTree = "<group>"; };
-		E82B7D72125A074600B7BA8A /* TCPrefController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCPrefController.h; path = Interface/TCPrefController.h; sourceTree = "<group>"; };
-		E82B7D79125A08A800B7BA8A /* TCPrefController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCPrefController.m; path = Interface/TCPrefController.m; sourceTree = "<group>"; };
+		E82B7D72125A074600B7BA8A /* TCPreferencesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCPreferencesWindowController.h; path = Interface/TCPreferencesWindowController.h; sourceTree = "<group>"; };
+		E82B7D79125A08A800B7BA8A /* TCPreferencesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCPreferencesWindowController.m; path = Interface/TCPreferencesWindowController.m; sourceTree = "<group>"; };
 		E82B7D88125A0EA700B7BA8A /* TCMainController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCMainController.h; path = Interface/TCMainController.h; sourceTree = "<group>"; };
 		E82B7D8E125A115400B7BA8A /* TCMainController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCMainController.m; path = Interface/TCMainController.m; sourceTree = "<group>"; };
 		E82D3F7F142D2AB400A33C7A /* TorChat-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "TorChat-Info.plist"; path = "TorChat/TorChat-Info.plist"; sourceTree = "<group>"; };
@@ -172,24 +165,6 @@
 		E861274611F59E3C00901B29 /* stat_offline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = stat_offline.png; path = ../Medias/stat_offline.png; sourceTree = "<group>"; };
 		E861274711F59E3C00901B29 /* stat_online.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = stat_online.png; path = ../Medias/stat_online.png; sourceTree = "<group>"; };
 		E861274811F59E3C00901B29 /* stat_xa.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = stat_xa.png; path = ../Medias/stat_xa.png; sourceTree = "<group>"; };
-		E868535811F9D7740064C0CC /* chat_bluebubble_bottomleft.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_bluebubble_bottomleft.png; sourceTree = "<group>"; };
-		E868535911F9D7740064C0CC /* chat_bluebubble_bottommiddle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_bluebubble_bottommiddle.png; sourceTree = "<group>"; };
-		E868535A11F9D7740064C0CC /* chat_bluebubble_bottomright.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_bluebubble_bottomright.png; sourceTree = "<group>"; };
-		E868535B11F9D7740064C0CC /* chat_bluebubble_left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_bluebubble_left.png; sourceTree = "<group>"; };
-		E868535C11F9D7740064C0CC /* chat_bluebubble_middle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_bluebubble_middle.png; sourceTree = "<group>"; };
-		E868535D11F9D7740064C0CC /* chat_bluebubble_right.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_bluebubble_right.png; sourceTree = "<group>"; };
-		E868535E11F9D7740064C0CC /* chat_bluebubble_topleft.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_bluebubble_topleft.png; sourceTree = "<group>"; };
-		E868535F11F9D7740064C0CC /* chat_bluebubble_topmiddle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_bluebubble_topmiddle.png; sourceTree = "<group>"; };
-		E868536011F9D7740064C0CC /* chat_bluebubble_topright.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_bluebubble_topright.png; sourceTree = "<group>"; };
-		E868536111F9D7740064C0CC /* chat_graybubble_bottomleft.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_graybubble_bottomleft.png; sourceTree = "<group>"; };
-		E868536211F9D7740064C0CC /* chat_graybubble_bottommiddle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_graybubble_bottommiddle.png; sourceTree = "<group>"; };
-		E868536311F9D7740064C0CC /* chat_graybubble_bottomright.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_graybubble_bottomright.png; sourceTree = "<group>"; };
-		E868536411F9D7740064C0CC /* chat_graybubble_left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_graybubble_left.png; sourceTree = "<group>"; };
-		E868536511F9D7740064C0CC /* chat_graybubble_middle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_graybubble_middle.png; sourceTree = "<group>"; };
-		E868536611F9D7740064C0CC /* chat_graybubble_right.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_graybubble_right.png; sourceTree = "<group>"; };
-		E868536711F9D7740064C0CC /* chat_graybubble_topleft.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_graybubble_topleft.png; sourceTree = "<group>"; };
-		E868536811F9D7740064C0CC /* chat_graybubble_topmiddle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_graybubble_topmiddle.png; sourceTree = "<group>"; };
-		E868536911F9D7740064C0CC /* chat_graybubble_topright.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_graybubble_topright.png; sourceTree = "<group>"; };
 		E86B5A1617AE7C6C00C715CA /* TCFileCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCFileCellView.h; path = Interface/TCFileCellView.h; sourceTree = "<group>"; };
 		E86B5A1717AE7C6C00C715CA /* TCFileCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCFileCellView.m; path = Interface/TCFileCellView.m; sourceTree = "<group>"; };
 		E874146912FAE0C200BD4862 /* TCDropButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCDropButton.h; path = Interface/TCDropButton.h; sourceTree = "<group>"; };
@@ -247,27 +222,21 @@
 		E889F09F12531D1E000C36B2 /* TCTorManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCTorManager.m; path = Interface/TCTorManager.m; sourceTree = "<group>"; };
 		E889F0A112531D33000C36B2 /* TCConfigPlist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCConfigPlist.h; path = Interface/TCConfigPlist.h; sourceTree = "<group>"; };
 		E889F0A212531D33000C36B2 /* TCConfigPlist.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCConfigPlist.m; path = Interface/TCConfigPlist.m; sourceTree = "<group>"; };
-		E889F0A412531D3F000C36B2 /* TCBuddiesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCBuddiesController.h; path = Interface/TCBuddiesController.h; sourceTree = "<group>"; };
-		E889F0A512531D3F000C36B2 /* TCBuddiesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = TCBuddiesController.m; path = Interface/TCBuddiesController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		E889F0A712531D48000C36B2 /* TCBuddyInfoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCBuddyInfoController.h; path = Interface/TCBuddyInfoController.h; sourceTree = "<group>"; };
-		E889F0A812531D48000C36B2 /* TCBuddyInfoController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCBuddyInfoController.m; path = Interface/TCBuddyInfoController.m; sourceTree = "<group>"; };
-		E889F0AD12531D62000C36B2 /* TCChatController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatController.h; path = Interface/TCChatController.h; sourceTree = "<group>"; };
-		E889F0AE12531D62000C36B2 /* TCChatController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCChatController.m; path = Interface/TCChatController.m; sourceTree = "<group>"; };
-		E889F0B012531D6B000C36B2 /* TCChatTalk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatTalk.h; path = Interface/TCChatTalk.h; sourceTree = "<group>"; };
-		E889F0B112531D6B000C36B2 /* TCChatTalk.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCChatTalk.m; path = Interface/TCChatTalk.m; sourceTree = "<group>"; };
-		E889F0B312531D73000C36B2 /* TCChatBubble.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatBubble.h; path = Interface/TCChatBubble.h; sourceTree = "<group>"; };
-		E889F0B412531D73000C36B2 /* TCChatBubble.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCChatBubble.m; path = Interface/TCChatBubble.m; sourceTree = "<group>"; };
-		E889F0B612531D7E000C36B2 /* TCChatPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatPage.h; path = Interface/TCChatPage.h; sourceTree = "<group>"; };
-		E889F0B712531D7E000C36B2 /* TCChatPage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCChatPage.m; path = Interface/TCChatPage.m; sourceTree = "<group>"; };
-		E889F0B912531D92000C36B2 /* TCAssistantController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCAssistantController.h; path = Interface/TCAssistantController.h; sourceTree = "<group>"; };
-		E889F0BA12531D92000C36B2 /* TCAssistantController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCAssistantController.m; path = Interface/TCAssistantController.m; sourceTree = "<group>"; };
+		E889F0A412531D3F000C36B2 /* TCBuddiesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCBuddiesWindowController.h; path = Interface/TCBuddiesWindowController.h; sourceTree = "<group>"; };
+		E889F0A512531D3F000C36B2 /* TCBuddiesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = TCBuddiesWindowController.m; path = Interface/TCBuddiesWindowController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		E889F0A712531D48000C36B2 /* TCBuddyInfoWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCBuddyInfoWindowController.h; path = Interface/TCBuddyInfoWindowController.h; sourceTree = "<group>"; };
+		E889F0A812531D48000C36B2 /* TCBuddyInfoWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCBuddyInfoWindowController.m; path = Interface/TCBuddyInfoWindowController.m; sourceTree = "<group>"; };
+		E889F0AD12531D62000C36B2 /* TCChatWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatWindowController.h; path = Interface/TCChatWindowController.h; sourceTree = "<group>"; };
+		E889F0AE12531D62000C36B2 /* TCChatWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCChatWindowController.m; path = Interface/TCChatWindowController.m; sourceTree = "<group>"; };
+		E889F0B912531D92000C36B2 /* TCAssistantWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCAssistantWindowController.h; path = Interface/TCAssistantWindowController.h; sourceTree = "<group>"; };
+		E889F0BA12531D92000C36B2 /* TCAssistantWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCAssistantWindowController.m; path = Interface/TCAssistantWindowController.m; sourceTree = "<group>"; };
 		E889F0BC12531D9C000C36B2 /* TCAssistantBack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCAssistantBack.h; path = Interface/TCAssistantBack.h; sourceTree = "<group>"; };
 		E889F0BD12531D9C000C36B2 /* TCAssistantBack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCAssistantBack.m; path = Interface/TCAssistantBack.m; sourceTree = "<group>"; };
 		E889F0BF12531DAC000C36B2 /* TCFilesCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCFilesCommon.h; path = Interface/TCFilesCommon.h; sourceTree = "<group>"; };
-		E889F0C012531DB2000C36B2 /* TCFilesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCFilesController.h; path = Interface/TCFilesController.h; sourceTree = "<group>"; };
-		E889F0C112531DB2000C36B2 /* TCFilesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCFilesController.m; path = Interface/TCFilesController.m; sourceTree = "<group>"; };
-		E889F0C612531DC9000C36B2 /* TCLogsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCLogsController.h; path = Interface/TCLogsController.h; sourceTree = "<group>"; };
-		E889F0C712531DC9000C36B2 /* TCLogsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCLogsController.m; path = Interface/TCLogsController.m; sourceTree = "<group>"; };
+		E889F0C012531DB2000C36B2 /* TCFilesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCFilesWindowController.h; path = Interface/TCFilesWindowController.h; sourceTree = "<group>"; };
+		E889F0C112531DB2000C36B2 /* TCFilesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCFilesWindowController.m; path = Interface/TCFilesWindowController.m; sourceTree = "<group>"; };
+		E889F0C612531DC9000C36B2 /* TCLogsWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCLogsWindowController.h; path = Interface/TCLogsWindowController.h; sourceTree = "<group>"; };
+		E889F0C712531DC9000C36B2 /* TCLogsWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCLogsWindowController.m; path = Interface/TCLogsWindowController.m; sourceTree = "<group>"; };
 		E889F0C912531DD6000C36B2 /* TorChatAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TorChatAppDelegate.h; path = Interface/TorChatAppDelegate.h; sourceTree = "<group>"; };
 		E889F0CA12531DD6000C36B2 /* TorChatAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TorChatAppDelegate.m; path = Interface/TorChatAppDelegate.m; sourceTree = "<group>"; };
 		E88AE83511EDE9D50037D808 /* TCConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCConnection.m; sourceTree = "<group>"; };
@@ -300,8 +269,8 @@
 		E8D5E25E14DA98B800973297 /* back_send_field.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = back_send_field.png; path = ../Medias/back_send_field.png; sourceTree = "<group>"; };
 		E8D5E26014DAA0B400973297 /* TCSplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCSplitView.h; path = Interface/TCSplitView.h; sourceTree = "<group>"; };
 		E8D5E26114DAA0B400973297 /* TCSplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCSplitView.m; path = Interface/TCSplitView.m; sourceTree = "<group>"; };
-		E8D5E26914DAD3E200973297 /* TCChatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatView.h; path = Interface/TCChatView.h; sourceTree = "<group>"; };
-		E8D5E26A14DAD3E200973297 /* TCChatView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCChatView.m; path = Interface/TCChatView.m; sourceTree = "<group>"; };
+		E8D5E26914DAD3E200973297 /* TCChatViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatViewController.h; path = Interface/TCChatViewController.h; sourceTree = "<group>"; };
+		E8D5E26A14DAD3E200973297 /* TCChatViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCChatViewController.m; path = Interface/TCChatViewController.m; sourceTree = "<group>"; };
 		E8EDBCD217AA4C6500172B9C /* TCLogsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCLogsManager.h; path = Interface/TCLogsManager.h; sourceTree = "<group>"; };
 		E8EDBCD317AA4C6500172B9C /* TCLogsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCLogsManager.m; path = Interface/TCLogsManager.m; sourceTree = "<group>"; };
 		E8F15A78130425A4000593E1 /* TCKeyedText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCKeyedText.h; path = Interface/TCKeyedText.h; sourceTree = "<group>"; };
@@ -315,6 +284,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E809B1A51859CC4B001664E1 /* WebKit.framework in Frameworks */,
 				E80414CB17A57722008220C9 /* Security.framework in Frameworks */,
 				E81FD9F811E7259B000614D5 /* Cocoa.framework in Frameworks */,
 			);
@@ -371,6 +341,7 @@
 		E81FD9EF11E7259B000614D5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E809B1A41859CC4B001664E1 /* WebKit.framework */,
 				E80414CA17A57722008220C9 /* Security.framework */,
 				E81FD9F711E7259B000614D5 /* Cocoa.framework */,
 			);
@@ -443,10 +414,10 @@
 		E83AD977127B546800538925 /* Buddies */ = {
 			isa = PBXGroup;
 			children = (
-				E889F0A412531D3F000C36B2 /* TCBuddiesController.h */,
-				E889F0A512531D3F000C36B2 /* TCBuddiesController.m */,
-				E889F0A712531D48000C36B2 /* TCBuddyInfoController.h */,
-				E889F0A812531D48000C36B2 /* TCBuddyInfoController.m */,
+				E889F0A412531D3F000C36B2 /* TCBuddiesWindowController.h */,
+				E889F0A512531D3F000C36B2 /* TCBuddiesWindowController.m */,
+				E889F0A712531D48000C36B2 /* TCBuddyInfoWindowController.h */,
+				E889F0A812531D48000C36B2 /* TCBuddyInfoWindowController.m */,
 				E870BD8317A8490500DFA076 /* Views */,
 				E870BD8717A8498400DFA076 /* Resources */,
 			);
@@ -456,8 +427,8 @@
 		E83AD979127B549100538925 /* Assistant */ = {
 			isa = PBXGroup;
 			children = (
-				E889F0B912531D92000C36B2 /* TCAssistantController.h */,
-				E889F0BA12531D92000C36B2 /* TCAssistantController.m */,
+				E889F0B912531D92000C36B2 /* TCAssistantWindowController.h */,
+				E889F0BA12531D92000C36B2 /* TCAssistantWindowController.m */,
 				E8A6FE2D17A9942700C4DEAB /* TCPanel.h */,
 				E8A6FE2917A993A700C4DEAB /* Panels */,
 				E870BD8517A8494D00DFA076 /* Views */,
@@ -470,8 +441,8 @@
 			isa = PBXGroup;
 			children = (
 				E889F0BF12531DAC000C36B2 /* TCFilesCommon.h */,
-				E889F0C012531DB2000C36B2 /* TCFilesController.h */,
-				E889F0C112531DB2000C36B2 /* TCFilesController.m */,
+				E889F0C012531DB2000C36B2 /* TCFilesWindowController.h */,
+				E889F0C112531DB2000C36B2 /* TCFilesWindowController.m */,
 				E870BD8617A8496000DFA076 /* Views */,
 				E870BD8A17A849F200DFA076 /* Resources */,
 			);
@@ -481,8 +452,8 @@
 		E83AD97B127B54B300538925 /* Logs */ = {
 			isa = PBXGroup;
 			children = (
-				E889F0C612531DC9000C36B2 /* TCLogsController.h */,
-				E889F0C712531DC9000C36B2 /* TCLogsController.m */,
+				E889F0C612531DC9000C36B2 /* TCLogsWindowController.h */,
+				E889F0C712531DC9000C36B2 /* TCLogsWindowController.m */,
 				E870BD8B17A849FF00DFA076 /* Resources */,
 			);
 			name = Logs;
@@ -491,8 +462,8 @@
 		E83AD97C127B54C200538925 /* Preferences */ = {
 			isa = PBXGroup;
 			children = (
-				E82B7D72125A074600B7BA8A /* TCPrefController.h */,
-				E82B7D79125A08A800B7BA8A /* TCPrefController.m */,
+				E82B7D72125A074600B7BA8A /* TCPreferencesWindowController.h */,
+				E82B7D79125A08A800B7BA8A /* TCPreferencesWindowController.m */,
 				E870BD8C17A84A0A00DFA076 /* Resources */,
 			);
 			name = Preferences;
@@ -512,24 +483,8 @@
 		E868535711F9D7740064C0CC /* Chat */ = {
 			isa = PBXGroup;
 			children = (
-				E868535811F9D7740064C0CC /* chat_bluebubble_bottomleft.png */,
-				E868535911F9D7740064C0CC /* chat_bluebubble_bottommiddle.png */,
-				E868535A11F9D7740064C0CC /* chat_bluebubble_bottomright.png */,
-				E868535B11F9D7740064C0CC /* chat_bluebubble_left.png */,
-				E868535C11F9D7740064C0CC /* chat_bluebubble_middle.png */,
-				E868535D11F9D7740064C0CC /* chat_bluebubble_right.png */,
-				E868535E11F9D7740064C0CC /* chat_bluebubble_topleft.png */,
-				E868535F11F9D7740064C0CC /* chat_bluebubble_topmiddle.png */,
-				E868536011F9D7740064C0CC /* chat_bluebubble_topright.png */,
-				E868536111F9D7740064C0CC /* chat_graybubble_bottomleft.png */,
-				E868536211F9D7740064C0CC /* chat_graybubble_bottommiddle.png */,
-				E868536311F9D7740064C0CC /* chat_graybubble_bottomright.png */,
-				E868536411F9D7740064C0CC /* chat_graybubble_left.png */,
-				E868536511F9D7740064C0CC /* chat_graybubble_middle.png */,
-				E868536611F9D7740064C0CC /* chat_graybubble_right.png */,
-				E868536711F9D7740064C0CC /* chat_graybubble_topleft.png */,
-				E868536811F9D7740064C0CC /* chat_graybubble_topmiddle.png */,
-				E868536911F9D7740064C0CC /* chat_graybubble_topright.png */,
+				E809B1491859C697001664E1 /* balloon_aqua.tiff */,
+				E809B14A1859C697001664E1 /* balloon_graphite.tiff */,
 			);
 			name = Chat;
 			path = ../Medias/Chat;
@@ -577,8 +532,8 @@
 		E870BD8117A848D000DFA076 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
-				E889F0AD12531D62000C36B2 /* TCChatController.h */,
-				E889F0AE12531D62000C36B2 /* TCChatController.m */,
+				E889F0AD12531D62000C36B2 /* TCChatWindowController.h */,
+				E889F0AE12531D62000C36B2 /* TCChatWindowController.m */,
 				E870BD8417A8491200DFA076 /* Views */,
 				E870BD8817A849B200DFA076 /* Resources */,
 			);
@@ -601,14 +556,10 @@
 		E870BD8417A8491200DFA076 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				E8D5E26914DAD3E200973297 /* TCChatView.h */,
-				E8D5E26A14DAD3E200973297 /* TCChatView.m */,
-				E889F0B012531D6B000C36B2 /* TCChatTalk.h */,
-				E889F0B112531D6B000C36B2 /* TCChatTalk.m */,
-				E889F0B312531D73000C36B2 /* TCChatBubble.h */,
-				E889F0B412531D73000C36B2 /* TCChatBubble.m */,
-				E889F0B612531D7E000C36B2 /* TCChatPage.h */,
-				E889F0B712531D7E000C36B2 /* TCChatPage.m */,
+				E8D5E26914DAD3E200973297 /* TCChatViewController.h */,
+				E8D5E26A14DAD3E200973297 /* TCChatViewController.m */,
+				E809B1431859C593001664E1 /* TCChatTranscriptViewController.h */,
+				E809B1441859C593001664E1 /* TCChatTranscriptViewController.m */,
 				E852235017B504CA00C6F585 /* TCChatCellView.h */,
 				E852235117B504CA00C6F585 /* TCChatCellView.m */,
 				E8127AA71854CB1100FEDA7F /* TCChatTextField.h */,
@@ -647,6 +598,7 @@
 		E870BD8817A849B200DFA076 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				E809B14D1859C6F9001664E1 /* ChatTemplate.plist */,
 				E870BD8D17A84A3B00DFA076 /* XIB */,
 				E870BD8E17A84A4300DFA076 /* Media */,
 			);
@@ -806,6 +758,8 @@
 			children = (
 				E889F09512531CFB000C36B2 /* NSString+TCExtension.h */,
 				E889F09612531CFB000C36B2 /* NSString+TCExtension.m */,
+				E809B1461859C5BC001664E1 /* NSImage+TCExtension.h */,
+				E809B1471859C5BC001664E1 /* NSImage+TCExtension.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -924,28 +878,12 @@
 				E861274C11F59E3C00901B29 /* stat_xa.png in Resources */,
 				E849F93711F5E8F300193F06 /* engrenage.png in Resources */,
 				E83423F111F6FA2100922152 /* Localizable.strings in Resources */,
-				E868536A11F9D7740064C0CC /* chat_bluebubble_bottomleft.png in Resources */,
-				E868536B11F9D7740064C0CC /* chat_bluebubble_bottommiddle.png in Resources */,
-				E868536C11F9D7740064C0CC /* chat_bluebubble_bottomright.png in Resources */,
-				E868536D11F9D7740064C0CC /* chat_bluebubble_left.png in Resources */,
-				E868536E11F9D7740064C0CC /* chat_bluebubble_middle.png in Resources */,
-				E868536F11F9D7740064C0CC /* chat_bluebubble_right.png in Resources */,
-				E868537011F9D7740064C0CC /* chat_bluebubble_topleft.png in Resources */,
-				E868537111F9D7740064C0CC /* chat_bluebubble_topmiddle.png in Resources */,
-				E868537211F9D7740064C0CC /* chat_bluebubble_topright.png in Resources */,
-				E868537311F9D7740064C0CC /* chat_graybubble_bottomleft.png in Resources */,
 				E878984817B05C0B00DB7709 /* AssistantPanel_Basic.xib in Resources */,
-				E868537411F9D7740064C0CC /* chat_graybubble_bottommiddle.png in Resources */,
-				E868537511F9D7740064C0CC /* chat_graybubble_bottomright.png in Resources */,
-				E868537611F9D7740064C0CC /* chat_graybubble_left.png in Resources */,
-				E868537711F9D7740064C0CC /* chat_graybubble_middle.png in Resources */,
-				E868537811F9D7740064C0CC /* chat_graybubble_right.png in Resources */,
-				E868537911F9D7740064C0CC /* chat_graybubble_topleft.png in Resources */,
-				E868537A11F9D7740064C0CC /* chat_graybubble_topmiddle.png in Resources */,
-				E868537B11F9D7740064C0CC /* chat_graybubble_topright.png in Resources */,
 				E826C10B120D94F000AF9A5E /* file_down.png in Resources */,
 				E826C10C120D94F000AF9A5E /* file_up.png in Resources */,
 				E878984917B05C0B00DB7709 /* AssistantPanel_Mode.xib in Resources */,
+				E809B14E1859C6F9001664E1 /* ChatTemplate.plist in Resources */,
+				E809B14B1859C697001664E1 /* balloon_aqua.tiff in Resources */,
 				E826C116120D99E500AF9A5E /* file_stop_rollover.tif in Resources */,
 				E826C117120D99E500AF9A5E /* file_stop.tif in Resources */,
 				E826C12D120D9D6F00AF9A5E /* file_reveal_rollover.tif in Resources */,
@@ -963,6 +901,7 @@
 				E8D249C812F82C4700B476E3 /* bar.png in Resources */,
 				E8D5E25F14DA98B800973297 /* back_send_field.png in Resources */,
 				E8D5E26514DACFA200973297 /* ChatView.xib in Resources */,
+				E809B14C1859C697001664E1 /* balloon_graphite.tiff in Resources */,
 				E80367CC14E056200089CE80 /* balloon_rigth.png in Resources */,
 				E80367CD14E056200089CE80 /* balloon_left.png in Resources */,
 				E80367CE14E056200089CE80 /* balloon_center.png in Resources */,
@@ -983,6 +922,7 @@
 				E85903B211EC9877005CE53F /* TCTools.m in Sources */,
 				E88AE83711EDE9D50037D808 /* TCConnection.m in Sources */,
 				E8CCCD7211FEE70E00C8EEFF /* TCFileSend.m in Sources */,
+				E809B1451859C593001664E1 /* TCChatTranscriptViewController.m in Sources */,
 				E8CCCD7511FEE72500C8EEFF /* TCFileReceive.m in Sources */,
 				E8F16D3411FF7E9700DFA05F /* TCParser.m in Sources */,
 				E8C3982B1205D51000B9307B /* TCSocket.m in Sources */,
@@ -993,21 +933,19 @@
 				E889F09D12531D12000C36B2 /* TCTableView.m in Sources */,
 				E889F0A012531D1E000C36B2 /* TCTorManager.m in Sources */,
 				E889F0A312531D33000C36B2 /* TCConfigPlist.m in Sources */,
-				E889F0A612531D3F000C36B2 /* TCBuddiesController.m in Sources */,
-				E889F0A912531D48000C36B2 /* TCBuddyInfoController.m in Sources */,
-				E889F0AF12531D62000C36B2 /* TCChatController.m in Sources */,
-				E889F0B212531D6B000C36B2 /* TCChatTalk.m in Sources */,
-				E889F0B512531D73000C36B2 /* TCChatBubble.m in Sources */,
-				E889F0B812531D7E000C36B2 /* TCChatPage.m in Sources */,
-				E889F0BB12531D92000C36B2 /* TCAssistantController.m in Sources */,
+				E889F0A612531D3F000C36B2 /* TCBuddiesWindowController.m in Sources */,
+				E889F0A912531D48000C36B2 /* TCBuddyInfoWindowController.m in Sources */,
+				E889F0AF12531D62000C36B2 /* TCChatWindowController.m in Sources */,
+				E889F0BB12531D92000C36B2 /* TCAssistantWindowController.m in Sources */,
 				E878981617AFCC0900DB7709 /* TCBuddyCellView.m in Sources */,
 				E8A6FE2C17A993FC00C4DEAB /* TCPanel_Welcome.m in Sources */,
 				E889F0BE12531D9C000C36B2 /* TCAssistantBack.m in Sources */,
-				E889F0C212531DB2000C36B2 /* TCFilesController.m in Sources */,
-				E889F0C812531DC9000C36B2 /* TCLogsController.m in Sources */,
+				E889F0C212531DB2000C36B2 /* TCFilesWindowController.m in Sources */,
+				E889F0C812531DC9000C36B2 /* TCLogsWindowController.m in Sources */,
 				E889F0CB12531DD6000C36B2 /* TorChatAppDelegate.m in Sources */,
-				E82B7D7A125A08A800B7BA8A /* TCPrefController.m in Sources */,
+				E82B7D7A125A08A800B7BA8A /* TCPreferencesWindowController.m in Sources */,
 				E852235217B504CA00C6F585 /* TCChatCellView.m in Sources */,
+				E809B1481859C5BC001664E1 /* NSImage+TCExtension.m in Sources */,
 				E82B7D8F125A115400B7BA8A /* TCMainController.m in Sources */,
 				E835491917A810E1003C08BB /* TCInfo.m in Sources */,
 				E8C1EFF312F7169400E24C42 /* TCImage.m in Sources */,
@@ -1018,7 +956,7 @@
 				E8A6FE3217A995AB00C4DEAB /* TCPanel_Mode.m in Sources */,
 				E82D3F83142D2AF300A33C7A /* main.m in Sources */,
 				E8D5E26214DAA0B400973297 /* TCSplitView.m in Sources */,
-				E8D5E26B14DAD3E200973297 /* TCChatView.m in Sources */,
+				E8D5E26B14DAD3E200973297 /* TCChatViewController.m in Sources */,
 				E8A6FE3517A995D100C4DEAB /* TCPanel_Advanced.m in Sources */,
 				E8455D3D17A425F00046307B /* TCValue.m in Sources */,
 				E8455D4617A4386C0046307B /* NSData+TCTools.m in Sources */,

@@ -5,12 +5,13 @@
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4514"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="TCFilesController">
+        <customObject id="-2" userLabel="File's Owner" customClass="TCFilesWindowController">
             <connections>
                 <outlet property="clearButton" destination="13" id="30"/>
                 <outlet property="countField" destination="15" id="29"/>
                 <outlet property="filesView" destination="36" id="44"/>
                 <outlet property="mainWindow" destination="1" id="23"/>
+                <outlet property="window" destination="1" id="qMu-dC-ulN"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -19,7 +20,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="480" height="270"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1578"/>
             <value key="minSize" type="size" width="480" height="270"/>
             <view key="contentView" id="2">
                 <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>

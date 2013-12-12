@@ -1,7 +1,7 @@
 /*
- *  main.m
+ *  TCLogsWindowController.h
  *
- *  Copyright 2013 Avrous Julien-Pierre
+ *  Copyright 2013 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -22,17 +22,17 @@
 
 
 
-#import "TCChatWindowController.h"
-
 #import <Cocoa/Cocoa.h>
 
 
+/*
+** TCLogsWindowController
+*/
+#pragma mark - TCLogsWindowController
 
-int main(int argc, char *argv[])
-{
-	// Ignore sigpipe
-	signal(SIGPIPE, SIG_IGN);
+@interface TCLogsWindowController : NSWindowController
 
-	// Run
-	return NSApplicationMain(argc,  (const char **) argv);
-}
+// -- Singleton --
++ (TCLogsWindowController *)sharedController;
+
+@end

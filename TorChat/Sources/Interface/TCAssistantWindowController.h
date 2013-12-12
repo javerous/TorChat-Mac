@@ -1,7 +1,7 @@
 /*
- *  main.m
+ *  TCAssistantWindowController.h
  *
- *  Copyright 2013 Avrous Julien-Pierre
+ *  Copyright 2013 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -21,18 +21,26 @@
  */
 
 
-
-#import "TCChatWindowController.h"
-
 #import <Cocoa/Cocoa.h>
 
 
+/*
+** Types
+*/
+#pragma mark - Types
 
-int main(int argc, char *argv[])
-{
-	// Ignore sigpipe
-	signal(SIGPIPE, SIG_IGN);
+typedef void (^TCAssistantCallback)(id context);
 
-	// Run
-	return NSApplicationMain(argc,  (const char **) argv);
-}
+
+
+/*
+** TCAssistantWindowController
+*/
+#pragma mark - TCAssistantWindowController
+
+@interface TCAssistantWindowController : NSWindowController
+
+// -- Constructor --
++ (TCAssistantWindowController *)startAssistantWithPanels:(NSArray *)panels andCallback:(TCAssistantCallback)callback;
+
+@end

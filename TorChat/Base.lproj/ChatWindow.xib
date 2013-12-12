@@ -5,7 +5,7 @@
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4514"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="TCChatController">
+        <customObject id="-2" userLabel="File's Owner" customClass="TCChatWindowController">
             <connections>
                 <outlet property="chatView" destination="W62-o1-NcR" id="jUy-fM-exx"/>
                 <outlet property="splitView" destination="84" id="98"/>
@@ -20,7 +20,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="451" height="460"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1578"/>
             <value key="minSize" type="size" width="350" height="200"/>
             <view key="contentView" id="2" userLabel="View">
                 <rect key="frame" x="0.0" y="0.0" width="451" height="460"/>
@@ -35,20 +35,20 @@
                                 <autoresizingMask key="autoresizingMask"/>
                                 <subviews>
                                     <scrollView focusRingType="none" borderType="none" autohidesScrollers="YES" horizontalLineScroll="38" horizontalPageScroll="10" verticalLineScroll="38" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="87">
-                                        <rect key="frame" x="0.0" y="0.0" width="164" height="460"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="167" height="460"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <clipView key="contentView" copiesOnScroll="NO" id="qc6-6W-xgV">
-                                            <rect key="frame" x="0.0" y="0.0" width="164" height="460"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="167" height="460"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" columnReordering="NO" columnResizing="NO" multipleSelection="NO" emptySelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="36" viewBased="YES" id="88">
-                                                    <rect key="frame" x="0.0" y="0.0" width="164" height="460"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="167" height="460"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <size key="intercellSpacing" width="3" height="2"/>
                                                     <color key="backgroundColor" name="_sourceListBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                     <tableColumns>
-                                                        <tableColumn width="161" minWidth="40" maxWidth="1000" id="91">
+                                                        <tableColumn width="164" minWidth="40" maxWidth="1000" id="91">
                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left">
                                                                 <font key="font" metaFont="smallSystem"/>
                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -60,7 +60,7 @@
                                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                             <prototypeCellViews>
                                                                 <tableCellView identifier="chat_label" id="pc7-Vj-EAp" customClass="TCChatCellView">
-                                                                    <rect key="frame" x="1" y="1" width="161" height="36"/>
+                                                                    <rect key="frame" x="1" y="1" width="164" height="36"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <subviews>
                                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Ql7-8b-pKL" userLabel="name_field">
@@ -85,7 +85,7 @@
                                                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSUser" id="e7X-CG-l49"/>
                                                                         </imageView>
                                                                         <button hidden="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mSZ-jE-U9g" userLabel="close_button" customClass="TCButton">
-                                                                            <rect key="frame" x="144" y="11" width="14" height="14"/>
+                                                                            <rect key="frame" x="147" y="11" width="14" height="14"/>
                                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                             <constraints>
                                                                                 <constraint firstAttribute="width" constant="14" id="Y41-cp-4zn"/>
@@ -163,11 +163,11 @@
                                                                     </connections>
                                                                 </tableCellView>
                                                                 <tableCellView identifier="chat_no_label" id="tUk-Fv-LrM" customClass="TCChatCellView">
-                                                                    <rect key="frame" x="1" y="39" width="161" height="36"/>
+                                                                    <rect key="frame" x="1" y="39" width="164" height="36"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <subviews>
                                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Zkg-Kb-r81" userLabel="name_field">
-                                                                            <rect key="frame" x="37" y="11" width="56" height="16"/>
+                                                                            <rect key="frame" x="37" y="10" width="56" height="16"/>
                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                                             <constraints>
                                                                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="50" id="LpM-SU-45L"/>
@@ -179,7 +179,7 @@
                                                                             </textFieldCell>
                                                                         </textField>
                                                                         <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="8Ao-wd-vXA" userLabel="avatar">
-                                                                            <rect key="frame" x="3" y="5" width="28" height="28"/>
+                                                                            <rect key="frame" x="3" y="4" width="28" height="28"/>
                                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                             <constraints>
                                                                                 <constraint firstAttribute="width" constant="28" id="GJR-0l-u3s"/>
@@ -188,7 +188,7 @@
                                                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSUser" id="BG6-QW-DWh"/>
                                                                         </imageView>
                                                                         <button hidden="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gez-9O-KLB" userLabel="close_button" customClass="TCButton">
-                                                                            <rect key="frame" x="144" y="11" width="14" height="14"/>
+                                                                            <rect key="frame" x="147" y="10" width="14" height="14"/>
                                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                             <constraints>
                                                                                 <constraint firstAttribute="height" constant="14" id="8o1-fs-R4L"/>
@@ -249,7 +249,7 @@
                                     <constraint firstItem="87" firstAttribute="top" secondItem="86" secondAttribute="top" id="uxL-ju-Sov"/>
                                 </constraints>
                             </customView>
-                            <customView id="W62-o1-NcR">
+                            <customView fixedFrame="YES" id="W62-o1-NcR">
                                 <rect key="frame" x="168" y="0.0" width="283" height="460"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </customView>

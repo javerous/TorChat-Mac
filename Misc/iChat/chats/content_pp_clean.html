@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			body {
+				-webkit-user-select: none;
+				overflow-x: auto;
+				margin-top: 5px;
+				font-family: Helvetica;
+				font-size: 12px;
+				margin-bottom: 0px;
+				margin-left: 0px;
+				overflow-y: auto;
+				background-color: transparent;
+				margin-right: 0px;
+			}
+
+			table {
+				border-spacing: 0px;
+			}
+			
+			div.mc {
+				padding-top: 0px;
+				border-bottom: solid transparent 1px;
+				width: 100%;
+				padding-bottom: 0px;
+				border-top: solid transparent 1px;
+				margin-top: -1px;
+				padding-left: 0px;
+				padding-right: 0px;
+			}
+
+			td.icon-container-local {
+				padding: 2px 12px 2px 4px;
+			}
+			
+			td.icon-container-remote {
+				padding: 2px 4px 2px 12px;
+			}
+			
+			td {
+				padding-bottom: 0px;
+				padding-left: 0px;
+				vertical-align: bottom;
+				padding-right: 0px;
+				padding-top: 0px;
+			}
+			
+			td.spacer-container {
+				width: 33%;
+			}
+			
+			message {
+				display: block;
+				word-break: break-word;
+			}
+			
+			div.icon-pres-container {
+				text-align: center;
+				height: 32px;
+				width: 32px;
+				position: relative;
+				border-spacing: 0px;
+			}
+			
+			div.icon-pres {
+				border-radius: 3px;
+				background-position: center center;
+				min-width: 32px;
+				background-repeat: no-repeat;
+				min-height: 32px;
+				background-size: 32px;
+				background-color: white;
+			}
+			
+			div.icon-pres-shadow {
+				left: 0px;
+				border-top: solid 1px rgba(0, 0, 0, 0.43);
+				border-radius: 3px;
+				position: absolute;
+				width: 100%;
+				box-shadow: inset 0 1px 0 rgba(0,0,0,0.1), 0 1px 0 rgba(255, 255, 255, 0.9);
+				border-right:
+				solid 1px rgba(0, 0, 0, 0.3);
+				height: 100%;
+				-webkit-box-sizing: border-box;
+				border-bottom: solid 1px rgba(0, 0, 0, 0.25);
+				border-left: solid 1px rgba(0, 0, 0, 0.3);
+				top: 0px;
+			}
+			
+			span.unselectable {
+				-webkit-user-select: none;
+			}
+			
+			.status {
+				color: rgb(139,146,165);
+				font-weight: bold;
+				margin-left: 3px;
+				text-align: center;
+				margin-bottom: 3px;
+				display: block;
+				font-size: 11px;
+				margin-top: 3px;
+				margin-right: 3px;
+				visibility: visible;
+			}
+			
+			.status .message-content {
+				text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+				white-space: nowrap;
+				padding-left: 10px;
+				-webkit-user-select: text;
+				padding-right: 10px;
+			}
+						
+			.error {
+				color: rgb(139,146,165);
+				font-weight: bold;
+				font-style:italic;
+				margin-left: 3px;
+				text-align: center;
+				margin-bottom: 3px;
+				display: block;
+				font-size: 10px;
+				margin-top: 3px;
+				margin-right: 3px;
+				visibility: visible;
+			}
+			
+			.error .message-content {
+				text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+				white-space: nowrap;
+				padding-left: 10px;
+				-webkit-user-select: text;
+				padding-right: 10px;
+			}
+			
+			span.fromLocal {
+				font-weight: normal;
+				font-family: Helvetica;
+				color: #000000;
+				-webkit-user-select: text;
+				font-size: 12px;
+				text-shadow: 0 1px 0 rgba(255,255,255,0.55);
+				font-style: normal;
+			}
+			
+			span.fromRemote {
+				font-weight: normal;
+				font-family: Helvetica;
+				color: #000000;
+				-webkit-user-select: text;
+				font-size: 12px;
+				text-shadow: 0 1px 0 rgba(255,255,255,0.55);
+				font-style: normal;
+			}
+			
+			.icon-container {
+				display: inline;
+			}
+			
+			td.message-container-local {
+				text-align: right;
+				min-width: 47px;
+			}
+			
+			.balloon-local {
+				display: inline-block;
+				border-bottom: 12px;
+				text-align: left;
+				border-top: 10px;
+				border-right: 20px;
+				margin-top: 5px;
+				-webkit-border-fit: lines;
+				border-left: 12px;
+			}
+			
+			.balloon-local > div.balloon-inside {
+				margin: -6px -3px -6px 0px;
+				text-align: right;
+			}
+			
+			.mc-local-sender {
+				-webkit-border-image: url([URL-RIGHT-BALLON]) 43.478261% 51.282051% 52.173913% 30.769231% !important;
+			}
+			
+			.mc-remote-sender {
+				-webkit-border-image: url([URL-LEFT-BALLON]) 43.478261% 30.769231% 52.173913% 51.282051%;
+			}
+			
+			div.icon-pres-remote {
+				background-image: url([URL-REMOTE-AVATAR]);
+			}
+			
+			div.icon-pres-local {
+				background-image: url([URL-LOCAL-AVATAR]);
+			}
+			
+			td.message-container-remote {
+				text-align: left;min-width: 47px;
+			}
+			
+			.balloon-remote {
+				display: inline-block;
+				border-bottom: 12px;
+				text-align: left;
+				border-top: 10px;
+				border-right: 12px;
+				margin-top: 5px;
+				-webkit-border-fit: lines;
+				border-left: 20px;
+			}
+			
+			.balloon-remote > div.balloon-inside {
+				margin: -6px 0px -6px -3px;
+			}
+			
+			@media screen and (-webkit-device-pixel-ratio:2) {
+			
+				.mc-local-sender {
+					-webkit-border-image: url([URL-RIGHT-BALLON-2X]) 43.478261% 51.282051% 52.173913% 30.769231% !important;
+				}
+
+				.mc-remote-sender {
+					-webkit-border-image: url([URL-LEFT-BALLON-2X]) 43.478261% 30.769231% 52.173913% 51.282051%;
+				}
+			
+				div.icon-pres-remote {
+					background-image: url([URL-REMOTE-AVATAR-2X]);
+				}
+				
+				div.icon-pres-local {
+					background-image: url([URL-LOCAL-AVATAR-2X]);
+				}
+				
+				message {
+				}
+			}
+			
+		</style>
+	</head>
+	
+	<body>
+	
+			<div class="mc"  align="left">
+			<table>
+				<tr>
+				
+					<td width="32px" class="icon-container-remote" nowrap="nowrap">
+						<span class="icon-container">
+							<div class="icon-pres-container">
+								<div class="icon-pres icon-pres-remote"></div>
+								<div class="icon-pres-shadow"></div>
+							</div>
+						</span>
+					</td>
+					
+					<td class="message-container-remote">
+						<div  class="mc-remote-sender balloon-remote">
+							<div class="balloon-inside">
+								<message class="message">
+									<span class="fromRemote">
+										<span>[TEXT]</span>
+									</span>
+								</message>
+							</div>
+						</div>
+					</td>
+					
+					<td class="spacer-container"></td>
+					
+				</tr>
+			</table>
+		</div>
+		
+		<div class="mc" align="right">
+			<table>
+				<tr>
+				
+					<td class="spacer-container"></td>
+					
+					<td class="message-container-local">
+						<div class="mc-local-sender balloon-local">
+							<div class="balloon-inside">
+								<message class="message" >
+									<span class="fromLocal">
+										<span>[TEXT]</span>
+									</span>
+								</message>
+							</div>
+						</div>
+					</td>
+					
+					<td width="32px" class="icon-container-local" nowrap="nowrap">
+						<span class="icon-container">
+							<div class="icon-pres-container">
+								<div class="icon-pres icon-pres-local"></div>
+								<div class="icon-pres-shadow"></div>
+							</div>
+						</span>
+					</td>
+					
+				</tr>
+			</table>
+		</div>
+		
+
+		<div class="status">
+			<div class="message-content">
+				<span class="unselectable">[TEXT]</span>
+			</div>
+		</div>
+		
+		
+		<div class="error">
+			<div class="message-content">
+				<span class="unselectable">[TEXT]</span>
+			</div>
+		</div>
+
+	</body>
+</html>

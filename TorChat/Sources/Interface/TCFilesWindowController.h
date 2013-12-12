@@ -1,5 +1,5 @@
 /*
- *  TorChatAppDelegate.h
+ *  TCFilesWindowController.h
  *
  *  Copyright 2013 Avérous Julien-Pierre
  *
@@ -22,11 +22,26 @@
 
 
 
-/*
-** TorChatAppDelegate
-*/
-#pragma mark - TorChatAppDelegate
+#import <Cocoa/Cocoa.h>
 
-@interface TorChatAppDelegate : NSObject <NSApplicationDelegate>
+#import "TCFilesCommon.h"
+
+
+
+/*
+** TCFilesWindowController
+*/
+#pragma mark - TCFilesWindowController
+
+// == Class ==
+@interface TCFilesWindowController : NSWindowController
+
+// -- Constructor --
++ (TCFilesWindowController *)sharedController;
+
+// -- Actions --
+- (void)startFileTransfert:(NSString *)uuid withFilePath:(NSString *)filePath buddyAddress:(NSString *)address buddyName:(NSString *)name transfertWay:(tcfile_way)way fileSize:(uint64_t)size;
+- (void)setStatus:(tcfile_status)status andTextStatus:(NSString *)txtStatus forFileTransfert:(NSString *)uuid withWay:(tcfile_way)way;
+- (void)setCompleted:(uint64_t)size forFileTransfert:(NSString *)uuid withWay:(tcfile_way)way;
 
 @end

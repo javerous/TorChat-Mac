@@ -5,7 +5,7 @@
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4514"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="TCPrefController">
+        <customObject id="-2" userLabel="File's Owner" customClass="TCPreferencesWindowController">
             <connections>
                 <outlet property="addBlockedField" destination="209" id="216"/>
                 <outlet property="addBlockedWindow" destination="205" id="215"/>
@@ -13,6 +13,7 @@
                 <outlet property="generalView" destination="86" id="181"/>
                 <outlet property="mainWindow" destination="1" id="3"/>
                 <outlet property="networkView" destination="114" id="182"/>
+                <outlet property="window" destination="1" id="lvS-OI-Gaa"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -21,7 +22,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="413" height="191"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1578"/>
             <view key="contentView" id="2">
                 <rect key="frame" x="0.0" y="0.0" width="413" height="191"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -335,7 +336,7 @@
                 <outlet property="torPortField" destination="118" id="191"/>
             </connections>
         </view>
-        <view id="149" userLabel="Budies" customClass="TCPrefView_Buddies">
+        <view id="149" userLabel="Buddies" customClass="TCPrefView_Buddies">
             <rect key="frame" x="0.0" y="0.0" width="413" height="292"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
@@ -454,7 +455,7 @@
             <windowStyleMask key="styleMask" titled="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="283" y="348" width="255" height="88"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1578"/>
             <view key="contentView" id="206">
                 <rect key="frame" x="0.0" y="0.0" width="255" height="88"/>
                 <autoresizingMask key="autoresizingMask"/>
