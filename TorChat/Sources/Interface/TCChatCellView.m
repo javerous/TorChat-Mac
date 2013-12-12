@@ -19,7 +19,7 @@
 
 @interface TCChatCellView ()
 {
-	NSTrackingArea		*_trakingArea;
+	NSTrackingArea *_trakingArea;
 }
 
 @property (retain, nonatomic) IBOutlet NSImageView		*avatarView;

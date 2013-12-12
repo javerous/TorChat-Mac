@@ -5,7 +5,7 @@
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4514"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="TCBuddyInfoController">
+        <customObject id="-2" userLabel="File's Owner" customClass="TCBuddyInfoWindowController">
             <connections>
                 <outlet property="addressField" destination="20" id="79"/>
                 <outlet property="aliasField" destination="17" id="81"/>

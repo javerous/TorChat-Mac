@@ -5,13 +5,13 @@
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4514"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="TCChatView">
+        <customObject id="-2" userLabel="File's Owner" customClass="TCChatViewController">
             <connections>
                 <outlet property="backView" destination="56" id="92"/>
                 <outlet property="lineView" destination="90" id="91"/>
-                <outlet property="talkView" destination="58" id="87"/>
+                <outlet property="transcriptView" destination="G3i-0Y-aMb" id="wTH-rN-hyu"/>
                 <outlet property="userField" destination="57" id="84"/>
-                <outlet property="view" destination="1" id="86"/>
+                <outlet property="view" destination="1" id="SwZ-Qr-m5F"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -47,43 +47,24 @@
                         <action selector="textAction:" target="-2" id="89"/>
                     </connections>
                 </textField>
-                <scrollView focusRingType="none" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="58" customClass="TCChatTalk">
-                    <rect key="frame" x="0.0" y="36" width="300" height="423"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                    <clipView key="contentView" id="kuv-H0-Vdr">
-                        <rect key="frame" x="0.0" y="0.0" width="300" height="423"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="59">
-                                <rect key="frame" x="0.0" y="0.0" width="300" height="423"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                            </view>
-                        </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                    </clipView>
-                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="60">
-                        <rect key="frame" x="-100" y="-100" width="166" height="15"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </scroller>
-                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="61">
-                        <rect key="frame" x="284" y="0.0" width="16" height="0.0"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </scroller>
-                </scrollView>
+                <customView translatesAutoresizingMaskIntoConstraints="NO" id="G3i-0Y-aMb" userLabel="Transcript View">
+                    <rect key="frame" x="0.0" y="36" width="300" height="424"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                </customView>
             </subviews>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="56" secondAttribute="trailing" id="9fL-a9-0ma"/>
-                <constraint firstItem="58" firstAttribute="top" secondItem="1" secondAttribute="top" constant="1" id="I1N-XQ-tNy"/>
-                <constraint firstAttribute="trailing" secondItem="58" secondAttribute="trailing" id="M7O-qy-5Al"/>
-                <constraint firstItem="58" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="Vt5-XK-zo6"/>
+                <constraint firstItem="G3i-0Y-aMb" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="A20-K4-WLD"/>
+                <constraint firstAttribute="trailing" secondItem="G3i-0Y-aMb" secondAttribute="trailing" id="A7t-gg-CnW"/>
                 <constraint firstItem="56" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="ado-0r-FF0"/>
                 <constraint firstItem="56" firstAttribute="top" secondItem="90" secondAttribute="bottom" id="eSm-pi-Rjv"/>
+                <constraint firstItem="G3i-0Y-aMb" firstAttribute="top" secondItem="1" secondAttribute="top" id="gEN-3f-vRX"/>
                 <constraint firstItem="57" firstAttribute="trailing" secondItem="56" secondAttribute="trailing" constant="-13" id="gtR-da-Gfo"/>
                 <constraint firstItem="57" firstAttribute="leading" secondItem="56" secondAttribute="leading" constant="13" id="kkm-pQ-gE3"/>
-                <constraint firstItem="90" firstAttribute="top" secondItem="58" secondAttribute="bottom" id="lw3-j6-i9V"/>
                 <constraint firstAttribute="trailing" secondItem="90" secondAttribute="trailing" id="lz2-1U-0oE"/>
                 <constraint firstItem="57" firstAttribute="bottom" secondItem="56" secondAttribute="bottom" constant="-7" id="mtJ-TH-J46"/>
                 <constraint firstItem="57" firstAttribute="top" secondItem="56" secondAttribute="top" constant="6" id="s8i-0V-7so"/>
+                <constraint firstItem="90" firstAttribute="top" secondItem="G3i-0Y-aMb" secondAttribute="bottom" id="sDw-OD-Uzc"/>
                 <constraint firstItem="90" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="uIS-7w-piX"/>
                 <constraint firstAttribute="bottom" secondItem="56" secondAttribute="bottom" id="ve5-g8-snM"/>
             </constraints>
