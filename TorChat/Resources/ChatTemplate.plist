@@ -40,6 +40,12 @@ div.icon-pres-remote { background-image: url([URL-REMOTE-AVATAR]); }
 div.icon-pres-local { background-image: url([URL-LOCAL-AVATAR]); }
 td.message-container-remote { text-align: left;min-width: 47px; }
 .balloon-remote { display: inline-block; border-bottom: 12px; text-align: left; border-top: 10px; border-right: 12px; margin-top: 5px; -webkit-border-fit: lines; border-left: 20px; }
-.balloon-remote &gt; div.balloon-inside { margin: -6px 0px -6px -3px; }</string>
+.balloon-remote &gt; div.balloon-inside { margin: -6px 0px -6px -3px; }
+@media screen and (-webkit-device-pixel-ratio:2) {
+.mc-local-sender { -webkit-border-image: url([URL-RIGHT-BALLOON-2X]) 43.478261% 51.282051% 52.173913% 30.769231% !important; }
+.mc-remote-sender { -webkit-border-image: url([URL-LEFT-BALLOON-2X]) 43.478261% 30.769231% 52.173913% 51.282051%; }
+div.icon-pres-remote { background-image: url([URL-REMOTE-AVATAR-2X]); }
+div.icon-pres-local { background-image: url([URL-LOCAL-AVATAR-2X]); }
+message { } }</string>
 </dict>
 </plist>

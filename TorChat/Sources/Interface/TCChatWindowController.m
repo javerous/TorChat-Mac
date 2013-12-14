@@ -58,6 +58,8 @@
 	NSMutableDictionary		*_identifiersContent;
 	
 	NSString				*_selectedIdentifier;
+	
+	NSView					*_currentView;
 }
 
 @property (strong, nonatomic) IBOutlet NSSplitView		*splitView;
@@ -108,8 +110,10 @@
 	return self;
 }
 
-- (void)awakeFromNib
+- (void)loadWindow
 {
+	[super loadWindow];
+	
 	[self.window center];
 	[self setWindowFrameAutosaveName:@"ChatWindow"];
 }
@@ -479,16 +483,9 @@
 {
 	// > Main Queue <
 	
-	NSArray *subviews = [_chatView subviews];
-	
 	// Remove current view
-	if ([subviews count] > 0)
-	{
-		NSView *vw = [subviews objectAtIndex:0];
-		
-		[vw removeFromSuperview];
-	}
-	
+	[_currentView removeFromSuperview];
+
 	if (!view)
 		return;
 	
@@ -502,6 +499,8 @@
 	
 	[_chatView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[content]|" options:0 metrics:nil views:viewsDictionary]];
 	[_chatView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[content]|" options:0 metrics:nil views:viewsDictionary]];
+	
+	_currentView = content;
 	
 	// Select the field (XXX direct or call a method ?)
 	[view becomeFirstResponder];
