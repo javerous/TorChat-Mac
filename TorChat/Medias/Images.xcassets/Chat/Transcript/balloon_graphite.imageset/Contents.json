@@ -3,11 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "balloon_graphite.png"
+      "filename" : "graphite.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "2x"
+      "scale" : "2x",
+      "filename" : "graphite_2x.png"
     }
   ],
   "info" : {

@@ -25,6 +25,7 @@
 #import "TCChatCellView.h"
 
 #import "TCButton.h"
+#import "TCThreePartImageView.h"
 
 
 
@@ -38,10 +39,11 @@
 	NSTrackingArea *_trakingArea;
 }
 
-@property (retain, nonatomic) IBOutlet NSImageView		*avatarView;
-@property (retain, nonatomic) IBOutlet NSTextField		*unreadField;
+@property (strong, nonatomic) IBOutlet NSImageView		*avatarView;
+@property (strong, nonatomic) IBOutlet NSTextField		*unreadField;
 
-@property (retain, nonatomic) IBOutlet TCButton			*closeButton;
+@property (strong, nonatomic) IBOutlet TCButton					*closeButton;
+@property (strong, nonatomic) IBOutlet TCThreePartImageView		*balloonView;
 
 @end
 
@@ -65,6 +67,10 @@
 	[_closeButton setImage:[NSImage imageNamed:@"file_stop"]];
 	[_closeButton setRollOverImage:[NSImage imageNamed:@"file_stop_rollover"]];
 	[_closeButton setPushImage:[NSImage imageNamed:@"file_stop_pushed"]];
+	
+	_balloonView.startCap = [NSImage imageNamed:@"balloon_left"];
+	_balloonView.centerFill = [NSImage imageNamed:@"balloon_center"];
+	_balloonView.endCap = [NSImage imageNamed:@"balloon_right"];
 	
 	_trakingArea = [[NSTrackingArea alloc] initWithRect:NSZeroRect options:(NSTrackingMouseEnteredAndExited | NSTrackingActiveInKeyWindow | NSTrackingInVisibleRect) owner:self userInfo:nil];
 

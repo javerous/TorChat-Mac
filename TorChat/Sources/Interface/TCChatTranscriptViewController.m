@@ -126,7 +126,7 @@ NSMutableDictionary	*gAvatarCache;
 		NSData		*data = [NSData dataWithContentsOfFile:path];
 		
 		_template = [NSPropertyListSerialization propertyListWithData:data options:0 format:nil error:nil];
-    }
+	}
 	
     return self;
 }
@@ -157,7 +157,6 @@ NSMutableDictionary	*gAvatarCache;
 
 	// Load empty HTML structure.
 	[[_webView mainFrame] loadHTMLString:@"<html><head></head><body></body></html>" baseURL:nil];
-	
 	
 	// Hold a the controlled view.
 	self.view = _webView;
@@ -201,6 +200,8 @@ NSMutableDictionary	*gAvatarCache;
 													  													  
 													  [documentView scrollPoint:docPoint];
 												  }];
+	
+#warning FIXME: use pending messages to load them once the webview is ready.
 }
 
 
@@ -306,12 +307,7 @@ NSMutableDictionary	*gAvatarCache;
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-LEFT-BALLOON]" withString:@"tc-resource://balloon/left-balloon"];
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-REMOTE-AVATAR]" withString:[NSString stringWithFormat:@"tc-resource://avatar/%@", _remoteAvatarIdentifier]];
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-LOCAL-AVATAR]" withString:[NSString stringWithFormat:@"tc-resource://avatar/%@", _localAvatarIdentifier]];
-	
-	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-RIGHT-BALLOON-2X]" withString:@"tc-resource://balloon/right-balloon/2x"];
-	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-LEFT-BALLOON-2X]" withString:@"tc-resource://balloon/left-balloon/2x"];
-	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-REMOTE-AVATAR-2X]" withString:[NSString stringWithFormat:@"tc-resource://avatar/%@/2x", _remoteAvatarIdentifier]];
-	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-LOCAL-AVATAR-2X]" withString:[NSString stringWithFormat:@"tc-resource://avatar/%@/2x", _localAvatarIdentifier]];
-	
+
 	[self _setStyle:cssSnippet];
 }
 
@@ -536,6 +532,8 @@ NSMutableDictionary	*gAvatarCache;
 		NSImage *image = [[NSImage imageNamed:@"balloon_aqua"] flipHorizontally];
 		
 		data = [image TIFFRepresentation];
+		
+		NSLog(@"right");
 	}
 	else
 	{

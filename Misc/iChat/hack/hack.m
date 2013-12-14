@@ -21,8 +21,10 @@
  */
 
 #import <Cocoa/Cocoa.h>
+#import <WebKit/WebKit.h>
 
 #include <objc/message.h>
+
 
 
 static unsigned gIndex = 0;
@@ -129,9 +131,30 @@ void replace_drawBalloonInRect(NSView *self, SEL _cmd, struct CGRect in_rect, st
 	}
 	[img unlockFocus];
 
-	[[img TIFFRepresentation] writeToFile:[NSString stringWithFormat:@"/Users/jp/Desktop/output/ballon_%u.tiff", gIndex++]  atomically:NO];
+	
+	NSString *path = [@"~/Desktop/ballon_%u.tiff" stringByExpandingTildeInPath];
+	
+	[[img TIFFRepresentation] writeToFile:[NSString stringWithFormat:path, gIndex++]  atomically:NO];
 }
 
+
+WebView * search_webview(NSView *view)
+{
+	if ([view isKindOfClass:[WebView class]])
+		return (WebView *)view;
+
+	NSArray *subviews = [view subviews];
+	
+	for (NSView *subview in subviews)
+	{
+		WebView *result = search_webview(subview);
+		
+		if (result)
+			return result;
+	}
+	
+	return nil;
+}
 
 
  void __attribute__ ((constructor)) my_init(void)
@@ -159,4 +182,124 @@ void replace_drawBalloonInRect(NSView *self, SEL _cmd, struct CGRect in_rect, st
 	Method _drawBalloonInRect = class_getInstanceMethod([NSView class], @selector(drawBalloonInRect:tailAtPoint:withShadow:fillColor:strokeColor:lineWidth:curve:));
 
 	original_drawBalloonInRect = (void *)method_setImplementation(_drawBalloonInRect, (IMP)replace_drawBalloonInRect);
+	
+	
+	static dispatch_source_t	timer;
+	//static unsigned				archIndex = 0;
+	
+	// Create dispatch source timer used to throttle saves to disk.
+	timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+	
+	dispatch_source_set_event_handler(timer, ^{
+		
+		/*
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			
+			NSLog(@"Get image");
+			NSURLRequest	*request;
+			NSData			*data;
+
+			// ---
+			request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"ichat-balloon-style://left-balloon-2x/16704303"]];
+			data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+			[data writeToFile:[NSString stringWithFormat:[@"~/Desktop/balloon_trans_2x_%u.tiff" stringByExpandingTildeInPath], archIndex++] atomically:NO];
+			
+			request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"ichat-balloon-style://left-balloon/16704303"]];
+			data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+			[data writeToFile:[NSString stringWithFormat:[@"~/Desktop/balloon_trans_%u.tiff" stringByExpandingTildeInPath], archIndex++] atomically:NO];
+			
+			// ---
+			request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"ichat-balloon-style://left-balloon-2x/13869566"]];
+			data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+			[data writeToFile:[NSString stringWithFormat:[@"~/Desktop/balloon_trans_2x_%u.tiff" stringByExpandingTildeInPath], archIndex++] atomically:NO];
+			
+			request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"ichat-balloon-style://left-balloon/13869566"]];
+			data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+			[data writeToFile:[NSString stringWithFormat:[@"~/Desktop/balloon_trans_%u.tiff" stringByExpandingTildeInPath], archIndex++] atomically:NO];
+			
+			// ---
+			request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"ichat-balloon-style://left-balloon-2x/7911934"]];
+			data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+			[data writeToFile:[NSString stringWithFormat:[@"~/Desktop/balloon_trans_2x_%u.tiff" stringByExpandingTildeInPath], archIndex++] atomically:NO];
+			
+			request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"ichat-balloon-style://left-balloon/7911934"]];
+			data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+			[data writeToFile:[NSString stringWithFormat:[@"~/Desktop/balloon_trans_%u.tiff" stringByExpandingTildeInPath], archIndex++] atomically:NO];
+
+			// ---
+			request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"ichat-balloon-style://left-balloon-2x/16549578"]];
+			data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+			[data writeToFile:[NSString stringWithFormat:[@"~/Desktop/balloon_trans_2x_%u.tiff" stringByExpandingTildeInPath], archIndex++] atomically:NO];
+			
+			request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"ichat-balloon-style://left-balloon/16549578"]];
+			data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+			[data writeToFile:[NSString stringWithFormat:[@"~/Desktop/balloon_trans_%u.tiff" stringByExpandingTildeInPath], archIndex++] atomically:NO];
+			
+			// ---
+			request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"ichat-balloon-style://left-balloon-2x/16163624"]];
+			data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+			[data writeToFile:[NSString stringWithFormat:[@"~/Desktop/balloon_trans_2x_%u.tiff" stringByExpandingTildeInPath], archIndex++] atomically:NO];
+			
+			request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"ichat-balloon-style://left-balloon/16163624"]];
+			data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+			[data writeToFile:[NSString stringWithFormat:[@"~/Desktop/balloon_trans_%u.tiff" stringByExpandingTildeInPath], archIndex++] atomically:NO];
+			
+			// ---
+			request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"ichat-balloon-style://left-balloon-2x/11857483"]];
+			data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+			[data writeToFile:[NSString stringWithFormat:[@"~/Desktop/balloon_trans_2x_%u.tiff" stringByExpandingTildeInPath], archIndex++] atomically:NO];
+			
+			request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"ichat-balloon-style://left-balloon/11857483"]];
+			data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+			[data writeToFile:[NSString stringWithFormat:[@"~/Desktop/balloon_trans_%u.tiff" stringByExpandingTildeInPath], archIndex++] atomically:NO];
+			
+			// ---
+			request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"ichat-balloon-style://left-balloon-2x/11320007"]];
+			data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+			[data writeToFile:[NSString stringWithFormat:[@"~/Desktop/balloon_trans_2x_%u.tiff" stringByExpandingTildeInPath], archIndex++] atomically:NO];
+			
+			request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"ichat-balloon-style://left-balloon/11320007"]];
+			data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+			[data writeToFile:[NSString stringWithFormat:[@"~/Desktop/balloon_trans_%u.tiff" stringByExpandingTildeInPath], archIndex++] atomically:NO];
+			
+			// ---
+			request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"ichat-balloon-style://left-balloon-2x/14935011"]];
+			data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+			[data writeToFile:[NSString stringWithFormat:[@"~/Desktop/balloon_trans_2x_%u.tiff" stringByExpandingTildeInPath], archIndex++] atomically:NO];
+			
+			request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"ichat-balloon-style://left-balloon/14935011"]];
+			data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+			[data writeToFile:[NSString stringWithFormat:[@"~/Desktop/balloon_trans_%u.tiff" stringByExpandingTildeInPath], archIndex++] atomically:NO];
+		});
+		*/
+		
+		/*
+		NSLog(@"Archiving WebViews...");
+		// Note: because of a bug in WebKit, image loaded from CSS with an URL are not always saved in the archive.
+		
+		// Get windows list
+		NSArray *windows = [[NSApplication sharedApplication] windows];
+				
+		for (NSWindow *window in windows)
+		{
+			WebView *webView = search_webview([window contentView]);
+			
+			if (!webView)
+				continue;
+							
+			DOMDocument *document = [[webView mainFrame] DOMDocument];
+			WebArchive	*archive = [document webArchive];
+			NSData		*page = [archive data];
+			NSString	*path = [@"~/Desktop/transcript_%u.webarchive" stringByExpandingTildeInPath];
+			
+			[page writeToFile:[NSString stringWithFormat:path, archIndex++] atomically:NO];
+		}
+		*/
+	});
+	
+	dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 5ull * NSEC_PER_SEC, 0ull);
+	dispatch_resume(timer);
 }
+
+
+
