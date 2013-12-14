@@ -9,12 +9,14 @@
 /* Begin PBXBuildFile section */
 		E87F305514E0208900EB4B45 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E87F305414E0208900EB4B45 /* Cocoa.framework */; };
 		E87F305714E0209C00EB4B45 /* hack.m in Sources */ = {isa = PBXBuildFile; fileRef = E87F305614E0209C00EB4B45 /* hack.m */; };
+		E8F234E7185B9BDD008B8F93 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8F234E6185B9BDD008B8F93 /* WebKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		E87F304D14E0207A00EB4B45 /* libhack.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libhack.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		E87F305414E0208900EB4B45 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		E87F305614E0209C00EB4B45 /* hack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = hack.m; sourceTree = "<group>"; };
+		E8F234E6185B9BDD008B8F93 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -22,6 +24,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E8F234E7185B9BDD008B8F93 /* WebKit.framework in Frameworks */,
 				E87F305514E0208900EB4B45 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -34,6 +37,7 @@
 			children = (
 				E87F305614E0209C00EB4B45 /* hack.m */,
 				E87F304E14E0207A00EB4B45 /* Products */,
+				E8F234E6185B9BDD008B8F93 /* WebKit.framework */,
 				E87F305414E0208900EB4B45 /* Cocoa.framework */,
 			);
 			sourceTree = "<group>";
@@ -194,6 +198,7 @@
 				E87F305314E0207A00EB4B45 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
