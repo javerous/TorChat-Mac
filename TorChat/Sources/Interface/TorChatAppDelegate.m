@@ -94,7 +94,8 @@
 	[[TCChatWindowController sharedController] receiveMessage:@"Ceci est un test" forIdentifier:@"yy"];
 
 	return;
-*/
+ */
+
 	
 	// Observe buddy select change
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddySelectChanged:) name: TCBuddiesWindowControllerSelectChanged object:nil];
