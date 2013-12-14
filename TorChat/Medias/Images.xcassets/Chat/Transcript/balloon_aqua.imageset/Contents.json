@@ -3,11 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "balloon_aqua.png"
+      "filename" : "aqua.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "2x"
+      "scale" : "2x",
+      "filename" : "aqua_2x.png"
     }
   ],
   "info" : {
