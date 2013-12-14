@@ -59,6 +59,7 @@
 		E889F0C812531DC9000C36B2 /* TCLogsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0C712531DC9000C36B2 /* TCLogsWindowController.m */; };
 		E889F0CB12531DD6000C36B2 /* TorChatAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0CA12531DD6000C36B2 /* TorChatAppDelegate.m */; };
 		E88AE83711EDE9D50037D808 /* TCConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = E88AE83511EDE9D50037D808 /* TCConnection.m */; };
+		E8A2CC49185CC2AF00624448 /* TCThreePartImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A2CC48185CC2AF00624448 /* TCThreePartImageView.m */; };
 		E8A6FE2C17A993FC00C4DEAB /* TCPanel_Welcome.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A6FE2B17A993FC00C4DEAB /* TCPanel_Welcome.m */; };
 		E8A6FE3217A995AB00C4DEAB /* TCPanel_Mode.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A6FE3117A995AB00C4DEAB /* TCPanel_Mode.m */; };
 		E8A6FE3517A995D100C4DEAB /* TCPanel_Advanced.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A6FE3417A995D100C4DEAB /* TCPanel_Advanced.m */; };
@@ -192,6 +193,8 @@
 		E889F0CA12531DD6000C36B2 /* TorChatAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TorChatAppDelegate.m; path = Interface/TorChatAppDelegate.m; sourceTree = "<group>"; };
 		E88AE83511EDE9D50037D808 /* TCConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCConnection.m; sourceTree = "<group>"; };
 		E88AE83611EDE9D50037D808 /* TCConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCConnection.h; sourceTree = "<group>"; };
+		E8A2CC47185CC2AF00624448 /* TCThreePartImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCThreePartImageView.h; path = Interface/TCThreePartImageView.h; sourceTree = "<group>"; };
+		E8A2CC48185CC2AF00624448 /* TCThreePartImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCThreePartImageView.m; path = Interface/TCThreePartImageView.m; sourceTree = "<group>"; };
 		E8A6FE2A17A993FC00C4DEAB /* TCPanel_Welcome.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCPanel_Welcome.h; path = Interface/TCPanel_Welcome.h; sourceTree = "<group>"; };
 		E8A6FE2B17A993FC00C4DEAB /* TCPanel_Welcome.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCPanel_Welcome.m; path = Interface/TCPanel_Welcome.m; sourceTree = "<group>"; };
 		E8A6FE2D17A9942700C4DEAB /* TCPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCPanel.h; path = Interface/TCPanel.h; sourceTree = "<group>"; };
@@ -615,6 +618,8 @@
 				E889F09C12531D12000C36B2 /* TCTableView.m */,
 				E8D5E26014DAA0B400973297 /* TCSplitView.h */,
 				E8D5E26114DAA0B400973297 /* TCSplitView.m */,
+				E8A2CC47185CC2AF00624448 /* TCThreePartImageView.h */,
+				E8A2CC48185CC2AF00624448 /* TCThreePartImageView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -776,6 +781,7 @@
 				E852235217B504CA00C6F585 /* TCChatCellView.m in Sources */,
 				E809B1481859C5BC001664E1 /* NSImage+TCExtension.m in Sources */,
 				E82B7D8F125A115400B7BA8A /* TCMainController.m in Sources */,
+				E8A2CC49185CC2AF00624448 /* TCThreePartImageView.m in Sources */,
 				E835491917A810E1003C08BB /* TCInfo.m in Sources */,
 				E8C1EFF312F7169400E24C42 /* TCImage.m in Sources */,
 				E8EDBCD417AA4C6500172B9C /* TCLogsManager.m in Sources */,
