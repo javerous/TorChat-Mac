@@ -64,6 +64,7 @@
 		E8A6FE3217A995AB00C4DEAB /* TCPanel_Mode.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A6FE3117A995AB00C4DEAB /* TCPanel_Mode.m */; };
 		E8A6FE3517A995D100C4DEAB /* TCPanel_Advanced.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A6FE3417A995D100C4DEAB /* TCPanel_Advanced.m */; };
 		E8A6FE3817A995F100C4DEAB /* TCPanel_Basic.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A6FE3717A995F100C4DEAB /* TCPanel_Basic.m */; };
+		E8A7F6DE185D22F8002A4495 /* TCChatTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A7F6DD185D22F8002A4495 /* TCChatTableView.m */; };
 		E8BE843C124254BE0013968B /* tor in Resources */ = {isa = PBXBuildFile; fileRef = E8BE843B124254BD0013968B /* tor */; };
 		E8C1EFF312F7169400E24C42 /* TCImage.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C1EFF112F7169400E24C42 /* TCImage.m */; };
 		E8C3982B1205D51000B9307B /* TCSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C398291205D51000B9307B /* TCSocket.m */; };
@@ -204,6 +205,8 @@
 		E8A6FE3417A995D100C4DEAB /* TCPanel_Advanced.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCPanel_Advanced.m; path = Interface/TCPanel_Advanced.m; sourceTree = "<group>"; };
 		E8A6FE3617A995F100C4DEAB /* TCPanel_Basic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCPanel_Basic.h; path = Interface/TCPanel_Basic.h; sourceTree = "<group>"; };
 		E8A6FE3717A995F100C4DEAB /* TCPanel_Basic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCPanel_Basic.m; path = Interface/TCPanel_Basic.m; sourceTree = "<group>"; };
+		E8A7F6DC185D22F8002A4495 /* TCChatTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatTableView.h; path = Interface/TCChatTableView.h; sourceTree = "<group>"; };
+		E8A7F6DD185D22F8002A4495 /* TCChatTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCChatTableView.m; path = Interface/TCChatTableView.m; sourceTree = "<group>"; };
 		E8BE843B124254BD0013968B /* tor */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = tor; path = TorChat/Resources/tor; sourceTree = "<group>"; };
 		E8C1EFF112F7169400E24C42 /* TCImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCImage.m; sourceTree = "<group>"; };
 		E8C1EFF212F7169400E24C42 /* TCImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCImage.h; sourceTree = "<group>"; };
@@ -489,6 +492,8 @@
 				E8D5E26A14DAD3E200973297 /* TCChatViewController.m */,
 				E809B1431859C593001664E1 /* TCChatTranscriptViewController.h */,
 				E809B1441859C593001664E1 /* TCChatTranscriptViewController.m */,
+				E8A7F6DC185D22F8002A4495 /* TCChatTableView.h */,
+				E8A7F6DD185D22F8002A4495 /* TCChatTableView.m */,
 				E852235017B504CA00C6F585 /* TCChatCellView.h */,
 				E852235117B504CA00C6F585 /* TCChatCellView.m */,
 				E8127AA71854CB1100FEDA7F /* TCChatTextField.h */,
@@ -788,6 +793,7 @@
 				E874146B12FAE0C200BD4862 /* TCDropButton.m in Sources */,
 				E88879FF1303EA9F00C7D60E /* TCDragImageView.m in Sources */,
 				E8F15A7A130425A4000593E1 /* TCKeyedText.m in Sources */,
+				E8A7F6DE185D22F8002A4495 /* TCChatTableView.m in Sources */,
 				E8A6FE3217A995AB00C4DEAB /* TCPanel_Mode.m in Sources */,
 				E82D3F83142D2AF300A33C7A /* main.m in Sources */,
 				E8D5E26214DAA0B400973297 /* TCSplitView.m in Sources */,
