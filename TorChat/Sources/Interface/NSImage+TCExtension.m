@@ -36,10 +36,8 @@
 - (NSImage *)flipHorizontally
 {
     NSSize	size = self.size;
-    NSImage	*result = [[NSImage alloc] initWithSize:size];
-	
-    [result lockFocus];
-	{
+    NSImage	*result = [NSImage imageWithSize:size flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
+		
 		NSAffineTransform *translate = [NSAffineTransform transform];
 		
 		[translate translateXBy:size.width yBy:0];
@@ -47,8 +45,9 @@
 		[translate concat];
 		
 		[self drawAtPoint:NSZeroPoint fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0];
-	}
-    [result unlockFocus];
+		
+		return YES;
+	}];
 	
     return result;
 }

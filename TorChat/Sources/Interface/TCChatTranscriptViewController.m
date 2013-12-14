@@ -82,6 +82,11 @@ NSMutableDictionary	*gAvatarCache;
 	
 	NSString		*_localAvatarIdentifier;
 	NSString		*_remoteAvatarIdentifier;
+	
+	BOOL			_isViewReady;
+
+	NSString		*_tmpStyle;
+	NSMutableString	*_tmpBody;
 }
 
 @end
@@ -118,14 +123,23 @@ NSMutableDictionary	*gAvatarCache;
 		_localAvatarIdentifier = [self uuid];
 		_remoteAvatarIdentifier	= [self uuid];
 		
+		NSLog(@"_localAvatarIdentifier: %@", _localAvatarIdentifier);
+		NSLog(@"_remoteAvatarIdentifier: %@", _remoteAvatarIdentifier);
+
+		
 		[TCURLProtocolInternal setAvatar:[NSImage imageNamed:NSImageNameUser] forIdentifier:_localAvatarIdentifier];
 		[TCURLProtocolInternal setAvatar:[NSImage imageNamed:NSImageNameUser] forIdentifier:_remoteAvatarIdentifier];
-		
+
 		// Load template.
 		NSString	*path = [[NSBundle mainBundle] pathForResource:@"ChatTemplate" ofType:@"plist"];
 		NSData		*data = [NSData dataWithContentsOfFile:path];
 		
 		_template = [NSPropertyListSerialization propertyListWithData:data options:0 format:nil error:nil];
+		
+		// Temporary HTML section.
+		_tmpBody = [[NSMutableString alloc] init];
+		
+		[self _reloadStyle];
 	}
 	
     return self;
@@ -156,7 +170,13 @@ NSMutableDictionary	*gAvatarCache;
 	[_webView setDrawsBackground:YES];
 
 	// Load empty HTML structure.
-	[[_webView mainFrame] loadHTMLString:@"<html><head></head><body></body></html>" baseURL:nil];
+	NSString *html = [NSString stringWithFormat:@"<html><head><style>%@</style></head><body>%@</body></html>", _tmpStyle, _tmpBody];
+	
+	[[_webView mainFrame] loadHTMLString:html baseURL:nil];
+	
+	_isViewReady = YES;
+	_tmpBody = nil;
+	_tmpStyle = nil;
 	
 	// Hold a the controlled view.
 	self.view = _webView;
@@ -178,9 +198,6 @@ NSMutableDictionary	*gAvatarCache;
 {
 	NSView *documentView = sender.mainFrame.frameView.documentView;
 	
-	// Include CSS.
-	[self _reloadStyle];
-	
 	// Activate elasticity.
 	NSScrollView *scrollView = documentView.enclosingScrollView;
 	
@@ -200,8 +217,6 @@ NSMutableDictionary	*gAvatarCache;
 													  													  
 													  [documentView scrollPoint:docPoint];
 												  }];
-	
-#warning FIXME: use pending messages to load them once the webview is ready.
 }
 
 
@@ -271,6 +286,9 @@ NSMutableDictionary	*gAvatarCache;
 
 - (void)setRemoteAvatar:(NSImage *)image
 {
+	if (!image)
+		return;
+	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		[TCURLProtocolInternal removeAvatarForIdentifier:_remoteAvatarIdentifier];
@@ -303,11 +321,19 @@ NSMutableDictionary	*gAvatarCache;
 	
 	NSString *cssSnippet = _template[TCTemplateCSSSnippet];
 	
+	NSLog(@"_localAvatarIdentifier: %@", _localAvatarIdentifier);
+	NSLog(@"_remoteAvatarIdentifier: %@", _remoteAvatarIdentifier);
+	
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-RIGHT-BALLOON]" withString:@"tc-resource://balloon/right-balloon"];
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-LEFT-BALLOON]" withString:@"tc-resource://balloon/left-balloon"];
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-REMOTE-AVATAR]" withString:[NSString stringWithFormat:@"tc-resource://avatar/%@", _remoteAvatarIdentifier]];
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-LOCAL-AVATAR]" withString:[NSString stringWithFormat:@"tc-resource://avatar/%@", _localAvatarIdentifier]];
 
+	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-RIGHT-BALLOON-2X]" withString:@"tc-resource://balloon/right-balloon-2x"];
+	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-LEFT-BALLOON-2X]" withString:@"tc-resource://balloon/left-balloon-2x"];
+	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-REMOTE-AVATAR-2X]" withString:[NSString stringWithFormat:@"tc-resource://avatar/%@", _remoteAvatarIdentifier]];
+	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-LOCAL-AVATAR-2X]" withString:[NSString stringWithFormat:@"tc-resource://avatar/%@", _localAvatarIdentifier]];
+	
 	[self _setStyle:cssSnippet];
 }
 
@@ -315,33 +341,45 @@ NSMutableDictionary	*gAvatarCache;
 {
 	// > main queue <
 
-	DOMDocument *document = [[_webView mainFrame] DOMDocument];
-	
-	// Search head.
-    DOMNodeList		*headList = [document getElementsByTagName:@"head"];
-	DOMHTMLElement	*headNode;
-	
-	if ([headList length] == 0)
+	if ([style length] == 0)
 		return;
 	
-	headNode = (DOMHTMLElement *)[headList item:0];
-
-	// Replace or append style.
-	DOMNodeList		*styleList = [headNode getElementsByTagName:@"style"];
-	DOMHTMLElement	*newStyleNode = (DOMHTMLElement *)[document createElement:@"style"];
-
-	[newStyleNode setInnerHTML:style];
-	
-	if ([styleList length] == 0)
+	if (_isViewReady)
 	{
-		[headNode appendChild:newStyleNode];
+		DOMDocument *document = [[_webView mainFrame] DOMDocument];
+		
+		// Search head.
+		DOMNodeList		*headList = [document getElementsByTagName:@"head"];
+		DOMHTMLElement	*headNode;
+		
+		if ([headList length] == 0)
+			return;
+		
+		headNode = (DOMHTMLElement *)[headList item:0];
+		
+		// Replace or append style.
+		DOMNodeList		*styleList = [headNode getElementsByTagName:@"style"];
+		DOMHTMLElement	*newStyleNode = (DOMHTMLElement *)[document createElement:@"style"];
+		
+		[newStyleNode setInnerHTML:style];
+		
+		if ([styleList length] == 0)
+		{
+			[headNode appendChild:newStyleNode];
+		}
+		else
+		{
+			[headNode replaceChild:newStyleNode oldChild:[styleList item:0]];
+		}
+		
+		[_webView setNeedsDisplay:YES];
 	}
 	else
 	{
-		[headNode replaceChild:newStyleNode oldChild:[styleList item:0]];
+		_tmpStyle = style;
+		
+		//NSLog(@"%@", _tmpStyle);
 	}
-	
-	[_webView setNeedsDisplay:YES];
 }
 
 - (void)_appendBodyTag:(NSString *)tagName innerHTML:(NSString *)innerHTML
@@ -349,13 +387,22 @@ NSMutableDictionary	*gAvatarCache;
 	// > main queue <
 	
 	// Create a new node.
-	DOMDocument		*document = [[_webView mainFrame] DOMDocument];
-    DOMHTMLElement	*newNode = (DOMHTMLElement *)[document createElement:tagName];
+	if (_isViewReady)
+	{
+		DOMDocument		*document = [[_webView mainFrame] DOMDocument];
+		DOMHTMLElement	*newNode = (DOMHTMLElement *)[document createElement:tagName];
 	
-    [newNode setInnerHTML:innerHTML];
-    [document.body appendChild:newNode];
+		[newNode setInnerHTML:innerHTML];
+		[document.body appendChild:newNode];
 	
-	[_webView setNeedsDisplay:YES];
+		[_webView setNeedsDisplay:YES];
+	}
+	else
+	{
+		NSString *item = [NSString stringWithFormat:@"<%@>%@</%@>", tagName, innerHTML, tagName];
+		
+		[_tmpBody appendString:item];
+	}
 }
 
 - (NSString *)uuid
@@ -486,6 +533,8 @@ NSMutableDictionary	*gAvatarCache;
 		
 		NSData *data = gAvatarCache[identifier];
 		
+		NSLog(@"%@ -> %p", identifier, data);
+		
 		if (data)
 		{
 			// Build response.
@@ -519,26 +568,57 @@ NSMutableDictionary	*gAvatarCache;
 	side = parameters[1];
 	
 	// Load image.
-    NSData *data = nil;
+	static NSImage			*leftBalloon = nil;
+	static NSImage			*rightBalloon = nil;
+	static dispatch_once_t	onceToken;
 	
+	dispatch_once(&onceToken, ^{
+		leftBalloon = [NSImage imageNamed:@"balloon_graphite"];
+		rightBalloon = [[NSImage imageNamed:@"balloon_aqua"] flipHorizontally];
+	});
+	
+	
+    NSData *data = nil;
+	NSRect targetRect = NSZeroRect;
+	NSImage	*sourceImage = nil;
+		
 	if ([side isEqualToString:@"left-balloon"])
 	{
-		NSImage *image = [NSImage imageNamed:@"balloon_graphite"];
+		NSSize size = leftBalloon.size;
 		
-		data = [image TIFFRepresentation];
+		targetRect = NSMakeRect(0, 0, size.width, size.height);
+		sourceImage = leftBalloon;
 	}
 	else if ([side isEqualToString:@"right-balloon"])
 	{
-		NSImage *image = [[NSImage imageNamed:@"balloon_aqua"] flipHorizontally];
+		NSSize size = rightBalloon.size;
+		
+		targetRect = NSMakeRect(0, 0, size.width, size.height);
+		sourceImage = rightBalloon;
+	}
+	else if ([side isEqualToString:@"left-balloon-2x"])
+	{
+		NSSize size = leftBalloon.size;
+		
+		targetRect = NSMakeRect(0, 0, size.width * 2.0, size.height * 2.0);
+		sourceImage = leftBalloon;
+	}
+	else if ([side isEqualToString:@"right-balloon-2x"])
+	{
+		NSSize size = rightBalloon.size;
+		
+		targetRect = NSMakeRect(0, 0, size.width * 2.0, size.height * 2.0);
+		sourceImage = rightBalloon;
+	}
+	
+	if (sourceImage)
+	{
+		NSImage *image = [NSImage imageWithSize:targetRect.size flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
+			[sourceImage drawInRect:targetRect fromRect:NSZeroRect operation:NSCompositeCopy fraction:1.0];
+			return YES;
+		}];
 		
 		data = [image TIFFRepresentation];
-		
-		NSLog(@"right");
-	}
-	else
-	{
-		[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Unknown side" code:0 userInfo:@{}]];
-		return;
 	}
 	
 	if (!data)
