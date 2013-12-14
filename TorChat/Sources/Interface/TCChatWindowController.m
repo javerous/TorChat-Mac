@@ -503,7 +503,9 @@
 	_currentView = content;
 	
 	// Select the field (XXX direct or call a method ?)
-	[view becomeFirstResponder];
+	//[view becomeFirstResponder];
+	
+	[view makeFirstResponder];
 }
 
 - (void)_selectChatWithIdentifier:(NSString *)identifier

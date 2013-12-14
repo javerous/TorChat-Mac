@@ -73,4 +73,7 @@
 - (void)setLocalAvatar:(NSImage *)image;
 - (void)setRemoteAvatar:(NSImage *)image;
 
+// -- Focus --
+- (void)makeFirstResponder;
+
 @end
