@@ -149,7 +149,7 @@
 /*
 ** TCChatView - Content
 */
-#pragma mark - TCChatView - Property
+#pragma mark - TCChatView - Content
 
 - (void)receiveMessage:(NSString *)message
 {
@@ -175,6 +175,18 @@
 - (void)setRemoteAvatar:(NSImage *)image
 {
 	[_chatTranscript setRemoteAvatar:image];
+}
+
+
+
+/*
+** TCChatView - Focus
+*/
+#pragma mark - TCChatView - Focus
+
+- (void)makeFirstResponder
+{
+	[self.view.window makeFirstResponder:_userField];
 }
 
 @end
