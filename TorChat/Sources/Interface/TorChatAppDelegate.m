@@ -86,6 +86,7 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+/*
 	[[TCChatWindowController sharedController] startChatWithIdentifier:@"xx" name:@"Tutu" localAvatar:nil remoteAvatar:nil context:nil delegate:nil];
 	[[TCChatWindowController sharedController] startChatWithIdentifier:@"yy" name:@"Toto" localAvatar:nil remoteAvatar:nil context:nil delegate:nil];
 
@@ -93,6 +94,7 @@
 	[[TCChatWindowController sharedController] receiveMessage:@"Ceci est un test" forIdentifier:@"yy"];
 
 	return;
+*/
 	
 	// Observe buddy select change
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddySelectChanged:) name: TCBuddiesWindowControllerSelectChanged object:nil];
