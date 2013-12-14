@@ -162,8 +162,10 @@ static dispatch_queue_t	gQueue;
 	[self windowDidResize:nil];
 }
 
-- (void)awakeFromNib
+- (void)loadWindow
 {
+	[super loadWindow];
+	
 	[_avatarView setFilename:_address];
 }
 
@@ -534,7 +536,6 @@ static dispatch_queue_t	gQueue;
 	NSImage *avatar = [[notice userInfo] objectForKey:@"avatar"];
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
-		
 		[_avatarView setImage:avatar];
 	});
 }
@@ -557,7 +558,6 @@ static dispatch_queue_t	gQueue;
 	NSString *text = [[notice userInfo] objectForKey:@"text"];
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
-		
 		[self setInfo:text withKey:BICInfoProfileText];
 		[self updateInfoView];
 	});
