@@ -123,10 +123,6 @@ NSMutableDictionary	*gAvatarCache;
 		_localAvatarIdentifier = [self uuid];
 		_remoteAvatarIdentifier	= [self uuid];
 		
-		NSLog(@"_localAvatarIdentifier: %@", _localAvatarIdentifier);
-		NSLog(@"_remoteAvatarIdentifier: %@", _remoteAvatarIdentifier);
-
-		
 		[TCURLProtocolInternal setAvatar:[NSImage imageNamed:NSImageNameUser] forIdentifier:_localAvatarIdentifier];
 		[TCURLProtocolInternal setAvatar:[NSImage imageNamed:NSImageNameUser] forIdentifier:_remoteAvatarIdentifier];
 
@@ -170,13 +166,9 @@ NSMutableDictionary	*gAvatarCache;
 	[_webView setDrawsBackground:YES];
 
 	// Load empty HTML structure.
-	NSString *html = [NSString stringWithFormat:@"<html><head><style>%@</style></head><body>%@</body></html>", _tmpStyle, _tmpBody];
+	NSString *html = [NSString stringWithFormat:@"<html><head><style></style></head><body></body></html>"];
 	
 	[[_webView mainFrame] loadHTMLString:html baseURL:nil];
-	
-	_isViewReady = YES;
-	_tmpBody = nil;
-	_tmpStyle = nil;
 	
 	// Hold a the controlled view.
 	self.view = _webView;
@@ -217,6 +209,15 @@ NSMutableDictionary	*gAvatarCache;
 													  													  
 													  [documentView scrollPoint:docPoint];
 												  }];
+	
+	// Set pending content.
+	[[self _styleNode] setInnerHTML:_tmpStyle];
+	[[self _bodyNode] setInnerHTML:_tmpBody];
+
+	_isViewReady = YES;
+
+	_tmpBody = nil;
+	_tmpStyle = nil;
 }
 
 
@@ -321,9 +322,6 @@ NSMutableDictionary	*gAvatarCache;
 	
 	NSString *cssSnippet = _template[TCTemplateCSSSnippet];
 	
-	NSLog(@"_localAvatarIdentifier: %@", _localAvatarIdentifier);
-	NSLog(@"_remoteAvatarIdentifier: %@", _remoteAvatarIdentifier);
-	
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-RIGHT-BALLOON]" withString:@"tc-resource://balloon/right-balloon"];
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-LEFT-BALLOON]" withString:@"tc-resource://balloon/left-balloon"];
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-REMOTE-AVATAR]" withString:[NSString stringWithFormat:@"tc-resource://avatar/%@", _remoteAvatarIdentifier]];
@@ -346,39 +344,17 @@ NSMutableDictionary	*gAvatarCache;
 	
 	if (_isViewReady)
 	{
-		DOMDocument *document = [[_webView mainFrame] DOMDocument];
+		// Search style node.
+		DOMHTMLElement *styleNode = [self _styleNode];
 		
-		// Search head.
-		DOMNodeList		*headList = [document getElementsByTagName:@"head"];
-		DOMHTMLElement	*headNode;
+		[styleNode setInnerHTML:style];
 		
-		if ([headList length] == 0)
-			return;
-		
-		headNode = (DOMHTMLElement *)[headList item:0];
-		
-		// Replace or append style.
-		DOMNodeList		*styleList = [headNode getElementsByTagName:@"style"];
-		DOMHTMLElement	*newStyleNode = (DOMHTMLElement *)[document createElement:@"style"];
-		
-		[newStyleNode setInnerHTML:style];
-		
-		if ([styleList length] == 0)
-		{
-			[headNode appendChild:newStyleNode];
-		}
-		else
-		{
-			[headNode replaceChild:newStyleNode oldChild:[styleList item:0]];
-		}
-		
+		// Set need display.
 		[_webView setNeedsDisplay:YES];
 	}
 	else
 	{
 		_tmpStyle = style;
-		
-		//NSLog(@"%@", _tmpStyle);
 	}
 }
 
@@ -403,6 +379,40 @@ NSMutableDictionary	*gAvatarCache;
 		
 		[_tmpBody appendString:item];
 	}
+}
+
+- (DOMHTMLElement *)_styleNode
+{
+	// > main queue <
+
+	DOMDocument *document = [[_webView mainFrame] DOMDocument];
+	
+	// Search head.
+	DOMNodeList		*headList = [document getElementsByTagName:@"head"];
+	DOMHTMLElement	*headNode;
+	
+	if ([headList length] == 0)
+		return nil;
+	
+	headNode = (DOMHTMLElement *)[headList item:0];
+	
+	// Search style.
+	DOMNodeList *styleList = [headNode getElementsByTagName:@"style"];
+	
+	if ([styleList length] == 0)
+		return nil;
+	
+	// Return style node.
+	return (DOMHTMLElement *)[styleList item:0];
+}
+
+- (DOMHTMLElement *)_bodyNode
+{
+	// > main queue <
+
+	DOMDocument *document = [[_webView mainFrame] DOMDocument];
+
+	return document.body;
 }
 
 - (NSString *)uuid
@@ -532,8 +542,6 @@ NSMutableDictionary	*gAvatarCache;
 	dispatch_async(gAvatarQueue, ^{
 		
 		NSData *data = gAvatarCache[identifier];
-		
-		NSLog(@"%@ -> %p", identifier, data);
 		
 		if (data)
 		{

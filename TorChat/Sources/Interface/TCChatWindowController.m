@@ -181,7 +181,7 @@
 		
 		NSMutableDictionary		*content = [_identifiersContent objectForKey:identifier];
 		TCValue					*pdelegate = nil;
-		TCChatViewController				*view;
+		TCChatViewController	*view;
 		
 		// No need to start a chat if already started.
 		if (content)
