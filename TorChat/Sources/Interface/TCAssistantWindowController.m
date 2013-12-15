@@ -38,6 +38,7 @@
 
 @interface TCAssistantWindowController () <TCAssistantProxy>
 {
+	NSArray					*_panels;
 	NSMutableDictionary		*_panelsClass;
 	NSMutableDictionary		*_panelsInstances;
 
@@ -85,6 +86,10 @@
 {
 	TCAssistantWindowController *assistant = [[TCAssistantWindowController alloc] initWithPanels:panels andCallback:callback];
 	
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[assistant showWindow:nil];
+	});
+	
 	return assistant;
 }
 
@@ -108,14 +113,8 @@
 		for (Class <TCAssistantPanel> class in panels)
 			[_panelsClass setObject:class forKey:[class identifiant]];
 		
-		// Show first pannel.
-		Class <TCAssistantPanel> class = panels[0];
-		
-		[self _switchToPanel:[class identifiant]];
-		
-		// Show window.
-		[self.window center];
-		[self showWindow:nil];
+		// Handle panels.
+		_panels = panels;
 	}
 	
 	return self;
@@ -124,6 +123,20 @@
 - (void)dealloc
 {
     TCDebugLog("TCAssistantWindowController dealloc");
+}
+
+- (void)loadWindow
+{
+	[super loadWindow];
+	
+	// Show first pannel.
+	Class <TCAssistantPanel> class = _panels[0];
+	
+	[self _switchToPanel:[class identifiant]];
+	
+	// Show window.
+	[self.window center];
+	[self showWindow:nil];
 }
 
 
@@ -202,7 +215,7 @@
 	// Set the view
 	if (panel)
 		[_mainView addSubview:[panel view]];
-
+	
 	// Set the title
 	_mainTitle.stringValue = [[panel class] title];
 	
