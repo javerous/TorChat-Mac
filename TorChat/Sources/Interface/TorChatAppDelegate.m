@@ -86,7 +86,14 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-/*
+	/*
+	[[TCFilesWindowController sharedController] startFileTransfert:@"8888888" withFilePath:@"/" buddyAddress:@"xxxxx" buddyName:@"Truc" transfertWay:tcfile_download fileSize:1024];
+	[[TCFilesWindowController sharedController] startFileTransfert:@"8888888" withFilePath:@"/" buddyAddress:@"xxxxx" buddyName:@"Truc" transfertWay:tcfile_upload fileSize:1024];
+
+	return;
+	*/
+	
+	/*
 	[[TCChatWindowController sharedController] startChatWithIdentifier:@"xx" name:@"Tutu" localAvatar:nil remoteAvatar:nil context:nil delegate:nil];
 	[[TCChatWindowController sharedController] startChatWithIdentifier:@"yy" name:@"Toto" localAvatar:nil remoteAvatar:nil context:nil delegate:nil];
 
@@ -94,8 +101,7 @@
 	[[TCChatWindowController sharedController] receiveMessage:@"Ceci est un test" forIdentifier:@"yy"];
 
 	return;
- */
-
+	*/
 	
 	// Observe buddy select change
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddySelectChanged:) name: TCBuddiesWindowControllerSelectChanged object:nil];
