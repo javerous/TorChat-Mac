@@ -174,7 +174,7 @@ void catch_signal(int sig);
 
 - (void)startWithConfiguration:(id <TCConfig>)configuration
 {
-	return;
+	//return;
 	if (!configuration)
 		return;
 
