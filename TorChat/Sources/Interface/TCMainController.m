@@ -192,6 +192,7 @@
 		NSArray *panels = @[ [TCPanel_Welcome class], [TCPanel_Mode class], [TCPanel_Advanced class], [TCPanel_Basic class] ];
 		
 		_assistant = [TCAssistantWindowController startAssistantWithPanels:panels andCallback:^(id context) {
+			
 			TCConfigPlist *config = (TCConfigPlist *)context;
 			
 			// Hold the config
