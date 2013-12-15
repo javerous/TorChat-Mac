@@ -125,10 +125,15 @@
     TCDebugLog("TCAssistantWindowController dealloc");
 }
 
-- (void)loadWindow
+
+
+/*
+** TCAssistantWindowController - NSWindowController
+*/
+#pragma mark - TCAssistantWindowController - NSWindowController
+
+- (void)windowDidLoad
 {
-	[super loadWindow];
-	
 	// Show first pannel.
 	Class <TCAssistantPanel> class = _panels[0];
 	
@@ -136,7 +141,6 @@
 	
 	// Show window.
 	[self.window center];
-	[self showWindow:nil];
 }
 
 

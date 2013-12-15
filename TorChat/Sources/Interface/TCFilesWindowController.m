@@ -90,15 +90,25 @@
 	{
 		// Alloc files array.
 		_files =  [[NSMutableArray alloc] init];
-				
-		// Update window.
-		[self.window center];
-		[self.window setFrameAutosaveName:@"FilesWindow"];
-		
-		[self _updateCount];
     }
     
     return self;
+}
+
+
+
+/*
+** TCFilesWindowController - NSWindowController
+*/
+#pragma mark - TCFilesWindowController - NSWindowController
+
+- (void)windowDidLoad
+{
+	// Update window.
+	[self.window center];
+	[self.window setFrameAutosaveName:@"FilesWindow"];
+	
+	[self _updateCount];
 }
 
 
