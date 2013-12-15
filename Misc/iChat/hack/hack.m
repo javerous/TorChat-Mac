@@ -156,6 +156,34 @@ WebView * search_webview(NSView *view)
 	return nil;
 }
 
+void save_view(NSView *view, NSUInteger *counter, NSString *path)
+{
+	// Save view content.
+	NSSize size = view.frame.size;
+	
+	if (size.width != 0 && size.height != 0)
+	{
+		NSImage *image = [[NSImage alloc] initWithSize:size];
+		
+		[image lockFocus];
+		{
+			[view drawRect:NSMakeRect(0, 0, size.width, size.height)];
+		}
+		[image unlockFocus];
+		
+		*counter = *counter + 1;
+		
+		[[image TIFFRepresentation] writeToFile:[NSString stringWithFormat:path, *counter] atomically:NO];
+	}
+
+		
+	// Recurse on subviews.
+	NSArray *subviews = [view subviews];
+	
+	for (NSView *subview in subviews)
+		save_view(subview, counter, path);
+}
+
 
  void __attribute__ ((constructor)) my_init(void)
 {
@@ -185,12 +213,35 @@ WebView * search_webview(NSView *view)
 	
 	
 	static dispatch_source_t	timer;
-	//static unsigned				archIndex = 0;
 	
 	// Create dispatch source timer used to throttle saves to disk.
 	timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
 	
 	dispatch_source_set_event_handler(timer, ^{
+		
+		
+		// Save all views content.
+		{
+			NSLog(@"Saving views...");
+
+			static NSUInteger directoryIndex = 0;
+			
+			directoryIndex++;
+			
+			// > Create output directory.
+			NSString	*path = [NSString stringWithFormat:[@"~/Desktop/ouput_%u" stringByExpandingTildeInPath], directoryIndex];
+			NSString	*finalPath = [path stringByAppendingPathComponent:@"file_%lu.tiff"];
+
+			[[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:NO attributes:nil error:nil];
+			
+			// > Recurse on views.
+			NSUInteger	counter = 0;
+			NSArray		*windows = [[NSApplication sharedApplication] windows];
+
+			for (NSWindow *window in windows)
+				save_view([window contentView], &counter, finalPath);
+		}
+		
 		
 		/*
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -274,27 +325,31 @@ WebView * search_webview(NSView *view)
 		*/
 		
 		/*
-		NSLog(@"Archiving WebViews...");
-		// Note: because of a bug in WebKit, image loaded from CSS with an URL are not always saved in the archive.
-		
-		// Get windows list
-		NSArray *windows = [[NSApplication sharedApplication] windows];
-				
-		for (NSWindow *window in windows)
 		{
-			WebView *webView = search_webview([window contentView]);
+			static unsigned archIndex = 0;
+
+			NSLog(@"Archiving WebViews...");
+			// Note: because of a bug in WebKit, image loaded from CSS with an URL are not always saved in the archive.
 			
-			if (!webView)
-				continue;
-							
-			DOMDocument *document = [[webView mainFrame] DOMDocument];
-			WebArchive	*archive = [document webArchive];
-			NSData		*page = [archive data];
-			NSString	*path = [@"~/Desktop/transcript_%u.webarchive" stringByExpandingTildeInPath];
+			// Get windows list
+			NSArray *windows = [[NSApplication sharedApplication] windows];
 			
-			[page writeToFile:[NSString stringWithFormat:path, archIndex++] atomically:NO];
+			for (NSWindow *window in windows)
+			{
+				WebView *webView = search_webview([window contentView]);
+				
+				if (!webView)
+					continue;
+				
+				DOMDocument *document = [[webView mainFrame] DOMDocument];
+				WebArchive	*archive = [document webArchive];
+				NSData		*page = [archive data];
+				NSString	*path = [@"~/Desktop/transcript_%u.webarchive" stringByExpandingTildeInPath];
+				
+				[page writeToFile:[NSString stringWithFormat:path, archIndex++] atomically:NO];
+			}
 		}
-		*/
+		 */
 	});
 	
 	dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 5ull * NSEC_PER_SEC, 0ull);
