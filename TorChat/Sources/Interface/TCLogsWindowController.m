@@ -137,7 +137,7 @@
 
 - (id)init
 {
-	self = [super init];
+	self = [super initWithWindowNibName:@"LogsWindow"];
 	
     if (self)
 	{
@@ -155,9 +155,6 @@
 		
 		// Add logs observer.
 		[[TCLogsManager sharedManager] addObserver:self forKey:nil];
-		
-		// Load the nib.
-		[[NSBundle mainBundle] loadNibNamed:@"LogsWindow" owner:self topLevelObjects:nil];
     }
     
     return self;

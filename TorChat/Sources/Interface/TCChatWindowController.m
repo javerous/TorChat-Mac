@@ -110,10 +110,15 @@
 	return self;
 }
 
-- (void)loadWindow
+
+
+/*
+** TCChatWindowController - NSWindowController
+*/
+#pragma mark - TCChatWindowController - NSWindowController
+
+- (void)windowDidLoad
 {
-	[super loadWindow];
-	
 	[self.window center];
 	[self setWindowFrameAutosaveName:@"ChatWindow"];
 }
