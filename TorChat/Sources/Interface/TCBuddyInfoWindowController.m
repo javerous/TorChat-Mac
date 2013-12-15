@@ -130,10 +130,6 @@ static dispatch_queue_t	gQueue;
 	{
 		_logs = [[NSMutableArray alloc] init];
 		_infos = [[NSMutableDictionary alloc] init];
-		
-		[window center];
-		
-		[self windowDidResize:nil];
     }
     
     return self;
@@ -157,16 +153,11 @@ static dispatch_queue_t	gQueue;
 {
     [super windowDidLoad];
 
+	[_avatarView setFilename:_address];
+
 	[self.window center];
 	[self setWindowFrameAutosaveName:@"InfoWindow"];
 	[self windowDidResize:nil];
-}
-
-- (void)loadWindow
-{
-	[super loadWindow];
-	
-	[_avatarView setFilename:_address];
 }
 
 

@@ -41,6 +41,7 @@
 // > Views
 #import "TCButton.h"
 #import "TCDropButton.h"
+#import "TCThreePartImageView.h"
 
 // > Managers
 #import "TCLogsManager.h"
@@ -80,6 +81,7 @@
 @property (strong, nonatomic) IBOutlet NSPopUpButton		*imStatus;
 @property (strong, nonatomic) IBOutlet NSImageView			*imStatusImage;
 @property (strong, nonatomic) IBOutlet TCDropButton			*imAvatar;
+@property (strong, nonatomic) IBOutlet TCThreePartImageView *barView;
 
 @property (strong, nonatomic) IBOutlet NSWindow				*addWindow;
 @property (strong, nonatomic) IBOutlet NSTextField			*addNameField;
@@ -150,15 +152,8 @@
 		
 		// Observe file events
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(fileCancel:) name:TCFileCancelNotification object:nil];
-		
-		// Place Window.
-		[self.window center];
-		[self.window setFrameAutosaveName:@"BuddiesWindow"];
-		
-		// Configure table view.
-		[_tableView setTarget:self];
-		[_tableView setDoubleAction:@selector(tableViewDoubleClick:)];
 	}
+	
 	return self;
 }
 
@@ -167,6 +162,22 @@
 	TCDebugLog("TCBuddieController dealloc");
 	
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)windowDidLoad
+{
+	// Place Window.
+	[self.window center];
+	[self.window setFrameAutosaveName:@"BuddiesWindow"];
+	
+	// Configure table view.
+	[_tableView setTarget:self];
+	[_tableView setDoubleAction:@selector(tableViewDoubleClick:)];
+	
+	// Configura bar.
+	_barView.startCap = [NSImage imageNamed:@"bar"];
+	_barView.centerFill = [NSImage imageNamed:@"bar"];
+	_barView.endCap = [NSImage imageNamed:@"bar"];
 }
 
 
@@ -191,6 +202,9 @@
 		return;
 	
 	_running = YES;
+	
+	// Load window.
+	[self window];
 	
 	// Hold the config
 	_configuration = configuration;

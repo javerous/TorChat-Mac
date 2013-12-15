@@ -160,18 +160,16 @@
 
 - (id)init
 {
-	self = [super init];
+	self = [super initWithWindowNibName:@"PreferencesWindow"];
 	
     if (self)
 	{
-        // Load the nib
-		[[NSBundle mainBundle] loadNibNamed:@"PreferencesWindow" owner:self topLevelObjects:nil];
     }
     
     return self;
 }
 
-- (void)awakeFromNib
+- (void)windowDidLoad
 {	
 	// Place Window
 	[self.window center];

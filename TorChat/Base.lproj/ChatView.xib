@@ -7,7 +7,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCChatViewController">
             <connections>
-                <outlet property="backView" destination="56" id="92"/>
+                <outlet property="backView" destination="Hwz-KV-tck" id="3DE-aF-khk"/>
                 <outlet property="lineView" destination="90" id="91"/>
                 <outlet property="transcriptView" destination="G3i-0Y-aMb" id="wTH-rN-hyu"/>
                 <outlet property="userField" destination="57" id="84"/>
@@ -27,11 +27,10 @@
                     <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     <font key="titleFont" metaFont="system"/>
                 </box>
-                <imageView translatesAutoresizingMaskIntoConstraints="NO" id="56">
+                <customView translatesAutoresizingMaskIntoConstraints="NO" id="Hwz-KV-tck" userLabel="Back View" customClass="TCThreePartImageView">
                     <rect key="frame" x="0.0" y="0.0" width="300" height="35"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="axesIndependently" image="back_send_field" id="63"/>
-                </imageView>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                </customView>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="57" customClass="TCChatTextField">
                     <rect key="frame" x="13" y="7" width="274" height="22"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
@@ -53,24 +52,21 @@
                 </customView>
             </subviews>
             <constraints>
-                <constraint firstAttribute="trailing" secondItem="56" secondAttribute="trailing" id="9fL-a9-0ma"/>
+                <constraint firstItem="Hwz-KV-tck" firstAttribute="top" secondItem="57" secondAttribute="top" constant="-6" id="5R6-cc-lCZ"/>
                 <constraint firstItem="G3i-0Y-aMb" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="A20-K4-WLD"/>
                 <constraint firstAttribute="trailing" secondItem="G3i-0Y-aMb" secondAttribute="trailing" id="A7t-gg-CnW"/>
-                <constraint firstItem="56" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="ado-0r-FF0"/>
-                <constraint firstItem="56" firstAttribute="top" secondItem="90" secondAttribute="bottom" id="eSm-pi-Rjv"/>
+                <constraint firstAttribute="trailing" secondItem="Hwz-KV-tck" secondAttribute="trailing" id="BuU-nq-dSY"/>
+                <constraint firstItem="Hwz-KV-tck" firstAttribute="trailing" secondItem="57" secondAttribute="trailing" constant="13" id="ITm-h8-Xn0"/>
+                <constraint firstItem="Hwz-KV-tck" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="La2-R2-7GF"/>
+                <constraint firstAttribute="bottom" secondItem="Hwz-KV-tck" secondAttribute="bottom" id="Nfp-IS-EY8"/>
+                <constraint firstItem="Hwz-KV-tck" firstAttribute="top" secondItem="90" secondAttribute="bottom" id="QrU-lv-iNe"/>
                 <constraint firstItem="G3i-0Y-aMb" firstAttribute="top" secondItem="1" secondAttribute="top" id="gEN-3f-vRX"/>
-                <constraint firstItem="57" firstAttribute="trailing" secondItem="56" secondAttribute="trailing" constant="-13" id="gtR-da-Gfo"/>
-                <constraint firstItem="57" firstAttribute="leading" secondItem="56" secondAttribute="leading" constant="13" id="kkm-pQ-gE3"/>
+                <constraint firstItem="Hwz-KV-tck" firstAttribute="bottom" secondItem="57" secondAttribute="bottom" constant="7" id="kn2-TB-X9Y"/>
+                <constraint firstItem="Hwz-KV-tck" firstAttribute="leading" secondItem="57" secondAttribute="leading" constant="-13" id="lp3-jc-xlh"/>
                 <constraint firstAttribute="trailing" secondItem="90" secondAttribute="trailing" id="lz2-1U-0oE"/>
-                <constraint firstItem="57" firstAttribute="bottom" secondItem="56" secondAttribute="bottom" constant="-7" id="mtJ-TH-J46"/>
-                <constraint firstItem="57" firstAttribute="top" secondItem="56" secondAttribute="top" constant="6" id="s8i-0V-7so"/>
                 <constraint firstItem="90" firstAttribute="top" secondItem="G3i-0Y-aMb" secondAttribute="bottom" id="sDw-OD-Uzc"/>
                 <constraint firstItem="90" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="uIS-7w-piX"/>
-                <constraint firstAttribute="bottom" secondItem="56" secondAttribute="bottom" id="ve5-g8-snM"/>
             </constraints>
         </customView>
     </objects>
-    <resources>
-        <image name="back_send_field" width="1" height="35"/>
-    </resources>
 </document>

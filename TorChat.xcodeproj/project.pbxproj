@@ -348,7 +348,6 @@
 			children = (
 				E82B7D88125A0EA700B7BA8A /* TCMainController.h */,
 				E82B7D8E125A115400B7BA8A /* TCMainController.m */,
-				E870BD9517A84AFC00DFA076 /* Resources */,
 			);
 			name = Main;
 			sourceTree = "<group>";
@@ -605,13 +604,6 @@
 				E85923F5120A9E060035C420 /* FilesWindow.xib */,
 			);
 			name = XIB;
-			sourceTree = "<group>";
-		};
-		E870BD9517A84AFC00DFA076 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Resources;
 			sourceTree = "<group>";
 		};
 		E870BD9717A84B4100DFA076 /* Views */ = {
