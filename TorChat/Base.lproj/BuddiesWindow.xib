@@ -8,19 +8,16 @@
         <customObject id="-2" userLabel="File's Owner" customClass="TCBuddiesWindowController">
             <connections>
                 <outlet property="addAddressField" destination="73" id="93"/>
-                <outlet property="addCommentField" destination="172" id="177"/>
                 <outlet property="addNameField" destination="69" id="92"/>
                 <outlet property="addNotesField" destination="172" id="247"/>
                 <outlet property="addWindow" destination="65" id="102"/>
-                <outlet property="imAddress" destination="207" id="216"/>
+                <outlet property="barView" destination="h1G-x1-A2b" id="TsP-Q2-0Lu"/>
                 <outlet property="imAvatar" destination="219" id="221"/>
                 <outlet property="imRemove" destination="10" id="49"/>
-                <outlet property="imStatImage" destination="182" id="195"/>
                 <outlet property="imStatus" destination="50" id="58"/>
                 <outlet property="imStatusImage" destination="182" id="215"/>
                 <outlet property="imTitle" destination="207" id="218"/>
                 <outlet property="indicator" destination="3" id="42"/>
-                <outlet property="mainWindow" destination="1" id="101"/>
                 <outlet property="profileName" destination="235" id="241"/>
                 <outlet property="profileText" destination="234" id="242"/>
                 <outlet property="profileWindow" destination="223" id="246"/>
@@ -34,25 +31,24 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" texturedBackground="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="390" width="280" height="315"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1578"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
             <value key="minSize" type="size" width="280" height="315"/>
             <view key="contentView" id="2">
                 <rect key="frame" x="0.0" y="0.0" width="280" height="315"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
-                    <imageView translatesAutoresizingMaskIntoConstraints="NO" id="188">
+                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="h1G-x1-A2b" userLabel="Bar" customClass="TCThreePartImageView">
                         <rect key="frame" x="-1" y="-1" width="281" height="35"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="35" id="Qes-BP-c6T"/>
+                            <constraint firstAttribute="height" constant="35" id="RaI-JH-zem"/>
                         </constraints>
-                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="axesIndependently" image="bar" id="189"/>
-                    </imageView>
+                    </customView>
                     <scrollView borderType="line" horizontalLineScroll="42" horizontalPageScroll="10" verticalLineScroll="42" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="13">
                         <rect key="frame" x="-1" y="33" width="282" height="237"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <clipView key="contentView" id="Kgb-04-BiO">
-                            <rect key="frame" x="1" y="1" width="269" height="235"/>
+                            <rect key="frame" x="1" y="1" width="280" height="235"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="40" viewBased="YES" id="14" userLabel="Table View">
@@ -196,7 +192,7 @@
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <scroller key="verticalScroller" verticalHuggingPriority="750" controlSize="small" horizontal="NO" id="15">
-                            <rect key="frame" x="270" y="1" width="11" height="235"/>
+                            <rect key="frame" x="267" y="1" width="14" height="235"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
@@ -214,7 +210,7 @@
                         <constraints>
                             <constraint firstAttribute="width" constant="30" id="QSs-V8-cgs"/>
                         </constraints>
-                        <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="add" imagePosition="only" alignment="center" state="on" borderStyle="border" inset="2" id="30">
+                        <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="NSAddTemplate" imagePosition="only" alignment="center" state="on" borderStyle="border" inset="2" id="30">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="systemBold"/>
                         </buttonCell>
@@ -228,7 +224,7 @@
                         <constraints>
                             <constraint firstAttribute="width" constant="32" id="fn9-LG-gj0"/>
                         </constraints>
-                        <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="remove" imagePosition="only" alignment="center" enabled="NO" state="on" borderStyle="border" inset="2" id="28">
+                        <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="NSRemoveTemplate" imagePosition="only" alignment="center" enabled="NO" state="on" borderStyle="border" inset="2" id="28">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
@@ -326,23 +322,23 @@
                     </customView>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="3" firstAttribute="leading" secondItem="188" secondAttribute="trailing" constant="-29" id="1Yx-jD-toi"/>
-                    <constraint firstItem="3" firstAttribute="centerY" secondItem="188" secondAttribute="centerY" constant="0.5" id="1yT-pb-e6V"/>
+                    <constraint firstItem="h1G-x1-A2b" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="-1" id="0Ra-fR-y1o"/>
                     <constraint firstItem="VX6-UO-DYL" firstAttribute="top" secondItem="2" secondAttribute="top" id="3PA-e9-KbU"/>
-                    <constraint firstItem="188" firstAttribute="centerY" secondItem="8" secondAttribute="centerY" constant="0.5" id="5bd-3Z-B3O"/>
+                    <constraint firstItem="h1G-x1-A2b" firstAttribute="centerY" secondItem="10" secondAttribute="centerY" constant="0.5" id="7Ka-fI-Jyy"/>
                     <constraint firstItem="13" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="-1" id="Ae9-v1-tLP"/>
+                    <constraint firstItem="8" firstAttribute="centerY" secondItem="h1G-x1-A2b" secondAttribute="centerY" constant="-0.5" id="F0I-c2-0Ge"/>
                     <constraint firstItem="13" firstAttribute="top" secondItem="VX6-UO-DYL" secondAttribute="bottom" id="JeV-4s-8wZ"/>
                     <constraint firstItem="8" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="7" id="MgN-Xd-hs4"/>
-                    <constraint firstItem="188" firstAttribute="top" secondItem="13" secondAttribute="bottom" constant="-1" id="UHl-ag-Gal"/>
+                    <constraint firstAttribute="bottom" secondItem="h1G-x1-A2b" secondAttribute="bottom" constant="-1" id="S7D-yf-2k1"/>
                     <constraint firstItem="3" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="10" secondAttribute="trailing" constant="8" symbolic="YES" id="VBx-tx-S6s"/>
-                    <constraint firstAttribute="bottom" secondItem="188" secondAttribute="bottom" constant="-1" id="WV7-Jo-180"/>
                     <constraint firstAttribute="trailing" secondItem="VX6-UO-DYL" secondAttribute="trailing" id="YbT-SF-NHg"/>
                     <constraint firstItem="10" firstAttribute="leading" secondItem="8" secondAttribute="trailing" constant="8" id="e0o-uz-o1h"/>
                     <constraint firstItem="VX6-UO-DYL" firstAttribute="leading" secondItem="2" secondAttribute="leading" id="hQi-Vu-Tyg"/>
-                    <constraint firstAttribute="trailing" secondItem="188" secondAttribute="trailing" id="hcu-dJ-7BJ"/>
+                    <constraint firstItem="3" firstAttribute="centerY" secondItem="h1G-x1-A2b" secondAttribute="centerY" constant="0.5" id="ikh-On-IL2"/>
                     <constraint firstAttribute="trailing" secondItem="13" secondAttribute="trailing" constant="-1" id="j97-Ec-2jV"/>
-                    <constraint firstItem="10" firstAttribute="centerY" secondItem="188" secondAttribute="centerY" constant="-0.5" id="vuz-a1-eqa"/>
-                    <constraint firstItem="188" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="-1" id="wkC-je-0wf"/>
+                    <constraint firstItem="h1G-x1-A2b" firstAttribute="trailing" secondItem="3" secondAttribute="trailing" constant="13" id="jh0-nP-j7W"/>
+                    <constraint firstItem="h1G-x1-A2b" firstAttribute="top" secondItem="13" secondAttribute="bottom" constant="-1" id="l9H-of-JJ1"/>
+                    <constraint firstAttribute="trailing" secondItem="h1G-x1-A2b" secondAttribute="trailing" id="sRr-lI-TdA"/>
                 </constraints>
             </view>
         </window>
@@ -350,7 +346,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="340" y="419" width="309" height="237"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1578"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
             <value key="minSize" type="size" width="309" height="237"/>
             <view key="contentView" id="66">
                 <rect key="frame" x="0.0" y="0.0" width="309" height="237"/>
@@ -499,7 +495,7 @@ Gw
             <windowStyleMask key="styleMask" titled="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="425" y="527" width="480" height="280"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1578"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
             <view key="contentView" id="224">
                 <rect key="frame" x="0.0" y="0.0" width="480" height="280"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -619,10 +615,9 @@ Gw
         </window>
     </objects>
     <resources>
+        <image name="NSAddTemplate" width="8" height="8"/>
+        <image name="NSRemoveTemplate" width="8" height="8"/>
         <image name="NSUser" width="32" height="32"/>
-        <image name="add" width="32" height="23"/>
-        <image name="bar" width="1" height="35"/>
-        <image name="remove" width="32" height="23"/>
         <image name="stat_away" width="12.800000190734863" height="12.800000190734863"/>
         <image name="stat_offline" width="16" height="16"/>
         <image name="stat_online" width="12.800000190734863" height="12.800000190734863"/>

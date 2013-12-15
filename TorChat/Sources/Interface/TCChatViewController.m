@@ -28,6 +28,8 @@
 
 #import "NSString+TCExtension.h"
 
+#import "TCThreePartImageView.h"
+
 
 
 /*
@@ -41,10 +43,10 @@
 }
 
 // -- Properties --
-@property (strong, nonatomic) IBOutlet NSView		*transcriptView;
-@property (strong, nonatomic) IBOutlet NSTextField	*userField;
-@property (strong, nonatomic) IBOutlet NSBox		*lineView;
-@property (strong, nonatomic) IBOutlet NSView		*backView;
+@property (strong, nonatomic) IBOutlet NSView				*transcriptView;
+@property (strong, nonatomic) IBOutlet NSTextField			*userField;
+@property (strong, nonatomic) IBOutlet NSBox				*lineView;
+@property (strong, nonatomic) IBOutlet TCThreePartImageView	*backView;
 
 @property (strong, nonatomic) NSString *identifier;
 
@@ -124,6 +126,11 @@
 	
 	[_transcriptView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view]|" options:0 metrics:nil views:viewsDictionary]];
 	[_transcriptView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[view]|" options:0 metrics:nil views:viewsDictionary]];
+
+	// Configure back.
+	_backView.startCap = [NSImage imageNamed:@"back_send_field"];
+	_backView.centerFill = [NSImage imageNamed:@"back_send_field"];
+	_backView.endCap = [NSImage imageNamed:@"back_send_field"];
 }
 
 
