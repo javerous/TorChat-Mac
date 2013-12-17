@@ -33,7 +33,11 @@
 
 // -- Instance --
 - (id)initWithWidth:(NSUInteger)width andHeight:(NSUInteger)height;
+#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
+- (id)initWithImage:(UIImage *)image;
+#else
 - (id)initWithImage:(NSImage *)image;
+#endif
 
 // -- Content --
 - (BOOL)setBitmap:(NSData *)bitmap;
@@ -49,6 +53,9 @@
 - (NSUInteger)height;
 
 // -- Representation --
+#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
+- (UIImage *)imageRepresentation;
+#else
 - (NSImage *)imageRepresentation;
-
+#endif
 @end
