@@ -1,5 +1,5 @@
 /*
- *  TCTools.h
+ *  TCDebugLog.h
  *
  *  Copyright 2013 Avérous Julien-Pierre
  *
@@ -21,11 +21,14 @@
  */
 
 
-#import <Foundation/Foundation.h>
 
+#ifndef TCDEBUGLOG_H_
+# define TCDEBUGLOG_H_
 
-// == Network ==
-BOOL doAsyncSocket(int sock);
+# ifdef DEBUG
+#	define TCDebugLog(Str, Arg...) fprintf(stderr, Str"\n", ## Arg)
+#else
+#	define TCDebugLog(Str, ...) ((void)0)
+# endif
 
-// == Hash ==
-NSString *	hashMD5(NSData *data);
+#endif

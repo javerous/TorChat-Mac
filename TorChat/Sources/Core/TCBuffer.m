@@ -20,8 +20,10 @@
  *
  */
 
-
 #import "TCBuffer.h"
+
+#import "TCDebugLog.h"
+
 
 
 /*
