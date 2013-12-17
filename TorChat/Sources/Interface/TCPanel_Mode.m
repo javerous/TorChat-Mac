@@ -24,6 +24,8 @@
 
 #import "TCPanel_Mode.h"
 
+#import "TCDebugLog.h"
+
 
 
 /*

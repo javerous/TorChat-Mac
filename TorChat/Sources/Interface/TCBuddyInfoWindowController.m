@@ -28,6 +28,7 @@
 #import "TCLogsManager.h"
 #import "TCDragImageView.h"
 #import "TCKeyedText.h"
+#import "TCDebugLog.h"
 
 #import "TCBuddy.h"
 #import "TCImage.h"
