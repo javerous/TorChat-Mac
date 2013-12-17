@@ -23,6 +23,8 @@
 #import "TCFileSend.h"
 
 #import "TCTools.h"
+#import "TCDebugLog.h"
+
 
 
 /*

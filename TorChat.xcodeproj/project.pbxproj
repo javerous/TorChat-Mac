@@ -104,7 +104,7 @@
 		E83423EB11F6F97B00922152 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = TorChat/en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		E835491717A810E1003C08BB /* TCInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCInfo.h; path = TorChat/Sources/Core/TCInfo.h; sourceTree = SOURCE_ROOT; };
 		E835491817A810E1003C08BB /* TCInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCInfo.m; path = TorChat/Sources/Core/TCInfo.m; sourceTree = SOURCE_ROOT; };
-		E837DAD511E7739D004BC524 /* TCBuddy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = TCBuddy.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		E837DAD511E7739D004BC524 /* TCBuddy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = TCBuddy.m; sourceTree = "<group>"; };
 		E837DAD611E7739D004BC524 /* TCBuddy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCBuddy.h; sourceTree = "<group>"; };
 		E837DAD711E7739D004BC524 /* TCBuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCBuffer.m; sourceTree = "<group>"; };
 		E837DAD811E7739D004BC524 /* TCBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCBuffer.h; sourceTree = "<group>"; };
@@ -115,6 +115,7 @@
 		E8455D3C17A425F00046307B /* TCValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCValue.m; path = Interface/TCValue.m; sourceTree = "<group>"; };
 		E8455D4417A438660046307B /* NSData+TCTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+TCTools.h"; sourceTree = "<group>"; };
 		E8455D4517A438660046307B /* NSData+TCTools.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+TCTools.m"; sourceTree = "<group>"; };
+		E84641AF186091FE0046BEFB /* TCDebugLog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TCDebugLog.h; sourceTree = "<group>"; };
 		E84FE49617B06357006E2D12 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = TorChat/en.lproj/MainMenu.strings; sourceTree = "<group>"; };
 		E84FE49717B06375006E2D12 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = TorChat/en.lproj/ChatWindow.strings; sourceTree = "<group>"; };
 		E84FE49817B0637C006E2D12 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = TorChat/en.lproj/ChatView.strings; sourceTree = "<group>"; };
@@ -312,6 +313,7 @@
 			isa = PBXGroup;
 			children = (
 				E837DADA11E7739D004BC524 /* TCConfig.h */,
+				E84641AF186091FE0046BEFB /* TCDebugLog.h */,
 				E8C79A7F17ABB9F300DE085E /* TCConstants.h */,
 				E837DADC11E7739D004BC524 /* TCCoreManager.h */,
 				E837DADB11E7739D004BC524 /* TCCoreManager.m */,
