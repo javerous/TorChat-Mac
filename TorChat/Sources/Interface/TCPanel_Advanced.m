@@ -27,6 +27,7 @@
 #import "TCLogsManager.h"
 #import "TCConfigPlist.h"
 
+#import "TCDebugLog.h"
 
 
 /*
