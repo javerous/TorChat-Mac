@@ -28,14 +28,5 @@
 	#import <Cocoa/Cocoa.h>
 #endif
 
-
-// Debug mode
-#ifdef DEBUG
-#	define TCDebugLog(Str, Arg...) fprintf(stderr, Str"\n", ## Arg)
-#else
-#	define TCDebugLog(Str, ...) ((void)0)
-#endif
-
-
 // Proxy (private)
 #define PROXY_ENABLED 0
