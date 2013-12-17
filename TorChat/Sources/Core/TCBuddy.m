@@ -29,8 +29,9 @@
 
 #include <arpa/inet.h>
 
-
 #import "TCBuddy.h"
+
+#import "TCDebugLog.h"
 
 #import "TCParser.h"
 #import "TCSocket.h"
@@ -168,10 +169,14 @@ static char gLocalQueueContext;
 	dispatch_queue_t			_delegateQueue;
 	
 	// > Profile
+#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
+	UIImage						*_profileAvatar;
+#else
+	NSImage						*_profileAvatar;
+#endif
+	TCImage						*_tcProfileAvatar;
 	NSString					*_profileName;
 	NSString					*_profileText;
-	NSImage						*_profileAvatar;
-	TCImage						*_tcProfileAvatar;
 
 	// > Peer
 	NSString					*_peerClient;
@@ -788,7 +793,11 @@ static char gLocalQueueContext;
 	});
 }
 
+#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
+- (void)sendAvatar:(UIImage *)avatar
+#else
 - (void)sendAvatar:(NSImage *)avatar
+#endif
 {
 	TCImage *tcAvatar = [[TCImage alloc] initWithImage:avatar];
 	
@@ -900,7 +909,11 @@ static char gLocalQueueContext;
 */
 #pragma mark - Action
 
+#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
+- (void)startHandshake:(NSString *)remoteRandom status:(tcstatus)status avatar:(UIImage *)avatar name:(NSString *)name text:(NSString *)text
+#else
 - (void)startHandshake:(NSString *)remoteRandom status:(tcstatus)status avatar:(NSImage *)avatar name:(NSString *)name text:(NSString *)text
+#endif
 {
 	if (!remoteRandom || !name || !text)
 		return;
@@ -1004,9 +1017,13 @@ static char gLocalQueueContext;
 	return result;
 }
 
+#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
+- (UIImage *)profileAvatar
+#else
 - (NSImage *)profileAvatar
+#endif
 {
-	__block NSImage * result = NULL;
+	__block id result = NULL;
 	
 	dispatch_sync(_localQueue, ^{
 	
@@ -1731,7 +1748,7 @@ static char gLocalQueueContext;
 	[items addObject:md5];
 
 	// > Add the data
-	[items addObject:[[NSData alloc] initWithBytesNoCopy:chunk length:chunksz freeWhenDone:YES]];
+	[items addObject:[[NSData alloc] initWithBytesNoCopy:chunk length:(NSUInteger)chunksz freeWhenDone:YES]];
 	
 	// Send the command
 	[self _sendCommand:@"filedata" array:items channel:tcbuddy_channel_in];

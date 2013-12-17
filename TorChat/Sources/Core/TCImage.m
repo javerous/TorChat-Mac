@@ -83,6 +83,13 @@
 	return self;
 }
 
+#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
+- (id)initWithImage:(UIImage *)image
+{
+	// FIXME
+	return nil;
+}
+#else
 - (id)initWithImage:(NSImage *)image
 {
 	if (!image)
@@ -207,6 +214,7 @@
 	
 	return self;
 }
+#endif
 
 
 
@@ -348,36 +356,42 @@
 */
 #pragma mark - TCImage - Representation
 
-- (NSImage *)imageRepresentation
+#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
+- (UIImage *)imageRepresentation
+#else
+- (NSImage	*)imageRepresentation
+#endif
 {
-	NSImage *image = [[NSImage alloc] initWithSize:NSMakeSize(_width, _height)];
+	CGImageRef			imageRef = NULL;
+	NSData				*mixedData = [self bitmapMixed];
+	CGDataProviderRef	data;
+	CGColorSpaceRef		rgb;
 	
-	if (!image)
-		return nil;
-
-	NSData			*planeData = [self bitmapMixed];
-	const uint8_t	*plane = (const uint8_t	*)[planeData bytes];
+	data = CGDataProviderCreateWithCFData((__bridge CFDataRef)mixedData);
+	rgb = CGColorSpaceCreateDeviceRGB();
 	
-	if (plane)
+	if (data && rgb)
+		imageRef = CGImageCreate((size_t)_width, (size_t)_height, 8, 32, (size_t)(4 * _width), rgb, (CGBitmapInfo)kCGImageAlphaLast, data, NULL, TRUE, kCGRenderingIntentDefault);
+	
+	CGColorSpaceRelease(rgb);
+	CGDataProviderRelease(data);
+	
+	if (imageRef)
 	{
-		unsigned char		*planes[] = { (unsigned char *)plane };
-		NSBitmapImageRep	*rep = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:planes
-																		pixelsWide:(NSInteger)_width
-																		pixelsHigh:(NSInteger)_height
-																	 bitsPerSample:8
-																   samplesPerPixel:4
-																		  hasAlpha:YES
-																		  isPlanar:NO
-																	colorSpaceName:NSDeviceRGBColorSpace
-																	  bitmapFormat:NSAlphaNonpremultipliedBitmapFormat
-																	   bytesPerRow:0
-																	  bitsPerPixel:0];
+		id image;
 		
-		if (rep)
-			[image addRepresentation:rep];
+#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
+		image = [[UIImage alloc] initWithCGImage:imageRef];
+#else
+		image = [[NSImage alloc] initWithCGImage:imageRef size:NSZeroSize];
+#endif
+		
+		CGImageRelease(imageRef);
+		
+		return image;
 	}
-
-	return image;
+	
+	return nil;
 }
 
 @end

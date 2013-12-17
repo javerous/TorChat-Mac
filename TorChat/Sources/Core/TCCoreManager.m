@@ -27,6 +27,8 @@
 #import "TCCoreManager.h"
 #import "TCConnection.h"
 
+#import "TCDebugLog.h"
+
 #import "TCConfig.h"
 #import "TCImage.h"
 
@@ -75,7 +77,12 @@
 	dispatch_queue_t		_delegateQueue;
 	
 	// > Profile
+#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
+	UIImage					*_profileAvatar;
+#else
 	NSImage					*_profileAvatar;
+#endif
+	
 	NSString				*_profileName;
 	NSString				*_profileText;
 }
@@ -415,7 +422,11 @@
 */
 #pragma mark - TCCoreManager - Profile
 
+#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
+- (void)setProfileAvatar:(UIImage *)avatar
+#else
 - (void)setProfileAvatar:(NSImage *)avatar
+#endif
 {
 	if (!avatar)
 		return;
@@ -437,9 +448,13 @@
 	});
 }
 
+#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
+- (UIImage *)profileAvatar
+#else
 - (NSImage *)profileAvatar
+#endif
 {
-	__block NSImage *result = NULL;
+	__block id result = NULL;
 	
 	dispatch_sync(_localQueue, ^{
 		result = _profileAvatar;

@@ -22,6 +22,7 @@
 
 #import "TCSocket.h"
 
+#import "TCDebugLog.h"
 #import "TCBuffer.h"
 #import "TCTools.h"
 #import "TCInfo.h"
@@ -153,6 +154,7 @@
 				if ([_readBuffer size] + (size_t)sz > 50 * 1024 * 1024)
 				{
 					[self callError:tcsocket_read_full info:@"core_socker_read_full" fatal:YES];
+					free(buffer);
 				}
 				else
 				{

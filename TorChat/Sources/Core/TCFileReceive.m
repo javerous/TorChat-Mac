@@ -100,9 +100,9 @@
 				NSString *tempPath;
 				
 				if ([ext length] > 0)
-					tempName = [NSString stringWithFormat:@"%@-%lu.%@", name, idx, ext];
+					tempName = [NSString stringWithFormat:@"%@-%lu.%@", name, (unsigned long)idx, ext];
 				else
-					tempName = [NSString stringWithFormat:@"%@-%lu", name, idx];
+					tempName = [NSString stringWithFormat:@"%@-%lu", name, (unsigned long)idx];
 
 				tempPath = [folder stringByAppendingPathComponent:tempName];
 								
@@ -158,7 +158,7 @@
 	}
 
 	// Check the MD5
-	NSString *md5 = hashMD5([NSData dataWithBytesNoCopy:(void *)bytes length:chunkSize freeWhenDone:NO]);
+	NSString *md5 = hashMD5([NSData dataWithBytesNoCopy:(void *)bytes length:(NSUInteger)chunkSize freeWhenDone:NO]);
 	
 	if ([md5 isEqualToString:hash])
 	{
