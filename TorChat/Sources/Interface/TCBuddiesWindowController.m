@@ -29,6 +29,9 @@
 #import "TCConfig.h"
 #import "TCBuddy.h"
 
+// > Tools
+#import "TCDebugLog.h"
+
 // -- Interface --
 // > Controllers
 #import "TCBuddyInfoWindowController.h"
@@ -49,6 +52,8 @@
 
 // > Components
 #import "TCFilesCommon.h"
+
+
 
 
 
