@@ -169,12 +169,7 @@ static char gLocalQueueContext;
 	dispatch_queue_t			_delegateQueue;
 	
 	// > Profile
-#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-	UIImage						*_profileAvatar;
-#else
-	NSImage						*_profileAvatar;
-#endif
-	TCImage						*_tcProfileAvatar;
+	TCImage						*_profileAvatar;
 	NSString					*_profileName;
 	NSString					*_profileText;
 
@@ -288,7 +283,7 @@ static char gLocalQueueContext;
 		// Init profiles
 		_profileName = @"";
 		_profileText = @"";
-		_tcProfileAvatar = [[TCImage alloc] initWithWidth:64 andHeight:64];
+		_profileAvatar = [[TCImage alloc] initWithWidth:64 andHeight:64];
 		
 		// Init remotes
 		_peerClient = @"";
@@ -793,21 +788,15 @@ static char gLocalQueueContext;
 	});
 }
 
-#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-- (void)sendAvatar:(UIImage *)avatar
-#else
-- (void)sendAvatar:(NSImage *)avatar
-#endif
+- (void)sendAvatar:(TCImage *)avatar
 {
-	TCImage *tcAvatar = [[TCImage alloc] initWithImage:avatar];
-	
-	if (!tcAvatar)
+	if (!avatar)
 		return;
 	
 	dispatch_async(_localQueue, ^{
 		
 		if (_pongSent && _ponged && !_blocked)
-			[self _sendAvatar:tcAvatar];
+			[self _sendAvatar:avatar];
 	});
 }
 
@@ -904,16 +893,13 @@ static char gLocalQueueContext;
 }
 
 
+
 /*
 ** TCBuddy - Action
 */
 #pragma mark - Action
 
-#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-- (void)startHandshake:(NSString *)remoteRandom status:(tcstatus)status avatar:(UIImage *)avatar name:(NSString *)name text:(NSString *)text
-#else
-- (void)startHandshake:(NSString *)remoteRandom status:(tcstatus)status avatar:(NSImage *)avatar name:(NSString *)name text:(NSString *)text
-#endif
+- (void)startHandshake:(NSString *)remoteRandom status:(tcstatus)status avatar:(TCImage *)avatar name:(NSString *)name text:(NSString *)text
 {
 	if (!remoteRandom || !name || !text)
 		return;
@@ -923,14 +909,12 @@ static char gLocalQueueContext;
 		if (_blocked)
 			return;
 		
-		TCImage *tcAvatar = [[TCImage alloc] initWithImage:avatar];
-		
 		[self _sendPong:remoteRandom];
 		[self _sendClient];
 		[self _sendVersion];
 		[self _sendProfileName:name];
 		[self _sendProfileText:text];
-		[self _sendAvatar:tcAvatar];
+		[self _sendAvatar:avatar];
 		[self _sendAddMe];
 		[self _sendStatus:status];
 		
@@ -1017,11 +1001,7 @@ static char gLocalQueueContext;
 	return result;
 }
 
-#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-- (UIImage *)profileAvatar
-#else
-- (NSImage *)profileAvatar
-#endif
+- (TCImage *)profileAvatar
 {
 	__block id result = NULL;
 	
@@ -1284,9 +1264,7 @@ static char gLocalQueueContext;
 		return;
 	
 	// Hold & convert avatar.
-	[_tcProfileAvatar setBitmap:bitmap];
-	
-	_profileAvatar = [_tcProfileAvatar imageRepresentation];
+	[_profileAvatar setBitmap:bitmap];
 	
 	// Store profile avatar.
 	[_config setBuddy:_address lastProfileAvatar:_profileAvatar];
@@ -1302,7 +1280,7 @@ static char gLocalQueueContext;
 	if (_blocked)
 		return;
 
-	[_tcProfileAvatar setBitmapAlpha:bitmap];
+	[_profileAvatar setBitmapAlpha:bitmap];
 }
 
 - (void)parserParsedAddMe:(TCParser *)parser

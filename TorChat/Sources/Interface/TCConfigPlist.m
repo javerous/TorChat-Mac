@@ -395,10 +395,9 @@
 
 }
 
-- (NSImage *)profileAvatar
+- (TCImage *)profileAvatar
 {
-	id		avatar = [_fcontent objectForKey:TCCONF_KEY_PROFILE_AVATAR];
-	NSImage *image = nil;
+	id avatar = [_fcontent objectForKey:TCCONF_KEY_PROFILE_AVATAR];
 	
 	if ([avatar isKindOfClass:[NSDictionary class]])
 	{
@@ -413,25 +412,28 @@
 			return NULL;
 		
 		// Build TorChat core image
-		TCImage *tcImage = [[TCImage alloc] initWithWidth:[width unsignedIntValue] andHeight:[height unsignedIntValue]];
+		TCImage *image = [[TCImage alloc] initWithWidth:[width unsignedIntValue] andHeight:[height unsignedIntValue]];
 		
-		[tcImage setBitmap:bitmap];
-		[tcImage setBitmapAlpha:bitmapAlpha];
-		
-		image = [tcImage imageRepresentation];
-		
+		[image setBitmap:bitmap];
+		[image setBitmapAlpha:bitmapAlpha];
+				
 		if (image)
 			[self setProfileAvatar:image]; // Replace by the new format.
+		
+		return image;
 	}
-	if ([avatar isKindOfClass:[NSData class]])
+	else if ([avatar isKindOfClass:[NSData class]])
 	{
-		image = [[NSImage alloc] initWithData:avatar];
+		NSImage *image = [[NSImage alloc] initWithData:avatar];
+		TCImage *result = [[TCImage alloc] initWithImage:image];
+		
+		return result;
 	}
 
-	return image;
+	return nil;
 }
 
-- (void)setProfileAvatar:(NSImage *)picture
+- (void)setProfileAvatar:(TCImage *)picture
 {
 	// Remove avatar.
 	if (!picture)
@@ -444,8 +446,14 @@
 		return;
 	}
 	
+	// Get Cocoa image.
+	NSImage *image = [picture imageRepresentation];
+	
+	if (!image)
+		return;
+	
 	// Create PNG representation.
-	NSData *tiffData = [picture TIFFRepresentation];
+	NSData *tiffData = [image TIFFRepresentation];
 	NSData *pngData;
 	
 	if (!tiffData)

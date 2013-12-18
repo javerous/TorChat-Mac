@@ -110,7 +110,7 @@
 			return nil;
 		}
 		
-		// Compute output rect
+		// Compute output rect.
 		CGRect	outRect;
 		CGSize	selfSize = [image size];
 		
@@ -183,7 +183,7 @@
 			bitmapAlpha[k] = a;
 		}
 		
-		// Build result
+		// Build result.
 		_width = 64;
 		_height = 64;
 		
