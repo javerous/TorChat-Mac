@@ -34,6 +34,7 @@
 #define BytesPerPixelAlpha	1
 
 
+
 /*
 ** TCImage - Private
 */
@@ -52,6 +53,7 @@
 }
 
 @end
+
 
 
 /*
@@ -85,12 +87,9 @@
 
 #if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
 - (id)initWithImage:(UIImage *)image
-{
-	// FIXME
-	return nil;
-}
 #else
 - (id)initWithImage:(NSImage *)image
+#endif
 {
 	if (!image)
 		return nil;
@@ -101,81 +100,64 @@
 	{
 		// FIXME: build the TCImage size from [NSImage size] instead of static 64x64 ?
 		
-		/*
-		 TorChat use separated bitmap for picture and mask. The picture is not pre-multiplied with alpha.
-		 Working on not alpha pre-multiplied is a _ploud_ with Core Graphic !!
-		 - We can't build a context with a NSBitmapImageRep configured with NSAlphaNonpremultipliedBitmapFormat
-		 - We can't build a CGBitmapContext with kCGImageAlphaLast
-		 
-		 -> Grrrr !
-		 */
+		// Build an empty bitmap image.
+		CGColorSpaceRef	rgb = CGColorSpaceCreateDeviceRGB();
+		CGContextRef	bitmapContext = CGBitmapContextCreateWithData(NULL, 64, 64, 8, 64 * 4, rgb, (CGBitmapInfo)kCGImageAlphaPremultipliedLast, NULL, NULL);
 		
-		size_t				bitmapSz = 64 * 64 * 3;
-		unsigned char		*bitmap;
+		if (!bitmapContext)
+		{
+			CGColorSpaceRelease(rgb);
+			return nil;
+		}
 		
-		size_t				bitmapAlphaSz = 64 * 64 * 1;
-		unsigned char		*bitmapAlpha;
-		
-		size_t				fullSz = bitmapSz + bitmapAlphaSz;
-		unsigned char		*full = (unsigned char *)calloc(1, fullSz);
-		
-		size_t				i, j, k;
-		
-		unsigned char		*planes[] = { full };
-		NSBitmapImageRep	*imageRep;
-		NSRect				outRect;
-		NSSize				selfSize;
-		
-		if (!full)
-			return NULL;
-		
-		// Build an empty bitmap image
-		imageRep = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:planes
-														   pixelsWide:64
-														   pixelsHigh:64
-														bitsPerSample:8
-													  samplesPerPixel:4
-															 hasAlpha:YES
-															 isPlanar:NO
-													   colorSpaceName:NSDeviceRGBColorSpace
-														 bitmapFormat:0
-														  bytesPerRow:(64 * 4)
-														 bitsPerPixel:32];
-		
-		
-		if (!imageRep)
-			return NULL;
-		
-		// Compute out rect
-		selfSize = [image size];
+		// Compute output rect
+		CGRect	outRect;
+		CGSize	selfSize = [image size];
 		
 		if (selfSize.width > selfSize.height)
 		{
 			CGFloat outHeight = (64.0f * selfSize.height) / selfSize.width;
 			
-			outRect = NSMakeRect(0, (64.0f - outHeight) / 2.0f, 64, outHeight);
+			outRect = CGRectMake(0, (64.0f - outHeight) / 2.0f, 64, outHeight);
 		}
 		else
 		{
 			CGFloat outWidth = (64.0f * selfSize.width) / selfSize.height;
 			
-			outRect = NSMakeRect((64.0f - outWidth) / 2.0f, 0, outWidth, 64);
+			outRect = CGRectMake((64.0f - outWidth) / 2.0f, 0, outWidth, 64);
 		}
 		
-		
-		// Draw ourself resized on this bitmap
-		[NSGraphicsContext saveGraphicsState];
+		// Draw image resized on this bitmap.
+#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
+		UIGraphicsPushContext(bitmapContext);
 		{
-			[NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithBitmapImageRep:imageRep]];
+			CGContextTranslateCTM(bitmapContext, 0.0f, 64);
+			CGContextScaleCTM(bitmapContext, 1.0f, -1.0f);
 			
+			[image drawInRect:outRect blendMode:kCGBlendModeNormal alpha:1.0];
+		}
+		UIGraphicsPopContext();
+#else
+		[NSGraphicsContext saveGraphicsState];
+		[NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithGraphicsPort:(void *)bitmapContext flipped:NO]];
+		{
 			[image drawInRect:outRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0];
 		}
 		[NSGraphicsContext restoreGraphicsState];
+#endif
+
+		// Kill the pre-multiplied alpha and build separated parts.
+		size_t				i, j, k;
+
+		size_t				bitmapSz = 64 * 64 * 3;
+		unsigned char		*bitmap = (unsigned char *)malloc(bitmapSz);
 		
-		// Kill the pre-multiplied alpha (f*cking Core Graphic) and build separated parts
-		bitmap = (unsigned char *)malloc(bitmapSz);
-		bitmapAlpha = (unsigned char *)malloc(bitmapAlphaSz);
+		size_t				bitmapAlphaSz = 64 * 64 * 1;
+		unsigned char		*bitmapAlpha = (unsigned char *)malloc(bitmapAlphaSz);
 		
+		size_t				fullSz = bitmapSz + bitmapAlphaSz;
+		unsigned char		*full = CGBitmapContextGetData(bitmapContext);
+
 		for (i = 0, j = 0, k = 0; i < fullSz; i += 4, j += 3, k++)
 		{
 			uint8_t r = full[i];
@@ -207,14 +189,14 @@
 		
 		[self setBitmap:[[NSData alloc] initWithBytesNoCopy:bitmap length:bitmapSz freeWhenDone:YES]];
 		[self setBitmapAlpha:[[NSData alloc] initWithBytesNoCopy:bitmapAlpha length:bitmapAlphaSz freeWhenDone:YES]];
-
-		// Clean
-		free(full);
+		
+		// Clean.
+		CGColorSpaceRelease(rgb);
+		CGContextRelease(bitmapContext);
 	}
-	
+
 	return self;
 }
-#endif
 
 
 
@@ -362,36 +344,43 @@
 - (NSImage	*)imageRepresentation
 #endif
 {
-	CGImageRef			imageRef = NULL;
+	// Create data provider from mixed data.
 	NSData				*mixedData = [self bitmapMixed];
 	CGDataProviderRef	data;
-	CGColorSpaceRef		rgb;
 	
+	if (!mixedData)
+		return nil;
+
 	data = CGDataProviderCreateWithCFData((__bridge CFDataRef)mixedData);
-	rgb = CGColorSpaceCreateDeviceRGB();
 	
+	// Create color space.
+	CGColorSpaceRef rgb = CGColorSpaceCreateDeviceRGB();
+	
+	// Create Core Graphic image.
+	CGImageRef imageRef = NULL;
+
 	if (data && rgb)
 		imageRef = CGImageCreate((size_t)_width, (size_t)_height, 8, 32, (size_t)(4 * _width), rgb, (CGBitmapInfo)kCGImageAlphaLast, data, NULL, TRUE, kCGRenderingIntentDefault);
 	
-	CGColorSpaceRelease(rgb);
-	CGDataProviderRelease(data);
-	
+	// Create image.
+	id image = nil;
+
 	if (imageRef)
 	{
-		id image;
-		
 #if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
 		image = [[UIImage alloc] initWithCGImage:imageRef];
 #else
 		image = [[NSImage alloc] initWithCGImage:imageRef size:NSZeroSize];
 #endif
-		
-		CGImageRelease(imageRef);
-		
-		return image;
 	}
 	
-	return nil;
+	// Clean.
+	CGColorSpaceRelease(rgb);
+	CGDataProviderRelease(data);
+	CGImageRelease(imageRef);
+	
+	// Return.
+	return image;
 }
 
 @end

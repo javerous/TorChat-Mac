@@ -20,8 +20,6 @@
  *
  */
 
-
-
 #ifndef TCCONSTANTS_H_
 # define TCCONSTANTS_H_
 
