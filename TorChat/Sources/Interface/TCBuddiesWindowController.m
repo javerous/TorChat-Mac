@@ -472,7 +472,8 @@
 			
 		case tccore_notify_profile_avatar:
 		{
-			NSImage	*final = (NSImage *)info.context;
+			TCImage	*tcFinal = (TCImage *)info.context;
+			NSImage	*final = [tcFinal imageRepresentation];
 			
 			if (!final)
 				final = [NSImage imageNamed:NSImageNameUser];
@@ -625,7 +626,8 @@
 				
 			case tcbuddy_notify_profile_avatar:
 			{
-				NSImage *avatar = (NSImage *)info.context;
+				TCImage *tcAvatar = (TCImage *)info.context;
+				NSImage *avatar = [tcAvatar imageRepresentation];
 				
 				if (!avatar)
 					return;
