@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4514" systemVersion="13A603" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4514" systemVersion="13B42" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment defaultVersion="1080" identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4514"/>
@@ -31,7 +31,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" texturedBackground="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="390" width="280" height="315"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1578"/>
             <value key="minSize" type="size" width="280" height="315"/>
             <view key="contentView" id="2">
                 <rect key="frame" x="0.0" y="0.0" width="280" height="315"/>
@@ -48,17 +48,17 @@
                         <rect key="frame" x="-1" y="33" width="282" height="237"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <clipView key="contentView" id="Kgb-04-BiO">
-                            <rect key="frame" x="1" y="1" width="280" height="235"/>
+                            <rect key="frame" x="1" y="1" width="269" height="235"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="40" viewBased="YES" id="14" userLabel="Table View">
-                                    <rect key="frame" x="0.0" y="0.0" width="283" height="235"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="269" height="235"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <size key="intercellSpacing" width="3" height="2"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                     <tableColumns>
-                                        <tableColumn identifier="state" editable="NO" width="280" minWidth="19" maxWidth="3000" id="17">
+                                        <tableColumn identifier="state" editable="NO" width="266" minWidth="19" maxWidth="3000" id="17">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left">
                                                 <font key="font" metaFont="smallSystem"/>
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -70,7 +70,7 @@
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                             <prototypeCellViews>
                                                 <tableCellView identifier="buddy_name" id="4Rk-i9-zN3" customClass="TCBuddyCellView">
-                                                    <rect key="frame" x="1" y="1" width="280" height="40"/>
+                                                    <rect key="frame" x="1" y="1" width="266" height="40"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="oq1-kh-KnK">
@@ -101,7 +101,7 @@
                                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" image="stat_online" id="6E4-0R-jop"/>
                                                         </imageView>
                                                         <imageView translatesAutoresizingMaskIntoConstraints="NO" id="buD-Zm-EwP">
-                                                            <rect key="frame" x="239" y="4" width="32" height="32"/>
+                                                            <rect key="frame" x="225" y="4" width="32" height="32"/>
                                                             <autoresizingMask key="autoresizingMask"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="32" id="1K1-ce-mbe"/>
@@ -130,7 +130,7 @@
                                                     </connections>
                                                 </tableCellView>
                                                 <tableCellView identifier="buddy_address" id="hsO-ra-HIR" customClass="TCBuddyCellView">
-                                                    <rect key="frame" x="1" y="43" width="280" height="40"/>
+                                                    <rect key="frame" x="1" y="43" width="266" height="40"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="5xm-xg-tqe">
@@ -152,7 +152,7 @@
                                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" image="stat_online" id="tt0-tX-P2j"/>
                                                         </imageView>
                                                         <imageView translatesAutoresizingMaskIntoConstraints="NO" id="fpY-ul-zMs">
-                                                            <rect key="frame" x="239" y="4" width="32" height="32"/>
+                                                            <rect key="frame" x="225" y="4" width="32" height="32"/>
                                                             <autoresizingMask key="autoresizingMask"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="32" id="Np3-92-8Yc"/>
@@ -192,7 +192,7 @@
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <scroller key="verticalScroller" verticalHuggingPriority="750" controlSize="small" horizontal="NO" id="15">
-                            <rect key="frame" x="267" y="1" width="14" height="235"/>
+                            <rect key="frame" x="270" y="1" width="11" height="235"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
@@ -346,7 +346,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="340" y="419" width="309" height="237"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1578"/>
             <value key="minSize" type="size" width="309" height="237"/>
             <view key="contentView" id="66">
                 <rect key="frame" x="0.0" y="0.0" width="309" height="237"/>
@@ -495,7 +495,7 @@ Gw
             <windowStyleMask key="styleMask" titled="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="425" y="527" width="480" height="280"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1578"/>
             <view key="contentView" id="224">
                 <rect key="frame" x="0.0" y="0.0" width="480" height="280"/>
                 <autoresizingMask key="autoresizingMask"/>
