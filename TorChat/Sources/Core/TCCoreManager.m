@@ -77,12 +77,7 @@
 	dispatch_queue_t		_delegateQueue;
 	
 	// > Profile
-#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-	UIImage					*_profileAvatar;
-#else
-	NSImage					*_profileAvatar;
-#endif
-	
+	TCImage					*_profileAvatar;
 	NSString				*_profileName;
 	NSString				*_profileText;
 }
@@ -422,11 +417,7 @@
 */
 #pragma mark - TCCoreManager - Profile
 
-#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-- (void)setProfileAvatar:(UIImage *)avatar
-#else
-- (void)setProfileAvatar:(NSImage *)avatar
-#endif
+- (void)setProfileAvatar:(TCImage *)avatar
 {
 	if (!avatar)
 		return;
@@ -448,11 +439,7 @@
 	});
 }
 
-#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-- (UIImage *)profileAvatar
-#else
-- (NSImage *)profileAvatar
-#endif
+- (TCImage *)profileAvatar
 {
 	__block id result = NULL;
 	

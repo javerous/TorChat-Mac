@@ -268,7 +268,8 @@ static dispatch_queue_t	gQueue;
 	if ([name length] == 0)
 		name = [buddy lastProfileName];
 	
-	NSImage *image = [buddy profileAvatar];
+	TCImage *tcImage = [buddy profileAvatar];
+	NSImage *image = [tcImage imageRepresentation];
 	
 	if (!image)
 		image = [NSImage imageNamed:NSImageNameUser];

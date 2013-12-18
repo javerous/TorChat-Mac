@@ -28,6 +28,7 @@
 #import "TCCoreManager.h"
 #import "TCConfig.h"
 #import "TCBuddy.h"
+#import "TCImage.h"
 
 // > Tools
 #import "TCDebugLog.h"
@@ -233,7 +234,7 @@
 	[self updateStatusUI:[_control status]];
 	
 	// > Init avatar
-	avatar = [_control profileAvatar];
+	avatar = [[_control profileAvatar] imageRepresentation];
 	
 	if ([[avatar representations] count] > 0)
 		[_imAvatar setImage:avatar];
@@ -945,7 +946,9 @@
 	if (!avatar)
 		return;
 	
-	[_control setProfileAvatar:avatar];
+	TCImage *image = [[TCImage alloc] initWithImage:avatar];
+	
+	[_control setProfileAvatar:image];
 }
 
 
@@ -1291,12 +1294,13 @@
 		return;
 	
 	TCChatWindowController	*chatCtrl = [TCChatWindowController sharedController];
-	NSString			*identifier;
+	NSString				*identifier;
 	
 	identifier = [buddy address];
 	
 	// Start chat.
-	NSImage *image = [buddy profileAvatar];
+	TCImage *tcImage = [buddy profileAvatar];
+	NSImage	*image = [tcImage imageRepresentation];
 	
 	if (!image)
 		image = [NSImage imageNamed:NSImageNameUser];
