@@ -20,10 +20,6 @@
  *
  */
 
-#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-#  import <UIKit/UIKit.h>
-#endif
-
 #import <Foundation/Foundation.h>
 
 
@@ -40,6 +36,15 @@
 #define TCConfigBuddyLastName	@"lname"
 #define TCConfigBuddyLastText	@"ltext"
 #define TCConfigBuddyLastAvatar	@"lavatar"
+
+
+
+/*
+** Forward
+*/
+#pragma mark - Forward
+
+@class TCImage;
 
 
 
@@ -110,13 +115,8 @@ typedef enum
 - (NSString *)profileText;
 - (void)setProfileText:(NSString *)text;
 
-#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-- (UIImage *)profileAvatar;
-- (void)setProfileAvatar:(UIImage *)picture;
-#else
-- (NSImage *)profileAvatar;
-- (void)setProfileAvatar:(NSImage *)picture;
-#endif
+- (TCImage *)profileAvatar;
+- (void)setProfileAvatar:(TCImage *)picture;
 
 // -- Buddies --
 - (NSArray *)buddies; // Array of dictionary.
@@ -127,21 +127,13 @@ typedef enum
 - (void)setBuddy:(NSString *)address notes:(NSString *)notes;
 - (void)setBuddy:(NSString *)address lastProfileName:(NSString *)lastName;
 - (void)setBuddy:(NSString *)address lastProfileText:(NSString *)lastText;
-#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-- (void)setBuddy:(NSString *)address lastProfileAvatar:(UIImage *)lastAvatar;
-#else
-- (void)setBuddy:(NSString *)address lastProfileAvatar:(NSImage *)lastAvatar;
-#endif
+- (void)setBuddy:(NSString *)address lastProfileAvatar:(TCImage *)lastAvatar;
 
 - (NSString *)getBuddyAlias:(NSString *)address;
 - (NSString *)getBuddyNotes:(NSString *)address;
 - (NSString *)getBuddyLastProfileName:(NSString *)address;
 - (NSString *)getBuddyLastProfileText:(NSString *)address;
-#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-- (UIImage *)getBuddyLastProfileAvatar:(NSString *)address;
-#else
-- (NSImage *)getBuddyLastProfileAvatar:(NSString *)address;
-#endif
+- (TCImage *)getBuddyLastProfileAvatar:(NSString *)address;
 
 // -- Blocked --
 - (NSArray *)blockedBuddies;

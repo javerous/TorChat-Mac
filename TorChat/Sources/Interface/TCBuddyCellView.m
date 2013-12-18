@@ -25,6 +25,7 @@
 #import "TCBuddyCellView.h"
 
 #import "TCBuddy.h"
+#import "TCImage.h"
 
 
 
@@ -98,7 +99,8 @@
 	[_addressField setStringValue:[buddy address]];
 	
 	// Avatar.
-	NSImage *image = [buddy profileAvatar];
+	TCImage *tcImage = [buddy profileAvatar];
+	NSImage *image = [tcImage imageRepresentation];
 	
 	if (image)
 		[_avatarView setImage:image];

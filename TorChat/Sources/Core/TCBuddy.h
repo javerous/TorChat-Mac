@@ -35,6 +35,7 @@
 @class TCBuddy;
 @class TCSocket;
 @class TCInfo;
+@class TCImage;
 
 
 
@@ -169,22 +170,14 @@ typedef enum
 
 // -- Send Command --
 - (void)sendStatus:(tcstatus)status;
-#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-- (void)sendAvatar:(UIImage *)avatar;
-#else
-- (void)sendAvatar:(NSImage *)avatar;
-#endif
+- (void)sendAvatar:(TCImage *)avatar;
 - (void)sendProfileName:(NSString *)name;
 - (void)sendProfileText:(NSString *)text;
 - (void)sendMessage:(NSString *)message;
 - (void)sendFile:(NSString *)filepath;
 
 // -- Action --
-#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-- (void)startHandshake:(NSString *)remoteRandom status:(tcstatus)status avatar:(UIImage *)avatar name:(NSString *)name text:(NSString *)text;
-#else
-- (void)startHandshake:(NSString *)remoteRandom status:(tcstatus)status avatar:(NSImage *)avatar name:(NSString *)name text:(NSString *)text;
-#endif
+- (void)startHandshake:(NSString *)remoteRandom status:(tcstatus)status avatar:(TCImage *)avatar name:(NSString *)name text:(NSString *)text;
 - (void)setInputConnection:(TCSocket *)sock;
 
 // -- Content --
@@ -192,11 +185,7 @@ typedef enum
 - (NSString *)peerVersion;
 
 - (NSString *)profileText;
-#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-- (UIImage *)profileAvatar;
-#else
-- (NSImage *)profileAvatar;
-#endif
+- (TCImage *)profileAvatar;
 - (NSString *)profileName;		// Current profile name
 
 - (NSString *)lastProfileName;	// Last know profile name
