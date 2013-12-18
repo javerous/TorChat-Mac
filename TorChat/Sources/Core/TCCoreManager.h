@@ -127,13 +127,8 @@ typedef enum
 - (tcstatus)status;
 
 // -- Profile --
-#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-- (void)setProfileAvatar:(UIImage *)avatar;
-- (UIImage *)profileAvatar;
-#else
-- (void)setProfileAvatar:(NSImage *)avatar;
-- (NSImage *)profileAvatar;
-#endif
+- (void)setProfileAvatar:(TCImage *)avatar;
+- (TCImage *)profileAvatar;
 
 - (void)setProfileName:(NSString *)name;
 - (NSString *)profileName;
