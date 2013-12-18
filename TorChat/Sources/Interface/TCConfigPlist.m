@@ -647,14 +647,15 @@
 	[self saveConfig];
 }
 
-- (void)setBuddy:(NSString *)address lastProfileAvatar:(NSImage *)lastAvatar
+- (void)setBuddy:(NSString *)address lastProfileAvatar:(TCImage *)lastAvatar
 {
 	if (!address || !lastAvatar)
 		return;
 	
 	// Create PNG representation.
-	NSData *tiffData = [lastAvatar TIFFRepresentation];
-	NSData *pngData;
+	NSImage *image = [lastAvatar imageRepresentation];
+	NSData	*tiffData = [image TIFFRepresentation];
+	NSData	*pngData;
 	
 	if (!tiffData)
 		return;
@@ -747,7 +748,7 @@
 	return @"";
 }
 
-- (NSImage *)getBuddyLastProfileAvatar:(NSString *)address
+- (TCImage *)getBuddyLastProfileAvatar:(NSString *)address
 {
 	if (!address)
 		return nil;
@@ -761,7 +762,11 @@
 			NSData *data = buddy[TCConfigBuddyLastAvatar];
 			
 			if (data)
-				return [[NSImage alloc] initWithData:data];
+			{
+				NSImage *image = [[NSImage alloc] initWithData:data];
+				
+				return [[TCImage alloc] initWithImage:image];
+			}
 			else
 				return nil;
 		}
