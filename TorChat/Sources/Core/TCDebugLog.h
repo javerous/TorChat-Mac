@@ -20,8 +20,6 @@
  *
  */
 
-
-
 #ifndef TCDEBUGLOG_H_
 # define TCDEBUGLOG_H_
 
