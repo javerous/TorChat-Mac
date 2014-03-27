@@ -26,9 +26,10 @@
 #import "TCConfigPlist.h"
 #import "TCTorManager.h"
 #import "TCLogsWindowController.h"
-#import "TCDebugLog.h"
 
 #import "TCPanel.h"
+
+#import "TCDebugLog.h"
 
 
 

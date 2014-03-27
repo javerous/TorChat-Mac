@@ -180,8 +180,10 @@
 			
 			if (!conf)
 			{
+				NSString *key = NSLocalizedString(@"ac_err_read_file", @"");
+				
 				[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_err_read_file", path];
-				[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_err_read_file", @""), path] runModal];
+				[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:key, path] runModal];
 			}
 		}
 	}
