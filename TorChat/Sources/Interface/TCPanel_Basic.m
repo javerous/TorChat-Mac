@@ -27,6 +27,7 @@
 #import "TCLogsManager.h"
 #import "TCConfigPlist.h"
 #import "TCTorManager.h"
+
 #import "TCDebugLog.h"
 
 
@@ -67,9 +68,9 @@
 
 - (void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	
 	TCDebugLog("TCPanel_Basic dealloc");
-
 }
 
 
@@ -103,6 +104,8 @@
 	return _config;
 }
 
+#define TCLocalizedString(key, comment) [[NSBundle mainBundle] localizedStringForKey:[(key) copy] value:@"" table:nil]
+
 - (void)showPanel
 {
 	id <TCAssistantProxy> proxy = _proxy;
@@ -127,7 +130,7 @@
 		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_err_build_path", @"")] runModal];
 		return;
 	}
-	
+
 	// Try to build a new config file.
 	_config = [[TCConfigPlist alloc] initWithFile:pth];
 	
@@ -136,7 +139,7 @@
 		[_imAddressField setStringValue:NSLocalizedString(@"ac_err_config", @"")];
 		
 		[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_err_write_file", pth];
-		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_err_write_file", @""), pth] runModal];
+		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:TCLocalizedString(@"ac_err_write_file", @""), pth] runModal];
 
 		return;
 	}
