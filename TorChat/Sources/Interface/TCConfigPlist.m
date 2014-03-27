@@ -1038,16 +1038,15 @@
 #if defined(PROXY_ENABLED) && PROXY_ENABLED
 	
 	// Save by using proxy
-	if (proxy)
+	if (_proxy)
 	{
 		@try
 		{
-			[proxy setConfigContent:data];
+			[_proxy setConfigContent:data];
 		}
 		@catch (NSException *exception)
 		{
-			[proxy release];
-			proxy = nil;
+			_proxy = nil;
 			
 			NSLog(@"Configuration proxy unavailable");
 		}
