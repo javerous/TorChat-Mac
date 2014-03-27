@@ -61,8 +61,9 @@ void catch_signal(int sig);
     BOOL				_running;
 	
 	NSTask				*_task;
-	dispatch_source_t	_errSource;
-	dispatch_source_t	_outSource;
+	
+	NSFileHandle		*_errHandle;
+	NSFileHandle		*_outHandle;
 	
 	NSString			*_hidden;
 	
@@ -128,15 +129,9 @@ void catch_signal(int sig);
 	_task = nil;
 	gTorPid = -1;
 	
-	// Close out source
-	if (_outSource)
-		dispatch_source_cancel(_outSource);
-	
-	// Close err source
-	if (_errSource)
-		dispatch_source_cancel(_errSource);
-	
-	
+	_outHandle.readabilityHandler = nil;
+	_errHandle.readabilityHandler = nil;
+
 	// Kill the timer
 	if (_testTimer)
 		dispatch_source_cancel(_testTimer);
@@ -237,100 +232,85 @@ void catch_signal(int sig);
 		[args addObject:@"11009 127.0.0.1:60601"];   
 		
 		
-		// Build & handle pipe for tor task
-		NSPipe		*_errPipe = [[NSPipe alloc] init];
-		NSPipe		*_outPipe = [[NSPipe alloc] init];
-		TCBuffer	*_errBuffer = [[TCBuffer alloc] init];
-		TCBuffer	*_outBuffer =  [[TCBuffer alloc] init];
-		int			errFD = [[_errPipe fileHandleForReading] fileDescriptor];
-		int			outFD = [[_outPipe fileHandleForReading] fileDescriptor];
+		// Build & handle pipe for tor task.
+		NSPipe			*errPipe = [[NSPipe alloc] init];
+		NSPipe			*outPipe = [[NSPipe alloc] init];
+		TCBuffer		*errBuffer = [[TCBuffer alloc] init];
+		TCBuffer		*outBuffer =  [[TCBuffer alloc] init];
+		dispatch_queue_t	localQueue = _localQueue;
 		
-		// Create source for pipe handle
-		_errSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, (uintptr_t)errFD, 0, _localQueue);
-		_outSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, (uintptr_t)outFD, 0, _localQueue);
-		
-		// Realease pipe when source canceled
-		dispatch_source_set_cancel_handler(_errSource, ^{ });
-		dispatch_source_set_cancel_handler(_outSource, ^{ });
-		
-		// Handle pipe data
-		dispatch_source_set_event_handler(_errSource, ^{
+		_errHandle = [errPipe fileHandleForReading];
+		_outHandle = [outPipe fileHandleForReading];
+				
+		_errHandle.readabilityHandler = ^(NSFileHandle *handle) {
 			
-			unsigned long	size = dispatch_source_get_data(_errSource);
-			void			*data = malloc(size);
-			ssize_t			res;
+			NSData *data;
 			
-			if (data && (res = read(errFD, data, size)) > 0)
-			{
+			@try {
+				data = [handle availableData];
+			}
+			@catch (NSException *exception) {
+				handle.readabilityHandler = nil;
+				return;
+			}
+		
+			// Parse data.
+			dispatch_async(localQueue, ^{
+				
 				NSData *line;
-				
-				[_errBuffer appendBytes:data ofSize:(NSUInteger)res copy:NO];
 
-				[_errBuffer dataUpToCStr:"\n" includeSearch:NO];
-				
-				while ((line = [_outBuffer dataUpToCStr:"\n" includeSearch:NO]))
+				[errBuffer appendBytes:[data bytes] ofSize:[data length] copy:YES];
+
+				[errBuffer dataUpToCStr:"\n" includeSearch:NO];
+
+				while ((line = [errBuffer dataUpToCStr:"\n" includeSearch:NO]))
 				{
 					NSString *string = [[NSString alloc] initWithData:line encoding:NSUTF8StringEncoding];
 					
 					[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_err_log", [string UTF8String]];
 				}
-			}
-			else
-			{
-				free(data);
-				
-				if (_errSource)
-				{
-					dispatch_source_cancel(_errSource);
-					_errSource = nil;
-				}
-			}
-		});
+			});
+		};
 		
-		dispatch_source_set_event_handler(_outSource, ^{
-			unsigned long	size = dispatch_source_get_data(_outSource);
-			void			*data = malloc(size);
-			ssize_t			res;
+		_outHandle.readabilityHandler = ^(NSFileHandle *handle) {
+						
+			NSData *data;
 			
-			if (data && (res = read(outFD, data, size)) > 0)
-			{
+			@try {
+				data = [handle availableData];
+			}
+			@catch (NSException *exception) {
+				handle.readabilityHandler = nil;
+				return;
+			}
+			
+			// Parse data.
+			dispatch_async(localQueue, ^{
+				
 				NSData *line;
 				
-				[_outBuffer appendBytes:data ofSize:(NSUInteger)res copy:NO];
+				[outBuffer appendBytes:[data bytes] ofSize:[data length] copy:YES];
 				
-				while ((line = [_outBuffer dataUpToCStr:"\n" includeSearch:NO]))
+				[outBuffer dataUpToCStr:"\n" includeSearch:NO];
+				
+				while ((line = [outBuffer dataUpToCStr:"\n" includeSearch:NO]))
 				{
 					NSString *string = [[NSString alloc] initWithData:line encoding:NSUTF8StringEncoding];
-
+					
 					[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_out_log", [string UTF8String]];
 				}
-			}
-			else
-			{
-				free(data);
-				
-				if (_outSource)
-				{
-					dispatch_source_cancel(_outSource);
-					_outSource = nil;
-				}
-			}
-		});
+			});
+		};
 		
-		// Activate sources
-		dispatch_resume(_errSource);
-		dispatch_resume(_outSource);
-
 		// Build tor task
 		_task = [[NSTask alloc] init];
 		
 		[_task setLaunchPath:tor_path];
 		[_task setArguments:args];
 		
-		[_task setStandardError:_errPipe];
-		[_task setStandardOutput:_outPipe];
+		[_task setStandardError:errPipe];
+		[_task setStandardOutput:outPipe];
 
-		
 		// Run tor task
 		@try
 		{
@@ -387,7 +367,7 @@ void catch_signal(int sig);
 						
 						// Cancel ourself
 						dispatch_source_cancel(_testTimer);
-						_testTimer = 0;
+						_testTimer = nil;
 						
 						// Inform of the change
 						_running = YES;
@@ -415,7 +395,7 @@ void catch_signal(int sig);
 		_running = NO;
 		
 
-		// kill tor
+		// kill tor.
 		if (_task)
 		{
 			[_task terminate];
@@ -426,25 +406,17 @@ void catch_signal(int sig);
 			gTorPid = -1;
 		}
 		
-		// Close error pipe handling
-		if (_errSource)
-		{
-			dispatch_source_cancel(_errSource);
-			_errSource = nil;
-		}
+		// Stop handle.
+		_errHandle.readabilityHandler = nil;
+		_outHandle.readabilityHandler = nil;
 		
-		// Close output pipe handling
-		if (_outSource)
-		{
-			dispatch_source_cancel(_outSource);
-			_outSource = nil;
-		}
-		
+		_errHandle = nil;
+		_outHandle = nil;
 
-		// Clean hidden hostname
+		// Clean hidden hostname.
 		_hidden = nil;
 		
-		// Kill timer
+		// Kill timer.
 		if (_testTimer)
 		{
 			dispatch_source_cancel(_testTimer);
