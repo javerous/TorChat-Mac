@@ -124,21 +124,12 @@
 			[proxy setProtocolForProxy:@protocol(TCConfigProxy)];
 			
 			// Load
-			try
-			{
-				conf = new TCConfigPlist((id <TCConfigProxy>)proxy);
-			}
-			catch (const char *err)
-			{
-				NSString *oerr = [NSString stringWithUTF8String:err];
-				
-				[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_err_read_proxy", NSLocalizedString(oerr, @"")];
-				[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_err_read_proxy", @""), NSLocalizedString(oerr, @"")] runModal];
+			conf = [[TCConfigPlist alloc] initWithFileProxy:(id <TCConfigProxy>)proxy];
 
-				if (conf)
-					delete conf;
-				
-				conf = NULL;
+			if (!conf)
+			{
+				[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_err_read_proxy"];
+				[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_err_read_proxy", @"")] runModal];
 			}
 		}
 	}

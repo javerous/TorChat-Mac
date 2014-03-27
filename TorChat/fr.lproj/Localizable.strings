@@ -34,7 +34,7 @@
 "ac_err_build_path" = "Impossible de créer le chemin d'accès du fichier de configuration suite à une erreur système.";
 "ac_err_write_file" = "Impossible de créer un fichier de configuration (%@). Vérifiez les droits d'écriture sur votre dossier TorChat.";
 "ac_err_read_file" = "Impossible d'ouvrir le fichier configuration (%@). Vérifiez les droits de lecture sur votre fichier.";
-"ac_err_read_proxy" = "Impossible d'obtenir les données du fichier de configuration (%@). Vérifiez le proxy.";
+"ac_err_read_proxy" = "Impossible d'obtenir les données du fichier de configuration. Vérifiez le proxy.";
 "ac_err_launch" = "Impossible de lancer tor. Vérifiez le journal de TorChat et le journal système pour plus d'informations.";
 "ac_err_config" = "Erreur";
 
