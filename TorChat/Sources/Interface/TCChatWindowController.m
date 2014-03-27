@@ -228,8 +228,12 @@
 		[_identifiersContent setObject:content forKey:identifier];
 		[_identifiers addObject:identifier];
 		
-		// Reload table
+		// Reload table.
 		[_userList reloadData];
+		
+		// Select this chat if it's the first one.
+		if ([_identifiers count] == 1)
+			[self _selectChatWithIdentifier:identifier];
 		
 		// Show window.
 		[self showWindow:nil];
@@ -304,16 +308,20 @@
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		TCChatViewController	*view = [[_identifiersContent objectForKey:identifier] objectForKey:TCChatViewKey];
-		NSInteger	index = [_userList selectedRow];
-		BOOL		setUnread = NO;
+		NSInteger				index = [_userList selectedRow];
+		BOOL					setUnread = NO;
 		
 		if (!view)
 			return;
 		
-		// Add message to view
+		// Add message to view.
 		[view receiveMessage:message];
 		
-		// Show as unread if needed
+		// Show window is not visible.
+		if ([self.window isVisible] == NO)
+			[self showWindow:nil];
+		
+		// Show as unread if needed.
 		if (index >= 0 && index < [_identifiers count] && [[_identifiers objectAtIndex:(NSUInteger)index] isEqualToString:identifier] == NO)
 		{
 			setUnread = YES;
@@ -344,6 +352,7 @@
 		if (!view)
 			return;
 		
+		// Add error to view.
 		[view receiveError:error];
 	});
 }
@@ -357,6 +366,7 @@
 		if (!view)
 			return;
 		
+		// Add status to view.
 		[view receiveStatus:status];
 	});
 }
@@ -370,7 +380,7 @@
 		if (!view)
 			return;
 		
-		// Update talk view
+		// Update talk view.
 		[view setLocalAvatar:image];
 	});
 }
@@ -379,16 +389,16 @@
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		NSMutableDictionary	*content = [_identifiersContent objectForKey:identifier];
-		TCChatViewController			*view = [content objectForKey:TCChatViewKey];
+		NSMutableDictionary		*content = [_identifiersContent objectForKey:identifier];
+		TCChatViewController	*view = [content objectForKey:TCChatViewKey];
 		
 		if (!content)
 			return;
 		
-		// Update talk view
+		// Update talk view.
 		[view setRemoteAvatar:image];
 		
-		// Update user table
+		// Update user table.
 		[content setObject:image forKey:TCChatAvatarKey];
 		
 		[_userList reloadData];
@@ -494,12 +504,15 @@
 	if (!view)
 		return;
 	
+	// Load window if not loaded (else _chatView can eventually be nil).
+	[self window];
+	
 	// Add the new one
 	NSDictionary	*viewsDictionary;
 	NSView			*content = view.view;
 	
 	[_chatView addSubview:content];
-	
+		
 	viewsDictionary = NSDictionaryOfVariableBindings(content);
 	
 	[_chatView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[content]|" options:0 metrics:nil views:viewsDictionary]];

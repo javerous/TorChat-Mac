@@ -26,7 +26,9 @@
 
 #import "TCConfigPlist.h"
 #import "TCLogsManager.h"
+
 #import "TCDebugLog.h"
+
 
 
 /*
@@ -159,8 +161,10 @@
 		if (!aconfig)
 		{
 			// Log error
+			NSString *key = NSLocalizedString(@"ac_err_read_file", @"");
+
 			[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_err_read_file", [url path]];
-			[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_err_read_file", @""), [url path]] runModal];
+			[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:key, [url path]] runModal];
 
 			return;
 		}
