@@ -34,6 +34,7 @@
 		E8455D3D17A425F00046307B /* TCValue.m in Sources */ = {isa = PBXBuildFile; fileRef = E8455D3C17A425F00046307B /* TCValue.m */; };
 		E8455D4617A4386C0046307B /* NSData+TCTools.m in Sources */ = {isa = PBXBuildFile; fileRef = E8455D4517A438660046307B /* NSData+TCTools.m */; };
 		E852235217B504CA00C6F585 /* TCChatCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E852235117B504CA00C6F585 /* TCChatCellView.m */; };
+		E85514DF18E4355300970E54 /* libevent-2.0.5.dylib in Resources */ = {isa = PBXBuildFile; fileRef = E85514DD18E4353F00970E54 /* libevent-2.0.5.dylib */; };
 		E85903B211EC9877005CE53F /* TCTools.m in Sources */ = {isa = PBXBuildFile; fileRef = E85903B011EC9877005CE53F /* TCTools.m */; };
 		E85923F7120A9E060035C420 /* FilesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E85923F5120A9E060035C420 /* FilesWindow.xib */; };
 		E86B5A1817AE7C6C00C715CA /* TCFileCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E86B5A1717AE7C6C00C715CA /* TCFileCellView.m */; };
@@ -121,6 +122,7 @@
 		E84FE49817B0637C006E2D12 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = TorChat/en.lproj/ChatView.strings; sourceTree = "<group>"; };
 		E852235017B504CA00C6F585 /* TCChatCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatCellView.h; path = Interface/TCChatCellView.h; sourceTree = "<group>"; };
 		E852235117B504CA00C6F585 /* TCChatCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCChatCellView.m; path = Interface/TCChatCellView.m; sourceTree = "<group>"; };
+		E85514DD18E4353F00970E54 /* libevent-2.0.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libevent-2.0.5.dylib"; path = "TorChat/Resources/libevent-2.0.5.dylib"; sourceTree = "<group>"; };
 		E85903B011EC9877005CE53F /* TCTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCTools.m; sourceTree = "<group>"; };
 		E85903B111EC9877005CE53F /* TCTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCTools.h; sourceTree = "<group>"; };
 		E86B5A1617AE7C6C00C715CA /* TCFileCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCFileCellView.h; path = Interface/TCFileCellView.h; sourceTree = "<group>"; };
@@ -273,6 +275,7 @@
 			children = (
 				E82D3F7F142D2AB400A33C7A /* TorChat-Info.plist */,
 				E8BE843B124254BD0013968B /* tor */,
+				E85514DD18E4353F00970E54 /* libevent-2.0.5.dylib */,
 				E81FD9FB11E7259B000614D5 /* InfoPlist.strings */,
 				E81FDA0011E7259C000614D5 /* MainMenu.xib */,
 				E83423EA11F6F97B00922152 /* Localizable.strings */,
@@ -734,6 +737,7 @@
 				E878984917B05C0B00DB7709 /* AssistantPanel_Mode.xib in Resources */,
 				E809B14E1859C6F9001664E1 /* ChatTemplate.plist in Resources */,
 				E8BE843C124254BE0013968B /* tor in Resources */,
+				E85514DF18E4355300970E54 /* libevent-2.0.5.dylib in Resources */,
 				E807B4B2124FB52700FDC769 /* LogsWindow.xib in Resources */,
 				E87CB85312508F7A00A75686 /* BuddyInfoWindow.xib in Resources */,
 				E82B7D7D125A098000B7BA8A /* PreferencesWindow.xib in Resources */,
@@ -1076,6 +1080,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/system",
+					"$(PROJECT_DIR)/TorChat/Resources",
 				);
 				PRODUCT_NAME = TorChat;
 				PROVISIONING_PROFILE = "";
@@ -1097,6 +1102,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/system",
+					"$(PROJECT_DIR)/TorChat/Resources",
 				);
 				PRODUCT_NAME = TorChat;
 				PROVISIONING_PROFILE = "";
