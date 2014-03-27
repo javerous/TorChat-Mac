@@ -383,19 +383,25 @@
 	[_clearButton setEnabled:(count_unrun > 0)];
 	[_countField setHidden:([_files count] == 0)];
 
+	NSString *key;
+
 	// Build up string
 	NSString *txt_up = nil;
 	
+	key = NSLocalizedString(@"file_uploads", @"");
+	
 	if (count_up > 1)
-		txt_up = [NSString stringWithFormat:NSLocalizedString(@"file_uploads", @""), count_up];
+		txt_up = [NSString stringWithFormat:key, count_up];
 	else if (count_up > 0)
 		txt_up = NSLocalizedString(@"one_upload", @"");
 	
 	// Build down string
 	NSString *txt_down = nil;
 	
+	key = NSLocalizedString(@"file_downloads", @"");
+
 	if (count_down > 1)
-		txt_down = [NSString stringWithFormat:NSLocalizedString(@"file_downloads", @""), count_up];
+		txt_down = [NSString stringWithFormat:key, count_up];
 	else if (count_down > 0)
 		txt_down = NSLocalizedString(@"one_download", @"");
 

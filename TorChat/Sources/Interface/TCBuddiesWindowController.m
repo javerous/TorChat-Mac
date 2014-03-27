@@ -888,13 +888,14 @@
 				
 			case tcbuddy_error_message_offline:
 			{
+				NSString	*key = NSLocalizedString(@"bd_error_offline", "");
 				NSString	*message = info.context;
 				NSString	*full;
 				
 				if (message)
-					full = [[NSString alloc] initWithFormat:NSLocalizedString(@"bd_error_offline", ""), message];
+					full = [[NSString alloc] initWithFormat:key, message];
 				else
-					full = [[NSString alloc] initWithFormat:NSLocalizedString(@"bd_error_offline", ""), @"-"];
+					full = [[NSString alloc] initWithFormat:key, @"-"];
 				
 				// Add the error
 				[[TCChatWindowController sharedController] receiveError:full forIdentifier:[aBuddy address]];
@@ -904,13 +905,14 @@
 				
 			case tcbuddy_error_message_blocked:
 			{
+				NSString	*key = NSLocalizedString(@"bd_error_blocked", "");
 				NSString	*message = (NSString *)info.context;
 				NSString	*full;
 				
 				if (message)
-					full = [[NSString alloc] initWithFormat:NSLocalizedString(@"bd_error_blocked", ""), message];
+					full = [[NSString alloc] initWithFormat:key, message];
 				else
-					full = [[NSString alloc] initWithFormat:NSLocalizedString(@"bd_error_blocked", ""), @"-"];
+					full = [[NSString alloc] initWithFormat:key, @"-"];
 				
 				// Add the error
 				[[TCChatWindowController sharedController] receiveError:full forIdentifier:[aBuddy address]];
@@ -1308,7 +1310,7 @@
 		image = [NSImage imageNamed:NSImageNameUser];
 	
 	[chatCtrl startChatWithIdentifier:identifier name:[buddy finalName] localAvatar:[_imAvatar image] remoteAvatar:image context:buddy delegate:self];
-	
+		
 	// Select it.
 	if (select)
 		[chatCtrl selectChatWithIdentifier:identifier];
