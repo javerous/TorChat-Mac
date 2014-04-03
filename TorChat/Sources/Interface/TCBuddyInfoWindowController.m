@@ -154,7 +154,7 @@ static dispatch_queue_t	gQueue;
 {
     [super windowDidLoad];
 
-	[_avatarView setFilename:_address];
+	[_avatarView setName:_address];
 
 	[self.window center];
 	[self setWindowFrameAutosaveName:@"InfoWindow"];
@@ -314,7 +314,7 @@ static dispatch_queue_t	gQueue;
 	[ctrl showWindow:nil];
 	
 	// Set the avatar drag name
-	[ctrl->_avatarView setFilename:address];
+	[ctrl->_avatarView setName:address];
 }
 
 + (void)buddyRemoved:(NSNotification *)notification;
