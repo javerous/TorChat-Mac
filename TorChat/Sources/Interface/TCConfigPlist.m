@@ -119,10 +119,6 @@
 		if (!filepath)
 			return nil;
 		
-#if defined(PROXY_ENABLED) && PROXY_ENABLED
-		_proxy = NULL;
-#endif
-		
 		// Hold path
 		_fpath = filepath;
 		
@@ -155,9 +151,6 @@
 	if (self)
 	{
 		NSData *data = nil;
-		
-		// Set path
-		_fpath = NULL;
 		
 		// Hold proxy
 		_proxy = proxy;

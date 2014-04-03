@@ -21,9 +21,9 @@
  */
 
 
-
 #import "TCDragImageView.h"
 
+#import "TCDragImage.h"
 
 
 /*
@@ -31,12 +31,7 @@
 */
 #pragma mark - TCDragImageView - Private
 
-@interface TCDragImageView ()
-{
-    NSString *_filename;
-}
-
-- (NSData *)pngImage;
+@interface TCDragImageView () <NSDraggingSource>
 
 @end
 
@@ -50,21 +45,6 @@
 @implementation TCDragImageView
 
 
-/*
-** TCDragImageView - Public
-*/
-#pragma mark - TCDragImageView - Public
-
-
-- (void)setFilename:(NSString *)filename
-{
-	if (!filename)
-		return;
-
-	_filename = filename;
-}
-
-
 
 /*
 ** TCDragImageView - Drag
@@ -73,87 +53,41 @@
 
 - (void)mouseDown:(NSEvent *)event
 {
-	NSPasteboard	*dragPasteboard = [NSPasteboard pasteboardWithName:NSDragPboard];
-	NSImage			*dragImage = [[NSImage alloc] initWithSize:[[self image] size]];
-	NSPoint			pt = [self bounds].origin;
-	
-	// Add pasteboard type (png data, and defered file)	
-	[dragPasteboard declareTypes:[NSArray arrayWithObjects:NSPasteboardTypePNG, NSFilesPromisePboardType, nil] owner:self];
-	
-	// Add defered file type
-	[dragPasteboard setPropertyList:[NSArray arrayWithObject:@"png"] forType:NSFilesPromisePboardType];
+	NSSize size = self.frame.size;
+	NSRect dragFrame = NSMakeRect(0, 0, size.width, size.height);
 		
-	// Draw dragging image
-	[dragImage lockFocus];
-	{
-		[[self image] dissolveToPoint:NSZeroPoint fraction:0.5];
-	}
-    [dragImage unlockFocus];
+	// Create drag image.
+	TCDragImage *dragImage = [[TCDragImage alloc] initWithImage:self.image andName:self.name];
 	
-	// Start drag session
-	[self dragImage:dragImage at:pt offset:NSZeroSize event:event pasteboard:dragPasteboard source:self slideBack:YES];
+	if (!dragImage)
+		return;
+	
+	// Create dragging item.
+	NSDraggingItem *dragItem = [[NSDraggingItem alloc] initWithPasteboardWriter:dragImage];
+	
+	dragItem.imageComponentsProvider = ^ NSArray * (void) {
+		
+		NSDraggingImageComponent *component = [NSDraggingImageComponent draggingImageComponentWithKey:NSDraggingImageComponentIconKey];
+		
+		component.frame = dragFrame;
+		component.contents = [self image];
+				
+		return @[ component ];
+	};
+	
+	dragItem.draggingFrame = dragFrame;
+	
+	// Create dragging session.
+	NSDraggingSession *draggingSession  = [self beginDraggingSessionWithItems:@[ dragItem ] event:event source:self];
+	
+	draggingSession.animatesToStartingPositionsOnCancelOrFail = YES;
+	draggingSession.draggingFormation = NSDraggingFormationNone;
 }
 
-- (NSArray *)namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
-{
-	NSData		*png = [self pngImage];
-	NSString	*filename = [NSString stringWithFormat:@"%@.png", (_filename ? _filename : @"noname")];
-	NSURL		*filepath;
-	
-	if (!png)
-		return nil;
-	
-	filepath = [dropDestination URLByAppendingPathComponent:filename];
-	
-	if (!filepath)
-		return nil;
-	
-	if ([png writeToURL:filepath atomically:NO] == NO)
-		return nil;
-
-	return [NSArray arrayWithObject:filename];
-}
-
-- (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)flag
+- (NSDragOperation)draggingSession:(NSDraggingSession *)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context
 {
 	return NSDragOperationCopy;
-}
 
-- (void)pasteboard:(NSPasteboard *)sender provideDataForType:(NSString *)type
-{	
-	if ([type compare:NSPasteboardTypePNG] == NSOrderedSame)
-	{		
-		NSData *png = [self pngImage];
-				
-		if (png)
-			[sender setData:png forType:NSPasteboardTypePNG];
-	}
-}
-
-
-
-/*
-** TCDragImageView - Private
-*/
-#pragma mark - TCDragImageView - Private
-
-- (NSData *)pngImage
-{
-	CGImageRef			ref = [[self image] CGImageForProposedRect:NULL context:nil hints:nil];
-	NSBitmapImageRep	*imp;
-	NSData				*png;
-	
-	if (!ref)
-		return nil;
-	
-	imp = [[NSBitmapImageRep alloc] initWithCGImage:ref];
-	
-	if (!imp)
-		return nil;
-	
-	png = [imp representationUsingType:NSPNGFileType properties:nil];
-		
-	return png;
 }
 
 @end
