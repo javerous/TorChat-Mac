@@ -1,5 +1,5 @@
 /*
- *  TCDragImageView.h
+ *  TCDragImage.h
  *
  *  Copyright 2013 Avérous Julien-Pierre
  *
@@ -26,12 +26,17 @@
 
 
 /*
-** TCDragImageView
+** TCDragImage - Interface
 */
-#pragma mark - TCDragImageView
+#pragma mark - TCDragImage
 
-@interface TCDragImageView : NSImageView
+@interface TCDragImage : NSObject < NSPasteboardWriting>
 
-@property (strong, nonatomic) NSString *name;
+// -- Instance --
+- (id)initWithImage:(NSImage *)image andName:(NSString *)name;
+
+// -- Properties --
+@property (strong, nonatomic, readonly) NSImage		*image;
+@property (strong, nonatomic, readonly) NSString	*name;
 
 @end
