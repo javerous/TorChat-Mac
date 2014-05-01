@@ -73,6 +73,8 @@
 - (void)setLocalAvatar:(NSImage *)image;
 - (void)setRemoteAvatar:(NSImage *)image;
 
+- (NSUInteger)messagesCount;
+
 // -- Focus --
 - (void)makeFirstResponder;
 

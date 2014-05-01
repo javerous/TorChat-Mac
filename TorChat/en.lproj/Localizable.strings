@@ -96,11 +96,10 @@
 
 
 /* Chat */
-"chats_count" = "chats";
-"chat_want_close" = "Are you sure you want to close this window?";
-"chat_want_close_info" = "There are %ld chats in this window. Do you want to close the window anyway?";
+"chat_want_close" = "Would you like to delete this conversation?";
+"chat_want_close_info" = "You can't undo this action.";
 "chat_cancel" = "Cancel";
-"chat_close" = "Close";
+"chat_close" = "Delete";
 
 
 /* Config */
