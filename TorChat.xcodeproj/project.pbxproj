@@ -686,6 +686,7 @@
 				E81FD9F011E7259B000614D5 /* Sources */,
 				E81FD9F111E7259B000614D5 /* Frameworks */,
 				E81FD9F211E7259B000614D5 /* Resources */,
+				E8D825131912BF4700C0D172 /* Set CFBundleVersion */,
 			);
 			buildRules = (
 			);
@@ -752,6 +753,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		E8D825131912BF4700C0D172 /* Set CFBundleVersion */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Set CFBundleVersion";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "COMMIT_HASH=$( cd \"${PROJECT_DIR}\";  git rev-parse --short HEAD )\n\nif [ $? -eq 0 ]; then\n    /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion ${COMMIT_HASH}\" \"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n    exit 0\nelse\n    echo \"Can't get current commit hash\"\n    exit 1\nfi";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E81FD9F011E7259B000614D5 /* Sources */ = {
