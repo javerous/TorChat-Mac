@@ -1,7 +1,7 @@
 /*
  *  TCContoller.h
  *
- *  Copyright 2013 Avérous Julien-Pierre
+ *  Copyright 2014 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
