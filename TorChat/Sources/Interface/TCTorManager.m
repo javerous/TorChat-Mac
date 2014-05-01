@@ -24,6 +24,10 @@
 
 #include <signal.h>
 
+#if defined(DEBUG) && DEBUG
+# include <libproc.h>
+#endif
+
 #import "TCTorManager.h"
 
 #import "TCConfigPlist.h"
@@ -169,7 +173,37 @@ void catch_signal(int sig);
 
 - (void)startWithConfiguration:(id <TCConfig>)configuration
 {
-	//return;
+#if defined(DEBUG) && DEBUG
+	
+	// To speed up debugging, if we are building in debug mode, do not launch a new tor instance if there is already one running.
+	
+	int count = proc_listpids(PROC_ALL_PIDS, 0, NULL, 0);
+	
+	if (count > 0)
+	{
+		pid_t *pids = malloc((unsigned)count * sizeof(pid_t));
+		
+		count = proc_listpids(PROC_ALL_PIDS, 0, pids, count * (int)sizeof(pid_t));
+
+		for (int i = 0; i < count; ++i)
+		{
+			char name[1024];
+						
+			if (proc_name(pids[i], name, sizeof(name)) > 0)
+			{
+				if (strcmp(name, "tor") == 0)
+				{
+					free(pids);
+					return;
+				}
+			}
+
+		}
+
+		free(pids);
+	}
+#endif
+	
 	if (!configuration)
 		return;
 
