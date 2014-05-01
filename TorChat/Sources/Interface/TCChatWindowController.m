@@ -247,7 +247,7 @@
 		if ([_identifiersContent objectForKey:identifier] == nil)
 			return;
 		
-		NSUInteger	index = [_identifiers indexOfObject:identifier];
+		NSUInteger index = [_identifiers indexOfObject:identifier];
 		
 		if (index == NSNotFound)
 			return;
@@ -267,6 +267,8 @@
 			if ([_identifiers count] == 0)
 			{
 				[self _loadChatView:nil];
+				
+				_selectedIdentifier = nil;
 			}
 			else
 			{
@@ -549,7 +551,7 @@
 	// Check not already loaded
 	if ([identifier isEqualToString:_selectedIdentifier])
 		return;
-	
+
 	// Hold selection
 	_selectedIdentifier = identifier;
 	
