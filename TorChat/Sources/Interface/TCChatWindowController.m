@@ -136,10 +136,24 @@
 	
 	if (index < 0 || index >= [_identifiers count])
 		return;
-	
+
 	NSString *identifier = [_identifiers objectAtIndex:(NSUInteger)index];
-	
-	[[TCChatWindowController sharedController] stopChatWithIdentifier:identifier];
+
+	// Validate the close if more than 0 message, as any close will delete the full conversation.
+	TCChatViewController *view = [[_identifiersContent objectForKey:identifier] objectForKey:TCChatViewKey];
+
+	if ([view messagesCount] > 0)
+	{
+		NSAlert *alert = [NSAlert alertWithMessageText:NSLocalizedString(@"chat_want_close", @"") defaultButton:NSLocalizedString(@"chat_close", @"") alternateButton:NSLocalizedString(@"chat_cancel", @"") otherButton:nil informativeTextWithFormat:NSLocalizedString(@"chat_want_close_info", @"")];
+		
+		[alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
+			if (returnCode == NSFileHandlingPanelOKButton)
+				[[TCChatWindowController sharedController] stopChatWithIdentifier:identifier];
+		}];
+	}
+	else
+		[[TCChatWindowController sharedController] stopChatWithIdentifier:identifier];
+
 }
 
 
