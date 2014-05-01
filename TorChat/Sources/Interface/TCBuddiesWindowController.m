@@ -1,7 +1,7 @@
 /*
  *  TCBuddiesController.m
  *
- *  Copyright 2013 Avérous Julien-Pierre
+ *  Copyright 2014 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -19,7 +19,6 @@
  *  along with TorChat.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 
 #import "TCBuddiesWindowController.h"
@@ -53,8 +52,6 @@
 
 // > Components
 #import "TCFilesCommon.h"
-
-
 
 
 
@@ -249,7 +246,7 @@
 		
 	// > Init table file drag
 	[_tableView registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
-	[_tableView setDraggingSourceOperationMask:NSDragOperationAll forLocal:NO];
+	[_tableView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:NO];
 	
 	// > Redirect avatar drop
 	[_imAvatar setDelegate:self];
@@ -394,19 +391,18 @@
 
 - (BOOL)tableView:(NSTableView *)aTableView acceptDrop:(id < NSDraggingInfo >)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation
 {
-	NSPasteboard	*pboard = [info draggingPasteboard];
-	NSArray			*types = [pboard types];
-	NSArray			*fileList = [pboard propertyListForType:NSFilenamesPboardType];
-	
 	if (row < 0 || row >= [_buddies count])
 		return NO;
 	
-	TCBuddy	*buddy = [_buddies objectAtIndex:(NSUInteger)row];
+	TCBuddy			*buddy = [_buddies objectAtIndex:(NSUInteger)row];
+	NSPasteboard	*pboard = [info draggingPasteboard];
+	NSArray			*types = [pboard types];
 	
 	if ([types containsObject:NSFilenamesPboardType])
 	{
-		NSFileManager *mng = [NSFileManager defaultManager];
-		
+		NSFileManager	*mng = [NSFileManager defaultManager];
+		NSArray			*fileList = [pboard propertyListForType:NSFilenamesPboardType];
+
 		for (NSString *fileName in fileList)
 		{
 			BOOL isDirectory = NO;
