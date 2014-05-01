@@ -39,7 +39,9 @@
 
 @interface TCChatViewController ()
 {
-	TCChatTranscriptViewController *_chatTranscript;
+	TCChatTranscriptViewController	*_chatTranscript;
+	
+	NSUInteger						_messagesCount;
 }
 
 // -- Properties --
@@ -143,12 +145,14 @@
 - (IBAction)textAction:(id)sender
 {
 	[_chatTranscript appendLocalMessage:[_userField stringValue]];
-	
+		
 	id <TCChatViewDelegate> delegate = _delegate;
 	
 	[delegate chat:self sendMessage:[_userField stringValue]];
 	
 	[_userField setStringValue:@""];
+	
+	_messagesCount++;
 }
 
 
@@ -161,12 +165,13 @@
 - (void)receiveMessage:(NSString *)message
 {
 	[_chatTranscript appendRemoteMessage:message];
+	
+	_messagesCount++;
 }
 
 - (void)receiveError:(NSString *)error
 {
 	[_chatTranscript appendError:error];
-	
 }
 
 - (void)receiveStatus:(NSString *)status
@@ -182,6 +187,11 @@
 - (void)setRemoteAvatar:(NSImage *)image
 {
 	[_chatTranscript setRemoteAvatar:image];
+}
+
+- (NSUInteger)messagesCount
+{
+	return _messagesCount;
 }
 
 

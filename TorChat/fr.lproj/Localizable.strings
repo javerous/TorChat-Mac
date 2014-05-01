@@ -96,11 +96,10 @@
 
 
 /* Chat */
-"chats_count" = "discussions";
-"chat_want_close" = "Êtes vous sûr de vouloir fermer cette fenêtre ?";
-"chat_want_close_info" = "Il y a %ld discussions dans cette fenêtre. Voulez-vous fermer cette fenêtre tout de même ?";
+"chat_want_close" = "Souhaitez-vous supprimer cette conversation ?";
+"chat_want_close_info" = "Impossible d’annuler cette opération.";
 "chat_cancel" = "Annuler";
-"chat_close" = "Fermer";
+"chat_close" = "Supprimer";
 
 
 /* Config */
