@@ -87,6 +87,8 @@ NSMutableDictionary	*gAvatarCache;
 
 	NSString		*_tmpStyle;
 	NSMutableString	*_tmpBody;
+	
+	int32_t			_messagesCount;
 }
 
 @end
@@ -235,7 +237,8 @@ NSMutableDictionary	*gAvatarCache;
 	snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:message];
 	
 	[self appendText:snippet];
-
+	
+	OSAtomicIncrement32(&_messagesCount);
 }
 
 - (void)appendRemoteMessage:(NSString *)message
@@ -246,6 +249,8 @@ NSMutableDictionary	*gAvatarCache;
 	snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:message];
 	
 	[self appendText:snippet];
+	
+	OSAtomicIncrement32(&_messagesCount);
 }
 
 - (void)appendError:(NSString *)error
@@ -300,6 +305,11 @@ NSMutableDictionary	*gAvatarCache;
 		
 		[self _reloadStyle];
 	});
+}
+
+- (NSUInteger)messagesCount
+{
+	return (NSUInteger)OSAtomicAdd32(0, &_messagesCount);
 }
 
 

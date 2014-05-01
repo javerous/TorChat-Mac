@@ -40,8 +40,6 @@
 @interface TCChatViewController ()
 {
 	TCChatTranscriptViewController	*_chatTranscript;
-	
-	NSUInteger						_messagesCount;
 }
 
 // -- Properties --
@@ -151,8 +149,6 @@
 	[delegate chat:self sendMessage:[_userField stringValue]];
 	
 	[_userField setStringValue:@""];
-	
-	_messagesCount++;
 }
 
 
@@ -165,8 +161,6 @@
 - (void)receiveMessage:(NSString *)message
 {
 	[_chatTranscript appendRemoteMessage:message];
-	
-	_messagesCount++;
 }
 
 - (void)receiveError:(NSString *)error
@@ -191,7 +185,7 @@
 
 - (NSUInteger)messagesCount
 {
-	return _messagesCount;
+	return [_chatTranscript messagesCount];
 }
 
 
