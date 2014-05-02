@@ -1845,12 +1845,6 @@ static char gLocalQueueContext;
 	// Add end line.
 	[part appendBytes:"\n" length:1];
 	
-	static int _i = 0;
-	
-	_i++;
-	
-	[part writeToFile:[NSString stringWithFormat:@"/Users/jp/Desktop/out/file_%i", _i] atomically:YES];
-	
 	// -- Buffer or send the command --
 	if (_socksstate != socks_finish)
 	{
