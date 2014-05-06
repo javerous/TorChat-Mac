@@ -1,4 +1,4 @@
-torchat-mac
+Torchat-Mac
 ===========
 
-Mac OS X native TorChat client
+Mac OS X native TorChat client.
