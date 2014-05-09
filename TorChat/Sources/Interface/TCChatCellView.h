@@ -34,6 +34,7 @@
 #define TCChatCellAvatarKey		@"avatar"
 #define TCChatCellNameKey		@"name"
 #define TCChatCellChatTextKey	@"chat_text"
+#define TCChatCellCloseKey		@"close"
 
 
 

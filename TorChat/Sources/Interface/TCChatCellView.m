@@ -89,25 +89,36 @@
 	if (!content)
 		return;
 	
-	NSImage		*avatar = content[TCChatCellAvatarKey];
-	NSString	*name = content[TCChatCellNameKey];
-	NSString	*text = content[TCChatCellChatTextKey];
-	
+	// Set avatar.
+	NSImage *avatar = content[TCChatCellAvatarKey];
+
 	if (avatar)
 		_avatarView.image = avatar;
 	else
 		_avatarView.image = [NSImage imageNamed:NSImageNameUser];
 	
+	// Set name.
+	NSString *name = content[TCChatCellNameKey];
+
 	if ([name length] > 0)
 		self.textField.stringValue = name;
 	else
 		self.textField.stringValue = @"-";
 	
+	// Set text.
+	NSString *text = content[TCChatCellChatTextKey];
+
 	if ([text length] > 0)
 		_unreadField.stringValue = text;
 	else
 		_unreadField.stringValue = @"";
+	
+	// Set close button (NSTrackingArea seem to be boggus on this).
+	BOOL closeButton = [content[TCChatCellCloseKey] boolValue];
+	
+	[_closeButton setHidden:(closeButton == NO)];
 }
+
 
 
 /*
