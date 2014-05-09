@@ -681,11 +681,13 @@
 				
 			case tcbuddy_notify_message:
 			{
+				TCChatWindowController *chatController = [TCChatWindowController sharedController];
+				
 				// Start a chat UI.
-				[self startChatForBuddy:aBuddy select:NO];
+				[self startChatForBuddy:aBuddy select:([chatController.window isKeyWindow] == NO)];
 				
 				// Add the message.
-				[[TCChatWindowController sharedController] receiveMessage:info.context forIdentifier:[aBuddy address]];
+				[chatController receiveMessage:info.context forIdentifier:[aBuddy address]];
 				
 				break;
 			}
