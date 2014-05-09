@@ -456,7 +456,14 @@
 	
 	if (content[TCChatLastChatKey])
 		rowContent[TCChatCellChatTextKey] = content[TCChatLastChatKey];
+	
+	// > Set close button status.
+	NSPoint windowMouseLocation = [self.window mouseLocationOutsideOfEventStream];
+	NSPoint mouseLocation = [tableView convertPoint:windowMouseLocation fromView:nil];
 
+	rowContent[TCChatCellCloseKey] = @([tableView rowAtPoint:mouseLocation] == rowIndex);
+		
+	// Set content.
 	[cellView setContent:rowContent];
 	
 	return cellView;
