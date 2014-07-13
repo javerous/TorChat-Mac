@@ -779,7 +779,7 @@
 	// Add to cocoa version
 	NSMutableArray *list = [_fcontent objectForKey:TCCONF_KEY_BLOCKED];
 	
-	if ([list indexOfObject:address] != NSNotFound)
+	if (list && [list indexOfObject:address] != NSNotFound)
 		return NO;
 	
 	if (!list)
