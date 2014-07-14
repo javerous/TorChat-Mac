@@ -104,7 +104,7 @@
 	*/
 	
 	// Observe buddy select change
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddySelectChanged:) name: TCBuddiesWindowControllerSelectChanged object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddySelectChanged:) name:TCBuddiesWindowControllerSelectChanged object:nil];
 
 	// Observe buddy blocked change
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddyBlockedChanged:) name:TCCocoaBuddyChangedBlockedNotification object:nil];
