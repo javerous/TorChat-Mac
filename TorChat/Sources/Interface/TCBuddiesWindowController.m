@@ -1384,16 +1384,7 @@
 
 - (void)reloadBuddy:(TCBuddy *)buddy
 {
-	if (!buddy)
-	{
-		NSInteger index = [_tableView selectedRow];
-		
-		[_tableView reloadData];
-		
-		if (index != NSNotFound)
-			[_tableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)index] byExtendingSelection:NO];
-	}
-	else
+	if (buddy)
 	{
 		NSUInteger index = [_buddies indexOfObjectIdenticalTo:buddy];
 		
@@ -1401,6 +1392,15 @@
 			[_tableView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 		else
 			[self reloadBuddy:nil];
+	}
+	else
+	{
+		NSInteger index = [_tableView selectedRow];
+		
+		[_tableView reloadData];
+		
+		if (index != NSNotFound)
+			[_tableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)index] byExtendingSelection:NO];
 	}
 }
 
