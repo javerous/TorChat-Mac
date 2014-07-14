@@ -493,10 +493,6 @@
 		case tccore_notify_profile_name:
 		{
 			dispatch_async(dispatch_get_main_queue(), ^{
-				
-				// Reload table
-				[_tableView reloadData];
-				
 				// Update Title
 				[self updateTitleUI];
 			});
@@ -519,7 +515,7 @@
 				
 				[[TCChatWindowController sharedController] setLocalAvatar:[_imAvatar image] forIdentifier:[buddy address]];
 				
-				[_tableView reloadData];
+				[self reloadBuddy:nil];
 			});
 			
 			break;
@@ -566,7 +562,7 @@
 				
 				// Reload buddies table.
 				dispatch_async(dispatch_get_main_queue(), ^{
-					[_tableView reloadData];
+					[self reloadBuddy:aBuddy];
 				});
 				
 				// Notify.
@@ -609,7 +605,7 @@
 				
 				// Reload buddies table.
 				dispatch_async(dispatch_get_main_queue(), ^{
-					[_tableView reloadData];
+					[self reloadBuddy:aBuddy];
 				});
 				
 				// Notify.
@@ -630,7 +626,7 @@
 				
 				// Reload table.
 				dispatch_async(dispatch_get_main_queue(), ^{
-					[_tableView reloadData];
+					[self reloadBuddy:aBuddy];
 				});
 				
 				// Set the new avatar to the chat window.
@@ -668,7 +664,7 @@
 				
 				// Reload table.
 				dispatch_async(dispatch_get_main_queue(), ^{
-					[_tableView reloadData];
+					[self reloadBuddy:aBuddy];
 				});
 				
 				// Notify.
@@ -701,7 +697,7 @@
 				
 				// Reload table.
 				dispatch_async(dispatch_get_main_queue(), ^{
-					[_tableView reloadData];
+					[self reloadBuddy:aBuddy];
 				});
 				
 				// Notify.
@@ -724,7 +720,7 @@
 				
 				// Reload table.
 				dispatch_async(dispatch_get_main_queue(), ^{
-					[_tableView reloadData];
+					[self reloadBuddy:aBuddy];
 				});
 				
 				// Notify.
@@ -1286,7 +1282,7 @@
 		[_buddies addObjectsFromArray:temp_off];
 		
 		// Reload table
-		[_tableView reloadData];
+		[self reloadBuddy:nil];
 	});
 }
 
@@ -1384,6 +1380,28 @@
 	
 	// Update popup-title
 	[[_imTitle itemAtIndex:0] setTitle:content];
+}
+
+- (void)reloadBuddy:(TCBuddy *)buddy
+{
+	if (buddy)
+	{
+		NSUInteger index = [_buddies indexOfObjectIdenticalTo:buddy];
+		
+		if (index != NSNotFound)
+			[_tableView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
+		else
+			[self reloadBuddy:nil];
+	}
+	else
+	{
+		NSInteger index = [_tableView selectedRow];
+		
+		[_tableView reloadData];
+		
+		if (index != NSNotFound)
+			[_tableView selectRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)index] byExtendingSelection:NO];
+	}
 }
 
 @end

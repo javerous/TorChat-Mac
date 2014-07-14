@@ -38,24 +38,6 @@
 
 
 /*
-** Globals
-*/
-#pragma mark - Globals
-
-static pid_t gTorPid = -1;
-
-
-
-/*
-** Prototypes
-*/
-#pragma mark - Prototypes
-
-void catch_signal(int sig);
-
-
-
-/*
 ** TCTorManager - Private
 */
 #pragma mark - TCTorManager - Private
@@ -73,6 +55,8 @@ void catch_signal(int sig);
 	
 	dispatch_queue_t	_localQueue;
 	dispatch_source_t	_testTimer;
+	
+	dispatch_source_t	_termSource;
 }
 
 - (void)postNotification:(NSString *)notice;
@@ -101,8 +85,6 @@ void catch_signal(int sig);
 	
 	dispatch_once(&pred, ^{
 		shr = [[TCTorManager alloc] init];
-		
-		signal(SIGINT, catch_signal);
 	});
 	
 	return shr;
@@ -114,10 +96,24 @@ void catch_signal(int sig);
 	
     if (self)
 	{
+		// Create queues.
         _localQueue = dispatch_queue_create("com.torchat.cocoa.tormanager.local", DISPATCH_QUEUE_SERIAL);
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillQuit:) name:NSApplicationWillTerminateNotification object:nil];
-    }
+		// Handle application standard termination.
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillTerminate:) name:NSApplicationWillTerminateNotification object:nil];
+		
+		// SIGTERM handle.
+		signal(SIGTERM, SIG_IGN);
+
+		_termSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_SIGNAL, SIGTERM, 0, _localQueue);
+		
+		dispatch_source_set_event_handler(_termSource, ^{
+			[self terminateTor];
+			exit(0);
+		});
+		
+		dispatch_resume(_termSource);
+	}
     
     return self;
 }
@@ -131,7 +127,6 @@ void catch_signal(int sig);
 	[_task waitUntilExit];
 	
 	_task = nil;
-	gTorPid = -1;
 	
 	_outHandle.readabilityHandler = nil;
 	_errHandle.readabilityHandler = nil;
@@ -151,17 +146,9 @@ void catch_signal(int sig);
 */
 #pragma mark - TCTorManager - Notification
 
-- (void)appWillQuit:(NSNotification *)notice
+- (void)applicationWillTerminate:(NSNotification *)notice
 {
-	if (_task)
-	{
-		[_task terminate];
-		
-		[_task waitUntilExit];
-		
-		_task = nil;
-		gTorPid = -1;
-	}
+	[self terminateTor];
 }
 
 
@@ -358,8 +345,6 @@ void catch_signal(int sig);
 			return;
 		}
 		
-		gTorPid = [_task processIdentifier];
-		
 		// Check the existence of the hostname file
 		NSString *htname = [configuration realPath:[[configuration torDataPath] stringByAppendingPathComponent:@"hidden/hostname"]];
 		
@@ -427,18 +412,9 @@ void catch_signal(int sig);
 			return;
 		
 		_running = NO;
-		
 
-		// kill tor.
-		if (_task)
-		{
-			[_task terminate];
-			
-			[_task waitUntilExit];
-			
-			_task = nil;
-			gTorPid = -1;
-		}
+		// Terminate tor.
+		[self terminateTor];
 		
 		// Stop handle.
 		_errHandle.readabilityHandler = nil;
@@ -514,17 +490,16 @@ void catch_signal(int sig);
 	});
 }
 
-@end
-
-
-
-/*
-** C Tools
-*/
-#pragma mark - C Tools
-
-void catch_signal(int sig)
+- (void)terminateTor
 {
-	if (gTorPid > 0)
-		kill(gTorPid, SIGINT);
+	if (_task)
+	{
+		[_task terminate];
+		
+		[_task waitUntilExit];
+		
+		_task = nil;
+	}
 }
+
+@end
