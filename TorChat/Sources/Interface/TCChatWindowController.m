@@ -243,11 +243,15 @@
 		[_identifiers addObject:identifier];
 		
 		// Reload table.
+		NSString *selectedIdentifier = _selectedIdentifier;
+		
 		[_userList reloadData];
 		
 		// Select this chat if it's the first one.
-		if ([_identifiers count] == 1)
+		if ([_identifiers count] == 1 || [self.window isVisible] == NO)
 			[self _selectChatWithIdentifier:identifier];
+		else
+			[self _selectChatWithIdentifier:selectedIdentifier];
 		
 		// Show window.
 		[self showWindow:nil];
@@ -271,10 +275,12 @@
 		[_identifiers removeObject:identifier];
 		
 		// Reload table
+		NSString *selectedIdentifier = _selectedIdentifier;
+		
 		[_userList reloadData];
 		
 		// Update selection
-		if ([_selectedIdentifier isEqualToString:identifier])
+		if ([selectedIdentifier isEqualToString:identifier])
 		{
 			NSUInteger nindex = index;
 			
@@ -293,7 +299,7 @@
 			}
 		}
 		else
-			[self _selectChatWithIdentifier:_selectedIdentifier];
+			[self _selectChatWithIdentifier:selectedIdentifier];
 	});
 }
 
@@ -333,10 +339,6 @@
 		// Add message to view.
 		[view receiveMessage:message];
 		
-		// Show window is not visible.
-		if ([self.window isVisible] == NO)
-			[self showWindow:nil];
-		
 		// Show as unread if needed.
 		if (index >= 0 && index < [_identifiers count] && [[_identifiers objectAtIndex:(NSUInteger)index] isEqualToString:identifier] == NO)
 		{
@@ -355,6 +357,14 @@
 			[content setObject:message forKey:TCChatLastChatKey];
 			
 			[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:cindex] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
+		}
+		
+		// Show window is not visible.
+		if ([self.window isVisible] == NO)
+		{
+			[self showWindow:nil];
+			
+			[self selectChatWithIdentifier:identifier];
 		}
 	});
 }
@@ -417,7 +427,11 @@
 		// Update user table.
 		[content setObject:image forKey:TCChatAvatarKey];
 		
-		[_userList reloadData];
+		// Reload row.
+		NSUInteger index = [_identifiers indexOfObject:identifier];
+
+		if (index != NSNotFound)
+			[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 	});
 }
 
@@ -542,9 +556,6 @@
 	[_chatView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[content]|" options:0 metrics:nil views:viewsDictionary]];
 	
 	_currentView = content;
-	
-	// Select the field (XXX direct or call a method ?)
-	//[view becomeFirstResponder];
 	
 	[view makeFirstResponder];
 }
