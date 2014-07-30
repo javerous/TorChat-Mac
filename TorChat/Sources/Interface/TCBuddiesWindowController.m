@@ -680,7 +680,7 @@
 				TCChatWindowController *chatController = [TCChatWindowController sharedController];
 				
 				// Start a chat UI.
-				[self startChatForBuddy:aBuddy select:([chatController.window isKeyWindow] == NO)];
+				[self startChatForBuddy:aBuddy select:NO];
 				
 				// Add the message.
 				[chatController receiveMessage:info.context forIdentifier:[aBuddy address]];
