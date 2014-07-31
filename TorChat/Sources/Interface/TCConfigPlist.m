@@ -69,7 +69,7 @@
 
 #define TCCONF_KEY_PATH_PLACE				@"place"
 #define TCCONF_VALUE_PATH_PLACE_REFERAL		@"<referal>"
-#define TCCONF_VALUE_PATH_PLACE_DEFAULT		@"<default>"
+#define TCCONF_VALUE_PATH_PLACE_STANDARD	@"<standard>"
 #define TCCONF_VALUE_PATH_PLACE_ABSOLUTE	@"<absolute>"
 
 #define TCCONF_KEY_PATH_SUBPATH				@"subpath"
@@ -1011,8 +1011,8 @@
 {
 	NSString *pathKey = nil;
 	
-	NSSearchPathDirectory	defaultPathDirectory;
-	NSString				*defaultSubPath = nil;
+	NSSearchPathDirectory	standardPathDirectory;
+	NSString				*standardSubPath = nil;
 	NSString				*referalSubPath = nil;
 
 	// Handle domain.
@@ -1020,15 +1020,15 @@
 	{
 		case TConfigPathDomainReferal:
 		{
-			// Referal = configuration path file.
+			// Referal = configuration path file directory.
 			return [_fpath stringByDeletingLastPathComponent];
 		}
 		
 		case TConfigPathDomainTorBinary:
 		{
 			pathKey = TCCONF_KEY_PATH_TOR_BIN;
-			defaultPathDirectory = NSApplicationSupportDirectory;
-			defaultSubPath = @"TorChat/Tor/";
+			standardPathDirectory = NSApplicationSupportDirectory;
+			standardSubPath = @"TorChat/Tor/";
 			referalSubPath = @"tordata/bin/";
 			break;
 		}
@@ -1036,8 +1036,8 @@
 		case TConfigPathDomainTorData:
 		{
 			pathKey = TCCONF_KEY_PATH_TOR_DARA;
-			defaultPathDirectory = NSApplicationSupportDirectory;
-			defaultSubPath = @"TorChat/TorData/";
+			standardPathDirectory = NSApplicationSupportDirectory;
+			standardSubPath = @"TorChat/TorData/";
 			referalSubPath = @"tordata/";
 			break;
 		}
@@ -1045,8 +1045,8 @@
 		case TConfigPathDomainTorIdentity:
 		{
 			pathKey = TCCONF_KEY_PATH_TOR_IDENTITY;
-			defaultPathDirectory = NSApplicationSupportDirectory;
-			defaultSubPath = @"TorChat/TorIdentity/";
+			standardPathDirectory = NSApplicationSupportDirectory;
+			standardSubPath = @"TorChat/TorIdentity/";
 			referalSubPath = @"tordata/hidden/";
 			break;
 		}
@@ -1054,8 +1054,8 @@
 		case TConfigPathDomainDownload:
 		{
 			pathKey = TCCONF_KEY_PATH_TOR_DOWNLOAD;
-			defaultPathDirectory = NSDownloadsDirectory;
-			defaultSubPath = @"TorChat/";
+			standardPathDirectory = NSDownloadsDirectory;
+			standardSubPath = @"TorChat/";
 			referalSubPath = @"Downloads/";
 			break;
 		}
@@ -1081,14 +1081,14 @@
 		else
 			return [path stringByAppendingPathComponent:referalSubPath];
 	}
-	else if ([domainPlace isEqualToString:TCCONF_VALUE_PATH_PLACE_DEFAULT])
+	else if ([domainPlace isEqualToString:TCCONF_VALUE_PATH_PLACE_STANDARD])
 	{
-		NSURL *url = [[NSFileManager defaultManager] URLForDirectory:defaultPathDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:YES error:nil];
+		NSURL *url = [[NSFileManager defaultManager] URLForDirectory:standardPathDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:YES error:nil];
 		
 		if (!url)
 			return nil;
 		
-		url = [url URLByAppendingPathComponent:defaultSubPath isDirectory:YES];
+		url = [url URLByAppendingPathComponent:standardSubPath isDirectory:YES];
 		
 		if (!url)
 			return nil;
@@ -1103,9 +1103,88 @@
 	return nil;
 }
 
-- (void)setDomain:(TConfigPathDomain)domain place:(TConfigPathPlace)place subpath:(NSString *)subpath
+- (BOOL)setDomain:(TConfigPathDomain)domain place:(TConfigPathPlace)place subpath:(NSString *)subpath
 {
+	// Handle domain.
+	NSString *pathKey = nil;
+
+	switch (domain)
+	{
+		case TConfigPathDomainReferal:
+		{
+			NSString *newPath = @"";
 #warning FIXME
+			
+			return NO;
+		}
+			
+		case TConfigPathDomainTorBinary:
+		{
+			pathKey = TCCONF_KEY_PATH_TOR_BIN;
+			break;
+		}
+			
+		case TConfigPathDomainTorData:
+		{
+			pathKey = TCCONF_KEY_PATH_TOR_DARA;
+			break;
+		}
+			
+		case TConfigPathDomainTorIdentity:
+		{
+			pathKey = TCCONF_KEY_PATH_TOR_IDENTITY;
+			break;
+		}
+			
+		case TConfigPathDomainDownload:
+		{
+			pathKey = TCCONF_KEY_PATH_TOR_DOWNLOAD;
+			break;
+		}
+	}
+	
+	// Handle paths.
+	NSMutableDictionary *paths = _fcontent[TCCONF_KEY_PATHS];
+	
+	if (!paths)
+	{
+		paths = [[NSMutableDictionary alloc] init];
+		
+		_fcontent[TCCONF_KEY_PATHS] = paths;
+	}
+	
+	// Handle places.
+	NSMutableDictionary *domainConfig = paths[pathKey];
+	
+	if (!domainConfig)
+	{
+		domainConfig = [[NSMutableDictionary alloc] init];
+		
+		paths[pathKey] = domainConfig;
+	}
+	
+	if (!subpath)
+		[domainConfig removeObjectForKey:pathKey];
+	
+	switch (place)
+	{
+		case TConfigPathPlaceReferal:
+			domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_REFERAL;
+			break;
+			
+		case TConfigPathPlaceStandard:
+			domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_STANDARD;
+			break;
+			
+		case TConfigPathPlaceAbsolute:
+			domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_ABSOLUTE;
+			break;
+	}
+	
+	// Save
+	[self saveConfig];
+	
+	return YES;
 }
 
 

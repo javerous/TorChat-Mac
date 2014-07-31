@@ -169,7 +169,7 @@ typedef enum
 
 // -- Paths --
 - (NSString *)pathForDomain:(TConfigPathDomain)domain;
-- (void)setDomain:(TConfigPathDomain)domain place:(TConfigPathPlace)place subpath:(NSString *)subpath;
+- (BOOL)setDomain:(TConfigPathDomain)domain place:(TConfigPathPlace)place subpath:(NSString *)subpath;
 
 // -- Tools --
 - (NSString *)realPath:(NSString *)path;
