@@ -117,7 +117,7 @@
 	
 	[aconfig setTorPort:(uint16_t)[_torPortField intValue]];
 	[aconfig setClientPort:(uint16_t)[_imInPortField intValue]];
-	[aconfig setMode:tc_config_advanced];
+	[aconfig setMode:TCConfigModeAdvanced];
 	
 	// Return the config
 	return aconfig;

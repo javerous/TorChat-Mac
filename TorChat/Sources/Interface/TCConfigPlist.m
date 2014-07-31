@@ -34,7 +34,6 @@
 #pragma mark - Defines
 
 // -- Config Keys --
-
 #define TCCONF_KEY_TOR_ADDRESS		@"tor_address"
 #define TCCONF_KEY_TOR_PORT			@"tor_socks_port"
 #define TCCONF_KEY_TOR_PATH			@"tor_path"
@@ -59,6 +58,22 @@
 #define TCCONF_KEY_BLOCKED			@"blocked"
 
 #define TCCONF_KEY_UI_TITLE			@"title"
+
+// > Paths
+#define TCCONF_KEY_PATHS					@"paths"
+
+#define TCCONF_KEY_PATH_TOR_BIN				@"tor_bin"
+#define TCCONF_KEY_PATH_TOR_DARA			@"tor_data"
+#define TCCONF_KEY_PATH_TOR_IDENTITY		@"tor_identity"
+#define TCCONF_KEY_PATH_TOR_DOWNLOAD		@"tor_download"
+
+#define TCCONF_KEY_PATH_PLACE				@"place"
+#define TCCONF_VALUE_PATH_PLACE_REFERAL		@"<referal>"
+#define TCCONF_VALUE_PATH_PLACE_DEFAULT		@"<default>"
+#define TCCONF_VALUE_PATH_PLACE_ABSOLUTE	@"<absolute>"
+
+#define TCCONF_KEY_PATH_SUBPATH				@"subpath"
+
 
 
 /*
@@ -171,7 +186,12 @@
 #endif
 
 
-// -- Tor --
+
+/*
+** TCConfigPlist - Tor
+*/
+#pragma mark - TCConfigPlist - Tor
+
 - (NSString *)torAddress
 {
 	NSString *value = [_fcontent objectForKey:TCCONF_KEY_TOR_ADDRESS];
@@ -255,7 +275,13 @@
 	[self saveConfig];
 }
 
-// -- TorChat --
+
+
+/*
+** TCConfigPlist - TorChat
+*/
+#pragma mark - TCConfigPlist - TorChat
+
 - (NSString *)selfAddress
 {
 	NSString *value = [_fcontent objectForKey:TCCONF_KEY_IM_ADDRESS];
@@ -316,8 +342,14 @@
 	[self saveConfig];
 }
 
-// -- Mode --
-- (tc_config_mode)mode
+
+
+/*
+** TCConfigPlist - Mode
+*/
+#pragma mark - TCConfigPlist - Mode
+
+- (TCConfigMode)mode
 {
 	NSNumber *value = [_fcontent objectForKey:TCCONF_KEY_MODE];
 	
@@ -325,18 +357,18 @@
 	{
 		int mode = [value unsignedShortValue];
 		
-		if (mode == tc_config_advanced)
-			return tc_config_advanced;
-		else if (mode == tc_config_basic)
-			return tc_config_basic;
+		if (mode == TCConfigModeAdvanced)
+			return TCConfigModeAdvanced;
+		else if (mode == TCConfigModeBasic)
+			return TCConfigModeBasic;
 		
-		return tc_config_advanced;
+		return TCConfigModeAdvanced;
 	}
 	else
-		return tc_config_advanced;
+		return TCConfigModeAdvanced;
 }
 
-- (void)setMode:(tc_config_mode)mode
+- (void)setMode:(TCConfigMode)mode
 {
 	[_fcontent setObject:@(mode) forKey:TCCONF_KEY_MODE];
 	
@@ -344,7 +376,13 @@
 	[self saveConfig];
 }
 
-// -- Profile --
+
+
+/*
+** TCConfigPlist - Profile
+*/
+#pragma mark - TCConfigPlist - Profile
+
 - (NSString *)profileName
 {
 	NSString *value = [_fcontent objectForKey:TCCONF_KEY_PROFILE_NAME];
@@ -463,7 +501,13 @@
 	[self saveConfig];
 }
 
-// -- Buddies --
+
+
+/*
+** TCConfigPlist - Buddies
+*/
+#pragma mark - TCConfigPlist - Buddies
+
 - (NSArray *)buddies
 {
 	return [[_fcontent objectForKey:TCCONF_KEY_BUDDIES] copy];
@@ -768,7 +812,13 @@
 	return nil;
 }
 
-// -- Blocked --
+
+
+/*
+** TCConfigPlist - Blocked
+*/
+#pragma mark - TCConfigPlist - Blocked
+
 - (NSArray *)blockedBuddies
 {
 	return [[_fcontent objectForKey:TCCONF_KEY_BLOCKED] copy];
@@ -825,18 +875,24 @@
 	return found;
 }
 
-// -- UI --
-- (tc_config_title)modeTitle
+
+
+/*
+** TCConfigPlist - UI
+*/
+#pragma mark - TCConfigPlist - UI
+
+- (TCConfigTitle)modeTitle
 {
 	NSNumber *value = [_fcontent objectForKey:TCCONF_KEY_UI_TITLE];
 	
 	if (!value)
-		return tc_config_title_address;
+		return TCConfigTitleAddress;
 	
-	return (tc_config_title)[value unsignedShortValue];
+	return (TCConfigTitle)[value unsignedShortValue];
 }
 
-- (void)setModeTitle:(tc_config_title)mode
+- (void)setModeTitle:(TCConfigTitle)mode
 {
 	[_fcontent setObject:@(mode) forKey:TCCONF_KEY_UI_TITLE];
 	
@@ -844,12 +900,18 @@
 	[self saveConfig];
 }
 
-// -- Client --
-- (NSString *)clientVersion:(tc_config_get)get
+
+
+/*
+** TCConfigPlist - Client
+*/
+#pragma mark - TCConfigPlist - Client
+
+- (NSString *)clientVersion:(TCConfigGet)get
 {
 	switch (get)
 	{
-		case tc_config_get_default:
+		case TCConfigGetDefault:
 		{
 			NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
 			
@@ -859,7 +921,7 @@
 			return @"";
 		}
 			
-		case tc_config_get_defined:
+		case TCConfigGetDefined:
 		{
 			NSString *value = [_fcontent objectForKey:TCCONF_KEY_CLIENT_VERSION];
 			
@@ -869,12 +931,12 @@
 			return @"";
 		}
 			
-		case tc_config_get_real:
+		case TCConfigGetReal:
 		{
-			NSString *value = [self clientVersion:tc_config_get_defined];
+			NSString *value = [self clientVersion:TCConfigGetDefined];
 			
 			if ([value length] == 0)
-				value = [self clientVersion:tc_config_get_default];
+				value = [self clientVersion:TCConfigGetDefault];
 			
 			return value;
 		}
@@ -894,16 +956,16 @@
 	[self saveConfig];
 }
 
-- (NSString *)clientName:(tc_config_get)get
+- (NSString *)clientName:(TCConfigGet)get
 {
 	switch (get)
 	{
-		case tc_config_get_default:
+		case TCConfigGetDefault:
 		{
 			return @"TorChat for Mac";
 		}
 			
-		case tc_config_get_defined:
+		case TCConfigGetDefined:
 		{
 			NSString *value = [_fcontent objectForKey:TCCONF_KEY_CLIENT_NAME];
 			
@@ -913,12 +975,12 @@
 			return @"";
 		}
 			
-		case tc_config_get_real:
+		case TCConfigGetReal:
 		{
-			NSString *value = [self clientName:tc_config_get_defined];
+			NSString *value = [self clientName:TCConfigGetDefined];
 			
 			if ([value length] == 0)
-				value = [self clientName:tc_config_get_default];
+				value = [self clientName:TCConfigGetDefault];
 			
 			return value;
 		}
@@ -938,7 +1000,121 @@
 	[self saveConfig];
 }
 
-// -- Tools --
+
+
+/*
+** TCConfigPlist - Paths
+*/
+#pragma mark - TCConfigPlist - Paths
+
+- (NSString *)pathForDomain:(TConfigPathDomain)domain
+{
+	NSString *pathKey = nil;
+	
+	NSSearchPathDirectory	defaultPathDirectory;
+	NSString				*defaultSubPath = nil;
+	NSString				*referalSubPath = nil;
+
+	// Handle domain.
+	switch (domain)
+	{
+		case TConfigPathDomainReferal:
+		{
+			// Referal = configuration path file.
+			return [_fpath stringByDeletingLastPathComponent];
+		}
+		
+		case TConfigPathDomainTorBinary:
+		{
+			pathKey = TCCONF_KEY_PATH_TOR_BIN;
+			defaultPathDirectory = NSApplicationSupportDirectory;
+			defaultSubPath = @"TorChat/Tor/";
+			referalSubPath = @"tordata/bin/";
+			break;
+		}
+		
+		case TConfigPathDomainTorData:
+		{
+			pathKey = TCCONF_KEY_PATH_TOR_DARA;
+			defaultPathDirectory = NSApplicationSupportDirectory;
+			defaultSubPath = @"TorChat/TorData/";
+			referalSubPath = @"tordata/";
+			break;
+		}
+		
+		case TConfigPathDomainTorIdentity:
+		{
+			pathKey = TCCONF_KEY_PATH_TOR_IDENTITY;
+			defaultPathDirectory = NSApplicationSupportDirectory;
+			defaultSubPath = @"TorChat/TorIdentity/";
+			referalSubPath = @"tordata/hidden/";
+			break;
+		}
+		
+		case TConfigPathDomainDownload:
+		{
+			pathKey = TCCONF_KEY_PATH_TOR_DOWNLOAD;
+			defaultPathDirectory = NSDownloadsDirectory;
+			defaultSubPath = @"TorChat/";
+			referalSubPath = @"Downloads/";
+			break;
+		}
+	}
+	
+	if (!pathKey)
+		return nil;
+	
+	// Handle places.
+	NSMutableDictionary *domainConfig = _fcontent[TCCONF_KEY_PATHS][pathKey];
+	NSString			*domainPlace = domainConfig[TCCONF_KEY_PATH_PLACE];
+	NSString			*domainSubpath = domainConfig[TCCONF_KEY_PATH_SUBPATH];
+
+	if (!domainPlace)
+		domainPlace = TCCONF_VALUE_PATH_PLACE_REFERAL;
+	
+	if ([domainPlace isEqualToString:TCCONF_VALUE_PATH_PLACE_REFERAL])
+	{
+		NSString *path = [self pathForDomain:TConfigPathDomainReferal];
+		
+		if (domainSubpath)
+			return [path stringByAppendingPathComponent:domainSubpath];
+		else
+			return [path stringByAppendingPathComponent:referalSubPath];
+	}
+	else if ([domainPlace isEqualToString:TCCONF_VALUE_PATH_PLACE_DEFAULT])
+	{
+		NSURL *url = [[NSFileManager defaultManager] URLForDirectory:defaultPathDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:YES error:nil];
+		
+		if (!url)
+			return nil;
+		
+		url = [url URLByAppendingPathComponent:defaultSubPath isDirectory:YES];
+		
+		if (!url)
+			return nil;
+		
+		return [url path];
+	}
+	else if ([domainPlace isEqualToString:TCCONF_VALUE_PATH_PLACE_ABSOLUTE])
+	{
+		return domainSubpath;
+	}
+	
+	return nil;
+}
+
+- (void)setDomain:(TConfigPathDomain)domain place:(TConfigPathPlace)place subpath:(NSString *)subpath
+{
+#warning FIXME
+}
+
+
+
+/*
+** TCConfigPlist - Tools
+*/
+#pragma mark - TCConfigPlist - Tools
+
 - (NSString *)realPath:(NSString *)path
 {
 	if ([path length] == 0)
@@ -984,7 +1160,13 @@
 	}
 }
 
-// -- Localization --
+
+
+/*
+** TCConfigPlist - Localization
+*/
+#pragma mark - TCConfigPlist - Localization
+
 - (NSString *)localized:(NSString *)key
 {
 	NSString *local = nil;
@@ -1000,7 +1182,13 @@
 	return local;
 }
 
-// -- Helpers --
+
+
+/*
+** TCConfigPlist - Helpers
+*/
+#pragma mark - TCConfigPlist - Helpers
+
 - (NSMutableDictionary *)loadConfig:(NSData *)data
 {
 	NSMutableDictionary	*content;

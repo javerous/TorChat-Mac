@@ -55,22 +55,38 @@
 
 typedef enum
 {
-	tc_config_get_default,	// Value used when the item was never set
-	tc_config_get_defined,	// Value used when the item was set
-	tc_config_get_real		// Value to use in standard case (eg. defined / default automatic choise)
-} tc_config_get; // FIXME: use in all get_* functions
+	TCConfigGetDefault,	// Value used when the item was never set
+	TCConfigGetDefined,	// Value used when the item was set
+	TCConfigGetReal		// Value to use in standard case (eg. defined / default automatic choise)
+} TCConfigGet; // FIXME: use in all get_* functions
 
 typedef enum
 {
-	tc_config_advanced,
-	tc_config_basic
-} tc_config_mode;
+	TCConfigModeAdvanced,
+	TCConfigModeBasic
+} TCConfigMode;
 
 typedef enum
 {
-	tc_config_title_address = 0,
-	tc_config_title_name	= 1
-} tc_config_title;
+	TCConfigTitleAddress = 0,
+	TCConfigTitleName	= 1
+} TCConfigTitle;
+
+typedef enum
+{
+	TConfigPathDomainReferal,	// Referal path.
+	TConfigPathDomainTorBinary,	// Path to the tor binary (and its dependancies) directory.
+	TConfigPathDomainTorData,	// Path to the tor data directory.
+	TConfigPathDomainTorIdentity, // Path to tor hidden service (buddy address)
+	TConfigPathDomainDownload, // Path to the download directory.
+} TConfigPathDomain;
+
+typedef enum
+{
+	TConfigPathPlaceReferal,	// Path is relative to referal.
+	TConfigPathPlaceStandard,	// Path is relative to standard OS X directories in ~.
+	TConfigPathPlaceAbsolute,	// Path is absolute.
+} TConfigPathPlace;
 
 
 
@@ -105,8 +121,8 @@ typedef enum
 - (void)setDownloadFolder:(NSString *)folder;
 
 // -- Mode --
-- (tc_config_mode)mode;
-- (void)setMode:(tc_config_mode)mode;
+- (TCConfigMode)mode;
+- (void)setMode:(TCConfigMode)mode;
 
 // -- Profile --
 - (NSString *)profileName;
@@ -141,15 +157,19 @@ typedef enum
 - (BOOL)removeBlockedBuddy:(NSString *)address;
 
 // -- UI --
-- (tc_config_title)modeTitle;
-- (void)setModeTitle:(tc_config_title)mode;
+- (TCConfigTitle)modeTitle;
+- (void)setModeTitle:(TCConfigTitle)mode;
 
 // -- Client --
-- (NSString *)clientVersion:(tc_config_get)get;
+- (NSString *)clientVersion:(TCConfigGet)get;
 - (void)setClientVersion:(NSString *)version;
 
-- (NSString *)clientName:(tc_config_get)get;
+- (NSString *)clientName:(TCConfigGet)get;
 - (void)setClientName:(NSString *)name;
+
+// -- Paths --
+- (NSString *)pathForDomain:(TConfigPathDomain)domain;
+- (void)setDomain:(TConfigPathDomain)domain place:(TConfigPathPlace)place subpath:(NSString *)subpath;
 
 // -- Tools --
 - (NSString *)realPath:(NSString *)path;

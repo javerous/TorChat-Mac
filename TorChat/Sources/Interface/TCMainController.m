@@ -179,6 +179,14 @@
 		}
 	}
 
+	NSLog(@"TConfigPathDomainReferal: %@", [conf pathForDomain:TConfigPathDomainReferal]);
+	NSLog(@"TConfigPathDomainTorBinary: %@", [conf pathForDomain:TConfigPathDomainTorBinary]);
+	NSLog(@"TConfigPathDomainTorData: %@", [conf pathForDomain:TConfigPathDomainTorData]);
+	NSLog(@"TConfigPathDomainTorIdentity: %@", [conf pathForDomain:TConfigPathDomainTorIdentity]);
+	NSLog(@"TConfigPathDomainDownload: %@", [conf pathForDomain:TConfigPathDomainDownload]);
+
+	
+	
 	// > Check if we should launch assistant
 	if (!conf)
 	{
