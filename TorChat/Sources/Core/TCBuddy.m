@@ -1568,14 +1568,14 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	[self _sendCommand:@"version" string:[_config clientVersion:tc_config_get_real] channel:tcbuddy_channel_out];
+	[self _sendCommand:@"version" string:[_config clientVersion:TCConfigGetReal] channel:tcbuddy_channel_out];
 }
 
 - (void)_sendClient
 {
 	// > localQueue <
 		
-	[self _sendCommand:@"client" string:[_config clientName:tc_config_get_real] channel:tcbuddy_channel_out];
+	[self _sendCommand:@"client" string:[_config clientName:TCConfigGetReal] channel:tcbuddy_channel_out];
 }
 
 - (void)_sendProfileName:(NSString *)name
