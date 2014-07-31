@@ -213,7 +213,7 @@
 	_configuration = configuration;
 	
 	// Load tor
-	if ([_configuration mode] == tc_config_basic && [[TCTorManager sharedManager] isRunning] == NO)
+	if ([_configuration mode] == TCConfigModeBasic && [[TCTorManager sharedManager] isRunning] == NO)
 		[[TCTorManager sharedManager] startWithConfiguration:_configuration];
 	
 	// Build controller
@@ -1065,11 +1065,11 @@
 	switch (tag)
 	{
 		case 0:
-			[_configuration setModeTitle:tc_config_title_name];
+			[_configuration setModeTitle:TCConfigTitleName];
 			break;
 			
 		case 1:
-			[_configuration setModeTitle:tc_config_title_address];
+			[_configuration setModeTitle:TCConfigTitleAddress];
 			break;
 			
 		case 3:
@@ -1350,7 +1350,7 @@
 		// Check the title to show
 		switch ([_configuration modeTitle])
 		{
-			case tc_config_title_address:
+			case TCConfigTitleAddress:
 			{
 				content = [_configuration selfAddress];
 				
@@ -1359,7 +1359,7 @@
 				break;
 			}
 				
-			case tc_config_title_name:
+			case TCConfigTitleName:
 			{
 				content = [_control profileName];
 				

@@ -351,11 +351,11 @@
 	[_downloadPath setURL:[NSURL fileURLWithPath:path]];
 	
 	// Client info.
-	[[_clientNameField cell] setPlaceholderString:[self.config clientName:tc_config_get_default]];
-	[[_clientVersionField cell] setPlaceholderString:[self.config clientVersion:tc_config_get_default]];
+	[[_clientNameField cell] setPlaceholderString:[self.config clientName:TCConfigGetDefault]];
+	[[_clientVersionField cell] setPlaceholderString:[self.config clientVersion:TCConfigGetDefault]];
 
-	[_clientNameField setStringValue:[self.config clientName:tc_config_get_defined]];
-	[_clientVersionField setStringValue:[self.config clientVersion:tc_config_get_defined]];
+	[_clientNameField setStringValue:[self.config clientName:TCConfigGetDefined]];
+	[_clientVersionField setStringValue:[self.config clientVersion:TCConfigGetDefined]];
 }
 
 - (void)saveConfig
@@ -395,7 +395,7 @@
 
 - (void)loadConfig
 {
-	tc_config_mode mode;
+	TCConfigMode mode;
 	
 	if (!self.config)
 		return;
@@ -403,14 +403,14 @@
 	mode = [self.config mode];
 	
 	// Set mode
-	if (mode == tc_config_basic)
+	if (mode == TCConfigModeBasic)
 	{		
 		[_imAddressField setEnabled:NO];
 		[_imPortField setEnabled:NO];
 		[_torAddressField setEnabled:NO];
 		[_torPortField setEnabled:NO];
 	}
-	else if (mode == tc_config_advanced)
+	else if (mode == TCConfigModeAdvanced)
 	{		
 		[_imAddressField setEnabled:YES];
 		[_imPortField setEnabled:YES];
@@ -430,7 +430,7 @@
 	 if (!self.config)
 		 return;
 	 
-	if ([self.config mode] == tc_config_advanced)
+	if ([self.config mode] == TCConfigModeAdvanced)
 	{
 		// Set config value
 		[self.config setSelfAddress:[_imAddressField stringValue]];
