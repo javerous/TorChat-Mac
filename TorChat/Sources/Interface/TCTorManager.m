@@ -207,7 +207,7 @@
 		[configuration setTorAddress:@"localhost"];
 		[configuration setTorPort:60600];
 		[configuration setClientPort:60601];
-		[configuration setMode:tc_config_basic];
+		[configuration setMode:TCConfigModeBasic];
 		
 		// Convert configuration
 		NSString	*data_path = [configuration realPath:[configuration torDataPath]];
