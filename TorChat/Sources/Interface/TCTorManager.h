@@ -29,13 +29,18 @@
 
 
 /*
-** Notify
+** Types
 */
-#pragma mark - Nority
+#pragma mark - Types
 
-#define TCTorManagerStatusChanged	@"TCTorManagerStatusChanged"
-#define TCTorManagerInfoHostNameKey	@"hostname"
-#define TCTorManagerInfoRunningKey	@"running"
+typedef enum
+{
+	TCTorManagerEventRunning,	// context = nil
+	TCTorManagerEventStopped,	// context = nil
+	TCTorManagerEventError,		// context = NSError
+	
+	TCTorManagerEventHostname	// context = NSString(hostname)
+} TCTorManagerEvent;
 
 
 
@@ -46,16 +51,19 @@
 
 @interface TCTorManager : NSObject
 
-// -- Singleton --
-+ (TCTorManager *)sharedManager;
+// -- Instance --
+- (id)initWithConfiguration:(id <TCConfig>)configuration;
 
 // -- Running --
-- (void)startWithConfiguration:(id <TCConfig>)configuration;
+- (void)start;
 - (void)stop;
 
 - (BOOL)isRunning;
 
 // -- Property --
 - (NSString *)hiddenHostname;
+
+// -- Events --
+@property (strong, atomic) void (^eventHandler)(TCTorManagerEvent event, id context);
 
 @end
