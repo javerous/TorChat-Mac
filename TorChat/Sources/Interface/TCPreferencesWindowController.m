@@ -189,7 +189,7 @@
 - (void)loadViewIdentifier:(NSString *)identifier animated:(BOOL)animated
 {
 	TCPrefView		*view = nil;
-	id <TCConfig>	config = [[TCMainController sharedController] config];
+	id <TCConfig>	config = [[TCMainController sharedController] configuration];
 
 	if ([identifier isEqualToString:@"general"])
 		view = _generalView;
@@ -269,7 +269,7 @@
 
 - (void)windowWillClose:(NSNotification *)notification
 {
-	id <TCConfig> config = [[TCMainController sharedController] config];
+	id <TCConfig> config = [[TCMainController sharedController] configuration];
 
 	_currentView.config = config;
 	

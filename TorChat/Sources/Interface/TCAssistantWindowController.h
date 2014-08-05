@@ -29,7 +29,7 @@
 */
 #pragma mark - Types
 
-typedef void (^TCAssistantCallback)(id context);
+typedef void (^TCAssistantCompletionBlock)(id context);
 
 
 
@@ -41,6 +41,6 @@ typedef void (^TCAssistantCallback)(id context);
 @interface TCAssistantWindowController : NSWindowController
 
 // -- Constructor --
-+ (TCAssistantWindowController *)startAssistantWithPanels:(NSArray *)panels andCallback:(TCAssistantCallback)callback;
++ (TCAssistantWindowController *)startAssistantWithPanels:(NSArray *)panels completionHandler:(TCAssistantCompletionBlock)callback;
 
 @end

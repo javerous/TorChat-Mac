@@ -1113,7 +1113,7 @@
 		case TConfigPathDomainReferal:
 		{
 			NSString *newPath = @"";
-#warning FIXME
+#warning FIXME Deplace configuration file
 			
 			return NO;
 		}

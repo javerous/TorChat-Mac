@@ -40,6 +40,7 @@
 @interface TCPanel_Basic ()
 {
 	TCConfigPlist					*_config;
+	TCTorManager					*_tor;
 	__weak id <TCAssistantProxy>	_proxy;
 }
 
@@ -101,7 +102,15 @@
 
 - (id)content
 {
-	return _config;
+	NSMutableDictionary *content = [[NSMutableDictionary alloc] init];
+	
+	if (_config)
+		content[@"configuration"] = _config;
+	
+	if (_tor)
+		content[@"tor_manager"] = _tor;
+	
+	return content;
 }
 
 #define TCLocalizedString(key, comment) [[NSBundle mainBundle] localizedStringForKey:[(key) copy] value:@"" table:nil]
@@ -117,14 +126,11 @@
 	if (_config)
 		return;
 	
-	// Obserse tor status changes.
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(torChanged:) name:TCTorManagerStatusChanged object:nil];
-	
 	// Get the default tor config path.
-	NSString *bpath = [[NSBundle mainBundle] bundlePath];
-	NSString *pth = [[bpath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"];
+	NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
+	NSString *configPath = [[bundlePath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"];
 	
-	if (!pth)
+	if (!configPath)
 	{
 		[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_err_build_path"];
 		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_err_build_path", @"")] runModal];
@@ -132,14 +138,14 @@
 	}
 
 	// Try to build a new config file.
-	_config = [[TCConfigPlist alloc] initWithFile:pth];
+	_config = [[TCConfigPlist alloc] initWithFile:configPath];
 	
 	if (!_config)
 	{
 		[_imAddressField setStringValue:NSLocalizedString(@"ac_err_config", @"")];
 		
-		[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_err_write_file", pth];
-		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:TCLocalizedString(@"ac_err_write_file", @""), pth] runModal];
+		[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_err_write_file", configPath];
+		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:TCLocalizedString(@"ac_err_write_file", @""), configPath] runModal];
 
 		return;
 	}
@@ -152,37 +158,50 @@
 	
 	[_imDownloadPath setURL:[NSURL fileURLWithPath:path]];
 	
-	// Start manager.
-	[[TCTorManager sharedManager] startWithConfiguration:_config];
-}
-
-
-
-/*
-** TCPanel_Basic - NSNotification
-*/
-#pragma mark - TCPanel_Basic - NSNotification
-
-- (void)torChanged:(NSNotification *)notice
-{
-	id <TCAssistantProxy> proxy = _proxy;
+	// Set default configuration.
+	[_config setTorAddress:@"localhost"];
+	[_config setTorPort:60600];
+	[_config setClientPort:60601];
+	[_config setMode:TCConfigModeBasic];
 	
-	NSDictionary	*info = notice.userInfo;
-	NSNumber		*running = [info objectForKey:TCTorManagerInfoRunningKey];
-	NSString		*host = [info objectForKey:TCTorManagerInfoHostNameKey];
+	// Create tor manager & start it.
+	__weak NSTextField *weakIMAddressField = _imAddressField;
 	
-	if ([running boolValue])
-	{
-		[proxy setDisableContinue:NO];
-		[_imAddressField setStringValue:host];
-	}
-	else
-	{
-		[proxy setDisableContinue:YES];
+	// > Create.
+	_tor = [[TCTorManager alloc] initWithConfiguration:_config];
+	
+	_tor.eventHandler = ^(TCTorManagerEvent event, id context) {
 		
-		// Log the error
-		[[TCLogsManager sharedManager] addGlobalAlertLog:@"tor_err_launch"];
-	}
+		NSTextField *imAddressField = weakIMAddressField;
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			
+			switch (event)
+			{
+				case TCTorManagerEventRunning:
+					break;
+					
+				case TCTorManagerEventStopped:
+					break;
+					
+				case TCTorManagerEventError:
+				{
+					[proxy setDisableContinue:YES];
+					break;
+				}
+				
+				case TCTorManagerEventHostname:
+				{
+					[proxy setDisableContinue:NO];
+					[imAddressField setStringValue:context];
+					break;
+				}
+			}
+		});
+	};
+	
+	// > Start.
+	[_tor start];
 }
 
 
