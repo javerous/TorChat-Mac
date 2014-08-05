@@ -120,7 +120,7 @@
 	[aconfig setMode:TCConfigModeAdvanced];
 	
 	// Return the config
-	return aconfig;
+	return @{ @"configuration" : aconfig };
 }
 
 - (void)showPanel

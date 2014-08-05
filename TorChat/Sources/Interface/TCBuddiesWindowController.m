@@ -212,13 +212,8 @@
 	// Hold the config
 	_configuration = configuration;
 	
-	// Load tor
-	if ([_configuration mode] == TCConfigModeBasic && [[TCTorManager sharedManager] isRunning] == NO)
-		[[TCTorManager sharedManager] startWithConfiguration:_configuration];
-	
 	// Build controller
 	_control = [[TCCoreManager alloc] initWithConfiguration:_configuration];
-	
 	
 	// -- Init window content --
 	// > Show load indicator

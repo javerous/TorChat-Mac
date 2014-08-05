@@ -41,7 +41,7 @@
 // -- Running --
 - (void)start;
 
-// -- Accessor --
-- (id <TCConfig>)config;
+// -- Properties --
+@property (strong, nonatomic, readonly) id <TCConfig> configuration;
 
 @end

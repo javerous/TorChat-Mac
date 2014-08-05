@@ -48,9 +48,9 @@
 	
 	NSString				*_nextID;
 	BOOL					_isLast;
-	BOOL					_fDisable;
+	BOOL					_nextDisabled;
 	
-	TCAssistantCallback		_callback;
+	TCAssistantCompletionBlock	_handler;
 }
 
 // -- Properties --
@@ -84,9 +84,9 @@
 */
 #pragma mark - TCAssistantWindowController - Instance
 
-+ (TCAssistantWindowController *)startAssistantWithPanels:(NSArray *)panels andCallback:(TCAssistantCallback)callback
++ (TCAssistantWindowController *)startAssistantWithPanels:(NSArray *)panels completionHandler:(TCAssistantCompletionBlock)callback
 {
-	TCAssistantWindowController *assistant = [[TCAssistantWindowController alloc] initWithPanels:panels andCallback:callback];
+	TCAssistantWindowController *assistant = [[TCAssistantWindowController alloc] initWithPanels:panels completionHandler:callback];
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[assistant showWindow:nil];
@@ -95,7 +95,7 @@
 	return assistant;
 }
 
-- (id)initWithPanels:(NSArray *)panels andCallback:(TCAssistantCallback)callback
+- (id)initWithPanels:(NSArray *)panels completionHandler:(TCAssistantCompletionBlock)callback
 {
 	self = [super initWithWindowNibName:@"AssistantWindow"];
 	
@@ -105,7 +105,7 @@
 			return nil;
 		
 		// Handle callback.
-		_callback = callback;
+		_handler = callback;
 		
 		// Create containers.
 		_panelsClass = [[NSMutableDictionary alloc] init];
@@ -171,10 +171,10 @@
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
 			
-			if (_callback)
-				_callback(content);
+			if (_handler)
+				_handler(content);
 			
-			_callback = nil;
+			_handler = nil;
 		});
 
 		[self.window orderOut:sender];
@@ -240,7 +240,7 @@
 {
 	// > main queue <
 	
-	if (_fDisable)
+	if (_nextDisabled)
 	{
 		[_nextButton setEnabled:NO];
 		return;
@@ -284,7 +284,7 @@
 
 - (void)setDisableContinue:(BOOL)disabled
 {
-	_fDisable = disabled;
+	_nextDisabled = disabled;
 	
 	[self _checkNextButton];
 }

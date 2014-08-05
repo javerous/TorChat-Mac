@@ -44,6 +44,15 @@
 
 @interface TCTorManager ()
 {
+	dispatch_queue_t	_localQueue;
+	dispatch_queue_t	_eventQueue;
+
+	dispatch_source_t	_testTimer;
+	
+	dispatch_source_t	_termSource;
+	
+	id <TCConfig>		_configuration;
+	
     BOOL				_running;
 	
 	NSTask				*_task;
@@ -52,14 +61,7 @@
 	NSFileHandle		*_outHandle;
 	
 	NSString			*_hidden;
-	
-	dispatch_queue_t	_localQueue;
-	dispatch_source_t	_testTimer;
-	
-	dispatch_source_t	_termSource;
 }
-
-- (void)postNotification:(NSString *)notice;
 
 @end
 
@@ -74,30 +76,25 @@
 
 
 /*
-** TCTorManager - Constructor & Destructor
+** TCTorManager - Instance
 */
-#pragma mark - TCTorManager - Constructor & Destructor
+#pragma mark - TCTorManager - Instance
 
-+ (TCTorManager *)sharedManager
-{
-	static TCTorManager		*shr = nil;
-	static dispatch_once_t	pred;
-	
-	dispatch_once(&pred, ^{
-		shr = [[TCTorManager alloc] init];
-	});
-	
-	return shr;
-}
-
-- (id)init
+- (id)initWithConfiguration:(id <TCConfig>)configuration
 {
 	self = [super init];
 	
     if (self)
 	{
+		if (!configuration)
+			return nil;
+		
 		// Create queues.
         _localQueue = dispatch_queue_create("com.torchat.cocoa.tormanager.local", DISPATCH_QUEUE_SERIAL);
+		_eventQueue = dispatch_queue_create("com.torchat.cocoa.tormanager.event", DISPATCH_QUEUE_SERIAL);
+		
+		// Handle configuration.
+		_configuration = configuration;
 		
 		// Handle application standard termination.
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillTerminate:) name:NSApplicationWillTerminateNotification object:nil];
@@ -120,7 +117,7 @@
 
 - (void)dealloc
 {
-	// Stop notification
+	// Stop notification.
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 		
 	// Kill the task
@@ -134,9 +131,6 @@
 	// Kill the timer
 	if (_testTimer)
 		dispatch_source_cancel(_testTimer);
-	
-	// Remove notification
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 
@@ -158,7 +152,7 @@
 */
 #pragma mark - TCTorManager - Running
 
-- (void)startWithConfiguration:(id <TCConfig>)configuration
+- (void)start
 {
 #if defined(DEBUG) && DEBUG
 	
@@ -191,56 +185,46 @@
 	}
 #endif
 	
-	if (!configuration)
-		return;
-
-	// Stop current session if running
+	// Stop current session if running.
 	[self stop];
 	
-	// Run in the main queue
+	// Run in the main queue.
 	dispatch_async(_localQueue, ^{
 		
 		if (_running)
 			return;
 		
-		// Set the default value
-		[configuration setTorAddress:@"localhost"];
-		[configuration setTorPort:60600];
-		[configuration setClientPort:60601];
-		[configuration setMode:TCConfigModeBasic];
+#warning FIXME: handle instalation if necessary.
+		return;
+		NSString	*data_path = [_configuration realPath:[_configuration torDataPath]];
+		NSString	*hidden_path = [_configuration realPath:[[_configuration torDataPath] stringByAppendingPathComponent:@"hidden"]];
+		NSString	*tor_path = [_configuration realPath:[_configuration torPath]];
 		
-		// Convert configuration
-		NSString	*data_path = [configuration realPath:[configuration torDataPath]];
-		NSString	*hidden_path = [configuration realPath:[[configuration torDataPath] stringByAppendingPathComponent:@"hidden"]];
-		NSString	*tor_path = [configuration realPath:[configuration torPath]];
-		
-		// Check conversion
+		// Check conversion.
 		if (!data_path || !hidden_path || !tor_path)
 		{
 			[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_err_build_path"];
-			  
-			[self postNotification:TCTorManagerStatusChanged];
-			
+			[self sendEvent:TCTorManagerEventError context:nil];
 			return;
 		}
 		
-		// Build folders
+		// Build folders.
 		NSFileManager *mng = [NSFileManager defaultManager];
 		
 		[mng createDirectoryAtPath:data_path withIntermediateDirectories:NO attributes:nil error:nil];
 		[mng createDirectoryAtPath:hidden_path withIntermediateDirectories:NO attributes:nil error:nil];
 
-		// Build argument
+		// Build argument.
 		NSMutableArray	*args = [NSMutableArray array];
 		
 		[args addObject:@"--ClientOnly"];
 		[args addObject:@"1"];
 		
 		[args addObject:@"--SocksPort"];
-		[args addObject:@"60600"];
+		[args addObject:[@([_configuration torPort]) stringValue]];
 		
 		[args addObject:@"--SocksListenAddress"];
-		[args addObject:@"localhost"];
+		[args addObject:([_configuration torAddress] ?: @"localhost")];
 		
 		
 		[args addObject:@"--DataDirectory"];
@@ -250,7 +234,7 @@
 		[args addObject:hidden_path];
 		
 		[args addObject:@"--HiddenServicePort"];
-		[args addObject:@"11009 127.0.0.1:60601"];   
+		[args addObject:[NSString stringWithFormat:@"11009 127.0.0.1:%u", [_configuration clientPort]]];
 		
 		
 		// Build & handle pipe for tor task.
@@ -340,13 +324,12 @@
 		@catch (id error)
 		{
 			[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_err_launch"];
-			
-			[self postNotification:TCTorManagerStatusChanged];
+			[self sendEvent:TCTorManagerEventError context:nil];
 			return;
 		}
 		
 		// Check the existence of the hostname file
-		NSString *htname = [configuration realPath:[[configuration torDataPath] stringByAppendingPathComponent:@"hidden/hostname"]];
+		NSString *htname = [_configuration realPath:[[_configuration torDataPath] stringByAppendingPathComponent:@"hidden/hostname"]];
 		
 		_testTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _localQueue);
 		
@@ -382,15 +365,16 @@
 						_hidden = [[NSString alloc] initWithUTF8String:buffer];
 						
 						// Set the address in the config
-						[configuration setSelfAddress:_hidden];
+						[_configuration setSelfAddress:_hidden];
 						
 						// Cancel ourself
 						dispatch_source_cancel(_testTimer);
 						_testTimer = nil;
 						
-						// Inform of the change
+						// Inform of the change.
 						_running = YES;
-						[self postNotification:TCTorManagerStatusChanged];
+						[self sendEvent:TCTorManagerEventRunning context:nil];
+						[self sendEvent:TCTorManagerEventHostname context:_hidden];
 					}
 				}
 
@@ -432,6 +416,9 @@
 			dispatch_source_cancel(_testTimer);
 			_testTimer = nil;
 		}
+		
+		// Notify.
+		[self sendEvent:TCTorManagerEventStopped context:nil];
 	});
 }
 
@@ -469,24 +456,20 @@
 
 
 /*
-** TCTorManager - Tools
+** TCTorManager - Helpers
 */
-#pragma mark - TCTorManager - Tools
+#pragma mark - TCTorManager - Helpers
 
-- (void)postNotification:(NSString *)notice
+- (void)sendEvent:(TCTorManagerEvent)event context:(id)context
 {
-	NSDictionary *info = [NSDictionary dictionaryWithObjectsAndKeys:(_hidden ? _hidden : @""),			TCTorManagerInfoHostNameKey,
-																	[NSNumber numberWithBool:_running],	TCTorManagerInfoRunningKey,
-																	nil];
-	
-	if (_running)
-		[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_is_running"];
-	else
-		[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_is_not_running"];
-	
-	// Notify
-	dispatch_async(dispatch_get_main_queue(), ^{
-		[[NSNotificationCenter defaultCenter] postNotificationName:notice object:self userInfo:info];
+	dispatch_async(_eventQueue, ^{
+		
+		void (^eventHandler)(TCTorManagerEvent event, id context) = _eventHandler;
+		
+		if (!eventHandler)
+			return;
+		
+		eventHandler(event, context);
 	});
 }
 
