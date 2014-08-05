@@ -34,6 +34,8 @@
 #import "TCPanel_Advanced.h"
 #import "TCPanel_Basic.h"
 
+#import "TCTorManager.h"
+
 #if defined(PROXY_ENABLED) && PROXY_ENABLED
 # import "TCConfigProxy.h"
 #endif
@@ -47,7 +49,8 @@
 
 @interface TCMainController ()
 {
-	id <TCConfig> _configuration;
+	id <TCConfig>	_configuration;
+	TCTorManager	*_torManager;
 	
 	TCAssistantWindowController	*_assistant;
 }
@@ -179,27 +182,29 @@
 		}
 	}
 
+// <DEBUG
+#warning DEBUG
 	NSLog(@"TConfigPathDomainReferal: %@", [conf pathForDomain:TConfigPathDomainReferal]);
 	NSLog(@"TConfigPathDomainTorBinary: %@", [conf pathForDomain:TConfigPathDomainTorBinary]);
 	NSLog(@"TConfigPathDomainTorData: %@", [conf pathForDomain:TConfigPathDomainTorData]);
 	NSLog(@"TConfigPathDomainTorIdentity: %@", [conf pathForDomain:TConfigPathDomainTorIdentity]);
 	NSLog(@"TConfigPathDomainDownload: %@", [conf pathForDomain:TConfigPathDomainDownload]);
-
+// DEBUG >
 	
-	
-	// > Check if we should launch assistant
+	// > Check if we should launch assistant.
 	if (!conf)
 	{
 		NSArray *panels = @[ [TCPanel_Welcome class], [TCPanel_Mode class], [TCPanel_Advanced class], [TCPanel_Basic class] ];
 		
-		_assistant = [TCAssistantWindowController startAssistantWithPanels:panels andCallback:^(id context) {
+		_assistant = [TCAssistantWindowController startAssistantWithPanels:panels completionHandler:^(id context) {
 			
-			TCConfigPlist *config = (TCConfigPlist *)context;
+			NSDictionary *items = context;
+	
+			// Hold items.
+			_configuration = items[@"configuration"];
+			_torManager = items[@"tor_manager"];
 			
-			// Hold the config
-			_configuration = config;
-			
-			// Start buddy controller
+			// Start buddy controller.
 			[[TCBuddiesWindowController sharedController] startWithConfiguration:_configuration];
 			
 			// Remove instance.
@@ -208,24 +213,20 @@
 	}
 	else
 	{
-		// > Hold the config
+		// > Hold the config.
 		_configuration = conf;
 		
-		// > Start buddy controller
+		// > Start tor.
+		if ([_configuration mode] == TCConfigModeBasic)
+		{
+			_torManager = [[TCTorManager alloc] initWithConfiguration:_configuration];
+			
+			[_torManager start];
+		}
+		
+		// > Start buddy controller.
 		[[TCBuddiesWindowController sharedController] startWithConfiguration:conf];
 	}
-}
-
-
-
-/*
-** TCMainController - Accessor
-*/
-#pragma mark - TCMainController - Accessor
-
-- (id <TCConfig>)config
-{
-	return _configuration;
 }
 
 @end
