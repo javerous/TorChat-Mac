@@ -1324,7 +1324,7 @@ static char gLocalQueueContext;
 	NSString *sfilename_2 = [sfilename_1 stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
 	
 	// Get the download folder
-	NSString *downPath = [[_config realPath:[_config downloadFolder]] stringByAppendingPathComponent:_address];
+	NSString *downPath = [[_config pathForDomain:TConfigPathDomainDownload] stringByAppendingPathComponent:_address];
 	
 	[[NSFileManager defaultManager] createDirectoryAtPath:downPath withIntermediateDirectories:YES attributes:nil error:nil];
 	
