@@ -113,7 +113,7 @@
 	// Set up the config with the fields
 	[aconfig setTorAddress:[_torAddressField stringValue]];
 	[aconfig setSelfAddress:[_imAddressField stringValue]];
-	[aconfig setDownloadFolder:[[_imDownloadPath URL] path]];
+	[aconfig setDomain:TConfigPathDomainDownload place:TConfigPathPlaceAbsolute subpath:[[_imDownloadPath URL] path]];
 	
 	[aconfig setTorPort:(uint16_t)[_torPortField intValue]];
 	[aconfig setClientPort:(uint16_t)[_imInPortField intValue]];

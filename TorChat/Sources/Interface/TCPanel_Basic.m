@@ -151,7 +151,7 @@
 	}
 	
 	// Set download path.
-	NSString *path = [_config realPath:[_config downloadFolder]];
+	NSString *path = [_config pathForDomain:TConfigPathDomainDownload];
 	
 	if ([[NSFileManager defaultManager] fileExistsAtPath:path] == NO)
 		[[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
@@ -219,7 +219,7 @@
 	NSString *path = [[_imDownloadPath URL] path];
 	
 	if (path)
-		[_config setDownloadFolder:path];
+		[_config setDomain:TConfigPathDomainDownload place:TConfigPathPlaceAbsolute subpath:path];
 	else
 		NSBeep();
 }

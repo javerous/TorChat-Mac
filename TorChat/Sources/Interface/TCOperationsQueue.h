@@ -1,5 +1,5 @@
 /*
- *  TCTorManager.h
+ *  TCOperationsQueue.h
  *
  *  Copyright 2014 Avérous Julien-Pierre
  *
@@ -21,10 +21,7 @@
  */
 
 
-
-#import <Cocoa/Cocoa.h>
-
-#import "TCConfig.h"
+#import <Foundation/Foundation.h>
 
 
 
@@ -35,35 +32,37 @@
 
 typedef enum
 {
-	TCTorManagerEventRunning,	// context = nil
-	TCTorManagerEventStopped,	// context = nil
-	TCTorManagerEventError,		// context = NSError
-	
-	TCTorManagerEventHostname	// context = NSString(hostname)
-} TCTorManagerEvent;
+	TCOperationsControlContinue,
+	TCOperationsControlFinish
+} TCOperationsControlType;
+
+typedef void (^TCOperationsControl)(TCOperationsControlType type);
+typedef void (^TCOperationsBlock)(TCOperationsControl ctrl);
 
 
 
 /*
-** TCTorManager
+** TCOperationsQueue
 */
-#pragma mark - TCTorManager
+#pragma mark - TCOperationsQueue
 
-@interface TCTorManager : NSObject
+@interface TCOperationsQueue : NSObject
+
+// -- Properties --
+@property (strong, atomic) dispatch_queue_t defaultQueue;
 
 // -- Instance --
-- (id)initWithConfiguration:(id <TCConfig>)configuration;
+- (id)init;
+- (id)initStarted;
+
+// -- Schedule --
+- (void)scheduleBlock:(TCOperationsBlock)block;
+- (void)scheduleOnQueue:(dispatch_queue_t)queue block:(TCOperationsBlock)block;
 
 // -- Life --
 - (void)start;
-- (void)stop;
 
-- (BOOL)isRunning;
-
-// -- Property --
-- (NSString *)hiddenHostname;
-
-// -- Events --
-@property (strong, atomic) void (^eventHandler)(TCTorManagerEvent event, id context);
+// -- Handler --
+@property (strong, atomic) dispatch_block_t finishHandler; // Called each time the operation queue become empty.
 
 @end

@@ -1,5 +1,5 @@
 /*
- *  TCTorManager.h
+ *  TCFileSignature.h
  *
  *  Copyright 2014 Avérous Julien-Pierre
  *
@@ -21,49 +21,32 @@
  */
 
 
-
-#import <Cocoa/Cocoa.h>
-
-#import "TCConfig.h"
+#import <Foundation/Foundation.h>
 
 
 
 /*
-** Types
+** Defines
 */
-#pragma mark - Types
+#pragma mark - Defines
 
-typedef enum
-{
-	TCTorManagerEventRunning,	// context = nil
-	TCTorManagerEventStopped,	// context = nil
-	TCTorManagerEventError,		// context = NSError
-	
-	TCTorManagerEventHostname	// context = NSString(hostname)
-} TCTorManagerEvent;
+#define SMPrivateKeyData	@"private_key"
+#define SMPublicKeyData		@"public_key"
 
 
 
 /*
-** TCTorManager
+** TCFileSignature
 */
-#pragma mark - TCTorManager
+#pragma mark - TCFileSignature
 
-@interface TCTorManager : NSObject
+@interface TCFileSignature : NSObject
 
-// -- Instance --
-- (id)initWithConfiguration:(id <TCConfig>)configuration;
+// -- Key Generation --
++ (NSDictionary *)generateKeyPairsOfSize:(NSUInteger)keySize;
 
-// -- Life --
-- (void)start;
-- (void)stop;
-
-- (BOOL)isRunning;
-
-// -- Property --
-- (NSString *)hiddenHostname;
-
-// -- Events --
-@property (strong, atomic) void (^eventHandler)(TCTorManagerEvent event, id context);
+// -- Signatures --
++ (NSData *)signContentsOfURL:(NSURL *)aURL withPrivateKey:(NSData *)privateKey;
++ (BOOL)validateSignature:(NSData *)signature forContentsOfURL:(NSURL *)aURL withPublicKey:(NSData *)publicKey;
 
 @end

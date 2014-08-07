@@ -321,6 +321,7 @@
 	[self saveConfig];
 }
 
+/*
 - (NSString *)downloadFolder
 {
 	NSString *value = [_fcontent objectForKey:TCCONF_KEY_DOWN_FOLDER];
@@ -341,7 +342,7 @@
 	// Save
 	[self saveConfig];
 }
-
+*/
 
 
 /*
@@ -1038,7 +1039,7 @@
 			pathKey = TCCONF_KEY_PATH_TOR_DARA;
 			standardPathDirectory = NSApplicationSupportDirectory;
 			standardSubPath = @"TorChat/TorData/";
-			referalSubPath = @"tordata/";
+			referalSubPath = @"tordata/data/";
 			break;
 		}
 		
@@ -1193,7 +1194,7 @@
 ** TCConfigPlist - Tools
 */
 #pragma mark - TCConfigPlist - Tools
-
+/*
 - (NSString *)realPath:(NSString *)path
 {
 	if ([path length] == 0)
@@ -1238,7 +1239,7 @@
 		return rpath;
 	}
 }
-
+*/
 
 
 /*
