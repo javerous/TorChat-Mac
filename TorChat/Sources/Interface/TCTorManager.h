@@ -27,6 +27,23 @@
 #import "TCConfig.h"
 
 
+/*
+** Globals
+*/
+#pragma mark - Globals
+
+#define TCTorManagerInfoDomain	@"TCTorManagerInfoDomain"
+
+
+
+/*
+** Forward
+*/
+#pragma mark - Forward
+
+@class TCInfo;
+
+
 
 /*
 ** Types
@@ -41,6 +58,11 @@ typedef enum
 	
 	TCTorManagerEventHostname	// context = NSString(hostname)
 } TCTorManagerEvent;
+
+typedef enum
+{
+	xyz_fixme
+} TCTorManagerError;
 
 
 
@@ -61,7 +83,7 @@ typedef enum
 - (BOOL)isRunning;
 
 // -- Update --
-- (void)checkForUpdateWithResultHandler:(void (^)(NSString *newVersion, NSString *errorID))handler;
+- (void)checkForUpdateWithResultHandler:(void (^)(NSString *newVersion, TCInfo *error))handler;
 
 // -- Property --
 - (NSString *)hiddenHostname;

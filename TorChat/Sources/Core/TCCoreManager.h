@@ -55,19 +55,19 @@
 // == Info Code ==
 typedef enum
 {
-	// -- Notify --
-	TCCoreNotifyStarted,
-	TCCoreNotifyStopped,
-	TCCoreNotifyStatus,			// context: NSNumber (TCStatus)
+	// -- Event --
+	TCCoreEventStarted,
+	TCCoreEventStopped,
+	TCCoreEventStatus,			// context: NSNumber (TCStatus)
 	
-	TCCoreNotifyProfileAvatar,	// context: TCImage
-	TCCoreNotifyProfileName,	// context: NSString (<name>)
-	TCCoreNotifyProfileText,	// context: NSString (<text>)
+	TCCoreEventProfileAvatar,	// context: TCImage
+	TCCoreEventProfileName,		// context: NSString (<name>)
+	TCCoreEventProfileText,		// context: NSString (<text>)
 	
-	TCCoreNotifyBuddyNew,		// context: TCBuddy
+	TCCoreEventBuddyNew,		// context: TCBuddy
 	
-	TCCoreNotifyClientStarted,
-	TCCoreNotifyClientStopped,
+	TCCoreEventClientStarted,
+	TCCoreEventClientStopped,
 	
 	// -- Errors --
 	TCCoreErrorServAccept,

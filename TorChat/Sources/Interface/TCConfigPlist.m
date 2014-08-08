@@ -36,13 +36,9 @@
 // -- Config Keys --
 #define TCCONF_KEY_TOR_ADDRESS		@"tor_address"
 #define TCCONF_KEY_TOR_PORT			@"tor_socks_port"
-#define TCCONF_KEY_TOR_PATH			@"tor_path"
-#define TCCONF_KEY_TOR_DATA_PATH	@"tor_data_path"
 
 #define TCCONF_KEY_IM_ADDRESS		@"im_address"
 #define TCCONF_KEY_IM_PORT			@"im_in_port"
-
-#define TCCONF_KEY_DOWN_FOLDER		@"download_path"
 
 #define TCCONF_KEY_MODE				@"mode"
 
@@ -231,50 +227,6 @@
 	[self saveConfig];
 }
 
-- (NSString *)torPath
-{
-	NSString *value = [_fcontent objectForKey:TCCONF_KEY_TOR_PATH];
-	
-	if (value)
-		return value;
-	else
-		return @"<tor>";
-}
-
-- (void)setTorPath:(NSString *)path
-{
-	if (!path)
-		return;
-	
-	[_fcontent setObject:path forKey:TCCONF_KEY_TOR_PATH];
-		
-	// Save
-	[self saveConfig];
-}
-
-- (NSString *)torDataPath
-{
-	NSString *value = [_fcontent objectForKey:TCCONF_KEY_TOR_DATA_PATH];
-	
-	if (value)
-		return value;
-	else
-		return @"tordata";
-	
-	return @"";
-}
-
-- (void)setTorDataPath:(NSString *)path
-{
-	if (!path)
-		return;
-	
-	[_fcontent setObject:path forKey:TCCONF_KEY_TOR_DATA_PATH];
-		
-	// Save
-	[self saveConfig];
-}
-
 
 
 /*
@@ -321,28 +273,6 @@
 	[self saveConfig];
 }
 
-/*
-- (NSString *)downloadFolder
-{
-	NSString *value = [_fcontent objectForKey:TCCONF_KEY_DOWN_FOLDER];
-	
-	if (value)
-		return value;
-	else
-		return [self localized:@"conf_download"];
-}
-
-- (void)setDownloadFolder:(NSString *)folder
-{
-		if (!folder)
-			return;
-
-	[_fcontent setObject:folder forKey:TCCONF_KEY_DOWN_FOLDER];
-		
-	// Save
-	[self saveConfig];
-}
-*/
 
 
 /*
@@ -1016,6 +946,17 @@
 	NSString				*standardSubPath = nil;
 	NSString				*referalSubPath = nil;
 
+#warning FIXME: get TCCONF_KEY_DOWN_FOLDER + TCCONF_KEY_TOR_PATH + TCCONF_KEY_TOR_DATA_PATH
+	
+	/*
+	 #define TCCONF_KEY_TOR_PATH			@"tor_path" / @"<tor>"
+	 #define TCCONF_KEY_TOR_DATA_PATH	@"tor_data_path"
+	 #define TCCONF_KEY_DOWN_FOLDER		@"download_path"
+
+	 // remember: path can start with ~ in hold format.
+	 */
+	// 
+	
 	// Handle domain.
 	switch (domain)
 	{
@@ -1186,80 +1127,6 @@
 	[self saveConfig];
 	
 	return YES;
-}
-
-
-
-/*
-** TCConfigPlist - Tools
-*/
-#pragma mark - TCConfigPlist - Tools
-/*
-- (NSString *)realPath:(NSString *)path
-{
-	if ([path length] == 0)
-		return @"";
-	
-	if ([path isEqualToString:@"<tor>"])
-	{
-		NSString *rpath = [[NSBundle mainBundle] pathForResource:@"tor" ofType:@""];
-		
-		if (rpath)
-			return rpath;
-		else
-			return @"cant_find_tor";
-	}
-	else if ([path characterAtIndex:0] == '~')
-	{
-		return [path stringByExpandingTildeInPath];
-	}
-	else if ([path characterAtIndex:0] == '/')
-	{
-		return path;
-	}
-	else
-	{
-		NSString *rpath = nil;
-		
-#if defined(PROXY_ENABLED) && PROXY_ENABLED
-		
-		// Build path relative to desktop directory
-		if (!rpath)
-			rpath = [[@"~/Desktop" stringByExpandingTildeInPath] stringByAppendingPathComponent:path];
-#endif
-		
-		// Build path relative to configuration directory
-		if (!rpath)
-			rpath = [[_fpath stringByDeletingLastPathComponent] stringByAppendingPathComponent:path];
-		
-		// Build path relative to temporary directory
-		if (!rpath)
-			rpath = [@"/tmp" stringByAppendingPathComponent:path];
-		
-		return rpath;
-	}
-}
-*/
-
-
-/*
-** TCConfigPlist - Localization
-*/
-#pragma mark - TCConfigPlist - Localization
-
-- (NSString *)localized:(NSString *)key
-{
-	NSString *local = nil;
-	
-	if (!key)
-		return @"";
-	
-	local = NSLocalizedString(key, @"");
-	
-	if ([local length] == 0)
-		return key;
-	
-	return local;
 }
 
 

@@ -103,9 +103,9 @@
 	if (!aconfig)
 	{
 		// Log error
-		NSString *key = NSLocalizedString(@"ac_err_write_file", @"");
+		NSString *key = NSLocalizedString(@"ac_error_write_file", @"");
 		
-		[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_err_write_file", path];
+		[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_error_write_file", path];
 		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:key, path] runModal];
 		return nil;
 	}
