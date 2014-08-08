@@ -56,18 +56,20 @@ typedef enum
 
 // -- Properties --
 @property (assign, nonatomic, readonly) TCInfoKind	kind;
-@property (assign, nonatomic, readonly)	int			infoCode;
+
+@property (assign, nonatomic, readonly) NSString	*domain;
+@property (assign, nonatomic, readonly)	int			code;
 @property (strong, nonatomic, readonly)	id			context;
-@property (strong, nonatomic)			NSString	*infoString;
+
+@property (strong, nonatomic, readonly) NSDate		*date;
+
+@property (strong, nonatomic, readonly) TCInfo		*subInfo;
+
 
 // -- Instance --
-+ (TCInfo *)infoOfKind:(TCInfoKind)kind infoCode:(int)code;
-+ (TCInfo *)infoOfKind:(TCInfoKind)kind infoCode:(int)code infoString:(NSString *)string;
-+ (TCInfo *)infoOfKind:(TCInfoKind)kind infoCode:(int)code infoString:(NSString *)string context:(id)context;
-+ (TCInfo *)infoOfKind:(TCInfoKind)kind infoCode:(int)code infoString:(NSString *)string info:(TCInfo *)info;
-+ (TCInfo *)infoOfKind:(TCInfoKind)kind infoCode:(int)code infoString:(NSString *)string context:(id)context info:(TCInfo *)info;
-
-// -- Tools --
-- (NSString *)render;
++ (TCInfo *)infoOfKind:(TCInfoKind)kind domain:(NSString *)domain code:(int)code;
++ (TCInfo *)infoOfKind:(TCInfoKind)kind domain:(NSString *)domain code:(int)code context:(id)context;
++ (TCInfo *)infoOfKind:(TCInfoKind)kind domain:(NSString *)domain code:(int)code info:(TCInfo *)info;
++ (TCInfo *)infoOfKind:(TCInfoKind)kind domain:(NSString *)domain code:(int)code context:(id)context info:(TCInfo *)info;
 
 @end
