@@ -132,8 +132,8 @@
 	
 	if (!configPath)
 	{
-		[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_err_build_path"];
-		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_err_build_path", @"")] runModal];
+		[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_error_build_path"];
+		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_error_build_path", @"")] runModal];
 		return;
 	}
 
@@ -142,10 +142,10 @@
 	
 	if (!_config)
 	{
-		[_imAddressField setStringValue:NSLocalizedString(@"ac_err_config", @"")];
+		[_imAddressField setStringValue:NSLocalizedString(@"ac_error_config", @"")];
 		
-		[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_err_write_file", configPath];
-		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:TCLocalizedString(@"ac_err_write_file", @""), configPath] runModal];
+		[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_error_write_file", configPath];
+		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:TCLocalizedString(@"ac_error_write_file", @""), configPath] runModal];
 
 		return;
 	}

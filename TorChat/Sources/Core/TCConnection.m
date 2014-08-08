@@ -142,7 +142,7 @@
 			[_sock scheduleOperation:TCSocketOperationLine withSize:1 andTag:0];
 			
 			// Notify
-			[self notify:TCCoreNotifyClientStarted];
+			[self notify:TCCoreEventClientStarted];
 		}
 	});
 }

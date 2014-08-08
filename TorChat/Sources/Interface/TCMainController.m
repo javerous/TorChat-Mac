@@ -131,8 +131,8 @@
 
 			if (!conf)
 			{
-				[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_err_read_proxy"];
-				[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_err_read_proxy", @"")] runModal];
+				[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_error_read_proxy"];
+				[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_error_read_proxy", @"")] runModal];
 			}
 		}
 	}
@@ -174,9 +174,9 @@
 			
 			if (!conf)
 			{
-				NSString *key = NSLocalizedString(@"ac_err_read_file", @"");
+				NSString *key = NSLocalizedString(@"ac_error_read_file", @"");
 				
-				[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_err_read_file", path];
+				[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_error_read_file", path];
 				[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:key, path] runModal];
 			}
 		}

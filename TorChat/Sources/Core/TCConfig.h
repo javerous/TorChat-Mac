@@ -104,21 +104,12 @@ typedef enum
 - (uint16_t)torPort;
 - (void)setTorPort:(uint16_t) port;
 
-//- (NSString *)torPath;
-//- (void)setTorPath:(NSString *)path;
-
-//- (NSString *)torDataPath;
-//- (void)setTorDataPath:(NSString *)path;
-
 // -- TorChat --
 - (NSString *)selfAddress;
 - (void)setSelfAddress:(NSString *)address;
 
 - (uint16_t)clientPort;
 - (void)setClientPort:(uint16_t)port;
-
-//- (NSString *)downloadFolder;
-//- (void)setDownloadFolder:(NSString *)folder;
 
 // -- Mode --
 - (TCConfigMode)mode;
@@ -170,11 +161,5 @@ typedef enum
 // -- Paths --
 - (NSString *)pathForDomain:(TConfigPathDomain)domain;
 - (BOOL)setDomain:(TConfigPathDomain)domain place:(TConfigPathPlace)place subpath:(NSString *)subpath;
-
-// -- Tools --
-//- (NSString *)realPath:(NSString *)path;
-
-// -- Localization --
-- (NSString *)localized:(NSString *)key;
 
 @end

@@ -202,11 +202,11 @@ static char gLocalQueueContext;
 - (void)_sendFileStopReceiving:(NSString *)uuid;
 
 // -- Send Command Data --
-- (BOOL)_sendCommand:(NSString *)command channel:(tcbuddy_channel)channel; // TCBuddyChannelOut
-- (BOOL)_sendCommand:(NSString *)command array:(NSArray *)data channel:(tcbuddy_channel)channel; // = TCBuddyChannelOut);
-- (BOOL)_sendCommand:(NSString *)command data:(NSData *)data channel:(tcbuddy_channel)channel; // = TCBuddyChannelOut);
-- (BOOL)_sendCommand:(NSString *)command string:(NSString *)data channel:(tcbuddy_channel)channel; // = TCBuddyChannelOut);
-- (BOOL)_sendData:(NSData *)data channel:(tcbuddy_channel)channel; // = TCBuddyChannelOut);
+- (BOOL)_sendCommand:(NSString *)command channel:(TCBuddyChannel)channel; // TCBuddyChannelOut
+- (BOOL)_sendCommand:(NSString *)command array:(NSArray *)data channel:(TCBuddyChannel)channel; // = TCBuddyChannelOut);
+- (BOOL)_sendCommand:(NSString *)command data:(NSData *)data channel:(TCBuddyChannel)channel; // = TCBuddyChannelOut);
+- (BOOL)_sendCommand:(NSString *)command string:(NSString *)data channel:(TCBuddyChannel)channel; // = TCBuddyChannelOut);
+- (BOOL)_sendData:(NSData *)data channel:(TCBuddyChannel)channel; // = TCBuddyChannelOut);
 
 // -- Network Helper --
 - (void)_startSocks;
@@ -402,7 +402,7 @@ static char gLocalQueueContext;
 		_running = YES;
 		
 		// Say that we are connected
-		[self _notify:TCBuddyNotifyConnectedTor];
+		[self _notify:TCBuddyEventConnectedTor];
 	});
 }
 
@@ -445,9 +445,9 @@ static char gLocalQueueContext;
 			
 			// Notify
 			if (lstatus != TCStatusOffline)
-				[self _notify:TCBuddyNotifyStatus context:[self _status]];
+				[self _notify:TCBuddyEventStatus context:[self _status]];
 			
-			[self _notify:TCBuddyNotifyDisconnected];
+			[self _notify:TCBuddyEventDisconnected];
 		}
 	});
 }
@@ -523,7 +523,7 @@ static char gLocalQueueContext;
 		_alias = name;
 		
 		// Notidy of the change
-		[self _notify:TCBuddyNotifyAlias context:name];
+		[self _notify:TCBuddyEventAlias context:name];
 	});
 }
 
@@ -552,7 +552,7 @@ static char gLocalQueueContext;
 		_notes = notes;
 		
 		// Notify of the change
-		[self _notify:TCBuddyNotifyNotes context:_notes];
+		[self _notify:TCBuddyEventNotes context:_notes];
 
 	});
 }
@@ -583,7 +583,7 @@ static char gLocalQueueContext;
 		_blocked = blocked;
 		
 		// Notify of the change
-		[self _notify:TCBuddyNotifyBlocked context:@(blocked)];
+		[self _notify:TCBuddyEventBlocked context:@(blocked)];
 	});
 }
 
@@ -743,7 +743,7 @@ static char gLocalQueueContext;
 				// Notify that we stop sending the file
 				TCFileInfo *info = [[TCFileInfo alloc] initWithFileSend:file];
 				
-				[self _notify:TCBuddyNotifyFileSendStopped context:info];
+				[self _notify:TCBuddyEventFileSendStopped context:info];
 				
 				// Release file
 				[_fsend removeObjectForKey:uuid];
@@ -761,7 +761,7 @@ static char gLocalQueueContext;
 				// Notify that we stop sending the file
 				TCFileInfo *info = [[TCFileInfo alloc] initWithFileReceive:file];
 
-				[self _notify:TCBuddyNotifyFileReceiveStopped context:info];
+				[self _notify:TCBuddyEventFileReceiveStopped context:info];
 
 				// Release file
 				[_freceive removeObjectForKey:uuid];
@@ -872,7 +872,7 @@ static char gLocalQueueContext;
 				// Notify
 				TCFileInfo *info = [[TCFileInfo alloc] initWithFileSend:file];
 				
-				[self _notify:TCBuddyNotifyFileSendStart context:info];
+				[self _notify:TCBuddyEventFileSendStart context:info];
 				
 				// Start the file session
 				[self _sendFileName:file];
@@ -951,7 +951,7 @@ static char gLocalQueueContext;
 			
 			// Notify that we are ready
 			if (_ponged && _pongSent)
-				[self _notify:TCBuddyNotifyIdentified];
+				[self _notify:TCBuddyEventIdentified];
 		}
 	});
 }
@@ -1084,7 +1084,7 @@ static char gLocalQueueContext;
 					[_outSocket setGlobalOperation:TCSocketOperationLine withSize:0 andTag:0];
 					
 					// Notify
-					[self _notify:TCBuddyNotifyConnectedBuddy];
+					[self _notify:TCBuddyEventConnectedBuddy];
 					
 					// We are connected, do things
 					[self _connectedSocks];
@@ -1172,7 +1172,7 @@ static char gLocalQueueContext;
 		_status = nstatus;
 		
 		// Notify that status changed
-		[self _notify:TCBuddyNotifyStatus context:[self _status]];
+		[self _notify:TCBuddyEventStatus context:[self _status]];
 	}
 }
 
@@ -1184,7 +1184,7 @@ static char gLocalQueueContext;
 		return;
 	
 	// Notify it
-	[self _notify:TCBuddyNotifyMessage context:message];
+	[self _notify:TCBuddyEventMessage context:message];
 }
 
 - (void)parser:(TCParser *)parser parsedVersion:(NSString *)version
@@ -1197,7 +1197,7 @@ static char gLocalQueueContext;
 	_peerVersion = version;
 		
 	// Notify it
-	[self _notify:TCBuddyNotifyVersion context:version];
+	[self _notify:TCBuddyEventVersion context:version];
 }
 
 - (void)parser:(TCParser *)parser parsedClient:(NSString *)client
@@ -1210,7 +1210,7 @@ static char gLocalQueueContext;
 	_peerClient = client;
 	
 	// Notify it
-	[self _notify:TCBuddyNotifyClient context:client];
+	[self _notify:TCBuddyEventClient context:client];
 }
 
 - (void)parser:(TCParser *)parser parsedProfileText:(NSString *)text
@@ -1227,7 +1227,7 @@ static char gLocalQueueContext;
 	[_config setBuddy:_address lastProfileText:text];
 	
 	// Notify it
-	[self _notify:TCBuddyNotifyProfileText context:text];
+	[self _notify:TCBuddyEventProfileText context:text];
 }
 
 - (void)parser:(TCParser *)parser parsedProfileName:(NSString *)name
@@ -1243,7 +1243,7 @@ static char gLocalQueueContext;
 	[_config setBuddy:_address lastProfileName:name];
 	
 	// Notify it.
-	[self _notify:TCBuddyNotifyProfileName context:name];
+	[self _notify:TCBuddyEventProfileName context:name];
 }
 
 - (void)parser:(TCParser *)parser parsedProfileAvatar:(NSData *)bitmap
@@ -1260,7 +1260,7 @@ static char gLocalQueueContext;
 	[_config setBuddy:_address lastProfileAvatar:_profileAvatar];
 	
 	// Notify it.
-	[self _notify:TCBuddyNotifyProfileAvatar context:_profileAvatar];
+	[self _notify:TCBuddyEventProfileAvatar context:_profileAvatar];
 }
 
 - (void)parser:(TCParser *)parser parsedProfileAvatarAlpha:(NSData *)bitmap
@@ -1337,7 +1337,7 @@ static char gLocalQueueContext;
 		
 	TCFileInfo *info = [[TCFileInfo alloc] initWithFileReceive:file];
 		
-	[self _notify:TCBuddyNotifyFileReceiveStart context:info];
+	[self _notify:TCBuddyEventFileReceiveStart context:info];
 }
 
 - (void)parser:(TCParser *)parser parsedFileDataWithUUID:(NSString *)uuid start:(NSString *)start hash:(NSString *)hash data:(NSData *)data
@@ -1375,13 +1375,13 @@ static char gLocalQueueContext;
 			// Notify of the new chunk
 			TCFileInfo *info = [[TCFileInfo alloc] initWithFileReceive:file];
 			
-			[self _notify:TCBuddyNotifyFileReceiveRunning context:info];
+			[self _notify:TCBuddyEventFileReceiveRunning context:info];
 			
 			// Do nothing if we are no more to send
 			if ([file isFinished])
 			{
 				// Notify that we have finished
-				[self _notify:TCBuddyNotifyFileReceiveFinish context:info];
+				[self _notify:TCBuddyEventFileReceiveFinish context:info];
 
 				// Release file
 				[_freceive removeObjectForKey:uuid];
@@ -1418,13 +1418,13 @@ static char gLocalQueueContext;
 		// Notice the advancing
 		TCFileInfo *info = [[TCFileInfo alloc] initWithFileSend:file];
 				
-		[self _notify:TCBuddyNotifyFileSendRunning context:info];
+		[self _notify:TCBuddyEventFileSendRunning context:info];
 
 		// Do nothing if we are no more to send
 		if ([file isFinished])
 		{
 			// Notify
-			[self _notify:TCBuddyNotifyFileSendFinish context:info];
+			[self _notify:TCBuddyEventFileSendFinish context:info];
 
 			// Release the file
 			[_fsend removeObjectForKey:uuid];
@@ -1484,7 +1484,7 @@ static char gLocalQueueContext;
 	// Notify that we stop sending the file
 	TCFileInfo *info = [[TCFileInfo alloc] initWithFileSend:file];
 		
-	[self _notify:TCBuddyNotifyFileSendStopped context:info];
+	[self _notify:TCBuddyEventFileSendStopped context:info];
 		
 	// Release file
 	[_fsend removeObjectForKey:uuid];
@@ -1507,7 +1507,7 @@ static char gLocalQueueContext;
 	// Notify that we stop receiving the file
 	TCFileInfo *info = [[TCFileInfo alloc] initWithFileReceive:file];
 
-	[self _notify:TCBuddyNotifyFileReceiveStopped context:info];
+	[self _notify:TCBuddyEventFileReceiveStopped context:info];
 	
 	// Release file
 	[_freceive removeObjectForKey:uuid];
@@ -1778,14 +1778,14 @@ static char gLocalQueueContext;
 */
 #pragma mark - Send Command Data
 
-- (BOOL)_sendCommand:(NSString *)command channel:(tcbuddy_channel)channel
+- (BOOL)_sendCommand:(NSString *)command channel:(TCBuddyChannel)channel
 {
 	// > localQueue <
 	
 	return [self _sendCommand:command data:nil channel:channel];
 }
 
-- (BOOL)_sendCommand:(NSString *)command array:(NSArray *)data channel:(tcbuddy_channel)channel
+- (BOOL)_sendCommand:(NSString *)command array:(NSArray *)data channel:(TCBuddyChannel)channel
 {
 	// > localQueue <
 	
@@ -1804,12 +1804,12 @@ static char gLocalQueueContext;
 	return [self _sendCommand:command data:rdata channel:channel];
 }
 
-- (BOOL)_sendCommand:(NSString *)command string:(NSString *)data channel:(tcbuddy_channel)channel
+- (BOOL)_sendCommand:(NSString *)command string:(NSString *)data channel:(TCBuddyChannel)channel
 {
 	return [self _sendCommand:command data:[data dataUsingEncoding:NSUTF8StringEncoding] channel:channel];
 }
 
-- (BOOL)_sendCommand:(NSString *)command data:(NSData *)data channel:(tcbuddy_channel)channel
+- (BOOL)_sendCommand:(NSString *)command data:(NSData *)data channel:(TCBuddyChannel)channel
 {
 	// > localQueue <
 	
@@ -1851,14 +1851,14 @@ static char gLocalQueueContext;
 	return YES;
 }
 
-- (BOOL)_sendData:(NSData *)data channel:(tcbuddy_channel)channel
+- (BOOL)_sendData:(NSData *)data channel:(TCBuddyChannel)channel
 {
 	// > localQueue <
 	
 	return [self _sendBytes:[data bytes] length:[data length] channel:channel];
 }
 
-- (BOOL)_sendBytes:(const void *)bytes length:(NSUInteger)length channel:(tcbuddy_channel)channel
+- (BOOL)_sendBytes:(const void *)bytes length:(NSUInteger)length channel:(TCBuddyChannel)channel
 {
 	// > localQueue <
 	
