@@ -58,15 +58,14 @@ typedef enum
 	// -- Notify --
 	TCCoreNotifyStarted,
 	TCCoreNotifyStopped,
-	TCCoreNotifyStatus,
+	TCCoreNotifyStatus,			// context: NSNumber (TCStatus)
 	
-	TCCoreNotifyProfileAvatar,
-	TCCoreNotifyProfileName,
-	TCCoreNotifyProfileText,
+	TCCoreNotifyProfileAvatar,	// context: TCImage
+	TCCoreNotifyProfileName,	// context: NSString (<name>)
+	TCCoreNotifyProfileText,	// context: NSString (<text>)
 	
-	TCCoreNotifyBuddyNew,
+	TCCoreNotifyBuddyNew,		// context: TCBuddy
 	
-	TCCoreNotifyClientNew,
 	TCCoreNotifyClientStarted,
 	TCCoreNotifyClientStopped,
 	
@@ -74,40 +73,36 @@ typedef enum
 	TCCoreErrorServAccept,
 	TCCoreErrorServAcceptAsync,
 	
-	TCCoreErrorSocket,
+	TCCoreErrorSocket,			// info: TCInfo (TCSocketInfoDomain)
 	TCCoreErrorSocketCreate,
 	TCCoreErrorSocketOption,
 	TCCoreErrorSocketBind,
 	TCCoreErrorSocketListen,
 
-	TCCoreErrorClientRead,
-	TCCoreErrorClientReadClosed,
-	TCCoreErrorClientReadFull,
-	
 	TCCoreErrorClientAlreadyPinged,
 	TCCoreErrorClientMasquerade,
 	TCCoreErrorClientAddBuddy,
 	
-	TCCoreErrorClientCmdUnknownCommand,
+	TCCoreErrorClientCmdUnknownCommand,		// context: NSString (<parser_error>)
 	
-	TCCoreErrorClientCmdPing,
-	TCCoreErrorClientCmdPong,
-	TCCoreErrorClientCmdStatus,
-	TCCoreErrorClientCmdVersion,
-	TCCoreErrorClientCmdClient,
-	TCCoreErrorClientCmdProfileText,
-	TCCoreErrorClientCmdProfileName,
-	TCCoreErrorClientCmdProfileAvatar,
-	TCCoreErrorClientCmdProfileAvatarAlpha,
-	TCCoreErrorClientCmdMessage,
-	TCCoreErrorClientCmdAddMe,
-	TCCoreErrorClientCmdRemoveMe,
-	TCCoreErrorClientCmdFileName,
-	TCCoreErrorClientCmdFileData,
-	TCCoreErrorClientCmdFileDataOk,
-	TCCoreErrorClientCmdFileDataError,
-	TCCoreErrorClientCmdFileStopSending,
-	TCCoreErrorClientCmdFileStopReceiving,
+	TCCoreErrorClientCmdPing,				// context: NSString (<parser_error>)
+	TCCoreErrorClientCmdPong,				// context: NSString (<parser_error>)
+	TCCoreErrorClientCmdStatus,				// context: NSString (<parser_error>)
+	TCCoreErrorClientCmdVersion,			// context: NSString (<parser_error>)
+	TCCoreErrorClientCmdClient,				// context: NSString (<parser_error>)
+	TCCoreErrorClientCmdProfileText,		// context: NSString (<parser_error>)
+	TCCoreErrorClientCmdProfileName,		// context: NSString (<parser_error>)
+	TCCoreErrorClientCmdProfileAvatar,		// context: NSString (<parser_error>)
+	TCCoreErrorClientCmdProfileAvatarAlpha,	// context: NSString (<parser_error>)
+	TCCoreErrorClientCmdMessage,			// context: NSString (<parser_error>)
+	TCCoreErrorClientCmdAddMe,				// context: NSString (<parser_error>)
+	TCCoreErrorClientCmdRemoveMe,			// context: NSString (<parser_error>)
+	TCCoreErrorClientCmdFileName,			// context: NSString (<parser_error>)
+	TCCoreErrorClientCmdFileData,			// context: NSString (<parser_error>)
+	TCCoreErrorClientCmdFileDataOk,			// context: NSString (<parser_error>)
+	TCCoreErrorClientCmdFileDataError,		// context: NSString (<parser_error>)
+	TCCoreErrorClientCmdFileStopSending,	// context: NSString (<parser_error>)
+	TCCoreErrorClientCmdFileStopReceiving,	// context: NSString (<parser_error>)
 } TCCoreInfo;
 
 // -- Delegate --

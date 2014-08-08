@@ -519,9 +519,6 @@
 			break;
 		}
 			
-		case TCCoreNotifyClientNew:
-			break;
-			
 		case TCCoreNotifyClientStarted:
 			break;
 			

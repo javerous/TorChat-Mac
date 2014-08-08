@@ -216,9 +216,9 @@
 		E8A6FE3717A995F100C4DEAB /* TCPanel_Basic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCPanel_Basic.m; path = Interface/TCPanel_Basic.m; sourceTree = "<group>"; };
 		E8A7F6DC185D22F8002A4495 /* TCChatTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatTableView.h; path = Interface/TCChatTableView.h; sourceTree = "<group>"; };
 		E8A7F6DD185D22F8002A4495 /* TCChatTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCChatTableView.m; path = Interface/TCChatTableView.m; sourceTree = "<group>"; };
-		E8AB4D971994CD8700FF986D /* TCTextConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TCTextConstants.h; sourceTree = "<group>"; };
 		E8AB4D981995095300FF986D /* TCInfo+Render.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "TCInfo+Render.h"; path = "Interface/TCInfo+Render.h"; sourceTree = "<group>"; };
 		E8AB4D991995095300FF986D /* TCInfo+Render.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "TCInfo+Render.m"; path = "Interface/TCInfo+Render.m"; sourceTree = "<group>"; };
+		E8AB4D9C199522CF00FF986D /* TCTextConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TCTextConstants.h; path = Interface/TCTextConstants.h; sourceTree = "<group>"; };
 		E8C1EFF112F7169400E24C42 /* TCImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCImage.m; sourceTree = "<group>"; };
 		E8C1EFF212F7169400E24C42 /* TCImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCImage.h; sourceTree = "<group>"; };
 		E8C398291205D51000B9307B /* TCSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCSocket.m; sourceTree = "<group>"; };
@@ -326,7 +326,6 @@
 			isa = PBXGroup;
 			children = (
 				E837DADA11E7739D004BC524 /* TCConfig.h */,
-				E8AB4D971994CD8700FF986D /* TCTextConstants.h */,
 				E84641AF186091FE0046BEFB /* TCDebugLog.h */,
 				E837DADC11E7739D004BC524 /* TCCoreManager.h */,
 				E837DADB11E7739D004BC524 /* TCCoreManager.m */,
@@ -702,6 +701,7 @@
 			isa = PBXGroup;
 			children = (
 				E87833E919926FF600D0C67F /* TCPublicKey.h */,
+				E8AB4D9C199522CF00FF986D /* TCTextConstants.h */,
 			);
 			name = Constants;
 			sourceTree = "<group>";
