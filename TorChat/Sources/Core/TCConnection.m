@@ -61,11 +61,11 @@
 }
 
 // -- Helpers --
-- (void)error:(TCCoreInfo)code info:(NSString *)info fatal:(BOOL)fatal;
-- (void)error:(TCCoreInfo)code info:(NSString *)info contextObj:(id)ctx fatal:(BOOL)fatal;
-- (void)error:(TCCoreInfo)code info:(NSString *)info contextInfo:(TCInfo *)serr fatal:(BOOL)fatal;
+- (void)error:(TCCoreInfo)code fatal:(BOOL)fatal;
+- (void)error:(TCCoreInfo)code context:(id)ctx fatal:(BOOL)fatal;
+- (void)error:(TCCoreInfo)code info:(TCInfo *)subInfo fatal:(BOOL)fatal;
 
-- (void)notify:(TCCoreInfo)notice info:(NSString *)info;
+- (void)notify:(TCCoreInfo)notice;
 
 @end
 
@@ -142,7 +142,7 @@
 			[_sock scheduleOperation:TCSocketOperationLine withSize:1 andTag:0];
 			
 			// Notify
-			[self notify:TCCoreNotifyClientStarted info:@"core_cnx_note_started"];
+			[self notify:TCCoreNotifyClientStarted];
 		}
 	});
 }
@@ -192,7 +192,7 @@
 			fprintf(stderr, "(1) Will disconnect incoming connection from fake '%s'\n", [address UTF8String]);
 			
 			// Notify
-			[self error:TCCoreErrorClientCmdPing info:@"core_cnx_err_fake_ping" fatal:YES];
+			[self error:TCCoreErrorClientCmdPing fatal:YES];
 			
 			return;
 		}
@@ -314,7 +314,7 @@
 	}
 	
 	// Parse error is fatal
-	[self error:nerr info:information fatal:YES];
+	[self error:nerr context:information fatal:YES];
 }
 
 
@@ -342,7 +342,7 @@
 - (void)socket:(TCSocket *)socket error:(TCInfo *)error
 {
 	// Fallback Error
-	[self error:TCCoreErrorSocket info:@"core_cnx_err_socket" contextInfo:error fatal:YES];
+	[self error:TCCoreErrorSocket info:error fatal:YES];
 }
 
 
@@ -352,45 +352,45 @@
 */
 #pragma mark - TCConnection - Helpers
 
-- (void)error:(TCCoreInfo)code info:(NSString *)info fatal:(BOOL)fatal
+- (void)error:(TCCoreInfo)code fatal:(BOOL)fatal
 {
 	id <TCConnectionDelegate> delegate = _delegate;
 	
 	if (delegate)
-		[delegate connection:self information:[TCInfo infoOfKind:TCInfoError infoCode:code infoString:info]];
+		[delegate connection:self information:[TCInfo infoOfKind:TCInfoError domain:TCConnectionInfoDomain code:code]];
 		
 	if (fatal)
 		[self stop];
 }
 
-- (void)error:(TCCoreInfo)code info:(NSString *)info contextObj:(id)ctx fatal:(BOOL)fatal
+- (void)error:(TCCoreInfo)code context:(id)ctx fatal:(BOOL)fatal
 {
 	id <TCConnectionDelegate> delegate = _delegate;
 	
 	if (delegate)
-		[delegate connection:self information:[TCInfo infoOfKind:TCInfoError infoCode:code infoString:info context:ctx]];
+		[delegate connection:self information:[TCInfo infoOfKind:TCInfoError domain:TCConnectionInfoDomain code:code context:ctx]];
 
 	if (fatal)
 		[self stop];
 }
 
-- (void)error:(TCCoreInfo)code info:(NSString *)info contextInfo:(TCInfo *)serr fatal:(BOOL)fatal
+- (void)error:(TCCoreInfo)code info:(TCInfo *)subInfo fatal:(BOOL)fatal
 {
 	id <TCConnectionDelegate> delegate = _delegate;
 
 	if (delegate)
-		[delegate connection:self information:[TCInfo infoOfKind:TCInfoError infoCode:code infoString:info info:serr]];
+		[delegate connection:self information:[TCInfo infoOfKind:TCInfoError domain:TCConnectionInfoDomain code:code info:subInfo]];
 	
 	if (fatal)
 		[self stop];
 }
 
-- (void)notify:(TCCoreInfo)notice info:(NSString *)info
+- (void)notify:(TCCoreInfo)notice
 {
 	id <TCConnectionDelegate> delegate = _delegate;
 
 	if (delegate)
-		[delegate connection:self information:[TCInfo infoOfKind:TCInfoInfo infoCode:notice infoString:info]];
+		[delegate connection:self information:[TCInfo infoOfKind:TCInfoInfo domain:TCConnectionInfoDomain code:notice]];
 }
 
 @end

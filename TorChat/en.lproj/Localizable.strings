@@ -77,9 +77,9 @@
 /* File */
 "file_canceling" = "Canceling...";
 "file_upload_done" = "Upload done.";
-"file_upload_stoped" = "Upload stoped.";
+"file_upload_stopped" = "Upload stopped.";
 "file_download_done" = "Download done.";
-"file_download_stoped" = "Download stoped.";
+"file_download_stopped" = "Download stopped.";
 "file_uploading" = "Uploading...";
 "file_downloading" = "Downloading...";
 "file_uploads" = "%u uploads";
@@ -118,11 +118,14 @@
 "core_bd_note_tor_connected" = "Buddy connected on tor SOCKS.";
 
 "core_bd_note_status_changed" = "Buddy status has changed.";
-"core_bd_note_stoped" = "Buddy is stoped.";
+"core_bd_note_stopped" = "Buddy is stopped.";
 
 "core_bd_note_alias_changed" = "The alias of the buddy changed.";
 "core_bd_note_notes_changed" = "The notes of the buddy changed.";
 "core_bd_note_blocked_changed" = "The block status of the buddy changed.";
+
+"core_bd_err_filesend" = "Can't open file for sending.";
+"core_bd_err_filereceive" = "Can't open file to receive incoming file.";
 
 "core_bd_note_file_send_canceled" = "File sending was canceled.";
 "core_bd_note_file_receive_canceled" = "File receiving was canceled.";
@@ -136,8 +139,8 @@
 "core_bd_note_file_chunk_send" = "New file chunk sent";
 "core_bd_note_file_chunk_receive" = "New file chunk received";
 
-"core_bd_note_file_send_stoped" = "File send was stoped by the remote peer.";
-"core_bd_note_file_receive_stoped" = "File receive was stoped by the remote peer.";
+"core_bd_note_file_send_stopped" = "File send was stopped by the remote peer.";
+"core_bd_note_file_receive_stopped" = "File receive was stopped by the remote peer.";
 "core_bd_note_new_message" = "Received a new message";
 "core_bd_err_file_offline" = "Can't send a file to an offline buddy.";
 "core_bd_err_file_blocked" = "Can't send a file to an blocked buddy.";
@@ -175,7 +178,7 @@
 "core_mng_err_accept" = "Can't accept new client because of a system error.";
 "core_mng_err_async" = "Can't use async I/O on system socket.";
 "core_mng_note_started" = "TorChat controller is started.";
-"core_mng_note_stoped" = "TorChat controller is stoped.";
+"core_mng_note_stopped" = "TorChat controller is stopped.";
 
 "core_mng_note_profile_avatar" = "Profile avatar changed.";
 "core_mng_note_profile_text" = "Profile text changed.";
@@ -195,13 +198,6 @@
 "core_cnx_err_add_buddy" = "Can't add a new buddy on TorChat controller.";
 
 "core_cnx_new_buddy" = "unknown";
-
-
-/* Core - File Send */
-"core_filesend_error" = "Can't open file for sending.";
-
-/* Core - File Receive */
-"core_filereceive_error" = "Can't open file to receive incoming file.";
 
 
 /* Core - Socket */

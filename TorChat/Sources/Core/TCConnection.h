@@ -25,6 +25,15 @@
 
 
 /*
+** Globals
+*/
+#pragma mark - Globals
+
+#define TCConnectionInfoDomain	@"TCConnectionInfoDomain"
+
+
+
+/*
 ** Forward
 */
 #pragma mark - Forward

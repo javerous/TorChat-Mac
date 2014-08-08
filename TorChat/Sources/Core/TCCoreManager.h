@@ -29,14 +29,21 @@
 
 
 /*
+** Globals
+*/
+#pragma mark - Globals
+
+#define TCCoreManagerInfoDomain	@"TCCoreManagerInfoDomain"
+
+
+
+/*
 ** Forward
 */
 #pragma mark - Forward
 
 @class TCCoreManager;
-
 @class TCImage;
-
 
 
 
@@ -64,14 +71,22 @@ typedef enum
 	TCCoreNotifyClientStopped,
 	
 	// -- Errors --
-	TCCoreErrorServSocket,
 	TCCoreErrorServAccept,
+	TCCoreErrorServAcceptAsync,
 	
 	TCCoreErrorSocket,
-	
+	TCCoreErrorSocketCreate,
+	TCCoreErrorSocketOption,
+	TCCoreErrorSocketBind,
+	TCCoreErrorSocketListen,
+
 	TCCoreErrorClientRead,
 	TCCoreErrorClientReadClosed,
 	TCCoreErrorClientReadFull,
+	
+	TCCoreErrorClientAlreadyPinged,
+	TCCoreErrorClientMasquerade,
+	TCCoreErrorClientAddBuddy,
 	
 	TCCoreErrorClientCmdUnknownCommand,
 	
