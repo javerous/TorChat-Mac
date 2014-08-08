@@ -77,9 +77,9 @@
 /* File */
 "file_canceling" = "Annulation...";
 "file_upload_done" = "Envoi terminé.";
-"file_upload_stoped" = "Envoi arrêté.";
+"file_upload_stopped" = "Envoi arrêté.";
 "file_download_done" = "Téléchargement terminé.";
-"file_download_stoped" = "Téléchargement arrêté.";
+"file_download_stopped" = "Téléchargement arrêté.";
 "file_uploading" = "Envoi...";
 "file_downloading" = "Téléchargement...";
 "file_uploads" = "%u envois";
@@ -118,11 +118,14 @@
 "core_bd_note_tor_connected" = "Contact connecté au SOCKS de tor.";
 
 "core_bd_note_status_changed" = "Le statut du contact a changé.";
-"core_bd_note_stoped" = "Le contact est arrêté.";
+"core_bd_note_stopped" = "Le contact est arrêté.";
 
 "core_bd_note_alias_changed" = "L'alias du contact a changé.";
 "core_bd_note_notes_changed" = "Les notes du contact ont changés.";
 "core_bd_note_blocked_changed" = "Le blocage du contact a changé.";
+
+"core_bd_err_filesend" = "Impossible d'ouvrir un fichier pour l'envoi.";
+"core_bd_err_filereceive" = "Impossible d'ouvrir un fichier pour la réception.";
 
 "core_bd_note_file_send_canceled" = "L'envoi d'un fichier a été annulé.";
 "core_bd_note_file_receive_canceled" = "La réception d'un fichier a été annulé.";
@@ -136,8 +139,8 @@
 "core_bd_note_file_chunk_send" = "Nouveau morceau de fichier envoyé";
 "core_bd_note_file_chunk_receive" = "Nouveau morceau de fichier reçu";
 
-"core_bd_note_file_send_stoped" = "L'envoi d'un fichier a été arrêté par l'hôte distant.";
-"core_bd_note_file_receive_stoped" = "La réception d'un fichier a été arrêté par l'hôte distant.";
+"core_bd_note_file_send_stopped" = "L'envoi d'un fichier a été arrêté par l'hôte distant.";
+"core_bd_note_file_receive_stopped" = "La réception d'un fichier a été arrêté par l'hôte distant.";
 "core_bd_note_new_message" = "Réception d'un nouveau message";
 "core_bd_err_file_offline" = "Impossible d'envoyer un fichier à un contact hors ligne.";
 "core_bd_err_file_blocked" = "Impossible d'envoyer un fichier à un contact bloqué.";
@@ -175,7 +178,7 @@
 "core_mng_err_accept" = "Impossible d'accepter de nouveaux clients à cause d'une erreur système.";
 "core_mng_err_async" = "Impossible d'utiliser les E/S asynchrones sur un socket système.";
 "core_mng_note_started" = "TorChat est démarré.";
-"core_mng_note_stoped" = "TorChat est arrêté.";
+"core_mng_note_stopped" = "TorChat est arrêté.";
 
 "core_mng_note_profile_avatar" = "L'avatar de profil a changé.";
 "core_mng_note_profile_text" = "Le texte de profil a changé.";
@@ -195,13 +198,6 @@
 "core_cnx_err_add_buddy" = "Impossible d'ajouter un nouveau contact.";
 
 "core_cnx_new_buddy" = "inconnu";
-
-
-/* Core - File Send */
-"core_filesend_error" = "Impossible d'ouvrir un fichier pour l'envoi.";
-
-/* Core - File Receive */
-"core_filereceive_error" = "Impossible d'ouvrir un fichier pour la réception.";
 
 
 /* Core - Socket */

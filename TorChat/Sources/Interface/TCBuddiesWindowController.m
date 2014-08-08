@@ -53,6 +53,9 @@
 // > Components
 #import "TCFilesCommon.h"
 
+// > Categories
+#import "TCInfo+Render.h"
+
 
 
 /*
@@ -430,7 +433,7 @@
 	[[TCLogsManager sharedManager] addGlobalLogEntry:[info render]];
 	
 	// Action information
-	switch (info.infoCode)
+	switch (info.code)
 	{
 		case TCCoreNotifyStarted:
 		{
@@ -542,7 +545,7 @@
 	dispatch_async(_localQueue, ^{
 		
 		// Actions
-		switch ((TCBuddyInfo)info.infoCode)
+		switch ((TCBuddyInfo)info.code)
 		{
 			case TCBuddyNotifyConnectedTor:
 				break;
@@ -803,7 +806,7 @@
 					return;
 				
 				// Update status
-				[[TCFilesWindowController sharedController] setStatus:tcfile_status_stoped andTextStatus:NSLocalizedString(@"file_upload_stoped", @"") forFileTransfert:[finfo uuid] withWay:tcfile_upload];
+				[[TCFilesWindowController sharedController] setStatus:tcfile_status_stopped andTextStatus:NSLocalizedString(@"file_upload_stopped", @"") forFileTransfert:[finfo uuid] withWay:tcfile_upload];
 				
 				break;
 			}
@@ -847,7 +850,7 @@
 				break;
 			}
 				
-			case TCBuddyNotifyFileReceiveStoped:
+			case TCBuddyNotifyFileReceiveStopped:
 			{
 				TCFileInfo *finfo = (TCFileInfo *)info.context;
 				
@@ -855,7 +858,7 @@
 					return;
 				
 				// Update status
-				[[TCFilesWindowController sharedController] setStatus:tcfile_status_stoped andTextStatus:NSLocalizedString(@"file_download_stoped", @"") forFileTransfert:[finfo uuid] withWay:tcfile_download];
+				[[TCFilesWindowController sharedController] setStatus:tcfile_status_stopped andTextStatus:NSLocalizedString(@"file_download_stopped", @"") forFileTransfert:[finfo uuid] withWay:tcfile_download];
 				
 				break;
 			}
@@ -870,11 +873,9 @@
 				break;
 				
 			case TCBuddyErrorSocks:
+			case TCBuddyErrorSocksRequest:
 				break;
-				
-			case TCBuddyErrorTooMessages:
-				break;
-				
+
 			case TCBuddyErrorMessageOffline:
 			{
 				NSString	*key = NSLocalizedString(@"bd_error_offline", "");
