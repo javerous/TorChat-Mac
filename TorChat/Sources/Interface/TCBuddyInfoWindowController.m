@@ -98,7 +98,7 @@ static dispatch_queue_t	gQueue;
 - (void)setInfo:(NSString *)indo withKey:(NSString *)key;
 - (void)updateInfoView;
 
-- (void)updateStatus:(tcstatus)status;
+- (void)updateStatus:(TCStatus)status;
 
 @end
 
@@ -469,23 +469,23 @@ static dispatch_queue_t	gQueue;
 	[[_infoView textStorage] setAttributedString:[keyed renderedText]];
 }
 	 
-- (void)updateStatus:(tcstatus)status
+- (void)updateStatus:(TCStatus)status
 {
 	switch (status)
 	{
-		case tcstatus_available:
+		case TCStatusAvailable:
 			[_statusView setImage:[NSImage imageNamed:@"stat_online"]];
 			break;
 			
-		case tcstatus_away:
+		case TCStatusAway:
 			[_statusView setImage:[NSImage imageNamed:@"stat_away"]];
 			break;
 			
-		case tcstatus_offline:
+		case TCStatusOffline:
 			[_statusView setImage:[NSImage imageNamed:@"stat_offline"]];
 			break;
 			
-		case tcstatus_xa:
+		case TCStatusXA:
 			[_statusView setImage:[NSImage imageNamed:@"stat_xa"]];
 			break;
 	}
@@ -559,7 +559,7 @@ static dispatch_queue_t	gQueue;
 - (void)buddyStatusChanged:(NSNotification *)notice
 {
 	NSNumber		*status = [[notice userInfo] objectForKey:@"status"];
-	tcstatus	istatus = (tcstatus)[status intValue];
+	TCStatus	istatus = (TCStatus)[status intValue];
 	
 	// Build notification info
 	dispatch_async(dispatch_get_main_queue(), ^{

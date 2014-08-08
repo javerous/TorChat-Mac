@@ -215,6 +215,7 @@
 		E8A6FE3717A995F100C4DEAB /* TCPanel_Basic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCPanel_Basic.m; path = Interface/TCPanel_Basic.m; sourceTree = "<group>"; };
 		E8A7F6DC185D22F8002A4495 /* TCChatTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatTableView.h; path = Interface/TCChatTableView.h; sourceTree = "<group>"; };
 		E8A7F6DD185D22F8002A4495 /* TCChatTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCChatTableView.m; path = Interface/TCChatTableView.m; sourceTree = "<group>"; };
+		E8AB4D971994CD8700FF986D /* TCErrorConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TCErrorConstants.h; sourceTree = "<group>"; };
 		E8C1EFF112F7169400E24C42 /* TCImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCImage.m; sourceTree = "<group>"; };
 		E8C1EFF212F7169400E24C42 /* TCImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCImage.h; sourceTree = "<group>"; };
 		E8C398291205D51000B9307B /* TCSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCSocket.m; sourceTree = "<group>"; };
@@ -223,7 +224,6 @@
 		E8C4CEEC17B0605800014783 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = TorChat/en.lproj/AssistantPanel_Advanced.strings; sourceTree = "<group>"; };
 		E8C4CEEE17B0605800014783 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = TorChat/en.lproj/AssistantPanel_Basic.strings; sourceTree = "<group>"; };
 		E8C4CEF017B0605800014783 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = TorChat/en.lproj/AssistantPanel_Mode.strings; sourceTree = "<group>"; };
-		E8C79A7F17ABB9F300DE085E /* TCConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TCConstants.h; sourceTree = "<group>"; };
 		E8CC776D18ED50C5003AB0BF /* TCDragImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCDragImage.h; path = Interface/TCDragImage.h; sourceTree = "<group>"; };
 		E8CC776E18ED50C5003AB0BF /* TCDragImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCDragImage.m; path = Interface/TCDragImage.m; sourceTree = "<group>"; };
 		E8CCCD7011FEE70E00C8EEFF /* TCFileSend.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCFileSend.m; sourceTree = "<group>"; };
@@ -323,14 +323,14 @@
 			isa = PBXGroup;
 			children = (
 				E837DADA11E7739D004BC524 /* TCConfig.h */,
+				E8AB4D971994CD8700FF986D /* TCErrorConstants.h */,
 				E84641AF186091FE0046BEFB /* TCDebugLog.h */,
-				E8C79A7F17ABB9F300DE085E /* TCConstants.h */,
 				E837DADC11E7739D004BC524 /* TCCoreManager.h */,
-				E837DAD511E7739D004BC524 /* TCBuddy.m */,
 				E837DADB11E7739D004BC524 /* TCCoreManager.m */,
+				E837DAD611E7739D004BC524 /* TCBuddy.h */,
+				E837DAD511E7739D004BC524 /* TCBuddy.m */,
 				E88AE83611EDE9D50037D808 /* TCConnection.h */,
 				E88AE83511EDE9D50037D808 /* TCConnection.m */,
-				E837DAD611E7739D004BC524 /* TCBuddy.h */,
 				E8CCCD7111FEE70E00C8EEFF /* TCFileSend.h */,
 				E8CCCD7011FEE70E00C8EEFF /* TCFileSend.m */,
 				E8CCCD7411FEE72500C8EEFF /* TCFileReceive.h */,

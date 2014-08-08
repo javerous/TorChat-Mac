@@ -37,9 +37,7 @@
 {
 	FILE		*_file;
 	uint64_t	_nextStart;
-
 }
-
 
 @end
 

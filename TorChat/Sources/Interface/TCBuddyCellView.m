@@ -70,18 +70,18 @@
 	{
 		switch ([buddy status])
 		{
-			case tcstatus_offline:
+			case TCStatusOffline:
 				[_statusView setImage:[NSImage imageNamed:@"stat_offline"]];
 				break;
 				
-			case tcstatus_available:
+			case TCStatusAvailable:
 				[_statusView setImage:[NSImage imageNamed:@"stat_online"]];
 				break;
 				
-			case tcstatus_away:
+			case TCStatusAway:
 				[_statusView setImage:[NSImage imageNamed:@"stat_away"]];
 				break;
-			case tcstatus_xa:
+			case TCStatusXA:
 				[_statusView setImage:[NSImage imageNamed:@"stat_xa"]];
 				break;
 		}
