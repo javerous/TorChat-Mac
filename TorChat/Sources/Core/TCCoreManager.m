@@ -230,7 +230,7 @@
 		// > Instanciate the listening socket
 		if ((_sock = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 		{
-			[self _error:TCCoreErrorSocketCreate  fatal:YES];
+			[self _error:TCCoreErrorSocketCreate fatal:YES];
 			return;
 		}
 		
