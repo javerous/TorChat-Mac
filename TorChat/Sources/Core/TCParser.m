@@ -149,7 +149,7 @@
 	{
 		NSString *error = [NSString stringWithFormat:@"Unknown command '%@'", command];
 
-		[self parserError:tcrec_unknown_command withString:error];
+		[self parserError:TCParserErrorUnknownCommand withString:error];
 	}
 }
 
@@ -161,7 +161,7 @@
 	// Check args.
 	if ([args count] != 2)
     {
-		[self parserError:tcrec_cmd_ping withString:@"Bad ping argument"];
+		[self parserError:TCParserErrorCmdPing withString:@"Bad ping argument"];
         return;
     }
 	
@@ -175,7 +175,7 @@
 	if ([receiver respondsToSelector:@selector(parser:parsedPingWithAddress:random:)])
 		[receiver parser:self parsedPingWithAddress:address random:random];
 	else
-		[self parserError:tcrec_cmd_ping withString:@"Ping: Not handled"];
+		[self parserError:TCParserErrorCmdPing withString:@"Ping: Not handled"];
 }
 
 - (void)parsePong:(NSData *)parameters
@@ -183,7 +183,7 @@
 	// Check args.
 	if ([parameters length] == 0)
     {
-		[self parserError:tcrec_cmd_pong withString:@"Bad pong argument"];
+		[self parserError:TCParserErrorCmdPong withString:@"Bad pong argument"];
         return;
 	}
 	
@@ -196,7 +196,7 @@
 	if ([receiver respondsToSelector:@selector(parser:parsedPongWithRandom:)])
 		[receiver parser:self parsedPongWithRandom:random];
 	else
-		[self parserError:tcrec_cmd_pong withString:@"Pong: Not handled"];
+		[self parserError:TCParserErrorCmdPong withString:@"Pong: Not handled"];
 }
 
 - (void)parseStatus:(NSData *)parameters
@@ -204,7 +204,7 @@
 	// Check args.
 	if ([parameters length] == 0)
     {
-		[self parserError:tcrec_cmd_status withString:@"Bad status argument"];
+		[self parserError:TCParserErrorCmdStatus withString:@"Bad status argument"];
         return;
 	}
 	
@@ -217,7 +217,7 @@
 	if ([receiver respondsToSelector:@selector(parser:parsedStatus:)])
 		[receiver parser:self parsedStatus:status];
 	else
-		[self parserError:tcrec_cmd_status withString:@"Status: Not handled"];
+		[self parserError:TCParserErrorCmdStatus withString:@"Status: Not handled"];
 }
 
 - (void)parseVersion:(NSData *)parameters
@@ -225,7 +225,7 @@
 	// Check args.
 	if ([parameters length] == 0)
     {
-		[self parserError:tcrec_cmd_version withString:@"Bad version argument"];
+		[self parserError:TCParserErrorCmdVersion withString:@"Bad version argument"];
         return;
 	}
 	
@@ -238,7 +238,7 @@
 	if ([receiver respondsToSelector:@selector(parser:parsedVersion:)])
 		[receiver parser:self parsedVersion:version];
 	else
-		[self parserError:tcrec_cmd_status withString:@"Version: Not handled"];
+		[self parserError:TCParserErrorCmdStatus withString:@"Version: Not handled"];
 }
 
 - (void)parseClient:(NSData *)parameters
@@ -246,7 +246,7 @@
 	// Check args.
 	if ([parameters length] == 0)
 	{
-		[self parserError:tcrec_cmd_client withString:@"Empty client argument"];
+		[self parserError:TCParserErrorCmdClient withString:@"Empty client argument"];
         return;
 	}
 
@@ -262,7 +262,7 @@
 	if ([receiver respondsToSelector:@selector(parser:parsedClient:)])
 		[receiver parser:self parsedClient:client];
 	else
-		[self parserError:tcrec_cmd_client withString:@"Client: Not handled"];
+		[self parserError:TCParserErrorCmdClient withString:@"Client: Not handled"];
 }
 
 - (void)parseProfileText:(NSData *)parameters
@@ -282,7 +282,7 @@
 	if ([receiver respondsToSelector:@selector(parser:parsedProfileText:)])
 		[receiver parser:self parsedProfileText:text];
 	else
-		[self parserError:tcrec_cmd_profile_text withString:@"Profile-Text: Not handled"];
+		[self parserError:TCParserErrorCmdProfileText withString:@"Profile-Text: Not handled"];
 }
 
 - (void)parseProfileName:(NSData *)parameters
@@ -302,7 +302,7 @@
 	if ([receiver respondsToSelector:@selector(parser:parsedProfileName:)])
 		[receiver parser:self parsedProfileName:name];
 	else
-		[self parserError:tcrec_cmd_profile_name withString:@"Profile-Name: Not handled"];
+		[self parserError:TCParserErrorCmdProfileName withString:@"Profile-Name: Not handled"];
 }
 
 - (void)parseProfileAvatar:(NSData *)parameters
@@ -317,7 +317,7 @@
 	if ([receiver respondsToSelector:@selector(parser:parsedProfileAvatar:)])
 		[receiver parser:self parsedProfileAvatar:parameters];
 	else
-		[self parserError:tcrec_cmd_profile_avatar withString:@"Profile-Avatar: Not handled"];
+		[self parserError:TCParserErrorCmdProfileAvatar withString:@"Profile-Avatar: Not handled"];
 }
 
 - (void)parseProfileAvatarAlpha:(NSData *)parameters
@@ -332,7 +332,7 @@
 	if ([receiver respondsToSelector:@selector(parser:parsedProfileAvatarAlpha:)])
 		[receiver parser:self parsedProfileAvatarAlpha:parameters];
 	else
-		[self parserError:tcrec_cmd_profile_avatar_alpha withString:@"Profile-AvatarAlpha: Not handled"];
+		[self parserError:TCParserErrorCmdProfileAvatarAlpha withString:@"Profile-AvatarAlpha: Not handled"];
 }
 
 - (void)parseMessage:(NSData *)parameters
@@ -340,7 +340,7 @@
 	// Check args.
 	if ([parameters length] == 0)
 	{
-		[self parserError:tcrec_cmd_message withString:@"Empty message content"];
+		[self parserError:TCParserErrorCmdMessage withString:@"Empty message content"];
         return;
 	}
 	
@@ -356,7 +356,7 @@
 	if ([receiver respondsToSelector:@selector(parser:parsedMessage:)])
 		[receiver parser:self parsedMessage:message];
 	else
-		[self parserError:tcrec_cmd_message withString:@"Message: Not handled"];
+		[self parserError:TCParserErrorCmdMessage withString:@"Message: Not handled"];
 }
 
 - (void)parseAddMe:(NSData *)parameters
@@ -367,7 +367,7 @@
 	if ([receiver respondsToSelector:@selector(parserParsedAddMe:)])
 		[receiver parserParsedAddMe:self];
 	else
-		[self parserError:tcrec_cmd_addme withString:@"AddMe: Not handled"];
+		[self parserError:TCParserErrorCmdAddMe withString:@"AddMe: Not handled"];
 }
 
 - (void)parseRemoveMe:(NSData *)parameters
@@ -378,7 +378,7 @@
 	if ([receiver respondsToSelector:@selector(parserparsedRemoveMe:)])
 		[receiver parserparsedRemoveMe:self];
 	else
-		[self parserError:tcrec_cmd_removeme withString:@"RemoveMe: Not handled"];
+		[self parserError:TCParserErrorCmdRemoveMe withString:@"RemoveMe: Not handled"];
 }
 
 - (void)parseFileName:(NSData *)parameters
@@ -388,7 +388,7 @@
 	
 	if ([args count] != 4)
     {
-		[self parserError:tcrec_cmd_filename withString:@"Bad filename argument"];
+		[self parserError:TCParserErrorCmdFileName withString:@"Bad filename argument"];
         return;
 	}
 	
@@ -404,7 +404,7 @@
 	if ([receiver respondsToSelector:@selector(parser:parsedFileNameWithUUIDD:fileSize:blockSize:fileName:)])
 		[receiver parser:self parsedFileNameWithUUIDD:uuid fileSize:fileSize blockSize:blockSize fileName:fileName];
 	else
-		[self parserError:tcrec_cmd_filename withString:@"FileName: Not handled"];
+		[self parserError:TCParserErrorCmdFileName withString:@"FileName: Not handled"];
 }
 
 - (void)parseFileData:(NSData *)parameters
@@ -414,7 +414,7 @@
 	
 	if ([args count] != 4)
     {
-		[self parserError:tcrec_cmd_filedata withString:@"Bad filedata argument"];
+		[self parserError:TCParserErrorCmdFileData withString:@"Bad filedata argument"];
         return;
 	}
 	
@@ -430,7 +430,7 @@
 	if ([receiver respondsToSelector:@selector(parser:parsedFileDataWithUUID:start:hash:data:)])
 		[receiver parser:self parsedFileDataWithUUID:uuid start:start hash:hash data:fileData];
 	else
-		[self parserError:tcrec_cmd_filedata withString:@"FileData: Not handled"];
+		[self parserError:TCParserErrorCmdFileData withString:@"FileData: Not handled"];
 }
 
 - (void)parseFileDataOk:(NSData *)parameters
@@ -440,7 +440,7 @@
 	
 	if ([args count] != 2)
     {
-		[self parserError:tcrec_cmd_filedataok withString:@"Bad filedataok argument"];
+		[self parserError:TCParserErrorCmdFileDataOk withString:@"Bad filedataok argument"];
         return;
 	}
 	
@@ -454,7 +454,7 @@
 	if ([receiver respondsToSelector:@selector(parser:parsedFileDataOkWithUUID:start:)])
 		[receiver parser:self parsedFileDataOkWithUUID:uuid start:start];
 	else
-		[self parserError:tcrec_cmd_filedataok withString:@"FileDataOk: Not handled"];
+		[self parserError:TCParserErrorCmdFileDataOk withString:@"FileDataOk: Not handled"];
 }
 
 - (void)parseFileDataError:(NSData *)parameters
@@ -464,7 +464,7 @@
 
 	if ([args count] != 2)
     {
-		[self parserError:tcrec_cmd_filedataerror withString:@"Bad filedataerror argument"];
+		[self parserError:TCParserErrorCmdFileDataError withString:@"Bad filedataerror argument"];
         return;
 	}
 	
@@ -478,7 +478,7 @@
 	if ([receiver respondsToSelector:@selector(parser:parsedFileDataErrorWithUUID:start:)])
 		[receiver parser:self parsedFileDataErrorWithUUID:uuid start:start];
 	else
-		[self parserError:tcrec_cmd_filedataerror withString:@"FileDataError: Not handled"];
+		[self parserError:TCParserErrorCmdFileDataError withString:@"FileDataError: Not handled"];
 }
 
 - (void)parseFileStopSending:(NSData *)parameters
@@ -486,7 +486,7 @@
 	// Check args.
 	if ([parameters length] == 0)
     {
-		[self parserError:tcrec_cmd_filestopsending withString:@"Bad filestopsending argument"];
+		[self parserError:TCParserErrorCmdFileStopSending withString:@"Bad filestopsending argument"];
         return;
 	}
 	
@@ -499,7 +499,7 @@
 	if ([receiver respondsToSelector:@selector(parser:parsedFileStopSendingWithUUID:)])
 		[receiver parser:self parsedFileStopSendingWithUUID:uuid];
 	else
-		[self parserError:tcrec_cmd_filestopsending withString:@"FileStopSending: Not handled"];
+		[self parserError:TCParserErrorCmdFileStopSending withString:@"FileStopSending: Not handled"];
 }
 
 - (void)parseFileStopReceiving:(NSData *)parameters
@@ -507,7 +507,7 @@
 	// Check args.
 	if ([parameters length] == 0)
     {
-		[self parserError:tcrec_cmd_filestopreceiving withString:@"Bad filestopreceiving argument"];
+		[self parserError:TCParserErrorCmdFileStopReceiving withString:@"Bad filestopreceiving argument"];
         return;
 	}
 	
@@ -520,7 +520,7 @@
 	if ([receiver respondsToSelector:@selector(parser:parsedFileStopReceivingWithUUID:)])
 		[receiver parser:self parsedFileStopReceivingWithUUID:uuid];
 	else
-		[self parserError:tcrec_cmd_filestopreceiving withString:@"FileStopReceiving: Not handled"];
+		[self parserError:TCParserErrorCmdFileStopReceiving withString:@"FileStopReceiving: Not handled"];
 }
 
 
@@ -530,7 +530,7 @@
 */
 #pragma mark - TCParser - Error
 
-- (void)parserError:(tcrec_error)errorCode withString:(NSString *)string
+- (void)parserError:(TCParserError)errorCode withString:(NSString *)string
 {
 	id <TCParserDelegate> delegate = _delegate;
 	
