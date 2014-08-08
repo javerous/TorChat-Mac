@@ -457,7 +457,7 @@ NSData *file_sha1(NSURL *fileURL);
 */
 #pragma mark - TCTorManager - Update
 
-- (void)checkForUpdateWithResultHandler:(void (^)(NSString *newVersion, NSString *errorID))handler
+- (void)checkForUpdateWithResultHandler:(void (^)(NSString *newVersion, TCInfo *error))handler
 {
 	if (!handler)
 		return;
@@ -639,7 +639,7 @@ NSData *file_sha1(NSURL *fileURL);
 	// Check conversion.
 	if (!torPath || !dataPath || !identityPath)
 	{
-		[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_err_build_path"];
+		[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_error_build_path"];
 		[self sendEvent:TCTorManagerEventError context:nil];
 		return;
 	}
@@ -708,7 +708,7 @@ NSData *file_sha1(NSURL *fileURL);
 			{
 				NSString *string = [[NSString alloc] initWithData:line encoding:NSUTF8StringEncoding];
 				
-				[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_err_log", [string UTF8String]];
+				[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_error_log", [string UTF8String]];
 			}
 		});
 	};
@@ -761,7 +761,7 @@ NSData *file_sha1(NSURL *fileURL);
 	}
 	@catch (id error)
 	{
-		[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_err_launch"];
+		[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_error_launch"];
 		[self sendEvent:TCTorManagerEventError context:nil];
 		return;
 	}

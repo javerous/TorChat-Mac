@@ -161,9 +161,9 @@
 		if (!aconfig)
 		{
 			// Log error
-			NSString *key = NSLocalizedString(@"ac_err_read_file", @"");
+			NSString *key = NSLocalizedString(@"ac_error_read_file", @"");
 
-			[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_err_read_file", [url path]];
+			[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_error_read_file", [url path]];
 			[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:key, [url path]] runModal];
 
 			return;
