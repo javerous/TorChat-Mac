@@ -40,26 +40,26 @@
 
 typedef enum
 {
-	tcrec_unknown_command,
-	tcrec_cmd_ping,
-	tcrec_cmd_pong,
-	tcrec_cmd_status,
-	tcrec_cmd_version,
-	tcrec_cmd_client,
-	tcrec_cmd_profile_text,
-	tcrec_cmd_profile_name,
-	tcrec_cmd_profile_avatar,
-	tcrec_cmd_profile_avatar_alpha,
-	tcrec_cmd_message,
-	tcrec_cmd_addme,
-	tcrec_cmd_removeme,
-	tcrec_cmd_filename,
-	tcrec_cmd_filedata,
-	tcrec_cmd_filedataok,
-	tcrec_cmd_filedataerror,
-	tcrec_cmd_filestopsending,
-	tcrec_cmd_filestopreceiving
-} tcrec_error;
+	TCParserErrorUnknownCommand,
+	TCParserErrorCmdPing,
+	TCParserErrorCmdPong,
+	TCParserErrorCmdStatus,
+	TCParserErrorCmdVersion,
+	TCParserErrorCmdClient,
+	TCParserErrorCmdProfileText,
+	TCParserErrorCmdProfileName,
+	TCParserErrorCmdProfileAvatar,
+	TCParserErrorCmdProfileAvatarAlpha,
+	TCParserErrorCmdMessage,
+	TCParserErrorCmdAddMe,
+	TCParserErrorCmdRemoveMe,
+	TCParserErrorCmdFileName,
+	TCParserErrorCmdFileData,
+	TCParserErrorCmdFileDataOk,
+	TCParserErrorCmdFileDataError,
+	TCParserErrorCmdFileStopSending,
+	TCParserErrorCmdFileStopReceiving
+} TCParserError;
 
 
 /*
@@ -93,7 +93,7 @@ typedef enum
 
 @protocol TCParserDelegate <NSObject>
 
-- (void)parser:(TCParser *)parser errorWithCode:(tcrec_error)error andInformation:(NSString *)information;
+- (void)parser:(TCParser *)parser errorWithCode:(TCParserError)error andInformation:(NSString *)information;
 
 @end
 

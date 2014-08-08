@@ -432,7 +432,7 @@
 	// Action information
 	switch (info.infoCode)
 	{
-		case tccore_notify_started:
+		case TCCoreNotifyStarted:
 		{
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[_indicator stopAnimation:self];
@@ -441,7 +441,7 @@
 			break;
 		}
 			
-		case tccore_notify_stoped:
+		case TCCoreNotifyStopped:
 		{
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[self updateStatusUI:-2];
@@ -450,9 +450,9 @@
 			break;
 		}
 			
-		case tccore_notify_status:
+		case TCCoreNotifyStatus:
 		{
-			tcstatus	status = (tcstatus)[(NSNumber *)info.context intValue];
+			TCStatus	status = (TCStatus)[(NSNumber *)info.context intValue];
 			
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[self updateStatusUI:status];
@@ -461,7 +461,7 @@
 			break;
 		}
 			
-		case tccore_notify_profile_avatar:
+		case TCCoreNotifyProfileAvatar:
 		{
 			TCImage	*tcFinal = (TCImage *)info.context;
 			NSImage	*final = [tcFinal imageRepresentation];
@@ -485,7 +485,7 @@
 			break;
 		}
 			
-		case tccore_notify_profile_name:
+		case TCCoreNotifyProfileName:
 		{
 			dispatch_async(dispatch_get_main_queue(), ^{
 				// Update Title
@@ -495,10 +495,10 @@
 			break;
 		}
 			
-		case tccore_notify_profile_text:
+		case TCCoreNotifyProfileText:
 			break;
 			
-		case tccore_notify_buddy_new:
+		case TCCoreNotifyBuddyNew:
 		{
 			TCBuddy *buddy = (TCBuddy *)info.context;
 			
@@ -516,13 +516,13 @@
 			break;
 		}
 			
-		case tccore_notify_client_new:
+		case TCCoreNotifyClientNew:
 			break;
 			
-		case tccore_notify_client_started:
+		case TCCoreNotifyClientStarted:
 			break;
 			
-		case tccore_notify_client_stoped:
+		case TCCoreNotifyClientStopped:
 			break;
 	}
 }
@@ -542,15 +542,15 @@
 	dispatch_async(_localQueue, ^{
 		
 		// Actions
-		switch ((tcbuddy_info)info.infoCode)
+		switch ((TCBuddyInfo)info.infoCode)
 		{
-			case tcbuddy_notify_connected_tor:
+			case TCBuddyNotifyConnectedTor:
 				break;
 				
-			case tcbuddy_notify_connected_buddy:
+			case TCBuddyNotifyConnectedBuddy:
 				break;
 				
-			case tcbuddy_notify_disconnected:
+			case TCBuddyNotifyDisconnected:
 			{
 				// Rebuid buddy list.
 				[self buddyStatusChanged];
@@ -562,36 +562,36 @@
 				
 				// Notify.
 				dispatch_async(_noticeQueue, ^{
-					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedStatusNotification object:aBuddy userInfo:@{ @"status" : @(tcstatus_offline) }];
+					[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedStatusNotification object:aBuddy userInfo:@{ @"status" : @(TCStatusOffline) }];
 				});
 				
 				break;
 			}
 				
-			case tcbuddy_notify_identified:
+			case TCBuddyNotifyIdentified:
 				break;
 				
-			case tcbuddy_notify_status:
+			case TCBuddyNotifyStatus:
 			{
-				tcstatus  status = (tcstatus)[(NSNumber *)info.context intValue];
+				TCStatus  status = (TCStatus)[(NSNumber *)info.context intValue];
 				NSString		*statusStr = @"";
 				
 				// Send status to chat window.
 				switch (status)
 				{
-					case tcstatus_offline:
+					case TCStatusOffline:
 						statusStr = NSLocalizedString(@"bd_status_offline", @"");
 						break;
 						
-					case tcstatus_available:
+					case TCStatusAvailable:
 						statusStr = NSLocalizedString(@"bd_status_available", @"");
 						break;
 						
-					case tcstatus_away:
+					case TCStatusAway:
 						statusStr = NSLocalizedString(@"bd_status_away", @"");
 						break;
 						
-					case tcstatus_xa:
+					case TCStatusXA:
 						statusStr = NSLocalizedString(@"bd_status_xa", @"");
 						break;
 				}
@@ -611,7 +611,7 @@
 				break;
 			}
 				
-			case tcbuddy_notify_profile_avatar:
+			case TCBuddyNotifyProfileAvatar:
 			{
 				TCImage *tcAvatar = (TCImage *)info.context;
 				NSImage *avatar = [tcAvatar imageRepresentation];
@@ -635,7 +635,7 @@
 				break;
 			}
 				
-			case tcbuddy_notify_profile_text:
+			case TCBuddyNotifyProfileText:
 			{
 				NSString *text = info.context;
 				
@@ -650,7 +650,7 @@
 				break;
 			}
 				
-			case tcbuddy_notify_profile_name:
+			case TCBuddyNotifyProfileName:
 			{
 				NSString *name = info.context;
 				
@@ -670,7 +670,7 @@
 				break;
 			}
 				
-			case tcbuddy_notify_message:
+			case TCBuddyNotifyMessage:
 			{
 				TCChatWindowController *chatController = [TCChatWindowController sharedController];
 				
@@ -683,7 +683,7 @@
 				break;
 			}
 				
-			case tcbuddy_notify_alias:
+			case TCBuddyNotifyAlias:
 			{
 				NSString *alias =info.context;
 				
@@ -703,10 +703,10 @@
 				break;
 			}
 				
-			case tcbuddy_notify_notes:
+			case TCBuddyNotifyNotes:
 				break;
 				
-			case tcbuddy_notify_blocked:
+			case TCBuddyNotifyBlocked:
 			{
 				NSNumber *blocked = info.context;
 				
@@ -726,7 +726,7 @@
 				break;
 			}
 				
-			case tcbuddy_notify_version:
+			case TCBuddyNotifyVersion:
 			{
 				NSString *version = info.context;
 				
@@ -741,7 +741,7 @@
 				break;
 			}
 				
-			case tcbuddy_notify_client:
+			case TCBuddyNotifyClient:
 			{
 				NSString *client = info.context;
 				
@@ -756,7 +756,7 @@
 				break;
 			}
 				
-			case tcbuddy_notify_file_send_start:
+			case TCBuddyNotifyFileSendStart:
 			{
 				TCFileInfo *finfo = (TCFileInfo *)info.context;
 				
@@ -769,7 +769,7 @@
 				break;
 			}
 				
-			case tcbuddy_notify_file_send_running:
+			case TCBuddyNotifyFileSendRunning:
 			{
 				TCFileInfo *finfo = (TCFileInfo *)info.context;
 				
@@ -782,7 +782,7 @@
 				break;
 			}
 				
-			case tcbuddy_notify_file_send_finish:
+			case TCBuddyNotifyFileSendFinish:
 			{
 				TCFileInfo *finfo = (TCFileInfo *)info.context;
 				
@@ -795,7 +795,7 @@
 				break;
 			}
 				
-			case tcbuddy_notify_file_send_stoped:
+			case TCBuddyNotifyFileSendStopped:
 			{
 				TCFileInfo *finfo = (TCFileInfo *)info.context;
 				
@@ -808,7 +808,7 @@
 				break;
 			}
 				
-			case tcbuddy_notify_file_receive_start:
+			case TCBuddyNotifyFileReceiveStart:
 			{
 				TCFileInfo *finfo = (TCFileInfo *)info.context;
 				
@@ -821,7 +821,7 @@
 				break;
 			}
 				
-			case tcbuddy_notify_file_receive_running:
+			case TCBuddyNotifyFileReceiveRunning:
 			{
 				TCFileInfo *finfo = (TCFileInfo *)info.context;
 				
@@ -834,7 +834,7 @@
 				break;
 			}
 				
-			case tcbuddy_notify_file_receive_finish:
+			case TCBuddyNotifyFileReceiveFinish:
 			{
 				TCFileInfo *finfo = (TCFileInfo *)info.context;
 				
@@ -847,7 +847,7 @@
 				break;
 			}
 				
-			case tcbuddy_notify_file_receive_stoped:
+			case TCBuddyNotifyFileReceiveStoped:
 			{
 				TCFileInfo *finfo = (TCFileInfo *)info.context;
 				
@@ -860,22 +860,22 @@
 				break;
 			}
 				
-			case tcbuddy_error_resolve_tor:
+			case TCBuddyErrorResolveTor:
 				break;
 				
-			case tcbuddy_error_connect_tor:
+			case TCBuddyErrorConnectTor:
 				break;
 				
-			case tcbuddy_error_socket:
+			case TCBuddyErrorSocket:
 				break;
 				
-			case tcbuddy_error_socks:
+			case TCBuddyErrorSocks:
 				break;
 				
-			case tcbuddy_error_too_messages:
+			case TCBuddyErrorTooMessages:
 				break;
 				
-			case tcbuddy_error_message_offline:
+			case TCBuddyErrorMessageOffline:
 			{
 				NSString	*key = NSLocalizedString(@"bd_error_offline", "");
 				NSString	*message = info.context;
@@ -892,7 +892,7 @@
 				break;
 			}
 				
-			case tcbuddy_error_message_blocked:
+			case TCBuddyErrorMessageBlocked:
 			{
 				NSString	*key = NSLocalizedString(@"bd_error_blocked", "");
 				NSString	*message = (NSString *)info.context;
@@ -909,19 +909,19 @@
 				break;
 			}
 				
-			case tcbuddy_error_send_file:
+			case TCBuddyErrorSendFile:
 				break;
 				
-			case tcbuddy_error_receive_file:
+			case TCBuddyErrorReceiveFile:
 				break;
 				
-			case tcbuddy_error_file_offline:
+			case TCBuddyErrorFileOffline:
 				break;
 				
-			case tcbuddy_error_file_blocked:
+			case TCBuddyErrorFileBlocked:
 				break;
 				
-			case tcbuddy_error_parse:
+			case TCBuddyErrorParse:
 				break;
 		}
 	});
@@ -985,9 +985,9 @@
 			
 			// Canceling the transfert
 			if (way == tcfile_upload)
-				[buddy fileCancelOfUUID:uuid way:tcbuddy_file_send];
+				[buddy fileCancelOfUUID:uuid way:TCBuddyFileSend];
 			else if (way == tcfile_download)
-				[buddy fileCancelOfUUID:uuid way:tcbuddy_file_receive];
+				[buddy fileCancelOfUUID:uuid way:TCBuddyFileReceive];
 			
 			return;
 		}
@@ -1012,15 +1012,15 @@
 			break;
 			
 		case 1:
-			[_control setStatus:tcstatus_available];
+			[_control setStatus:TCStatusAvailable];
 			break;
 			
 		case 2:
-			[_control setStatus:tcstatus_away];
+			[_control setStatus:TCStatusAway];
 			break;
 			
 		case 3:
-			[_control setStatus:tcstatus_xa];
+			[_control setStatus:TCStatusXA];
 			break;
 	}
 }
@@ -1251,19 +1251,19 @@
 			
 			switch ([buddy status])
 			{
-				case tcstatus_offline:
+				case TCStatusOffline:
 					[temp_off addObject:buddy];
 					break;
 					
-				case tcstatus_available:
+				case TCStatusAvailable:
 					[temp_av addObject:buddy];
 					break;
 					
-				case tcstatus_away:
+				case TCStatusAway:
 					[temp_aw addObject:buddy];
 					break;
 					
-				case tcstatus_xa:
+				case TCStatusXA:
 					[temp_xa addObject:buddy];
 					break;
 			}
