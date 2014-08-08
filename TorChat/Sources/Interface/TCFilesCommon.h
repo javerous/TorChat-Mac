@@ -44,7 +44,7 @@ typedef enum
 	tcfile_status_running,
 	tcfile_status_finish,
 	tcfile_status_cancel,
-	tcfile_status_stoped,
+	tcfile_status_stopped,
 	tcfile_status_error,
 } tcfile_status;
 

@@ -27,6 +27,15 @@
 
 
 /*
+** Globals
+*/
+#pragma mark - Globals
+
+#define TCBuddyInfoDomain	@"TCBuddyInfoDomain"
+
+
+
+/*
 ** Forward
 */
 #pragma mark - Forward
@@ -61,46 +70,46 @@ typedef enum
 	TCBuddyNotifyDisconnected,
 	TCBuddyNotifyIdentified,
 	
-	TCBuddyNotifyStatus,
-	TCBuddyNotifyMessage,
-	TCBuddyNotifyAlias,
-	TCBuddyNotifyNotes,
-	TCBuddyNotifyVersion,
-	TCBuddyNotifyClient,
-	TCBuddyNotifyBlocked,
+	TCBuddyNotifyStatus,			// context: NSNumber (TCStatus)
+	TCBuddyNotifyMessage,			// context: NSString (<message>)
+	TCBuddyNotifyAlias,				// context: NSString (<alias>)
+	TCBuddyNotifyNotes,				// context: NSString (<notes>)
+	TCBuddyNotifyVersion,			// context: NSString (<version>)
+	TCBuddyNotifyClient,			// context: NSString (<client_name>)
+	TCBuddyNotifyBlocked,			// context: NSNumber (BOOL)
 	
-	TCBuddyNotifyFileSendStart,
-	TCBuddyNotifyFileSendRunning,
-	TCBuddyNotifyFileSendFinish,
-	TCBuddyNotifyFileSendStopped,
+	TCBuddyNotifyFileSendStart,		// context: TCFileInfo
+	TCBuddyNotifyFileSendRunning,	// context: TCFileInfo
+	TCBuddyNotifyFileSendFinish,	// context: TCFileInfo
+	TCBuddyNotifyFileSendStopped,	// context: TCFileInfo
 	
-	TCBuddyNotifyFileReceiveStart,
-	TCBuddyNotifyFileReceiveRunning,
-	TCBuddyNotifyFileReceiveFinish,
-	TCBuddyNotifyFileReceiveStoped,
+	TCBuddyNotifyFileReceiveStart,	// context: TCFileInfo
+	TCBuddyNotifyFileReceiveRunning,// context: TCFileInfo
+	TCBuddyNotifyFileReceiveFinish,	// context: TCFileInfo
+	TCBuddyNotifyFileReceiveStopped,// context: TCFileInfo
 	
-	TCBuddyNotifyProfileText,
-	TCBuddyNotifyProfileName,
-	TCBuddyNotifyProfileAvatar,
+	TCBuddyNotifyProfileText,		// context: NSString (<text>)
+	TCBuddyNotifyProfileName,		// context: NSString (<name>)
+	TCBuddyNotifyProfileAvatar,		// context: TCImage
 	
 	// -- Error --
 	TCBuddyErrorResolveTor,
 	TCBuddyErrorConnectTor,
 	
-	TCBuddyErrorSocket,
+	TCBuddyErrorSocket,				// info: TCInfo (TCSocketInfoDomain)
 	
-	TCBuddyErrorSocks,
+	TCBuddyErrorSocks,				// context: NSNumber (<socks_error>)
+	TCBuddyErrorSocksRequest,
+
+	TCBuddyErrorMessageOffline,		// context: NSString (<message>)
+	TCBuddyErrorMessageBlocked,		// context: NSString (<message>)
 	
-	TCBuddyErrorTooMessages,
-	TCBuddyErrorMessageOffline,
-	TCBuddyErrorMessageBlocked,
-	
-	TCBuddyErrorSendFile,
+	TCBuddyErrorSendFile,			// context: NSString (<file_path>)
 	TCBuddyErrorReceiveFile,
-	TCBuddyErrorFileOffline,
-	TCBuddyErrorFileBlocked,
+	TCBuddyErrorFileOffline,		// context: NSString (<file_path>)
+	TCBuddyErrorFileBlocked,		// context: NSString (<file_path>)
 	
-	TCBuddyErrorParse
+	TCBuddyErrorParse				// info: TCInfo (TCSocketInfoDomain)
 } TCBuddyInfo;
 
 // == File ==

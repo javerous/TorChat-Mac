@@ -307,7 +307,7 @@
 	NSDictionary	*file = [_files objectAtIndex:(NSUInteger)rowIndex];
 	tcfile_status	status = (tcfile_status)[[file objectForKey:TCFileStatusKey] intValue];
 
-	if (status == tcfile_status_finish || status == tcfile_status_cancel || status == tcfile_status_stoped || status == tcfile_status_error)
+	if (status == tcfile_status_finish || status == tcfile_status_cancel || status == tcfile_status_stopped || status == tcfile_status_error)
 		cellView = [tableView makeViewWithIdentifier:@"transfers_end" owner:self];
 	else
 		cellView = [tableView makeViewWithIdentifier:@"transfers_progress" owner:self];

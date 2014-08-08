@@ -90,11 +90,11 @@
 - (void)removeConnection:(TCConnection *)connection;
 
 // -- Helpers --
-- (void)_error:(TCCoreInfo)code info:(NSString *)info fatal:(BOOL)fatal;
-- (void)_error:(TCCoreInfo)code info:(NSString *)info context:(id)ctx fatal:(BOOL)fatal;
+- (void)_error:(TCCoreInfo)code fatal:(BOOL)fatal;
+- (void)_error:(TCCoreInfo)code context:(id)ctx fatal:(BOOL)fatal;
 
-- (void)_notify:(TCCoreInfo)notice info:(NSString *)info;
-- (void)_notify:(TCCoreInfo)notice info:(NSString *)info context:(id)ctx;
+- (void)_notify:(TCCoreInfo)notice;
+- (void)_notify:(TCCoreInfo)notice context:(id)ctx;
 
 - (void)_sendEvent:(TCInfo *)info;
 
@@ -193,7 +193,7 @@
 				[_buddies addObject:buddy];
 				
 				// Notify
-				[self _notify:TCCoreNotifyBuddyNew info:@"core_mng_note_new_buddy" context:buddy];
+				[self _notify:TCCoreNotifyBuddyNew context:buddy];
 			}
 			
 			// -- Check that we are on the buddy list --
@@ -230,28 +230,28 @@
 		// > Instanciate the listening socket
 		if ((_sock = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 		{
-			[self _error:TCCoreErrorServSocket info:@"core_mng_err_socket" fatal:YES];
+			[self _error:TCCoreErrorSocketCreate  fatal:YES];
 			return;
 		}
 		
 		// > Reuse the port
 		if (setsockopt(_sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
 		{
-			[self _error:TCCoreErrorServSocket info:@"core_mng_err_setsockopt" fatal:YES];
+			[self _error:TCCoreErrorSocketOption fatal:YES];
 			return;
 		}
 		
 		// > Bind the socket to the configuration perviously set
 		if (bind(_sock, (struct sockaddr *)&my_addr, sizeof(struct sockaddr)) == -1)
 		{
-			[self _error:TCCoreErrorServSocket info:@"core_mng_err_bind" fatal:YES];
+			[self _error:TCCoreErrorSocketBind fatal:YES];
 			return;
 		}
 		
 		// > Set the socket as a listening socket
 		if (listen(_sock, 10) == -1)
 		{
-			[self _error:TCCoreErrorServSocket info:@"core_mng_err_listen" fatal:YES];
+			[self _error:TCCoreErrorSocketListen fatal:YES];
 			return;
 		}
 		
@@ -270,7 +270,7 @@
 			if (csock == -1)
 			{
 				dispatch_async(_localQueue, ^{
-					[self _error:TCCoreErrorServAccept info:@"core_mng_err_accept" fatal:YES];
+					[self _error:TCCoreErrorServAccept fatal:YES];
 				});
 			}
 			else
@@ -279,7 +279,7 @@
 				if (!doAsyncSocket(csock))
 				{
 					dispatch_async(_localQueue, ^{
-						[self _error:TCCoreErrorServAccept info:@"core_mng_err_async" fatal:YES];
+						[self _error:TCCoreErrorServAcceptAsync fatal:YES];
 					});
 					
 					return;
@@ -327,7 +327,7 @@
 		[self setStatus:_mstatus];
 		
 		// Notify
-		[self _notify:TCCoreNotifyStarted info:@"core_mng_note_started"];
+		[self _notify:TCCoreNotifyStarted];
 		
 		// We are running !
 		_running = YES;
@@ -362,7 +362,7 @@
 			[buddy stop];
 		
 		// Notify
-		[self _notify:TCCoreNotifyStopped info:@"core_mng_note_stoped"];
+		[self _notify:TCCoreNotifyStopped];
 		
 		_running = false;
 	});
@@ -382,7 +382,7 @@
 		
 		// Notify
 		if (status != _mstatus)
-			[self _notify:TCCoreNotifyStatus info:@"" context:@(status)];
+			[self _notify:TCCoreNotifyStatus context:@(status)];
 		
 		// Hold internal status
 		_mstatus = status;
@@ -435,7 +435,7 @@
 			[buddy sendAvatar:_profileAvatar];
 		
 		// Notify
-		[self _notify:TCCoreNotifyProfileAvatar info:@"core_mng_note_profile_avatar" context:_profileAvatar];
+		[self _notify:TCCoreNotifyProfileAvatar context:_profileAvatar];
 	});
 }
 
@@ -470,7 +470,7 @@
 			[buddy sendProfileName:_profileName];
 		
 		// Notify
-		[self _notify:TCCoreNotifyProfileName info:@"core_mng_note_profile_name" context:_profileName];
+		[self _notify:TCCoreNotifyProfileName context:_profileName];
 	});
 }
 
@@ -504,7 +504,7 @@
 			[buddy sendProfileText:_profileText];
 
 		// Notify
-		[self _notify:TCCoreNotifyProfileText info:@"core_mng_note_profile_name" context:_profileText];
+		[self _notify:TCCoreNotifyProfileText context:_profileText];
 	});
 }
 
@@ -552,7 +552,7 @@
 		[_buddies addObject:buddy];
 		
 		// Notify
-		[self _notify:TCCoreNotifyBuddyNew info:@"core_mng_note_new_buddy" context:buddy];
+		[self _notify:TCCoreNotifyBuddyNew context:buddy];
 		
         // Start it
 		[buddy start];
@@ -734,7 +734,7 @@
 
 	if ([abuddy isPonged])
 	{
-		[self _error:TCCoreErrorClientCmdPing info:@"core_cnx_err_already_pinged" fatal:YES];
+		[self _error:TCCoreErrorClientAlreadyPinged fatal:YES];
 		return;
 	}
 	
@@ -744,7 +744,7 @@
 	
 	if ([address isEqualToString:[_config selfAddress]] && abuddy && [[abuddy random] isEqualToString:random] == NO)
 	{
-		[self _error:TCCoreErrorClientCmdPing info:@"core_cnx_err_masquerade" fatal:YES];
+		[self _error:TCCoreErrorClientMasquerade fatal:YES];
 		return;
 	}
 	
@@ -757,7 +757,7 @@
 		
 		if (!abuddy)
 		{
-			[self _error:TCCoreErrorClientCmdPing info:@"core_cnx_err_add_buddy" fatal:YES];
+			[self _error:TCCoreErrorClientAddBuddy fatal:YES];
 			return;
 		}
 	}
@@ -789,7 +789,7 @@
 		}
 	}
 	else
-		[self _error:TCCoreErrorClientCmdPong info:@"core_cnx_err_pong" fatal:YES];
+		[self _error:TCCoreErrorClientCmdPong fatal:YES];
 	
 	// We don't need the connection at this time: simply remove it.
 	[self removeConnection:connection];
@@ -802,9 +802,6 @@
 	
 	// Forward the information.
 	dispatch_async(_localQueue, ^{
-		
-		info.infoString = [_config localized:info.infoString];
-		
 		[self _sendEvent:info];
 	});
 	
@@ -847,11 +844,11 @@
 */
 #pragma mark - TCCoreManager - Helpers
 
-- (void)_error:(TCCoreInfo)code info:(NSString *)info fatal:(BOOL)fatal
+- (void)_error:(TCCoreInfo)code fatal:(BOOL)fatal
 {
 	// > localQueue <
 	
-	TCInfo *err = [TCInfo infoOfKind:TCInfoError infoCode:code infoString:[_config localized:info]];
+	TCInfo *err = [TCInfo infoOfKind:TCInfoError domain:TCCoreManagerInfoDomain code:code];
 
 	[self _sendEvent:err];
 		
@@ -859,11 +856,11 @@
 		[self stop];
 }
 
-- (void)_error:(TCCoreInfo)code info:(NSString *)info context:(id)ctx fatal:(BOOL)fatal
+- (void)_error:(TCCoreInfo)code context:(id)ctx fatal:(BOOL)fatal
 {
 	// > localQueue <
 		
-	TCInfo *err = [TCInfo infoOfKind:TCInfoError infoCode:code infoString:[_config localized:info] context:ctx];
+	TCInfo *err = [TCInfo infoOfKind:TCInfoError domain:TCCoreManagerInfoDomain code:code context:ctx];
 	
 	[self _sendEvent:err];
 	
@@ -871,20 +868,20 @@
 		[self stop];
 }
 
-- (void)_notify:(TCCoreInfo)notice info:(NSString *)info
+- (void)_notify:(TCCoreInfo)notice
 {
 	// > localQueue <
 		
-	TCInfo *ifo = [TCInfo infoOfKind:TCInfoInfo infoCode:notice infoString:[_config localized:info]];
+	TCInfo *ifo = [TCInfo infoOfKind:TCInfoInfo domain:TCCoreManagerInfoDomain code:notice];
 
 	[self _sendEvent:ifo];
 }
 
-- (void)_notify:(TCCoreInfo)notice info:(NSString *)info context:(id)ctx
+- (void)_notify:(TCCoreInfo)notice context:(id)ctx
 {
 	// > localQueue <
 	
-	TCInfo *ifo = [TCInfo infoOfKind:TCInfoInfo infoCode:notice infoString:[_config localized:info] context:ctx];
+	TCInfo *ifo = [TCInfo infoOfKind:TCInfoInfo domain:TCCoreManagerInfoDomain code:notice context:ctx];
 
 	[self _sendEvent:ifo];
 }

@@ -77,7 +77,7 @@
 }
 
 // -- Errors --
-- (void)callError:(TCSocketError) error info:(NSString *)info fatal:(BOOL)fatal;
+- (void)callError:(TCSocketError) error fatal:(BOOL)fatal;
 
 // -- Data Input --
 - (void)_dataAvailable;
@@ -141,19 +141,19 @@
 			// Check read result
 			if (sz < 0)
 			{
-				[self callError:TCSocketErrorRead info:@"core_socket_read_error" fatal:YES];
+				[self callError:TCSocketErrorRead fatal:YES];
 				free(buffer);
 			}
 			else if (sz == 0 && errno != EAGAIN)
 			{
-				[self callError:TCSocketErrorReadClosed info:@"core_socket_read_closed" fatal:YES];
+				[self callError:TCSocketErrorReadClosed fatal:YES];
 				free(buffer);
 			}
 			else if (sz > 0)
 			{
 				if ([_readBuffer size] + (size_t)sz > 50 * 1024 * 1024)
 				{
-					[self callError:TCSocketErrorReadFull info:@"core_socker_read_full" fatal:YES];
+					[self callError:TCSocketErrorReadFull fatal:YES];
 					free(buffer);
 				}
 				else
@@ -193,11 +193,11 @@
 				// Check write result
 				if (sz < 0)
 				{
-					[self callError:TCSocketErrorWrite info:@"core_socket_write_error" fatal:YES];
+					[self callError:TCSocketErrorWrite fatal:YES];
 				}
 				else if (sz == 0 && errno != EAGAIN)
 				{
-					[self callError:TCSocketErrorWriteClosed info:@"core_socket_write_closed" fatal:YES];
+					[self callError:TCSocketErrorWriteClosed fatal:YES];
 				}
 				else if (sz > 0)
 				{
@@ -427,7 +427,7 @@
 */
 #pragma mark - TCSocket - Errors
 
-- (void)callError:(TCSocketError)error info:(NSString *)info fatal:(BOOL)fatal
+- (void)callError:(TCSocketError)error fatal:(BOOL)fatal
 {
 	// If fatal, just stop.
 	if (fatal)
@@ -439,7 +439,7 @@
 	if (!delegate)
 		return;
 	
-	TCInfo *err = [TCInfo infoOfKind:TCInfoError infoCode:error infoString:info];
+	TCInfo *err = [TCInfo infoOfKind:TCInfoError domain:TCSocketInfoDomain code:error];
 	
 	// Dispatch on the delegate queue.
 	dispatch_async(_delegateQueue, ^{
