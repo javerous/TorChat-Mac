@@ -193,7 +193,7 @@
 				[_buddies addObject:buddy];
 				
 				// Notify
-				[self _notify:TCCoreNotifyBuddyNew context:buddy];
+				[self _notify:TCCoreEventBuddyNew context:buddy];
 			}
 			
 			// -- Check that we are on the buddy list --
@@ -210,8 +210,9 @@
 				}
 			}
 			
+#warning FIXME: find a way to configure a localized name
 			if (!found)
-				[self addBuddy:[_config localized:@"core_mng_myself"] address:selfAddress];
+				[self addBuddy:nil address:selfAddress];
 			
 			// -- Buddy are loaded --
 			_buddiesLoaded = true;
@@ -327,7 +328,7 @@
 		[self setStatus:_mstatus];
 		
 		// Notify
-		[self _notify:TCCoreNotifyStarted];
+		[self _notify:TCCoreEventStarted];
 		
 		// We are running !
 		_running = YES;
@@ -362,7 +363,7 @@
 			[buddy stop];
 		
 		// Notify
-		[self _notify:TCCoreNotifyStopped];
+		[self _notify:TCCoreEventStopped];
 		
 		_running = false;
 	});
@@ -382,7 +383,7 @@
 		
 		// Notify
 		if (status != _mstatus)
-			[self _notify:TCCoreNotifyStatus context:@(status)];
+			[self _notify:TCCoreEventStatus context:@(status)];
 		
 		// Hold internal status
 		_mstatus = status;
@@ -435,7 +436,7 @@
 			[buddy sendAvatar:_profileAvatar];
 		
 		// Notify
-		[self _notify:TCCoreNotifyProfileAvatar context:_profileAvatar];
+		[self _notify:TCCoreEventProfileAvatar context:_profileAvatar];
 	});
 }
 
@@ -470,7 +471,7 @@
 			[buddy sendProfileName:_profileName];
 		
 		// Notify
-		[self _notify:TCCoreNotifyProfileName context:_profileName];
+		[self _notify:TCCoreEventProfileName context:_profileName];
 	});
 }
 
@@ -504,7 +505,7 @@
 			[buddy sendProfileText:_profileText];
 
 		// Notify
-		[self _notify:TCCoreNotifyProfileText context:_profileText];
+		[self _notify:TCCoreEventProfileText context:_profileText];
 	});
 }
 
@@ -552,7 +553,7 @@
 		[_buddies addObject:buddy];
 		
 		// Notify
-		[self _notify:TCCoreNotifyBuddyNew context:buddy];
+		[self _notify:TCCoreEventBuddyNew context:buddy];
 		
         // Start it
 		[buddy start];
@@ -751,7 +752,8 @@
 	// if the buddy don't exist, add it on the buddy list
 	if (!abuddy)
 	{
-		[self addBuddy:[_config localized:@"core_cnx_new_buddy"] address:address];
+#warning FIXME: find a way to configure a localized name
+		[self addBuddy:nil address:address];
 		
 		abuddy = [self buddyWithAddress:address];
 		

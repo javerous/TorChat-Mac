@@ -141,147 +141,147 @@
 			
 			TCBuddyInfoDomain : @{
 					// -- Notify --
-					@(TCBuddyNotifyConnectedTor) :
+					@(TCBuddyEventConnectedTor) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyConnectedTor",
+							TCInfoNameKey : @"TCBuddyEventConnectedTor",
 							TCInfoTextKey : TCCoreBuddyNoteTorConnected,
 						},
 					
-					@(TCBuddyNotifyConnectedBuddy) :
+					@(TCBuddyEventConnectedBuddy) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyConnectedBuddy",
+							TCInfoNameKey : @"TCBuddyEventConnectedBuddy",
 							TCInfoTextKey : TCCoreBuddyNoteConnected,
 						},
 					
-					@(TCBuddyNotifyDisconnected) :
+					@(TCBuddyEventDisconnected) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyDisconnected",
+							TCInfoNameKey : @"TCBuddyEventDisconnected",
 							TCInfoTextKey : TCCoreBuddyNoteStopped,
 						},
 					
-					@(TCBuddyNotifyIdentified) :
+					@(TCBuddyEventIdentified) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyIdentified",
+							TCInfoNameKey : @"TCBuddyEventIdentified",
 							TCInfoTextKey : TCCoreBuddyNoteIdentified,
 						},
 					
-					@(TCBuddyNotifyStatus) :
+					@(TCBuddyEventStatus) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyStatus",
+							TCInfoNameKey : @"TCBuddyEventStatus",
 							TCInfoTextKey : TCCoreBuddyNoteStatusChanged,
 						},
 					
-					@(TCBuddyNotifyMessage) :
+					@(TCBuddyEventMessage) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyMessage",
+							TCInfoNameKey : @"TCBuddyEventMessage",
 							TCInfoTextKey : TCCoreBuddyNoteNewMessage,
 						},
 					
-					@(TCBuddyNotifyAlias) :
+					@(TCBuddyEventAlias) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyAlias",
+							TCInfoNameKey : @"TCBuddyEventAlias",
 							TCInfoTextKey : TCCoreBuddyNoteAliasChanged,
 						},
 					
-					@(TCBuddyNotifyNotes) :
+					@(TCBuddyEventNotes) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyNotes",
+							TCInfoNameKey : @"TCBuddyEventNotes",
 							TCInfoTextKey : TCCoreBuddyNoteNotesChanged,
 						},
 					
-					@(TCBuddyNotifyVersion) :
+					@(TCBuddyEventVersion) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyVersion",
+							TCInfoNameKey : @"TCBuddyEventVersion",
 							TCInfoTextKey : TCCoreBuddyNoteNewVersion,
 						},
 					
-					@(TCBuddyNotifyClient) :
+					@(TCBuddyEventClient) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyClient",
+							TCInfoNameKey : @"TCBuddyEventClient",
 							TCInfoTextKey : TCCoreBuddyNoteNewClient,
 						},
 					
-					@(TCBuddyNotifyBlocked) :
+					@(TCBuddyEventBlocked) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyBlocked",
+							TCInfoNameKey : @"TCBuddyEventBlocked",
 							TCInfoTextKey : TCCoreBuddyNoteBlockedChanged,
 						},
 					
-					@(TCBuddyNotifyFileSendStart) :
+					@(TCBuddyEventFileSendStart) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyFileSendStart",
+							TCInfoNameKey : @"TCBuddyEventFileSendStart",
 							TCInfoTextKey : TCCoreBuddyNoteFileSendStart,
 						},
 					
-					@(TCBuddyNotifyFileSendRunning) :
+					@(TCBuddyEventFileSendRunning) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyFileSendRunning",
+							TCInfoNameKey : @"TCBuddyEventFileSendRunning",
 							TCInfoTextKey : TCCoreBuddyNoteFileChunkSend,
 						},
 					
-					@(TCBuddyNotifyFileSendFinish) :
+					@(TCBuddyEventFileSendFinish) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyFileSendFinish",
+							TCInfoNameKey : @"TCBuddyEventFileSendFinish",
 							TCInfoTextKey : TCCoreBuddyNoteFileSendFinish,
 						},
 					
-					@(TCBuddyNotifyFileSendStopped) :
+					@(TCBuddyEventFileSendStopped) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyFileSendStopped",
+							TCInfoNameKey : @"TCBuddyEventFileSendStopped",
 							TCInfoTextKey : TCCoreBuddyNoteFileSendCanceled,
 						},
 					
-					@(TCBuddyNotifyFileReceiveStart) :
+					@(TCBuddyEventFileReceiveStart) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyFileReceiveStart",
+							TCInfoNameKey : @"TCBuddyEventFileReceiveStart",
 							TCInfoTextKey : TCCoreBuddyNoteFileReceiveStart,
 						},
 					
-					@(TCBuddyNotifyFileReceiveRunning) :
+					@(TCBuddyEventFileReceiveRunning) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyFileReceiveRunning",
+							TCInfoNameKey : @"TCBuddyEventFileReceiveRunning",
 							TCInfoTextKey : TCCoreBuddyNoteFileChunkReceive,
 						},
 					
-					@(TCBuddyNotifyFileReceiveRunning) :
+					@(TCBuddyEventFileReceiveRunning) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyFileReceiveRunning",
+							TCInfoNameKey : @"TCBuddyEventFileReceiveRunning",
 							TCInfoTextKey : TCCoreBuddyNoteFileChunkReceive,
 						},
 					
-					@(TCBuddyNotifyFileReceiveFinish) :
+					@(TCBuddyEventFileReceiveFinish) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyFileReceiveFinish",
+							TCInfoNameKey : @"TCBuddyEventFileReceiveFinish",
 							TCInfoTextKey : TCCoreBuddyNoteFileReceiveFinish,
 						},
 					
-					@(TCBuddyNotifyFileReceiveStopped) :
+					@(TCBuddyEventFileReceiveStopped) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyFileReceiveStopped",
+							TCInfoNameKey : @"TCBuddyEventFileReceiveStopped",
 							TCInfoTextKey : TCCoreBuddyNoteFileReceiveStopped,
 						},
 					
-					@(TCBuddyNotifyProfileText) :
+					@(TCBuddyEventProfileText) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyProfileText",
+							TCInfoNameKey : @"TCBuddyEventProfileText",
 							TCInfoTextKey : TCCoreBuddyNoteNewProfileText,
 						},
 					
-					@(TCBuddyNotifyProfileText) :
+					@(TCBuddyEventProfileText) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyProfileText",
+							TCInfoNameKey : @"TCBuddyEventProfileText",
 							TCInfoTextKey : TCCoreBuddyNoteNewProfileText,
 						},
 					
-					@(TCBuddyNotifyProfileName) :
+					@(TCBuddyEventProfileName) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyProfileName",
+							TCInfoNameKey : @"TCBuddyEventProfileName",
 							TCInfoTextKey : TCCoreBuddyNoteNewProfileName,
 						},
 					
-					@(TCBuddyNotifyProfileAvatar) :
+					@(TCBuddyEventProfileAvatar) :
 						@{
-							TCInfoNameKey : @"TCBuddyNotifyProfileAvatar",
+							TCInfoNameKey : @"TCBuddyEventProfileAvatar",
 							TCInfoTextKey : TCCoreBuddyNoteNewProfileAvatar,
 						},
 					
@@ -398,129 +398,129 @@
 					@(TCCoreErrorSocket) :
 						@{
 							TCInfoNameKey : @"TCCoreErrorSocket",
-							TCInfoTextKey : @"core_cnx_err_socket",
+							TCInfoTextKey : @"core_cnx_error_socket",
 						},
 					
 					@(TCCoreErrorClientCmdPing) :
 						@{
 							TCInfoNameKey : @"TCCoreErrorClientCmdPing",
-							TCInfoTextKey : @"core_cnx_err_fake_ping",
+							TCInfoTextKey : @"core_cnx_error_fake_ping",
 						},
 					
-					@(TCCoreNotifyClientStarted) :
+					@(TCCoreEventClientStarted) :
 						@{
-							TCInfoNameKey : @"TCCoreNotifyClientStarted",
-							TCInfoTextKey : @"core_cnx_note_started",
+							TCInfoNameKey : @"TCCoreEventClientStarted",
+							TCInfoTextKey : @"core_cnx_event_started",
 						},
 				},
 			
 				TCCoreManagerInfoDomain: @{
-					@(TCCoreNotifyBuddyNew) :
+					@(TCCoreEventBuddyNew) :
 						@{
-							TCInfoNameKey : @"TCCoreNotifyBuddyNew",
-							TCInfoTextKey : @"core_mng_note_new_buddy",
+							TCInfoNameKey : @"TCCoreEventBuddyNew",
+							TCInfoTextKey : @"core_mng_event_new_buddy",
 						},
 					
 					@(TCCoreErrorSocketCreate) :
 						@{
 							TCInfoNameKey : @"TCCoreErrorSocketCreate",
-							TCInfoTextKey : @"core_mng_err_socket",
+							TCInfoTextKey : @"core_mng_error_socket",
 						},
 					
 					@(TCCoreErrorSocketOption) :
 						@{
 							TCInfoNameKey : @"TCCoreErrorSocketOption",
-							TCInfoTextKey : @"core_mng_err_setsockopt",
+							TCInfoTextKey : @"core_mng_error_setsockopt",
 						},
 					
 					@(TCCoreErrorSocketBind) :
 						@{
 							TCInfoNameKey : @"TCCoreErrorSocketBind",
-							TCInfoTextKey : @"core_mng_err_bind",
+							TCInfoTextKey : @"core_mng_error_bind",
 						},
 					
 					@(TCCoreErrorSocketListen) :
 						@{
 							TCInfoNameKey : @"TCCoreErrorSocketListen",
-							TCInfoTextKey : @"core_mng_err_listen",
+							TCInfoTextKey : @"core_mng_error_listen",
 						},
 					
 					@(TCCoreErrorServAccept) :
 						@{
 							TCInfoNameKey : @"TCCoreErrorServAccept",
-							TCInfoTextKey : @"core_mng_err_accept",
+							TCInfoTextKey : @"core_mng_error_accept",
 						},
 					
 					@(TCCoreErrorServAcceptAsync) :
 						@{
 							TCInfoNameKey : @"TCCoreErrorServAcceptAsync",
-							TCInfoTextKey : @"core_mng_err_async",
+							TCInfoTextKey : @"core_mng_error_async",
 						},
 					
-					@(TCCoreNotifyStarted) :
+					@(TCCoreEventStarted) :
 						@{
-							TCInfoNameKey : @"TCCoreNotifyStarted",
-							TCInfoTextKey : @"core_mng_note_started",
+							TCInfoNameKey : @"TCCoreEventStarted",
+							TCInfoTextKey : @"core_mng_event_started",
 						},
 					
-					@(TCCoreNotifyStopped) :
+					@(TCCoreEventStopped) :
 						@{
-							TCInfoNameKey : @"TCCoreNotifyStopped",
-							TCInfoTextKey : @"core_mng_note_stopped",
+							TCInfoNameKey : @"TCCoreEventStopped",
+							TCInfoTextKey : @"core_mng_event_stopped",
 						},
 					
-					@(TCCoreNotifyStatus) :
+					@(TCCoreEventStatus) :
 						@{
-							TCInfoNameKey : @"TCCoreNotifyStatus",
+							TCInfoNameKey : @"TCCoreEventStatus",
 							TCInfoTextKey : @"",
 						},
 					
-					@(TCCoreNotifyProfileAvatar) :
+					@(TCCoreEventProfileAvatar) :
 						@{
-							TCInfoNameKey : @"TCCoreNotifyProfileAvatar",
-							TCInfoTextKey : @"core_mng_note_profile_avatar",
+							TCInfoNameKey : @"TCCoreEventProfileAvatar",
+							TCInfoTextKey : @"core_mng_event_profile_avatar",
 						},
 					
-					@(TCCoreNotifyProfileName) :
+					@(TCCoreEventProfileName) :
 						@{
-							TCInfoNameKey : @"TCCoreNotifyProfileName",
-							TCInfoTextKey : @"core_mng_note_profile_name",
+							TCInfoNameKey : @"TCCoreEventProfileName",
+							TCInfoTextKey : @"core_mng_event_profile_name",
 						},
 					
-					@(TCCoreNotifyProfileText) :
+					@(TCCoreEventProfileText) :
 						@{
-							TCInfoNameKey : @"TCCoreNotifyProfileText",
-							TCInfoTextKey : @"core_mng_note_profile_name",
+							TCInfoNameKey : @"TCCoreEventProfileText",
+							TCInfoTextKey : @"core_mng_event_profile_name",
 						},
 					
-					@(TCCoreNotifyBuddyNew) :
+					@(TCCoreEventBuddyNew) :
 						@{
-							TCInfoNameKey : @"TCCoreNotifyBuddyNew",
-							TCInfoTextKey : @"core_mng_note_new_buddy",
+							TCInfoNameKey : @"TCCoreEventBuddyNew",
+							TCInfoTextKey : @"core_mng_event_new_buddy",
 						},
 					
 					@(TCCoreErrorClientAlreadyPinged) :
 						@{
 							TCInfoNameKey : @"TCCoreErrorClientAlreadyPinged",
-							TCInfoTextKey : @"core_cnx_err_already_pinged",
+							TCInfoTextKey : @"core_cnx_error_already_pinged",
 						},
 					
 					@(TCCoreErrorClientMasquerade) :
 						@{
 							TCInfoNameKey : @"TCCoreErrorClientMasquerade",
-							TCInfoTextKey : @"core_cnx_err_masquerade",
+							TCInfoTextKey : @"core_cnx_error_masquerade",
 						},
 					
 					@(TCCoreErrorClientAddBuddy) :
 						@{
 							TCInfoNameKey : @"TCCoreErrorClientAddBuddy",
-							TCInfoTextKey : @"core_cnx_err_add_buddy",
+							TCInfoTextKey : @"core_cnx_error_add_buddy",
 						},
 					
 					@(TCCoreErrorClientCmdPong) :
 						@{
 							TCInfoNameKey : @"TCCoreErrorClientCmdPong",
-							TCInfoTextKey : @"core_cnx_err_pong",
+							TCInfoTextKey : @"core_cnx_error_pong",
 						},
 				},
 			};

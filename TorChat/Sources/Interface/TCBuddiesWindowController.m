@@ -435,7 +435,7 @@
 	// Action information
 	switch (info.code)
 	{
-		case TCCoreNotifyStarted:
+		case TCCoreEventStarted:
 		{
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[_indicator stopAnimation:self];
@@ -444,7 +444,7 @@
 			break;
 		}
 			
-		case TCCoreNotifyStopped:
+		case TCCoreEventStopped:
 		{
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[self updateStatusUI:-2];
@@ -453,7 +453,7 @@
 			break;
 		}
 			
-		case TCCoreNotifyStatus:
+		case TCCoreEventStatus:
 		{
 			TCStatus	status = (TCStatus)[(NSNumber *)info.context intValue];
 			
@@ -464,7 +464,7 @@
 			break;
 		}
 			
-		case TCCoreNotifyProfileAvatar:
+		case TCCoreEventProfileAvatar:
 		{
 			TCImage	*tcFinal = (TCImage *)info.context;
 			NSImage	*final = [tcFinal imageRepresentation];
@@ -488,7 +488,7 @@
 			break;
 		}
 			
-		case TCCoreNotifyProfileName:
+		case TCCoreEventProfileName:
 		{
 			dispatch_async(dispatch_get_main_queue(), ^{
 				// Update Title
@@ -498,15 +498,15 @@
 			break;
 		}
 			
-		case TCCoreNotifyProfileText:
+		case TCCoreEventProfileText:
 			break;
 			
-		case TCCoreNotifyBuddyNew:
+		case TCCoreEventBuddyNew:
 		{
 			TCBuddy *buddy = (TCBuddy *)info.context;
 			
 			buddy.delegate = self;
-			
+
 			dispatch_async(dispatch_get_main_queue(), ^{
 				
 				[_buddies addObject:buddy];
@@ -519,10 +519,10 @@
 			break;
 		}
 			
-		case TCCoreNotifyClientStarted:
+		case TCCoreEventClientStarted:
 			break;
 			
-		case TCCoreNotifyClientStopped:
+		case TCCoreEventClientStopped:
 			break;
 	}
 }
@@ -544,13 +544,13 @@
 		// Actions
 		switch ((TCBuddyInfo)info.code)
 		{
-			case TCBuddyNotifyConnectedTor:
+			case TCBuddyEventConnectedTor:
 				break;
 				
-			case TCBuddyNotifyConnectedBuddy:
+			case TCBuddyEventConnectedBuddy:
 				break;
 				
-			case TCBuddyNotifyDisconnected:
+			case TCBuddyEventDisconnected:
 			{
 				// Rebuid buddy list.
 				[self buddyStatusChanged];
@@ -568,10 +568,10 @@
 				break;
 			}
 				
-			case TCBuddyNotifyIdentified:
+			case TCBuddyEventIdentified:
 				break;
 				
-			case TCBuddyNotifyStatus:
+			case TCBuddyEventStatus:
 			{
 				TCStatus  status = (TCStatus)[(NSNumber *)info.context intValue];
 				NSString		*statusStr = @"";
@@ -611,7 +611,7 @@
 				break;
 			}
 				
-			case TCBuddyNotifyProfileAvatar:
+			case TCBuddyEventProfileAvatar:
 			{
 				TCImage *tcAvatar = (TCImage *)info.context;
 				NSImage *avatar = [tcAvatar imageRepresentation];
@@ -635,7 +635,7 @@
 				break;
 			}
 				
-			case TCBuddyNotifyProfileText:
+			case TCBuddyEventProfileText:
 			{
 				NSString *text = info.context;
 				
@@ -650,7 +650,7 @@
 				break;
 			}
 				
-			case TCBuddyNotifyProfileName:
+			case TCBuddyEventProfileName:
 			{
 				NSString *name = info.context;
 				
@@ -670,7 +670,7 @@
 				break;
 			}
 				
-			case TCBuddyNotifyMessage:
+			case TCBuddyEventMessage:
 			{
 				TCChatWindowController *chatController = [TCChatWindowController sharedController];
 				
@@ -683,7 +683,7 @@
 				break;
 			}
 				
-			case TCBuddyNotifyAlias:
+			case TCBuddyEventAlias:
 			{
 				NSString *alias =info.context;
 				
@@ -703,10 +703,10 @@
 				break;
 			}
 				
-			case TCBuddyNotifyNotes:
+			case TCBuddyEventNotes:
 				break;
 				
-			case TCBuddyNotifyBlocked:
+			case TCBuddyEventBlocked:
 			{
 				NSNumber *blocked = info.context;
 				
@@ -726,7 +726,7 @@
 				break;
 			}
 				
-			case TCBuddyNotifyVersion:
+			case TCBuddyEventVersion:
 			{
 				NSString *version = info.context;
 				
@@ -741,7 +741,7 @@
 				break;
 			}
 				
-			case TCBuddyNotifyClient:
+			case TCBuddyEventClient:
 			{
 				NSString *client = info.context;
 				
@@ -756,7 +756,7 @@
 				break;
 			}
 				
-			case TCBuddyNotifyFileSendStart:
+			case TCBuddyEventFileSendStart:
 			{
 				TCFileInfo *finfo = (TCFileInfo *)info.context;
 				
@@ -769,7 +769,7 @@
 				break;
 			}
 				
-			case TCBuddyNotifyFileSendRunning:
+			case TCBuddyEventFileSendRunning:
 			{
 				TCFileInfo *finfo = (TCFileInfo *)info.context;
 				
@@ -782,7 +782,7 @@
 				break;
 			}
 				
-			case TCBuddyNotifyFileSendFinish:
+			case TCBuddyEventFileSendFinish:
 			{
 				TCFileInfo *finfo = (TCFileInfo *)info.context;
 				
@@ -795,7 +795,7 @@
 				break;
 			}
 				
-			case TCBuddyNotifyFileSendStopped:
+			case TCBuddyEventFileSendStopped:
 			{
 				TCFileInfo *finfo = (TCFileInfo *)info.context;
 				
@@ -808,7 +808,7 @@
 				break;
 			}
 				
-			case TCBuddyNotifyFileReceiveStart:
+			case TCBuddyEventFileReceiveStart:
 			{
 				TCFileInfo *finfo = (TCFileInfo *)info.context;
 				
@@ -821,7 +821,7 @@
 				break;
 			}
 				
-			case TCBuddyNotifyFileReceiveRunning:
+			case TCBuddyEventFileReceiveRunning:
 			{
 				TCFileInfo *finfo = (TCFileInfo *)info.context;
 				
@@ -834,7 +834,7 @@
 				break;
 			}
 				
-			case TCBuddyNotifyFileReceiveFinish:
+			case TCBuddyEventFileReceiveFinish:
 			{
 				TCFileInfo *finfo = (TCFileInfo *)info.context;
 				
@@ -847,7 +847,7 @@
 				break;
 			}
 				
-			case TCBuddyNotifyFileReceiveStopped:
+			case TCBuddyEventFileReceiveStopped:
 			{
 				TCFileInfo *finfo = (TCFileInfo *)info.context;
 				

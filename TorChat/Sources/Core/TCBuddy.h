@@ -64,33 +64,33 @@ typedef enum
 // == Info Codes ==
 typedef enum
 {
-	// -- Notify --
-	TCBuddyNotifyConnectedTor,
-	TCBuddyNotifyConnectedBuddy,
-	TCBuddyNotifyDisconnected,
-	TCBuddyNotifyIdentified,
+	// -- Event --
+	TCBuddyEventConnectedTor,
+	TCBuddyEventConnectedBuddy,
+	TCBuddyEventDisconnected,
+	TCBuddyEventIdentified,
 	
-	TCBuddyNotifyStatus,			// context: NSNumber (TCStatus)
-	TCBuddyNotifyMessage,			// context: NSString (<message>)
-	TCBuddyNotifyAlias,				// context: NSString (<alias>)
-	TCBuddyNotifyNotes,				// context: NSString (<notes>)
-	TCBuddyNotifyVersion,			// context: NSString (<version>)
-	TCBuddyNotifyClient,			// context: NSString (<client_name>)
-	TCBuddyNotifyBlocked,			// context: NSNumber (BOOL)
+	TCBuddyEventStatus,				// context: NSNumber (TCStatus)
+	TCBuddyEventMessage,			// context: NSString (<message>)
+	TCBuddyEventAlias,				// context: NSString (<alias>)
+	TCBuddyEventNotes,				// context: NSString (<notes>)
+	TCBuddyEventVersion,			// context: NSString (<version>)
+	TCBuddyEventClient,				// context: NSString (<client_name>)
+	TCBuddyEventBlocked,			// context: NSNumber (BOOL)
 	
-	TCBuddyNotifyFileSendStart,		// context: TCFileInfo
-	TCBuddyNotifyFileSendRunning,	// context: TCFileInfo
-	TCBuddyNotifyFileSendFinish,	// context: TCFileInfo
-	TCBuddyNotifyFileSendStopped,	// context: TCFileInfo
+	TCBuddyEventFileSendStart,		// context: TCFileInfo
+	TCBuddyEventFileSendRunning,	// context: TCFileInfo
+	TCBuddyEventFileSendFinish,		// context: TCFileInfo
+	TCBuddyEventFileSendStopped,	// context: TCFileInfo
 	
-	TCBuddyNotifyFileReceiveStart,	// context: TCFileInfo
-	TCBuddyNotifyFileReceiveRunning,// context: TCFileInfo
-	TCBuddyNotifyFileReceiveFinish,	// context: TCFileInfo
-	TCBuddyNotifyFileReceiveStopped,// context: TCFileInfo
+	TCBuddyEventFileReceiveStart,	// context: TCFileInfo
+	TCBuddyEventFileReceiveRunning,	// context: TCFileInfo
+	TCBuddyEventFileReceiveFinish,	// context: TCFileInfo
+	TCBuddyEventFileReceiveStopped,	// context: TCFileInfo
 	
-	TCBuddyNotifyProfileText,		// context: NSString (<text>)
-	TCBuddyNotifyProfileName,		// context: NSString (<name>)
-	TCBuddyNotifyProfileAvatar,		// context: TCImage
+	TCBuddyEventProfileText,		// context: NSString (<text>)
+	TCBuddyEventProfileName,		// context: NSString (<name>)
+	TCBuddyEventProfileAvatar,		// context: TCImage
 	
 	// -- Error --
 	TCBuddyErrorResolveTor,
@@ -124,7 +124,7 @@ typedef enum
 {
 	TCBuddyChannelOut,	// Connection initied by TCBuddy
 	TCBuddyChannelIn,	// Connection received by TControlClient
-} tcbuddy_channel;
+} TCBuddyChannel;
 
 
 
