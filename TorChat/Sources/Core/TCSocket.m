@@ -30,13 +30,13 @@
 
 
 /*
-** TCSocketOperation
+** TCSocketOperationHandler
 */
-#pragma mark - TCSocketOperation
+#pragma mark - TCSocketOperationHandler
 
-@interface TCSocketOperation : NSObject
+@interface TCSocketOperationHandler : NSObject
 
-@property (assign, nonatomic) tcsocket_operation	operation;
+@property (assign, nonatomic) TCSocketOperation		operation;
 @property (assign, nonatomic) NSUInteger			size;
 @property (assign, nonatomic) NSUInteger			tag;
 @property (strong, nonatomic) id					context;
@@ -72,16 +72,16 @@
 	__weak id <TCSocketDelegate> _delegate;
 	
 	// > Operations
-	TCSocketOperation	*_goperation;
-	NSMutableArray		*_operations;
+	TCSocketOperationHandler	*_goperation;
+	NSMutableArray				*_operations;
 }
 
 // -- Errors --
-- (void)callError:(tcsocket_error) error info:(NSString *)info fatal:(BOOL)fatal;
+- (void)callError:(TCSocketError) error info:(NSString *)info fatal:(BOOL)fatal;
 
 // -- Data Input --
 - (void)_dataAvailable;
-- (BOOL)_runOperation:(TCSocketOperation *)operation;
+- (BOOL)_runOperation:(TCSocketOperationHandler *)operation;
 
 @end
 
@@ -141,19 +141,19 @@
 			// Check read result
 			if (sz < 0)
 			{
-				[self callError:tcsocket_read_error info:@"core_socket_read_error" fatal:YES];
+				[self callError:TCSocketErrorRead info:@"core_socket_read_error" fatal:YES];
 				free(buffer);
 			}
 			else if (sz == 0 && errno != EAGAIN)
 			{
-				[self callError:tcsocket_read_closed info:@"core_socket_read_closed" fatal:YES];
+				[self callError:TCSocketErrorReadClosed info:@"core_socket_read_closed" fatal:YES];
 				free(buffer);
 			}
 			else if (sz > 0)
 			{
 				if ([_readBuffer size] + (size_t)sz > 50 * 1024 * 1024)
 				{
-					[self callError:tcsocket_read_full info:@"core_socker_read_full" fatal:YES];
+					[self callError:TCSocketErrorReadFull info:@"core_socker_read_full" fatal:YES];
 					free(buffer);
 				}
 				else
@@ -193,11 +193,11 @@
 				// Check write result
 				if (sz < 0)
 				{
-					[self callError:tcsocket_write_error info:@"core_socket_write_error" fatal:YES];
+					[self callError:TCSocketErrorWrite info:@"core_socket_write_error" fatal:YES];
 				}
 				else if (sz == 0 && errno != EAGAIN)
 				{
-					[self callError:tcsocket_write_closed info:@"core_socket_write_closed" fatal:YES];
+					[self callError:TCSocketErrorWriteClosed info:@"core_socket_write_closed" fatal:YES];
 				}
 				else if (sz > 0)
 				{
@@ -345,12 +345,12 @@
 */
 #pragma mark - TCSocket - Operations
 
-- (void)setGlobalOperation:(tcsocket_operation)operation withSize:(NSUInteger)size andTag:(NSUInteger)tag
+- (void)setGlobalOperation:(TCSocketOperation)operation withSize:(NSUInteger)size andTag:(NSUInteger)tag
 {
 	dispatch_async(_socketQueue, ^{
 		
 		// Create global operation.
-		_goperation = [[TCSocketOperation alloc] init];
+		_goperation = [[TCSocketOperationHandler alloc] init];
 		
 		_goperation.operation = operation;
 		_goperation.size = size;
@@ -369,12 +369,12 @@
 	});
 }
 
-- (void)scheduleOperation:(tcsocket_operation)operation withSize:(NSUInteger)size andTag:(NSUInteger)tag
+- (void)scheduleOperation:(TCSocketOperation)operation withSize:(NSUInteger)size andTag:(NSUInteger)tag
 {
 	dispatch_async(_socketQueue, ^{
 		
 		// Create global operation.
-		TCSocketOperation *op = [[TCSocketOperation alloc] init];
+		TCSocketOperationHandler *op = [[TCSocketOperationHandler alloc] init];
 		
 		op.operation = operation;
 		op.size = size;
@@ -427,7 +427,7 @@
 */
 #pragma mark - TCSocket - Errors
 
-- (void)callError:(tcsocket_error)error info:(NSString *)info fatal:(BOOL)fatal
+- (void)callError:(TCSocketError)error info:(NSString *)info fatal:(BOOL)fatal
 {
 	// If fatal, just stop.
 	if (fatal)
@@ -439,7 +439,7 @@
 	if (!delegate)
 		return;
 	
-	TCInfo *err = [TCInfo infoOfKind:tcinfo_error infoCode:error infoString:info];
+	TCInfo *err = [TCInfo infoOfKind:TCInfoError infoCode:error infoString:info];
 	
 	// Dispatch on the delegate queue.
 	dispatch_async(_delegateQueue, ^{
@@ -474,7 +474,7 @@
 		
 		for (i = 0; i < count; i++)
 		{
-			TCSocketOperation *op = _operations[i];
+			TCSocketOperationHandler *op = _operations[i];
 			
 			if ([self _runOperation:op])
 				[indexes addIndex:i];
@@ -486,7 +486,7 @@
 	}
 }
 
-- (BOOL)_runOperation:(TCSocketOperation *)operation
+- (BOOL)_runOperation:(TCSocketOperationHandler *)operation
 {
 	// > socketQueue <
 	
@@ -507,7 +507,7 @@
 	switch (operation.operation)
 	{
 		// Operation is to read a chunk of raw data.
-		case tcsocket_op_data:
+		case TCSocketOperationData:
 		{
 			// Get the amount to read.
 			NSUInteger size = operation.size;
@@ -529,14 +529,14 @@
 			
 			// -- Give to delegate --
 			dispatch_async(_delegateQueue, ^{
-				[delegate socket:self operationAvailable:tcsocket_op_data tag:tag content:data];
+				[delegate socket:self operationAvailable:TCSocketOperationData tag:tag content:data];
 			});
 			
 			return YES;
 		}
 			
 		// Operation is to read lines.
-		case tcsocket_op_line:
+		case TCSocketOperationLine:
 		{
 			NSUInteger		max = operation.size;
 			NSMutableArray	*lines = NULL;
@@ -582,7 +582,7 @@
 						
 			// -- Give to delegate --
 			dispatch_async(_delegateQueue, ^{
-				[delegate socket:self operationAvailable:tcsocket_op_line tag:tag content:lines];
+				[delegate socket:self operationAvailable:TCSocketOperationLine tag:tag content:lines];
 			});
 			
 			return YES;
@@ -597,10 +597,10 @@
 
 
 /*
-** TCSocketOperation
+** TCSocketOperationHandler
 */
-#pragma mark - TCSocketOperation
+#pragma mark - TCSocketOperationHandler
 
-@implementation TCSocketOperation
+@implementation TCSocketOperationHandler
 
 @end

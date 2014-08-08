@@ -43,21 +43,20 @@
 // == Socket Errors ==
 typedef enum
 {
-    tcsocket_read_closed,
-	tcsocket_read_error,
-	tcsocket_read_full,
+    TCSocketErrorReadClosed,
+	TCSocketErrorRead,
+	TCSocketErrorReadFull,
 	
-	tcsocket_write_closed,
-	tcsocket_write_error,
-    
-} tcsocket_error;
+	TCSocketErrorWriteClosed,
+	TCSocketErrorWrite,
+} TCSocketError;
 
 // == Socket Operations ==
 typedef enum
 {
-	tcsocket_op_data,
-	tcsocket_op_line
-} tcsocket_operation;
+	TCSocketOperationData,
+	TCSocketOperationLine
+} TCSocketOperation;
 
 
 
@@ -69,7 +68,7 @@ typedef enum
 @protocol TCSocketDelegate <NSObject>
 
 @required
-- (void)socket:(TCSocket *)socket operationAvailable:(tcsocket_operation)operation tag:(NSUInteger)tag content:(id)content;
+- (void)socket:(TCSocket *)socket operationAvailable:(TCSocketOperation)operation tag:(NSUInteger)tag content:(id)content;
 
 @optional
 - (void)socket:(TCSocket *)socket error:(TCInfo *)error;
@@ -97,10 +96,10 @@ typedef enum
 - (BOOL)sendBuffer:(TCBuffer *)buffer;
 
 // -- Operations --
-- (void)setGlobalOperation:(tcsocket_operation)operation withSize:(NSUInteger)size andTag:(NSUInteger)tag;
+- (void)setGlobalOperation:(TCSocketOperation)operation withSize:(NSUInteger)size andTag:(NSUInteger)tag;
 - (void)removeGlobalOperation;
 
-- (void)scheduleOperation:(tcsocket_operation)operation withSize:(NSUInteger)size andTag:(NSUInteger)tag;
+- (void)scheduleOperation:(TCSocketOperation)operation withSize:(NSUInteger)size andTag:(NSUInteger)tag;
 
 // -- Life --
 - (void)stop;

@@ -60,6 +60,9 @@ typedef enum
 
 - (BOOL)isRunning;
 
+// -- Update --
+- (void)checkForUpdateWithResultHandler:(void (^)(NSString *newVersion, NSString *errorID))handler;
+
 // -- Property --
 - (NSString *)hiddenHostname;
 

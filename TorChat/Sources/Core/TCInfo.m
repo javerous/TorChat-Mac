@@ -35,7 +35,7 @@
 }
 
 // -- Properties (RW) --
-@property (assign, nonatomic) tcinfo_kind	kind;
+@property (assign, nonatomic) TCInfoKind	kind;
 @property (assign, nonatomic) int			infoCode;
 @property (strong, nonatomic) id			context;
 
@@ -56,7 +56,7 @@
 */
 #pragma mark - TCInfo - Instance
 
-+ (TCInfo *)infoOfKind:(tcinfo_kind)kind infoCode:(int)code
++ (TCInfo *)infoOfKind:(TCInfoKind)kind infoCode:(int)code
 {
 	TCInfo *info = [[TCInfo alloc] init];
 	
@@ -66,7 +66,7 @@
 	return info;
 }
 
-+ (TCInfo *)infoOfKind:(tcinfo_kind)kind infoCode:(int)code infoString:(NSString *)string
++ (TCInfo *)infoOfKind:(TCInfoKind)kind infoCode:(int)code infoString:(NSString *)string
 {
 	TCInfo *info = [[TCInfo alloc] init];
 	
@@ -77,7 +77,7 @@
 	return info;
 }
 
-+ (TCInfo *)infoOfKind:(tcinfo_kind)kind infoCode:(int)code infoString:(NSString *)string context:(id)context
++ (TCInfo *)infoOfKind:(TCInfoKind)kind infoCode:(int)code infoString:(NSString *)string context:(id)context
 {
 	TCInfo *info = [[TCInfo alloc] init];
 	
@@ -89,7 +89,7 @@
 	return info;
 }
 
-+ (TCInfo *)infoOfKind:(tcinfo_kind)kind infoCode:(int)code infoString:(NSString *)string info:(TCInfo *)sinfo
++ (TCInfo *)infoOfKind:(TCInfoKind)kind infoCode:(int)code infoString:(NSString *)string info:(TCInfo *)sinfo
 {
 	TCInfo *info = [[TCInfo alloc] init];
 	
@@ -101,7 +101,7 @@
 	return info;
 }
 
-+ (TCInfo *)infoOfKind:(tcinfo_kind)kind infoCode:(int)code infoString:(NSString *)string context:(id)context info:(TCInfo *)sinfo
++ (TCInfo *)infoOfKind:(TCInfoKind)kind infoCode:(int)code infoString:(NSString *)string context:(id)context info:(TCInfo *)sinfo
 {
 	TCInfo *info = [[TCInfo alloc] init];
 	

@@ -24,7 +24,6 @@
 #import <Foundation/Foundation.h>
 
 #import "TCConfig.h"
-#import "TCConstants.h"
 
 
 /*
@@ -44,70 +43,78 @@
 */
 #pragma mark - Types
 
+// == Status ==
+typedef enum
+{
+	TCStatusOffline,
+	TCStatusAvailable,
+	TCStatusAway,
+	TCStatusXA,
+} TCStatus;
+
 // == Info Codes ==
 typedef enum
 {
 	// -- Notify --
-	tcbuddy_notify_connected_tor,
-	tcbuddy_notify_connected_buddy,
-	tcbuddy_notify_disconnected,
-	tcbuddy_notify_identified,
+	TCBuddyNotifyConnectedTor,
+	TCBuddyNotifyConnectedBuddy,
+	TCBuddyNotifyDisconnected,
+	TCBuddyNotifyIdentified,
 	
-	tcbuddy_notify_status,
-	tcbuddy_notify_message,
-	tcbuddy_notify_alias,
-	tcbuddy_notify_notes,
-	tcbuddy_notify_version,
-	tcbuddy_notify_client,
-	tcbuddy_notify_blocked,
+	TCBuddyNotifyStatus,
+	TCBuddyNotifyMessage,
+	TCBuddyNotifyAlias,
+	TCBuddyNotifyNotes,
+	TCBuddyNotifyVersion,
+	TCBuddyNotifyClient,
+	TCBuddyNotifyBlocked,
 	
-	tcbuddy_notify_file_send_start,
-	tcbuddy_notify_file_send_running,
-	tcbuddy_notify_file_send_finish,
-	tcbuddy_notify_file_send_stoped,
+	TCBuddyNotifyFileSendStart,
+	TCBuddyNotifyFileSendRunning,
+	TCBuddyNotifyFileSendFinish,
+	TCBuddyNotifyFileSendStopped,
 	
-	tcbuddy_notify_file_receive_start,
-	tcbuddy_notify_file_receive_running,
-	tcbuddy_notify_file_receive_finish,
-	tcbuddy_notify_file_receive_stoped,
+	TCBuddyNotifyFileReceiveStart,
+	TCBuddyNotifyFileReceiveRunning,
+	TCBuddyNotifyFileReceiveFinish,
+	TCBuddyNotifyFileReceiveStoped,
 	
-	tcbuddy_notify_profile_text,
-	tcbuddy_notify_profile_name,
-	tcbuddy_notify_profile_avatar,
-	
+	TCBuddyNotifyProfileText,
+	TCBuddyNotifyProfileName,
+	TCBuddyNotifyProfileAvatar,
 	
 	// -- Error --
-	tcbuddy_error_resolve_tor,
-	tcbuddy_error_connect_tor,
+	TCBuddyErrorResolveTor,
+	TCBuddyErrorConnectTor,
 	
-	tcbuddy_error_socket,
+	TCBuddyErrorSocket,
 	
-	tcbuddy_error_socks,
+	TCBuddyErrorSocks,
 	
-	tcbuddy_error_too_messages,
-	tcbuddy_error_message_offline,
-	tcbuddy_error_message_blocked,
+	TCBuddyErrorTooMessages,
+	TCBuddyErrorMessageOffline,
+	TCBuddyErrorMessageBlocked,
 	
-	tcbuddy_error_send_file,
-	tcbuddy_error_receive_file,
-	tcbuddy_error_file_offline,
-	tcbuddy_error_file_blocked,
+	TCBuddyErrorSendFile,
+	TCBuddyErrorReceiveFile,
+	TCBuddyErrorFileOffline,
+	TCBuddyErrorFileBlocked,
 	
-	tcbuddy_error_parse
-} tcbuddy_info;
+	TCBuddyErrorParse
+} TCBuddyInfo;
 
 // == File ==
 typedef enum
 {
-	tcbuddy_file_receive,
-	tcbuddy_file_send
-} tcbuddy_file_way;
+	TCBuddyFileReceive,
+	TCBuddyFileSend
+} TCBuddyFileWay;
 
 // == Channel ==
 typedef enum
 {
-	tcbuddy_channel_out,	// Connection initied by TCBuddy
-	tcbuddy_channel_in,		// Connection received by TControlClient
+	TCBuddyChannelOut,	// Connection initied by TCBuddy
+	TCBuddyChannelIn,	// Connection received by TControlClient
 } tcbuddy_channel;
 
 
@@ -157,19 +164,19 @@ typedef enum
 - (BOOL)blocked;
 - (void)setBlocked:(BOOL)blocked;
 
-- (tcstatus)status;
+- (TCStatus)status;
 
 - (NSString *)address;
 - (NSString *)random;
 
 // -- Files Info --
-- (NSString *)fileNameForUUID:(NSString *)uuid andWay:(tcbuddy_file_way)way;
-- (NSString *)filePathForUUID:(NSString *)uuid andWay:(tcbuddy_file_way)way;
-- (BOOL)fileStatForUUID:(NSString *)uuid way:(tcbuddy_file_way)way done:(uint64_t *)done total:(uint64_t *)total;
-- (void)fileCancelOfUUID:(NSString *)uuid way:(tcbuddy_file_way)way;
+- (NSString *)fileNameForUUID:(NSString *)uuid andWay:(TCBuddyFileWay)way;
+- (NSString *)filePathForUUID:(NSString *)uuid andWay:(TCBuddyFileWay)way;
+- (BOOL)fileStatForUUID:(NSString *)uuid way:(TCBuddyFileWay)way done:(uint64_t *)done total:(uint64_t *)total;
+- (void)fileCancelOfUUID:(NSString *)uuid way:(TCBuddyFileWay)way;
 
 // -- Send Command --
-- (void)sendStatus:(tcstatus)status;
+- (void)sendStatus:(TCStatus)status;
 - (void)sendAvatar:(TCImage *)avatar;
 - (void)sendProfileName:(NSString *)name;
 - (void)sendProfileText:(NSString *)text;
@@ -177,7 +184,7 @@ typedef enum
 - (void)sendFile:(NSString *)filepath;
 
 // -- Action --
-- (void)startHandshake:(NSString *)remoteRandom status:(tcstatus)status avatar:(TCImage *)avatar name:(NSString *)name text:(NSString *)text;
+- (void)startHandshake:(NSString *)remoteRandom status:(TCStatus)status avatar:(TCImage *)avatar name:(NSString *)name text:(NSString *)text;
 - (void)setInputConnection:(TCSocket *)sock;
 
 // -- Content --

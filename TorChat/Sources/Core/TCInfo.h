@@ -31,10 +31,10 @@
 
 typedef enum
 {
-	tcinfo_error,
-	tcinfo_warning,
-	tcinfo_info
-} tcinfo_kind;
+	TCInfoError,
+	TCInfoWarning,
+	TCInfoInfo
+} TCInfoKind;
 
 
 
@@ -55,17 +55,17 @@ typedef enum
 @interface TCInfo : NSObject
 
 // -- Properties --
-@property (assign, nonatomic, readonly) tcinfo_kind	kind;
+@property (assign, nonatomic, readonly) TCInfoKind	kind;
 @property (assign, nonatomic, readonly)	int			infoCode;
 @property (strong, nonatomic, readonly)	id			context;
 @property (strong, nonatomic)			NSString	*infoString;
 
 // -- Instance --
-+ (TCInfo *)infoOfKind:(tcinfo_kind)kind infoCode:(int)code;
-+ (TCInfo *)infoOfKind:(tcinfo_kind)kind infoCode:(int)code infoString:(NSString *)string;
-+ (TCInfo *)infoOfKind:(tcinfo_kind)kind infoCode:(int)code infoString:(NSString *)string context:(id)context;
-+ (TCInfo *)infoOfKind:(tcinfo_kind)kind infoCode:(int)code infoString:(NSString *)string info:(TCInfo *)info;
-+ (TCInfo *)infoOfKind:(tcinfo_kind)kind infoCode:(int)code infoString:(NSString *)string context:(id)context info:(TCInfo *)info;
++ (TCInfo *)infoOfKind:(TCInfoKind)kind infoCode:(int)code;
++ (TCInfo *)infoOfKind:(TCInfoKind)kind infoCode:(int)code infoString:(NSString *)string;
++ (TCInfo *)infoOfKind:(TCInfoKind)kind infoCode:(int)code infoString:(NSString *)string context:(id)context;
++ (TCInfo *)infoOfKind:(TCInfoKind)kind infoCode:(int)code infoString:(NSString *)string info:(TCInfo *)info;
++ (TCInfo *)infoOfKind:(TCInfoKind)kind infoCode:(int)code infoString:(NSString *)string context:(id)context info:(TCInfo *)info;
 
 // -- Tools --
 - (NSString *)render;

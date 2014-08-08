@@ -61,11 +61,11 @@
 }
 
 // -- Helpers --
-- (void)error:(tccore_info)code info:(NSString *)info fatal:(BOOL)fatal;
-- (void)error:(tccore_info)code info:(NSString *)info contextObj:(id)ctx fatal:(BOOL)fatal;
-- (void)error:(tccore_info)code info:(NSString *)info contextInfo:(TCInfo *)serr fatal:(BOOL)fatal;
+- (void)error:(TCCoreInfo)code info:(NSString *)info fatal:(BOOL)fatal;
+- (void)error:(TCCoreInfo)code info:(NSString *)info contextObj:(id)ctx fatal:(BOOL)fatal;
+- (void)error:(TCCoreInfo)code info:(NSString *)info contextInfo:(TCInfo *)serr fatal:(BOOL)fatal;
 
-- (void)notify:(tccore_info)notice info:(NSString *)info;
+- (void)notify:(TCCoreInfo)notice info:(NSString *)info;
 
 @end
 
@@ -139,10 +139,10 @@
 			_sock = [[TCSocket alloc] initWithSocket:_sockd];
 
 			[_sock setDelegate:self];
-			[_sock scheduleOperation:tcsocket_op_line withSize:1 andTag:0];
+			[_sock scheduleOperation:TCSocketOperationLine withSize:1 andTag:0];
 			
 			// Notify
-			[self notify:tccore_notify_client_started info:@"core_cnx_note_started"];
+			[self notify:TCCoreNotifyClientStarted info:@"core_cnx_note_started"];
 		}
 	});
 }
@@ -180,7 +180,7 @@
 	// > localQueue <
 
 	// Reschedule a line read.
-	[_sock scheduleOperation:tcsocket_op_line withSize:1 andTag:0];
+	[_sock scheduleOperation:TCSocketOperationLine withSize:1 andTag:0];
 	
 	// Little security check to detect mass pings with faked host names over the same connection.
 	if ([_last_ping_address length] != 0)
@@ -192,7 +192,7 @@
 			fprintf(stderr, "(1) Will disconnect incoming connection from fake '%s'\n", [address UTF8String]);
 			
 			// Notify
-			[self error:tccore_error_client_cmd_ping info:@"core_cnx_err_fake_ping" fatal:YES];
+			[self error:TCCoreErrorClientCmdPing info:@"core_cnx_err_fake_ping" fatal:YES];
 			
 			return;
 		}
@@ -229,87 +229,87 @@
 	});
 }
 
-- (void)parser:(TCParser *)parser errorWithCode:(tcrec_error)error andInformation:(NSString *)information
+- (void)parser:(TCParser *)parser errorWithCode:(TCParserError)error andInformation:(NSString *)information
 {
-	tccore_info nerr = tccore_error_client_unknown_command;
+	TCCoreInfo nerr = TCCoreErrorClientCmdUnknownCommand;
 	
 	// Convert parser error to controller errors
 	switch (error)
 	{
-		case tcrec_unknown_command:
-			nerr = tccore_error_client_unknown_command;
+		case TCParserErrorUnknownCommand:
+			nerr = TCCoreErrorClientCmdUnknownCommand;
 			break;
 			
-		case tcrec_cmd_ping:
-			nerr = tccore_error_client_cmd_ping;
+		case TCParserErrorCmdPing:
+			nerr = TCCoreErrorClientCmdPing;
 			break;
 			
-		case tcrec_cmd_pong:
-			nerr = tccore_error_client_cmd_pong;
+		case TCParserErrorCmdPong:
+			nerr = TCCoreErrorClientCmdPong;
 			break;
 			
-		case tcrec_cmd_status:
-			nerr = tccore_error_client_cmd_status;
+		case TCParserErrorCmdStatus:
+			nerr = TCCoreErrorClientCmdStatus;
 			break;
 			
-		case tcrec_cmd_version:
-			nerr = tccore_error_client_cmd_version;
+		case TCParserErrorCmdVersion:
+			nerr = TCCoreErrorClientCmdVersion;
 			break;
 			
-		case tcrec_cmd_client:
-			nerr = tccore_error_client_cmd_client;
+		case TCParserErrorCmdClient:
+			nerr = TCCoreErrorClientCmdClient;
 			break;
 			
-		case tcrec_cmd_profile_text:
-			nerr = tccore_error_client_cmd_profile_text;
+		case TCParserErrorCmdProfileText:
+			nerr = TCCoreErrorClientCmdProfileText;
 			break;
 			
-		case tcrec_cmd_profile_name:
-			nerr = tccore_error_client_cmd_profile_name;
+		case TCParserErrorCmdProfileName:
+			nerr = TCCoreErrorClientCmdProfileName;
 			break;
 			
-		case tcrec_cmd_profile_avatar:
-			nerr = tccore_error_client_cmd_profile_avatar;
+		case TCParserErrorCmdProfileAvatar:
+			nerr = TCCoreErrorClientCmdProfileAvatar;
 			break;
 			
-		case tcrec_cmd_profile_avatar_alpha:
-			nerr = tccore_error_client_cmd_profile_avatar_alpha;
+		case TCParserErrorCmdProfileAvatarAlpha:
+			nerr = TCCoreErrorClientCmdProfileAvatarAlpha;
 			break;
 			
-		case tcrec_cmd_message:
-			nerr = tccore_error_client_cmd_message;
+		case TCParserErrorCmdMessage:
+			nerr = TCCoreErrorClientCmdMessage;
 			break;
 			
-		case tcrec_cmd_addme:
-			nerr = tccore_error_client_cmd_addme;
+		case TCParserErrorCmdAddMe:
+			nerr = TCCoreErrorClientCmdAddMe;
 			break;
 			
-		case tcrec_cmd_removeme:
-			nerr = tccore_error_client_cmd_removeme;
+		case TCParserErrorCmdRemoveMe:
+			nerr = TCCoreErrorClientCmdRemoveMe;
 			break;
 			
-		case tcrec_cmd_filename:
-			nerr = tccore_error_client_cmd_filename;
+		case TCParserErrorCmdFileName:
+			nerr = TCCoreErrorClientCmdFileName;
 			break;
 			
-		case tcrec_cmd_filedata:
-			nerr = tccore_error_client_cmd_filedata;
+		case TCParserErrorCmdFileData:
+			nerr = TCCoreErrorClientCmdFileData;
 			break;
 			
-		case tcrec_cmd_filedataok:
-			nerr = tccore_error_client_cmd_filedataok;
+		case TCParserErrorCmdFileDataOk:
+			nerr = TCCoreErrorClientCmdFileDataOk;
 			break;
 			
-		case tcrec_cmd_filedataerror:
-			nerr = tccore_error_client_cmd_filedataerror;
+		case TCParserErrorCmdFileDataError:
+			nerr = TCCoreErrorClientCmdFileDataError;
 			break;
 			
-		case tcrec_cmd_filestopsending:
-			nerr = tccore_error_client_cmd_filestopsending;
+		case TCParserErrorCmdFileStopSending:
+			nerr = TCCoreErrorClientCmdFileStopSending;
 			break;
 			
-		case tcrec_cmd_filestopreceiving:
-			nerr = tccore_error_client_cmd_filestopreceiving;
+		case TCParserErrorCmdFileStopReceiving:
+			nerr = TCCoreErrorClientCmdFileStopReceiving;
 			break;
 	}
 	
@@ -324,9 +324,9 @@
 */
 #pragma mark - TCConnection - TCSocketDelegate
 
-- (void)socket:(TCSocket *)socket operationAvailable:(tcsocket_operation)operation tag:(NSUInteger)tag content:(id)content
+- (void)socket:(TCSocket *)socket operationAvailable:(TCSocketOperation)operation tag:(NSUInteger)tag content:(id)content
 {
-	if (operation == tcsocket_op_line)
+	if (operation == TCSocketOperationLine)
 	{
 		NSArray *lines = content;
 		
@@ -342,7 +342,7 @@
 - (void)socket:(TCSocket *)socket error:(TCInfo *)error
 {
 	// Fallback Error
-	[self error:tccore_error_socket info:@"core_cnx_err_socket" contextInfo:error fatal:YES];
+	[self error:TCCoreErrorSocket info:@"core_cnx_err_socket" contextInfo:error fatal:YES];
 }
 
 
@@ -352,45 +352,45 @@
 */
 #pragma mark - TCConnection - Helpers
 
-- (void)error:(tccore_info)code info:(NSString *)info fatal:(BOOL)fatal
+- (void)error:(TCCoreInfo)code info:(NSString *)info fatal:(BOOL)fatal
 {
 	id <TCConnectionDelegate> delegate = _delegate;
 	
 	if (delegate)
-		[delegate connection:self information:[TCInfo infoOfKind:tcinfo_error infoCode:code infoString:info]];
+		[delegate connection:self information:[TCInfo infoOfKind:TCInfoError infoCode:code infoString:info]];
 		
 	if (fatal)
 		[self stop];
 }
 
-- (void)error:(tccore_info)code info:(NSString *)info contextObj:(id)ctx fatal:(BOOL)fatal
+- (void)error:(TCCoreInfo)code info:(NSString *)info contextObj:(id)ctx fatal:(BOOL)fatal
 {
 	id <TCConnectionDelegate> delegate = _delegate;
 	
 	if (delegate)
-		[delegate connection:self information:[TCInfo infoOfKind:tcinfo_error infoCode:code infoString:info context:ctx]];
+		[delegate connection:self information:[TCInfo infoOfKind:TCInfoError infoCode:code infoString:info context:ctx]];
 
 	if (fatal)
 		[self stop];
 }
 
-- (void)error:(tccore_info)code info:(NSString *)info contextInfo:(TCInfo *)serr fatal:(BOOL)fatal
+- (void)error:(TCCoreInfo)code info:(NSString *)info contextInfo:(TCInfo *)serr fatal:(BOOL)fatal
 {
 	id <TCConnectionDelegate> delegate = _delegate;
 
 	if (delegate)
-		[delegate connection:self information:[TCInfo infoOfKind:tcinfo_error infoCode:code infoString:info info:serr]];
+		[delegate connection:self information:[TCInfo infoOfKind:TCInfoError infoCode:code infoString:info info:serr]];
 	
 	if (fatal)
 		[self stop];
 }
 
-- (void)notify:(tccore_info)notice info:(NSString *)info
+- (void)notify:(TCCoreInfo)notice info:(NSString *)info
 {
 	id <TCConnectionDelegate> delegate = _delegate;
 
 	if (delegate)
-		[delegate connection:self information:[TCInfo infoOfKind:tcinfo_info infoCode:notice infoString:info]];
+		[delegate connection:self information:[TCInfo infoOfKind:TCInfoInfo infoCode:notice infoString:info]];
 }
 
 @end

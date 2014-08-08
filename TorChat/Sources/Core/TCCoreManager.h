@@ -25,7 +25,7 @@
 
 #import "TCInfo.h"
 #import "TCConfig.h"
-#import "TCConstants.h"
+#import "TCBuddy.h"
 
 
 /*
@@ -36,7 +36,7 @@
 @class TCCoreManager;
 
 @class TCImage;
-@class TCBuddy;
+
 
 
 
@@ -49,51 +49,51 @@
 typedef enum
 {
 	// -- Notify --
-	tccore_notify_started,
-	tccore_notify_stoped,
-	tccore_notify_status,
+	TCCoreNotifyStarted,
+	TCCoreNotifyStopped,
+	TCCoreNotifyStatus,
 	
-	tccore_notify_profile_avatar,
-	tccore_notify_profile_name,
-	tccore_notify_profile_text,
+	TCCoreNotifyProfileAvatar,
+	TCCoreNotifyProfileName,
+	TCCoreNotifyProfileText,
 	
-	tccore_notify_buddy_new,
+	TCCoreNotifyBuddyNew,
 	
-	tccore_notify_client_new,
-	tccore_notify_client_started,
-	tccore_notify_client_stoped,
+	TCCoreNotifyClientNew,
+	TCCoreNotifyClientStarted,
+	TCCoreNotifyClientStopped,
 	
 	// -- Errors --
-	tccore_error_serv_socket,
-	tccore_error_serv_accept,
+	TCCoreErrorServSocket,
+	TCCoreErrorServAccept,
 	
-	tccore_error_socket,
+	TCCoreErrorSocket,
 	
-	tccore_error_client_read,
-	tccore_error_client_read_closed,
-	tccore_error_client_read_full,
+	TCCoreErrorClientRead,
+	TCCoreErrorClientReadClosed,
+	TCCoreErrorClientReadFull,
 	
-	tccore_error_client_unknown_command,
+	TCCoreErrorClientCmdUnknownCommand,
 	
-	tccore_error_client_cmd_ping,
-	tccore_error_client_cmd_pong,
-	tccore_error_client_cmd_status,
-	tccore_error_client_cmd_version,
-	tccore_error_client_cmd_client,
-	tccore_error_client_cmd_profile_text,
-	tccore_error_client_cmd_profile_name,
-	tccore_error_client_cmd_profile_avatar,
-	tccore_error_client_cmd_profile_avatar_alpha,
-	tccore_error_client_cmd_message,
-	tccore_error_client_cmd_addme,
-	tccore_error_client_cmd_removeme,
-	tccore_error_client_cmd_filename,
-	tccore_error_client_cmd_filedata,
-	tccore_error_client_cmd_filedataok,
-	tccore_error_client_cmd_filedataerror,
-	tccore_error_client_cmd_filestopsending,
-	tccore_error_client_cmd_filestopreceiving,
-} tccore_info;
+	TCCoreErrorClientCmdPing,
+	TCCoreErrorClientCmdPong,
+	TCCoreErrorClientCmdStatus,
+	TCCoreErrorClientCmdVersion,
+	TCCoreErrorClientCmdClient,
+	TCCoreErrorClientCmdProfileText,
+	TCCoreErrorClientCmdProfileName,
+	TCCoreErrorClientCmdProfileAvatar,
+	TCCoreErrorClientCmdProfileAvatarAlpha,
+	TCCoreErrorClientCmdMessage,
+	TCCoreErrorClientCmdAddMe,
+	TCCoreErrorClientCmdRemoveMe,
+	TCCoreErrorClientCmdFileName,
+	TCCoreErrorClientCmdFileData,
+	TCCoreErrorClientCmdFileDataOk,
+	TCCoreErrorClientCmdFileDataError,
+	TCCoreErrorClientCmdFileStopSending,
+	TCCoreErrorClientCmdFileStopReceiving,
+} TCCoreInfo;
 
 // -- Delegate --
 @protocol TCCoreManagerDelegate <NSObject>
@@ -123,8 +123,8 @@ typedef enum
 - (void)stop;
 
 // -- Status --
-- (void)setStatus:(tcstatus)status;
-- (tcstatus)status;
+- (void)setStatus:(TCStatus)status;
+- (TCStatus)status;
 
 // -- Profile --
 - (void)setProfileAvatar:(TCImage *)avatar;

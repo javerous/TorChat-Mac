@@ -453,6 +453,19 @@ NSData *file_sha1(NSURL *fileURL);
 
 
 /*
+** TCTorManager - Update
+*/
+#pragma mark - TCTorManager - Update
+
+- (void)checkForUpdateWithResultHandler:(void (^)(NSString *newVersion, NSString *errorID))handler
+{
+	if (!handler)
+		return;
+}
+
+
+
+/*
 ** TCTorManager - Operations
 */
 #pragma mark - TCTorManager - Operations
