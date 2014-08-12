@@ -12,6 +12,7 @@
 #import "TCSocket.h"
 #import "TCConnection.h"
 #import "TCCoreManager.h"
+#import "TCTorManager.h"
 
 #import "TCTextConstants.h"
 
@@ -139,8 +140,9 @@
 		
 		renderInfo = @{
 			
+			// == TCBuddyInfoDomain ==
 			TCBuddyInfoDomain : @{
-					// -- Notify --
+					// -- Event --
 					@(TCBuddyEventConnectedTor) :
 						@{
 							TCInfoNameKey : @"TCBuddyEventConnectedTor",
@@ -362,6 +364,7 @@
 						},
 				},
 			
+				// == TCSocketInfoDomain ==
 				TCSocketInfoDomain: @{
 					@(TCSocketErrorRead) :
 						@{
@@ -394,6 +397,7 @@
 						},
 				},
 			
+				// == TCConnectionInfoDomain ==
 				TCConnectionInfoDomain: @{
 					@(TCCoreErrorSocket) :
 						@{
@@ -414,6 +418,7 @@
 						},
 				},
 			
+				// == TCCoreManagerInfoDomain ==
 				TCCoreManagerInfoDomain: @{
 					@(TCCoreEventBuddyNew) :
 						@{
@@ -521,6 +526,110 @@
 						@{
 							TCInfoNameKey : @"TCCoreErrorClientCmdPong",
 							TCInfoTextKey : @"core_cnx_error_pong",
+						},
+				},
+			
+				// == TCTorManagerInfoStartDomain ==
+				TCTorManagerInfoStartDomain : @{
+					// -- Event --
+					@(TCTorManagerEventStartHostname) :
+						@{
+							TCInfoNameKey : @"TCTorManagerInfoStartHostname",
+							TCInfoTextKey : @"<fixme>", // FIXME
+						},
+					
+					@(TCTorManagerEventStartDone) :
+						@{
+							TCInfoNameKey : @"TCTorManagerInfoStartDone",
+							TCInfoTextKey : @"<fixme>", // FIXME
+						},
+					
+					// -- Error --
+					@(TCTorManagerErrorStartAlreadyRunning) :
+						@{
+							TCInfoNameKey : @"TCTorManagerInfoStartHostname",
+							TCInfoTextKey : @"<fixme>", // FIXME
+						},
+					
+					@(TCTorManagerErrorStartConfiguration) :
+						@{
+							TCInfoNameKey : @"TCTorManagerErrorStartConfiguration",
+							TCInfoTextKey : @"<fixme>", // FIXME
+							},
+					
+					@(TCTorManagerErrorStartUnarchive) :
+						@{
+							TCInfoNameKey : @"TCTorManagerErrorStartUnarchive",
+							TCInfoTextKey : @"<fixme>", // FIXME
+							},
+					
+					@(TCTorManagerErrorStartSignature) :
+						@{
+							TCInfoNameKey : @"TCTorManagerErrorStartSignature",
+							TCInfoTextKey : @"<fixme>", // FIXME
+							},
+					
+					@(TCTorManagerErrorStartLaunch) :
+						@{
+							TCInfoNameKey : @"TCTorManagerErrorStartLaunch",
+							TCInfoTextKey : @"<fixme>", // FIXME
+							},
+				},
+			
+				// == TCTorManagerInfoUpdateDomain ==
+				TCTorManagerInfoUpdateDomain : @{
+					// -- Event --
+					@(TCTorManagerEventUpdateAvailable) :
+						@{
+							TCInfoNameKey : @"TCTorManagerInfoUpdateAvailable",
+							TCInfoTextKey : @"<fixme>", // FIXME
+						},
+					
+					// -- Error --
+					@(TCTorManagerErrorNoUpdateValiable) :
+						@{
+							TCInfoNameKey : @"TCTorManagerErrorNoUpdateValiable",
+							TCInfoTextKey : @"<fixme>", // FIXME
+						},
+				},
+			
+				// == TCTorManagerInfoOperationDomain ==
+				TCTorManagerInfoOperationDomain : @{
+					// -- Error --
+					@(TCTorManagerErrorConfiguration) :
+						@{
+							TCInfoNameKey : @"TCTorManagerErrorConfiguration",
+							TCInfoTextKey : @"<fixme>", // FIXME
+						},
+					
+					@(TCTorManagerErrorIO) :
+						@{
+							TCInfoNameKey : @"TCTorManagerErrorIO",
+							TCInfoTextKey : @"<fixme>", // FIXME
+						},
+					
+					@(TCTorManagerErrorExtract) :
+						@{
+							TCInfoNameKey : @"TCTorManagerErrorExtract",
+							TCInfoTextKey : @"<fixme>", // FIXME
+						},
+					
+					@(TCTorManagerErrorSignature) :
+						@{
+							TCInfoNameKey : @"TCTorManagerErrorSignature",
+							TCInfoTextKey : @"<fixme>", // FIXME
+						},
+					
+					@(TCTorManagerErrorTor) :
+						@{
+							TCInfoNameKey : @"TCTorManagerErrorTor",
+							TCInfoTextKey : @"<fixme>", // FIXME
+						},
+					
+					@(TCTorManagerErrorInternal) :
+						@{
+							TCInfoNameKey : @"TCTorManagerErrorInternal",
+							TCInfoTextKey : @"<fixme>", // FIXME
 						},
 				},
 			};

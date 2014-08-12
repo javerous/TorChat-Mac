@@ -44,8 +44,8 @@
 "tor_error_launch" = "Impossible de lancer tor. Vérifiez votre journal système, et vérifiez l'intégrité de TorChat.";
 "tor_is_running" = "Tor est actif.";
 "tor_is_not_running" = "Tor n'est pas actif.";
-"tor_out_log" = "Tor: %s";
-"tor_error_log" = "Tor-Erreur: %s";
+"tor_out_log" = "Tor: %@";
+"tor_error_log" = "Tor-Erreur: %@";
 
 
 /* Menu */

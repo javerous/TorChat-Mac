@@ -36,6 +36,8 @@
 
 #import "TCTorManager.h"
 
+#import "TCInfo+Render.h"
+
 #if defined(PROXY_ENABLED) && PROXY_ENABLED
 # import "TCConfigProxy.h"
 #endif
@@ -221,7 +223,13 @@
 		{
 			_torManager = [[TCTorManager alloc] initWithConfiguration:_configuration];
 			
-			[_torManager start];
+			[_torManager startWithHandler:^(TCInfo *info) {
+				
+				NSLog(@"> '%@'", info);
+				NSLog(@"> '%@'", [info render]);
+				
+				[[TCLogsManager sharedManager] addGlobalLogEntry:[info render]];
+			}];
 		}
 		
 		// > Start buddy controller.
