@@ -39,6 +39,8 @@
 #import "TCFileSignature.h"
 #import "TCPublicKey.h"
 
+#import "TCInfo.h"
+
 
 
 /*
@@ -75,6 +77,8 @@ NSData *file_sha1(NSURL *fileURL);
 {
 	dispatch_queue_t	_localQueue;
 	dispatch_queue_t	_eventQueue;
+	
+	TCOperationsQueue	*_opQueue;
 
 	dispatch_source_t	_testTimer;
 	
@@ -123,6 +127,9 @@ NSData *file_sha1(NSURL *fileURL);
         _localQueue = dispatch_queue_create("com.torchat.cocoa.tormanager.local", DISPATCH_QUEUE_SERIAL);
 		_eventQueue = dispatch_queue_create("com.torchat.cocoa.tormanager.event", DISPATCH_QUEUE_SERIAL);
 		
+		// Operations queue.
+		_opQueue = [[TCOperationsQueue alloc] initStarted];
+
 		// Handle configuration.
 		_configuration = configuration;
 		
@@ -208,7 +215,7 @@ NSData *file_sha1(NSURL *fileURL);
 */
 #pragma mark - TCTorManager - Life
 
-- (void)start
+- (void)startWithHandler:(void (^)(TCInfo *info))handler
 {
 #if defined(DEBUG) && DEBUG
 	
@@ -241,10 +248,16 @@ NSData *file_sha1(NSURL *fileURL);
 	}
 #endif
 	
+	if (!handler)
+		handler = ^(TCInfo *error) { };
+	
 	dispatch_async(_localQueue, ^{
 		
 		if (_isStarted || _isRunning)
+		{
+			handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoStartDomain code:TCTorManagerErrorStartAlreadyRunning]);
 			return;
+		}
 		
 		// Mark as started.
 		_isStarted = YES;
@@ -252,11 +265,8 @@ NSData *file_sha1(NSURL *fileURL);
 		// Stop if running.
 		[self _stop];
 		
-		// Start operations.
-		TCOperationsQueue *queue = [[TCOperationsQueue alloc] init];
-		
 		// -- Stage archive --
-		[queue scheduleBlock:^(TCOperationsControl ctrl) {
+		[_opQueue scheduleBlock:^(TCOperationsControl ctrl) {
 			
 			// Check that the binary is already there.
 			NSFileManager	*manager = [NSFileManager defaultManager];
@@ -273,128 +283,106 @@ NSData *file_sha1(NSURL *fileURL);
 			// Stage the archive.
 			NSURL *archiveUrl = [[NSBundle mainBundle] URLForResource:@"tor" withExtension:@"tgz"];
 			
-			[self operationStageArchiveFile:archiveUrl completionHandler:^(BOOL error) {
-				
-				if (error)
-					ctrl(TCOperationsControlFinish);
-				else
-					ctrl(TCOperationsControlContinue);
-			}];
-		}];
-		
-		// -- Check signature --
-		[queue scheduleBlock:^(TCOperationsControl ctrl) {
-			
-			[self operationCheckSignatureWithCompletionHandler:^(BOOL error) {
-				if (error)
-					ctrl(TCOperationsControlFinish);
-				else
-					ctrl(TCOperationsControlContinue);
-			}];
-		}];
-
-		// -- Launch binary --
-		[queue scheduleBlock:^(TCOperationsControl ctrl) {
-
-			[self operationLaunchTor:^(BOOL error) {
+			[self operationStageArchiveFile:archiveUrl completionHandler:^(TCInfo *error) {
 				
 				if (error)
 				{
+					handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoStartDomain code:TCTorManagerErrorStartUnarchive info:error]);
 					ctrl(TCOperationsControlFinish);
 					return;
 				}
 				
-				_isRunning = YES;
+				ctrl(TCOperationsControlContinue);
+			}];
+		}];
+		
+		// -- Check signature --
+		[_opQueue scheduleBlock:^(TCOperationsControl ctrl) {
+			
+			[self operationCheckSignatureWithCompletionHandler:^(TCInfo *error) {
 				
-				[self sendEvent:TCTorManagerEventRunning context:nil];
+				if (error)
+				{
+					handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoStartDomain code:TCTorManagerErrorStartSignature info:error]);
+					ctrl(TCOperationsControlFinish);
+					return;
+				}
+				
+				ctrl(TCOperationsControlContinue);
+			}];
+		}];
+
+		// -- Launch binary --
+		[_opQueue scheduleBlock:^(TCOperationsControl ctrl) {
+
+			[self operationLaunchTor:^(TCInfo *error) {
+				
+				if (error)
+				{
+					handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoStartDomain code:TCTorManagerErrorStartLaunch info:error]);
+					ctrl(TCOperationsControlFinish);
+					return;
+				}
 				
 				ctrl(TCOperationsControlContinue);
 			}];
 		}];
 		
 		// -- Wait hostname --
-		[queue scheduleBlock:^(TCOperationsControl ctrl) {
+		[_opQueue scheduleBlock:^(TCOperationsControl ctrl) {
 
-			ctrl(TCOperationsControlContinue);
-
+			// Get the hostname file path.
+			NSString *htnamePath = [[_configuration pathForDomain:TConfigPathDomainTorIdentity] stringByAppendingPathComponent:@"hostname"];
 			
-		}];
-		
-		// Start.
-		[queue start];
-	});
-#if 0
-	// Stop current session if running.
-	[self stop];
-	
-	// Run in the main queue.
-	dispatch_async(_localQueue, ^{
-		
-		if (_running)
-			return;
-#warning FIXME: handle instalation if necessary.
-		return;
-
-		
-		// Check the existence of the hostname file
-		NSString *htname = [_configuration realPath:[[_configuration torDataPath] stringByAppendingPathComponent:@"hidden/hostname"]];
-		
-		_testTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _localQueue);
-		
-		dispatch_source_set_timer(_testTimer, DISPATCH_TIME_NOW, 1000000000L, 0);
-		
-		dispatch_source_set_event_handler(_testTimer, ^{
-			
-			FILE *f = fopen([htname UTF8String], "r");
-			
-			if (f)
+			if (!htnamePath)
 			{
-				char	buffer[1024];
-				size_t	rsz;
-				
-				rsz = fread(buffer, 1, sizeof(buffer) - 1, f);
-				
-				if (rsz > 0)
-				{
-					char *fnd;
-					
-					// End the string
-					buffer[rsz] = '\0';
-					
-					// Search for the end part
-					fnd = strstr(buffer, ".onion");
-					
-					if (fnd)
-					{
-						// End the string on the end part
-						*fnd = '\0';
-						
-						// Build NSString address
-						_hidden = [[NSString alloc] initWithUTF8String:buffer];
-						
-						// Set the address in the config
-						[_configuration setSelfAddress:_hidden];
-						
-						// Cancel ourself
-						dispatch_source_cancel(_testTimer);
-						_testTimer = nil;
-						
-						// Inform of the change.
-						_running = YES;
-						[self sendEvent:TCTorManagerEventRunning context:nil];
-						[self sendEvent:TCTorManagerEventHostname context:_hidden];
-					}
-				}
-
-				// Close
-				fclose(f);
+				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoStartDomain code:TCTorManagerErrorStartConfiguration]);
+				ctrl(TCOperationsControlFinish);
+				return;
 			}
-		});
-		
-		// Start timer
-		dispatch_resume(_testTimer);
+			
+			// Wait for file appearance.
+			_testTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _localQueue);
+			
+			dispatch_source_set_timer(_testTimer, DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC, 0);
+			
+			dispatch_source_set_event_handler(_testTimer, ^{
+				
+				// > Try to read file.
+				NSString *hostname = [NSString stringWithContentsOfFile:htnamePath encoding:NSASCIIStringEncoding error:nil];
+				
+				if (!hostname)
+					return;
+				
+				// > Extract first part.
+				NSRange rg = [hostname rangeOfString:@".onion"];
+				
+				if (rg.location == NSNotFound)
+					return;
+				
+				_hidden = [hostname substringToIndex:rg.location];
+				
+				// > Set the address in the config
+				[_configuration setSelfAddress:_hidden];
+				
+				// > Stop ourself.
+				dispatch_source_cancel(_testTimer);
+				_testTimer = nil;
+				
+				// Inform of the change.
+				_isRunning = YES;
+				
+				handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoStartDomain code:TCTorManagerEventStartHostname context:_hidden]);
+				handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoStartDomain code:TCTorManagerEventStartDone]);
+			});
+			
+			// Start timer
+			dispatch_resume(_testTimer);
+
+			// Don't wait for the end of this.
+			ctrl(TCOperationsControlContinue);
+		}];
 	});
-#endif
 }
 
 - (void)stop
@@ -433,10 +421,6 @@ NSData *file_sha1(NSURL *fileURL);
 		dispatch_source_cancel(_testTimer);
 		_testTimer = nil;
 	}
-	
-	// Notify.
-	[self sendEvent:TCTorManagerEventStopped context:nil];
-	
 }
 
 - (BOOL)isRunning
@@ -461,6 +445,11 @@ NSData *file_sha1(NSURL *fileURL);
 {
 	if (!handler)
 		return;
+	
+	
+	
+	
+#warning FIXME
 }
 
 
@@ -470,17 +459,17 @@ NSData *file_sha1(NSURL *fileURL);
 */
 #pragma mark - TCTorManager - Operations
 
-- (void)operationStageArchiveFile:(NSURL *)fileURL completionHandler:(void (^)(BOOL error))handler
+- (void)operationStageArchiveFile:(NSURL *)fileURL completionHandler:(void (^)(TCInfo *error))handler
 {
 	NSLog(@"Staging...");
 	
 	// Check parameters.
 	if (!handler)
-		handler = ^(BOOL error) { };
+		handler = ^(TCInfo *error) { };
 	
 	if (!fileURL)
 	{
-		handler(YES);
+		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorInternal]);
 		return;
 	}
 	
@@ -494,14 +483,14 @@ NSData *file_sha1(NSURL *fileURL);
 	
 	if (!torBinPath)
 	{
-		handler(YES);
+		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorIO]);
 		return;
 	}
 	
 	// Create target directory.
 	if ([fileManager createDirectoryAtPath:torBinPath withIntermediateDirectories:YES attributes:nil error:nil] == NO)
 	{
-		handler(YES);
+		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorConfiguration]);
 		return;
 	}
 	
@@ -512,7 +501,7 @@ NSData *file_sha1(NSURL *fileURL);
 	
 	if ([fileManager copyItemAtPath:[fileURL path] toPath:newFilePath error:nil] == NO)
 	{
-		handler(YES);
+		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorIO]);
 		return;
 	}
 	
@@ -544,7 +533,12 @@ NSData *file_sha1(NSURL *fileURL);
 	[task setStandardOutput:nil];
 	
 	task.terminationHandler = ^(NSTask *aTask) {
-		handler([aTask terminationStatus] != 0);
+		
+		if ([aTask terminationStatus] != 0)
+			handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorExtract context:@([aTask terminationStatus])]);
+		else
+			handler(nil);
+		
 		[fileManager removeItemAtPath:newFilePath error:nil];
 	};
 	
@@ -552,25 +546,25 @@ NSData *file_sha1(NSURL *fileURL);
 		[task launch];
 	}
 	@catch (NSException *exception) {
-		handler(YES);
+		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorExtract context:@(-1)]);
 		[fileManager removeItemAtPath:newFilePath error:nil];
 	}
 }
 
-- (void)operationCheckSignatureWithCompletionHandler:(void (^)(BOOL error))handler
+- (void)operationCheckSignatureWithCompletionHandler:(void (^)(TCInfo *error))handler
 {
 	NSLog(@"Checking...");
 
 	// Check parameters.
 	if (!handler)
-		handler = ^(BOOL error) { };
+		handler = ^(TCInfo *error) { };
 	
 	// Get tor path.
 	NSString *torBinPath = [_configuration pathForDomain:TConfigPathDomainTorBinary];
 	
 	if (!torBinPath)
 	{
-		handler(YES);
+		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorConfiguration]);
 		return;
 	}
 	
@@ -584,7 +578,7 @@ NSData *file_sha1(NSURL *fileURL);
 	
 	if (!data)
 	{
-		handler(YES);
+		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorIO]);
 		return;
 	}
 	
@@ -593,7 +587,7 @@ NSData *file_sha1(NSURL *fileURL);
 	
 	if ([TCFileSignature validateSignature:data forContentsOfURL:[NSURL fileURLWithPath:infoPath] withPublicKey:publicKey] == NO)
 	{
-		handler(YES);
+		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorSignature context:infoPath]);
 		return;
 	}
 	
@@ -601,9 +595,9 @@ NSData *file_sha1(NSURL *fileURL);
 	NSData			*infoData = [NSData dataWithContentsOfFile:infoPath];
 	NSDictionary	*info = [NSPropertyListSerialization propertyListWithData:infoData options:NSPropertyListImmutable format:nil error:nil];
 	
-	if (!infoData)
+	if (!info)
 	{
-		handler(YES);
+		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorIO]);
 		return;
 	}
 	
@@ -619,19 +613,22 @@ NSData *file_sha1(NSURL *fileURL);
 		
 		if (!diskHash || [infoHash isEqualToData:diskHash] == NO)
 		{
-			handler(YES);
+			handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorSignature context:filePath]);
 			return;
 		}
 	}
 	
 	// Finish.
-	handler(NO);
+	handler(nil);
 }
 
-- (void)operationLaunchTor:(void (^)(BOOL error))handler
+- (void)operationLaunchTor:(void (^)(TCInfo *error))handler
 {
 	NSLog(@"Launching...");
 
+	if (!handler)
+		handler = ^(TCInfo *error) { };
+	
 	NSString	*torPath = [_configuration pathForDomain:TConfigPathDomainTorBinary];
 	NSString	*dataPath = [_configuration pathForDomain:TConfigPathDomainTorData];
 	NSString	*identityPath = [_configuration pathForDomain:TConfigPathDomainTorIdentity];
@@ -639,8 +636,7 @@ NSData *file_sha1(NSURL *fileURL);
 	// Check conversion.
 	if (!torPath || !dataPath || !identityPath)
 	{
-		[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_error_build_path"];
-		[self sendEvent:TCTorManagerEventError context:nil];
+		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorConfiguration]);
 		return;
 	}
 	
@@ -672,20 +668,21 @@ NSData *file_sha1(NSURL *fileURL);
 	[args addObject:@"--HiddenServicePort"];
 	[args addObject:[NSString stringWithFormat:@"11009 127.0.0.1:%u", [_configuration clientPort]]];
 	
-	
 	// Build & handle pipe for 'tor' task.
 	NSPipe			*errPipe = [[NSPipe alloc] init];
 	NSPipe			*outPipe = [[NSPipe alloc] init];
 	TCBuffer		*errBuffer = [[TCBuffer alloc] init];
 	TCBuffer		*outBuffer =  [[TCBuffer alloc] init];
 	dispatch_queue_t	localQueue = _localQueue;
+	__weak TCTorManager *weakSelf = self;
 	
 	_errHandle = [errPipe fileHandleForReading];
 	_outHandle = [outPipe fileHandleForReading];
 	
 	_errHandle.readabilityHandler = ^(NSFileHandle *handle) {
 		
-		NSData *data;
+		NSData			*data;
+		TCTorManager	*wSelf = weakSelf;
 		
 		@try {
 			data = [handle availableData];
@@ -708,15 +705,16 @@ NSData *file_sha1(NSURL *fileURL);
 			{
 				NSString *string = [[NSString alloc] initWithData:line encoding:NSUTF8StringEncoding];
 				
-				[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_error_log", [string UTF8String]];
+				[wSelf sendLog:string kind:TCTorManagerLogError];
 			}
 		});
 	};
 	
 	_outHandle.readabilityHandler = ^(NSFileHandle *handle) {
 		
-		NSData *data;
-		
+		NSData			*data;
+		TCTorManager	*wSelf = weakSelf;
+
 		@try {
 			data = [handle availableData];
 		}
@@ -738,7 +736,7 @@ NSData *file_sha1(NSURL *fileURL);
 			{
 				NSString *string = [[NSString alloc] initWithData:line encoding:NSUTF8StringEncoding];
 				
-				[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_out_log", [string UTF8String]];
+				[wSelf sendLog:string kind:TCTorManagerLogStandard];
 			}
 		});
 	};
@@ -761,10 +759,14 @@ NSData *file_sha1(NSURL *fileURL);
 	}
 	@catch (id error)
 	{
-		[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_error_launch"];
-		[self sendEvent:TCTorManagerEventError context:nil];
+#warning FIXME: log in handler
+		//[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_error_launch"];
+		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorTor context:@(-1)]);
 		return;
 	}
+	
+	// Notify the laund.
+	handler(nil);
 }
 
 
@@ -794,16 +796,19 @@ NSData *file_sha1(NSURL *fileURL);
 */
 #pragma mark - TCTorManager - Helpers
 
-- (void)sendEvent:(TCTorManagerEvent)event context:(id)context
+- (void)sendLog:(NSString *)log kind:(TCTorManagerLogKind)kind
 {
+	if ([log length] == 0)
+		return;
+	
 	dispatch_async(_eventQueue, ^{
 		
-		void (^eventHandler)(TCTorManagerEvent event, id context) = _eventHandler;
+		void (^logHandler)(TCTorManagerLogKind kind, NSString *log) = _logHandler;
 		
-		if (!eventHandler)
+		if (!logHandler)
 			return;
 		
-		eventHandler(event, context);
+		logHandler(kind, log);
 	});
 }
 

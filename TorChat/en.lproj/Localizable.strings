@@ -44,8 +44,8 @@
 "tor_error_launch" = "Can't launch tor. Please check your system logs, and check the integrity of TorChat.";
 "tor_is_running" = "Tor is running.";
 "tor_is_not_running" = "Tor is not running.";
-"tor_out_log" = "Tor: %s";
-"tor_error_log" = "Tor-Error: %s";
+"tor_out_log" = "Tor: %@";
+"tor_error_log" = "Tor-Error: %@";
 
 
 /* Menu */

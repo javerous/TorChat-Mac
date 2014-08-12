@@ -30,6 +30,9 @@
 
 #import "TCDebugLog.h"
 
+#import "TCInfo.h"
+#import "TCInfo+Render.h"
+
 
 
 /*
@@ -174,39 +177,45 @@
 	
 	// > Create.
 	_tor = [[TCTorManager alloc] initWithConfiguration:_config];
-	
-	_tor.eventHandler = ^(TCTorManagerEvent event, id context) {
-		
-		NSTextField *imAddressField = weakIMAddressField;
-		
-		dispatch_async(dispatch_get_main_queue(), ^{
-			
-			switch (event)
-			{
-				case TCTorManagerEventRunning:
-					break;
-					
-				case TCTorManagerEventStopped:
-					break;
-					
-				case TCTorManagerEventError:
-				{
-					[proxy setDisableContinue:YES];
-					break;
-				}
+
+	_tor.logHandler = ^(TCTorManagerLogKind kind, NSString *log) {
+		switch (kind)
+		{
+			case TCTorManagerLogStandard:
+				[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_out_log", log];
+				break;
 				
-				case TCTorManagerEventHostname:
-				{
-					[proxy setDisableContinue:NO];
-					[imAddressField setStringValue:context];
-					break;
-				}
-			}
-		});
+			case TCTorManagerLogError:
+				[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_error_log", log];
+				break;
+		}
 	};
 	
 	// > Start.
-	[_tor start];
+	[_tor startWithHandler:^(TCInfo *info) {
+		
+		NSTextField *imAddressField = weakIMAddressField;
+
+		[[TCLogsManager sharedManager] addGlobalLogEntry:[info render]];
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+
+			if (info.kind == TCInfoError)
+			{
+				[proxy setDisableContinue:YES];
+			}
+			else if (info.kind == TCInfoInfo)
+			{
+				if ([info.domain isEqualToString:TCTorManagerInfoStartDomain])
+				{
+					if (info.code == TCTorManagerEventStartHostname)
+						[imAddressField setStringValue:info.context];
+					else if (info.code == TCTorManagerEventStartDone)
+						[proxy setDisableContinue:NO];
+				}
+			}
+		});
+	}];
 }
 
 

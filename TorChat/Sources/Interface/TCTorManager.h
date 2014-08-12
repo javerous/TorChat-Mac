@@ -32,7 +32,11 @@
 */
 #pragma mark - Globals
 
-#define TCTorManagerInfoDomain	@"TCTorManagerInfoDomain"
+#define TCTorManagerInfoStartDomain		@"TCTorManagerInfoStartDomain"
+#define TCTorManagerInfoUpdateDomain	@"TCTorManagerInfoUpdateDomain"
+
+#define TCTorManagerInfoOperationDomain	@"TCTorManagerInfoOperationDomain"
+
 
 
 
@@ -52,17 +56,48 @@
 
 typedef enum
 {
-	TCTorManagerEventRunning,	// context = nil
-	TCTorManagerEventStopped,	// context = nil
-	TCTorManagerEventError,		// context = NSError
-	
-	TCTorManagerEventHostname	// context = NSString(hostname)
-} TCTorManagerEvent;
+	TCTorManagerLogStandard,
+	TCTorManagerLogError
+} TCTorManagerLogKind;
 
 typedef enum
 {
-	xyz_fixme
-} TCTorManagerError;
+	// -- Event --
+	TCTorManagerEventStartHostname,
+	TCTorManagerEventStartDone,
+	
+	// -- Error --
+	TCTorManagerErrorStartAlreadyRunning,
+	
+	TCTorManagerErrorStartConfiguration,
+	TCTorManagerErrorStartUnarchive,
+	TCTorManagerErrorStartSignature,
+	TCTorManagerErrorStartLaunch,
+} TCTorManagerInfoStart;
+
+
+typedef enum
+{
+	// -- Event --
+	TCTorManagerEventUpdateAvailable, // context: NSString (<new version>)
+	
+	// -- Error --
+	TCTorManagerErrorNoUpdateValiable,
+	
+} TCTorManagerInfoUpdate;
+
+typedef enum
+{
+	// -- Error --
+	TCTorManagerErrorConfiguration,
+	TCTorManagerErrorIO,
+	TCTorManagerErrorExtract,		// context: NSNumber (<tar result>)
+	TCTorManagerErrorSignature,		// context: NSString (<path to the problematic file>)
+	TCTorManagerErrorTor,			// context: NSNumber (<tor result>)
+
+	TCTorManagerErrorInternal
+
+} TCTorManagerInfoOperation;
 
 
 
@@ -77,18 +112,18 @@ typedef enum
 - (id)initWithConfiguration:(id <TCConfig>)configuration;
 
 // -- Life --
-- (void)start;
+- (void)startWithHandler:(void (^)(TCInfo *info))handler;
 - (void)stop;
 
 - (BOOL)isRunning;
 
 // -- Update --
-- (void)checkForUpdateWithResultHandler:(void (^)(NSString *newVersion, TCInfo *error))handler;
+- (void)checkForUpdateWithResultHandler:(void (^)(TCInfo *error))handler;
 
 // -- Property --
 - (NSString *)hiddenHostname;
 
 // -- Events --
-@property (strong, atomic) void (^eventHandler)(TCTorManagerEvent event, id context);
+@property (strong, atomic) void (^logHandler)(TCTorManagerLogKind kind, NSString *log);
 
 @end
