@@ -188,7 +188,7 @@
 	NSLog(@"TConfigPathDomainTorBinary: %@", [conf pathForDomain:TConfigPathDomainTorBinary]);
 	NSLog(@"TConfigPathDomainTorData: %@", [conf pathForDomain:TConfigPathDomainTorData]);
 	NSLog(@"TConfigPathDomainTorIdentity: %@", [conf pathForDomain:TConfigPathDomainTorIdentity]);
-	NSLog(@"TConfigPathDomainDownload: %@", [conf pathForDomain:TConfigPathDomainDownload]);
+	NSLog(@"TConfigPathDomainDownloads: %@", [conf pathForDomain:TConfigPathDomainDownloads]);
 // DEBUG >
 	
 	// > Check if we should launch assistant.
