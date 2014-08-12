@@ -131,10 +131,13 @@
 	[proxy setIsLastPanel:YES];
 	
 	// Download path.
-	NSString *path = [[[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:NSLocalizedString(@"conf_download", @"")];
+	NSString *path = [[[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"Downloads"];
 	
 	if ([[NSFileManager defaultManager] fileExistsAtPath:path] == NO)
+	{
 		[[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+		[[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"]];
+	}
 	
 	[_imDownloadPath setURL:[NSURL fileURLWithPath:path]];
 }
