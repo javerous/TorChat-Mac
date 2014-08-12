@@ -55,7 +55,7 @@
 // == Info Code ==
 typedef enum
 {
-	// -- Event --
+	// -- Events --
 	TCCoreEventStarted,
 	TCCoreEventStopped,
 	TCCoreEventStatus,			// context: NSNumber (TCStatus)

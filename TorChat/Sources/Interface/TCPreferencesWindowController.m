@@ -325,7 +325,12 @@
 	NSString *path = [[_downloadPath URL] path];
 
 	if (path)
-		[self.config setDomain:TConfigPathDomainDownload place:TConfigPathPlaceAbsolute subpath:path];
+	{
+		[self.config setDomain:TConfigPathDomainDownloads place:TConfigPathPlaceAbsolute subpath:path];
+		
+		if ([[path lastPathComponent] isEqualToString:@"Downloads"])
+			[[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"]];
+	}
 	else
 		NSBeep();
 }
@@ -343,10 +348,15 @@
 		return;
 
 	// Download path.
-	NSString *path = [self.config pathForDomain:TConfigPathDomainDownload];
+	NSString *path = [self.config pathForDomain:TConfigPathDomainDownloads];
 
 	if ([[NSFileManager defaultManager] fileExistsAtPath:path] == NO)
+	{
 		[[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+		
+		if ([[path lastPathComponent] isEqualToString:@"Downloads"])
+			[[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"]];
+	}
 	
 	[_downloadPath setURL:[NSURL fileURLWithPath:path]];
 	
