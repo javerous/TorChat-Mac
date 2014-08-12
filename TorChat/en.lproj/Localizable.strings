@@ -102,10 +102,6 @@
 "chat_close" = "Delete";
 
 
-/* Config */
-"conf_download" = "Downloads";
-
-
 /* Logs */
 "logs_all_logs" = "All logs";
 "logs_global_logs" = "Globals";
