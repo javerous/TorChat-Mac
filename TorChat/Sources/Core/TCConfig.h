@@ -78,7 +78,7 @@ typedef enum
 	TConfigPathDomainTorBinary,	// Path to the tor binary (and its dependancies) directory.
 	TConfigPathDomainTorData,	// Path to the tor data directory.
 	TConfigPathDomainTorIdentity, // Path to tor hidden service (buddy address)
-	TConfigPathDomainDownload, // Path to the download directory.
+	TConfigPathDomainDownloads,	// Path to the downloads directory.
 } TConfigPathDomain;
 
 typedef enum

@@ -64,7 +64,7 @@ typedef enum
 // == Info Codes ==
 typedef enum
 {
-	// -- Event --
+	// -- Events --
 	TCBuddyEventConnectedTor,
 	TCBuddyEventConnectedBuddy,
 	TCBuddyEventDisconnected,
@@ -92,7 +92,7 @@ typedef enum
 	TCBuddyEventProfileName,		// context: NSString (<name>)
 	TCBuddyEventProfileAvatar,		// context: TCImage
 	
-	// -- Error --
+	// -- Errors --
 	TCBuddyErrorResolveTor,
 	TCBuddyErrorConnectTor,
 	

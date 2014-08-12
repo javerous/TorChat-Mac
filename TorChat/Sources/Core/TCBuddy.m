@@ -1314,9 +1314,12 @@ static char gLocalQueueContext;
 	NSString *sfilename_2 = [sfilename_1 stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
 	
 	// Get the download folder
-	NSString *downPath = [[_config pathForDomain:TConfigPathDomainDownload] stringByAppendingPathComponent:_address];
+	NSString *downPath = [[_config pathForDomain:TConfigPathDomainDownloads] stringByAppendingPathComponent:_address];
 	
 	[[NSFileManager defaultManager] createDirectoryAtPath:downPath withIntermediateDirectories:YES attributes:nil error:nil];
+	
+	if ([[downPath lastPathComponent] isEqualToString:@"Downloads"])
+		[[NSData data] writeToFile:[downPath stringByAppendingPathComponent:@".localized"]];
 	
 	// Parse values
 	uint64_t		ifsize = strtoull([fileSize cStringUsingEncoding:NSASCIIStringEncoding], NULL, 10);

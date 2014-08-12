@@ -33,7 +33,18 @@
 */
 #pragma mark - Defines
 
+// -- Version --
+#define TCConfigVersion1			1
+#define TCConfigVersion2			2
+
+#define TCConfigVersionCurrent		TCConfigVersion2
+
+
 // -- Config Keys --
+// > Config
+#define TCCONF_KEY_VERSION			@"version"
+
+// > General
 #define TCCONF_KEY_TOR_ADDRESS		@"tor_address"
 #define TCCONF_KEY_TOR_PORT			@"tor_socks_port"
 
@@ -59,9 +70,9 @@
 #define TCCONF_KEY_PATHS					@"paths"
 
 #define TCCONF_KEY_PATH_TOR_BIN				@"tor_bin"
-#define TCCONF_KEY_PATH_TOR_DARA			@"tor_data"
+#define TCCONF_KEY_PATH_TOR_DATA			@"tor_data"
 #define TCCONF_KEY_PATH_TOR_IDENTITY		@"tor_identity"
-#define TCCONF_KEY_PATH_TOR_DOWNLOAD		@"tor_download"
+#define TCCONF_KEY_PATH_DOWNLOADS			@"downloads"
 
 #define TCCONF_KEY_PATH_PLACE				@"place"
 #define TCCONF_VALUE_PATH_PLACE_REFERAL		@"<referal>"
@@ -946,17 +957,6 @@
 	NSString				*standardSubPath = nil;
 	NSString				*referalSubPath = nil;
 
-#warning FIXME: get TCCONF_KEY_DOWN_FOLDER + TCCONF_KEY_TOR_PATH + TCCONF_KEY_TOR_DATA_PATH
-	
-	/*
-	 #define TCCONF_KEY_TOR_PATH			@"tor_path" / @"<tor>"
-	 #define TCCONF_KEY_TOR_DATA_PATH	@"tor_data_path"
-	 #define TCCONF_KEY_DOWN_FOLDER		@"download_path"
-
-	 // remember: path can start with ~ in hold format.
-	 */
-	// 
-	
 	// Handle domain.
 	switch (domain)
 	{
@@ -971,16 +971,16 @@
 			pathKey = TCCONF_KEY_PATH_TOR_BIN;
 			standardPathDirectory = NSApplicationSupportDirectory;
 			standardSubPath = @"TorChat/Tor/";
-			referalSubPath = @"tordata/bin/";
+			referalSubPath = @"tor/bin/";
 			break;
 		}
 		
 		case TConfigPathDomainTorData:
 		{
-			pathKey = TCCONF_KEY_PATH_TOR_DARA;
+			pathKey = TCCONF_KEY_PATH_TOR_DATA;
 			standardPathDirectory = NSApplicationSupportDirectory;
 			standardSubPath = @"TorChat/TorData/";
-			referalSubPath = @"tordata/data/";
+			referalSubPath = @"tor/data/";
 			break;
 		}
 		
@@ -989,13 +989,13 @@
 			pathKey = TCCONF_KEY_PATH_TOR_IDENTITY;
 			standardPathDirectory = NSApplicationSupportDirectory;
 			standardSubPath = @"TorChat/TorIdentity/";
-			referalSubPath = @"tordata/hidden/";
+			referalSubPath = @"tor/identity/";
 			break;
 		}
 		
-		case TConfigPathDomainDownload:
+		case TConfigPathDomainDownloads:
 		{
-			pathKey = TCCONF_KEY_PATH_TOR_DOWNLOAD;
+			pathKey = TCCONF_KEY_PATH_DOWNLOADS;
 			standardPathDirectory = NSDownloadsDirectory;
 			standardSubPath = @"TorChat/";
 			referalSubPath = @"Downloads/";
@@ -1045,6 +1045,7 @@
 	return nil;
 }
 
+
 - (BOOL)setDomain:(TConfigPathDomain)domain place:(TConfigPathPlace)place subpath:(NSString *)subpath
 {
 	// Handle domain.
@@ -1068,7 +1069,7 @@
 			
 		case TConfigPathDomainTorData:
 		{
-			pathKey = TCCONF_KEY_PATH_TOR_DARA;
+			pathKey = TCCONF_KEY_PATH_TOR_DATA;
 			break;
 		}
 			
@@ -1078,9 +1079,9 @@
 			break;
 		}
 			
-		case TConfigPathDomainDownload:
+		case TConfigPathDomainDownloads:
 		{
-			pathKey = TCCONF_KEY_PATH_TOR_DOWNLOAD;
+			pathKey = TCCONF_KEY_PATH_DOWNLOADS;
 			break;
 		}
 	}
@@ -1106,7 +1107,9 @@
 	}
 	
 	if (!subpath)
-		[domainConfig removeObjectForKey:pathKey];
+		[paths removeObjectForKey:pathKey];
+	else
+		domainConfig[TCCONF_KEY_PATH_SUBPATH] = subpath;
 	
 	switch (place)
 	{
@@ -1138,21 +1141,127 @@
 
 - (NSMutableDictionary *)loadConfig:(NSData *)data
 {
-	NSMutableDictionary	*content;
+	NSMutableDictionary	*content = nil;
 	
-	// Parse plist
+	// Parse plist.
 	if (data)
+	{
+		// > Parse.
 		content = [NSPropertyListSerialization propertyListFromData:data mutabilityOption:NSPropertyListMutableContainersAndLeaves format:nil errorDescription:nil];
-	else
-		content = [NSMutableDictionary dictionary];
-	
-	// Check content
-	if (!content)
-		return nil;
-	
-	if ([content isKindOfClass:[NSDictionary class]] == NO)
-		return nil;
+		
+		if ([content isKindOfClass:[NSDictionary class]] == NO)
+			return nil;
+		
+		// > Check & update version.
+		NSNumber *fileVersion = content[TCCONF_KEY_VERSION];
+		
+		if (!fileVersion)
+			fileVersion = @(TCConfigVersion1);
+		
+		switch ([fileVersion intValue])
+		{
+			case TCConfigVersion1:
+			{
+				// Remove tor path.
+				[content removeObjectForKey:@"tor_path"]; // TCCONF_KEY_TOR_PATH
+				
+				// Create paths container.
+				NSMutableDictionary *paths = [[NSMutableDictionary alloc] init];
+				
+				// > Tor data path.
+				NSString *oldTorData = content[@"tor_data_path"];
+				
+				if (oldTorData)
+				{
+					NSMutableDictionary *domainConfig = [[NSMutableDictionary alloc] init];
+					
+					domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_ABSOLUTE;
+					domainConfig[TCCONF_KEY_PATH_SUBPATH] = [oldTorData stringByExpandingTildeInPath];
 
+					paths[TCCONF_KEY_PATH_TOR_DATA] = domainConfig;
+					
+					[content removeObjectForKey:@"tor_data_path"];
+				}
+				else
+				{
+					NSMutableDictionary *domainConfig = [[NSMutableDictionary alloc] init];
+
+					domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_REFERAL;
+					domainConfig[TCCONF_KEY_PATH_SUBPATH] = @"tordata/";
+					
+					paths[TCCONF_KEY_PATH_TOR_DATA] = domainConfig;
+				}
+				
+				// > Tor hidden path.
+				NSString *oldTorHidden = [oldTorData stringByAppendingPathComponent:@"hidden"];
+				
+				if (oldTorHidden)
+				{
+					NSMutableDictionary *domainConfig = [[NSMutableDictionary alloc] init];
+					
+					domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_ABSOLUTE;
+					domainConfig[TCCONF_KEY_PATH_SUBPATH] = [oldTorHidden stringByExpandingTildeInPath];
+					
+					paths[TCCONF_KEY_PATH_TOR_IDENTITY] = domainConfig;
+				}
+				else
+				{
+					NSMutableDictionary *domainConfig = [[NSMutableDictionary alloc] init];
+					
+					domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_REFERAL;
+					domainConfig[TCCONF_KEY_PATH_SUBPATH] = @"tordata/hidden/";
+					
+					paths[TCCONF_KEY_PATH_TOR_IDENTITY] = domainConfig;
+				}
+				
+				// > Download path.
+				NSString *oldDownload = [oldTorData stringByAppendingPathComponent:@"download_path"];
+
+				if (oldDownload)
+				{
+					NSMutableDictionary *domainConfig = [[NSMutableDictionary alloc] init];
+					
+					domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_ABSOLUTE;
+					domainConfig[TCCONF_KEY_PATH_SUBPATH] = [oldDownload stringByExpandingTildeInPath];
+					
+					paths[TCCONF_KEY_PATH_DOWNLOADS] = domainConfig;
+					
+					[content removeObjectForKey:@"download_path"];
+				}
+				else
+				{
+					NSMutableDictionary *domainConfig = [[NSMutableDictionary alloc] init];
+					
+					domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_REFERAL;
+					domainConfig[TCCONF_KEY_PATH_SUBPATH] = @"Downloads/";
+					
+					paths[TCCONF_KEY_PATH_DOWNLOADS] = domainConfig;
+				}
+
+				content[TCCONF_KEY_PATHS] = paths;
+				
+				// Update version.
+				content[TCCONF_KEY_VERSION] = @(TCConfigVersion2);
+				
+				// No break: continue update path.
+			}
+			
+			case TCConfigVersion2:
+			{
+				// Current version. Nothing to update.
+			}
+		}
+		
+	}
+
+	// Create empty sctucture.
+	if (!content)
+	{
+		content = [NSMutableDictionary dictionary];
+		
+		content[TCCONF_KEY_VERSION] = @(TCConfigVersionCurrent);
+	}
+	
 	return content;
 }
 
