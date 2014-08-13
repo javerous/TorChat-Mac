@@ -79,15 +79,23 @@ typedef enum
 typedef enum
 {
 	// -- Event --
-	TCTorManagerEventUpdateAvailable, // context: NSString (<new version>)
+	TCTorManagerEventUpdateAvailable,		// context: NSString (<new version>)
 	
 	// -- Error --
-	TCTorManagerErrorNoUpdateValiable,
+	TCTorManagerErrorUpdateNetworkRequest,	// context: NSError
+	TCTorManagerErrorUpdateBadServerReply,
+	TCTorManagerErrorUpdateLocalSignature,	// info: TCInfo (<operation error>)
+
+	TCTorManagerErrorUpdateNothingNew,
 	
 } TCTorManagerInfoUpdate;
 
 typedef enum
 {
+	// -- Event --
+	TCTorManagerEventInfo,			// context: NSDictionary
+	TCTorManagerEventDone,
+
 	// -- Error --
 	TCTorManagerErrorConfiguration,
 	TCTorManagerErrorIO,
@@ -118,7 +126,9 @@ typedef enum
 - (BOOL)isRunning;
 
 // -- Update --
-- (void)checkForUpdateWithResultHandler:(void (^)(TCInfo *error))handler;
+- (void)checkForUpdateWithCompletionHandler:(void (^)(TCInfo *info))handler;
+- (void)updateWithHandler:(void (^)())handler;
+
 
 // -- Property --
 - (NSString *)hiddenHostname;

@@ -65,6 +65,7 @@
 #pragma mark - Prototypes
 
 NSData *file_sha1(NSURL *fileURL);
+BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 
 
 
@@ -299,16 +300,19 @@ NSData *file_sha1(NSURL *fileURL);
 		// -- Check signature --
 		[_opQueue scheduleBlock:^(TCOperationsControl ctrl) {
 			
-			[self operationCheckSignatureWithCompletionHandler:^(TCInfo *error) {
+			[self operationCheckSignatureWithCompletionHandler:^(TCInfo *info) {
 				
-				if (error)
+				if (info.kind == TCInfoError)
 				{
-					handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoStartDomain code:TCTorManagerErrorStartSignature info:error]);
+					handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoStartDomain code:TCTorManagerErrorStartSignature info:info]);
 					ctrl(TCOperationsControlFinish);
 					return;
 				}
-				
-				ctrl(TCOperationsControlContinue);
+				else if (info.kind == TCInfoInfo)
+				{
+					if (info.code == TCTorManagerEventDone)
+						ctrl(TCOperationsControlContinue);
+				}
 			}];
 		}];
 
@@ -441,15 +445,101 @@ NSData *file_sha1(NSURL *fileURL);
 */
 #pragma mark - TCTorManager - Update
 
-- (void)checkForUpdateWithResultHandler:(void (^)(NSString *newVersion, TCInfo *error))handler
+- (void)checkForUpdateWithCompletionHandler:(void (^)(TCInfo *error))handler
 {
 	if (!handler)
 		return;
 	
+	TCOperationsQueue *queue = [[TCOperationsQueue alloc] init];
 	
+	// -- Get remote version --
+	__block NSString *remoteVersion = nil;
 	
+	[queue scheduleBlock:^(TCOperationsControl ctrl) {
+		
+		// Create session configuration, and setup it to use tor.
+		NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+		
+		sessionConfiguration.connectionProxyDictionary =  @{ (NSString *)kCFStreamPropertySOCKSProxyHost : ([_configuration torAddress] ?: @"localhost"),
+															 (NSString *)kCFStreamPropertySOCKSProxyPort : @([_configuration torPort]) };
+		
+		sessionConfiguration.timeoutIntervalForRequest = 30;
+		sessionConfiguration.timeoutIntervalForResource = 10;
+		
+		// Create session and send request.
+		NSURL			*url = [NSURL URLWithString:@"http://www.sourcemac.com/tor/version.txt"];
+		NSURLSession	*session = [NSURLSession sessionWithConfiguration:sessionConfiguration];
+		
+		[[session dataTaskWithRequest:[NSURLRequest requestWithURL:url] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+			
+			// Check error.
+			if (error)
+			{
+				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoUpdateDomain code:TCTorManagerErrorUpdateNetworkRequest context:error]);
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+			
+			// Check content.
+			if ([data length] == 0 || [data length] > 50 || (remoteVersion = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]) == nil)
+			{
+				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoUpdateDomain code:TCTorManagerErrorUpdateBadServerReply]);
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+
+			NSLog(@"remoteVersion: '%@'", remoteVersion);
+			
+			ctrl(TCOperationsControlContinue);
+		}] resume];
+	}];
 	
+	// -- Check signature --
+	__block NSString *localVersion = nil;
+	
+	[queue scheduleBlock:^(TCOperationsControl ctrl) {
+		
+		[self operationCheckSignatureWithCompletionHandler:^(TCInfo *info) {
+			
+			if (info.kind == TCInfoError)
+			{
+				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoUpdateDomain code:TCTorManagerErrorUpdateLocalSignature info:info]);
+				ctrl(TCOperationsControlFinish);
+			}
+			else if (info.kind == TCInfoInfo)
+			{
+				if (info.code == TCTorManagerEventInfo)
+				{
+					localVersion = ((NSDictionary *)info.context)[TCTorManagerKeyTorVersion];
+					NSLog(@"localVersion: %@", localVersion);
+				}
+				else if (info.code == TCTorManagerEventDone)
+				{
+					ctrl(TCOperationsControlContinue);
+				}
+			}
+		}];
+	}];
+	
+	// -- Compare versions --
+	[queue scheduleBlock:^(TCOperationsControl ctrl) {
+
+		if (version_greater(localVersion, remoteVersion))
+			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoUpdateDomain code:TCTorManagerEventUpdateAvailable context:remoteVersion]);
+		else
+			handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoUpdateDomain code:TCTorManagerErrorUpdateNothingNew]);
+		
+		ctrl(TCOperationsControlFinish);
+	}];
+
+	// Start.
+	[queue start];
+}
+
+- (void)updateWithHandler:(void (^)())handler
+{
 #warning FIXME
+
 }
 
 
@@ -551,7 +641,7 @@ NSData *file_sha1(NSURL *fileURL);
 	}
 }
 
-- (void)operationCheckSignatureWithCompletionHandler:(void (^)(TCInfo *error))handler
+- (void)operationCheckSignatureWithCompletionHandler:(void (^)(TCInfo *info))handler
 {
 	NSLog(@"Checking...");
 
@@ -601,6 +691,9 @@ NSData *file_sha1(NSURL *fileURL);
 		return;
 	}
 	
+	// Give info.
+	handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventInfo context:info]);
+	
 	// Check files hash.
 	NSDictionary *files = info[TCTorManagerKeyFiles];
 	
@@ -619,7 +712,7 @@ NSData *file_sha1(NSURL *fileURL);
 	}
 	
 	// Finish.
-	handler(nil);
+	handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventDone]);
 }
 
 - (void)operationLaunchTor:(void (^)(TCInfo *error))handler
@@ -657,7 +750,6 @@ NSData *file_sha1(NSURL *fileURL);
 	
 	[args addObject:@"--SocksListenAddress"];
 	[args addObject:([_configuration torAddress] ?: @"localhost")];
-	
 	
 	[args addObject:@"--DataDirectory"];
 	[args addObject:dataPath];
@@ -878,4 +970,36 @@ end:
 	}
 	
 	return result;
+}
+
+BOOL version_greater(NSString *baseVersion, NSString *newVersion)
+{
+	if (!newVersion)
+		return NO;
+	
+	if (!baseVersion)
+		return YES;
+	
+	NSArray		*baseParts = [baseVersion componentsSeparatedByString:@"."];
+	NSArray		*newParts = [newVersion componentsSeparatedByString:@"."];
+	NSUInteger	count = MAX([baseParts count], [newParts count]);
+	
+	for (NSUInteger i = 0; i < count; i++)
+	{
+		NSUInteger baseValue = 0;
+		NSUInteger newValue = 0;
+		
+		if (i < [baseParts count])
+			baseValue = (NSUInteger)[baseParts[i] intValue];
+		
+		if (i < [newParts count])
+			newValue = (NSUInteger)[newParts[i] intValue];
+		
+		if (newValue > baseValue)
+			return YES;
+		else if (newValue < baseValue)
+			return NO;
+	}
+	
+	return NO;
 }
