@@ -581,14 +581,33 @@
 					// -- Event --
 					@(TCTorManagerEventUpdateAvailable) :
 						@{
-							TCInfoNameKey : @"TCTorManagerInfoUpdateAvailable",
+							TCInfoNameKey : @"TCTorManagerEventUpdateAvailable",
 							TCInfoTextKey : @"<fixme>", // FIXME
 						},
 					
 					// -- Error --
-					@(TCTorManagerErrorNoUpdateValiable) :
+					@(TCTorManagerErrorUpdateNetworkRequest) :
 						@{
-							TCInfoNameKey : @"TCTorManagerErrorNoUpdateValiable",
+							TCInfoNameKey : @"TCTorManagerErrorUpdateNetworkRequest",
+							TCInfoTextKey : @"<fixme>", // FIXME
+						},
+					
+					
+					@(TCTorManagerErrorUpdateBadServerReply) :
+						@{
+							TCInfoNameKey : @"TCTorManagerErrorUpdateBadServerReply",
+							TCInfoTextKey : @"<fixme>", // FIXME
+						},
+					
+					@(TCTorManagerErrorUpdateLocalSignature) :
+						@{
+							TCInfoNameKey : @"TCTorManagerErrorUpdateLocalSignature",
+							TCInfoTextKey : @"<fixme>", // FIXME
+						},
+					
+					@(TCTorManagerErrorUpdateNothingNew) :
+						@{
+							TCInfoNameKey : @"TCTorManagerErrorUpdateNothingNew",
 							TCInfoTextKey : @"<fixme>", // FIXME
 						},
 				},

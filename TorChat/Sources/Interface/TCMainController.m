@@ -231,6 +231,17 @@
 		// > Start buddy controller.
 		[[TCBuddiesWindowController sharedController] startWithConfiguration:conf];
 	}
+
+// <DEBUG
+#warning DEBUG
+	
+	[_torManager checkForUpdateWithCompletionHandler:^(TCInfo *info) {
+		
+		NSLog(@"info: %@", [info render]);
+		
+	}];
+	
+// DEBUG>
 }
 
 @end
