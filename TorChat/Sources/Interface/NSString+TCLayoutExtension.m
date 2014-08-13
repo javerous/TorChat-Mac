@@ -1,5 +1,5 @@
 /*
- *  NSString+TCExtension.m
+ *  NSString+TCLayoutExtension.m
  *
  *  Copyright 2014 Avérous Julien-Pierre
  *
@@ -21,17 +21,15 @@
  */
 
 
-
-#import "NSString+TCExtension.h"
-
+#import "NSString+TCLayoutExtension.h"
 
 
 /*
-** NSString - TCExtension
+** NSString - TCLayoutExtension
 */
-#pragma mark - NSString - TCExtension
+#pragma mark - NSString - TCLayoutExtension
 
-@implementation NSString (TCExtension)
+@implementation NSString (TCLayoutExtension)
 
 // == Compute string height ==
 - (CGFloat)heightForDrawingWithFont:(NSFont *)font andWidth:(CGFloat)width
@@ -54,42 +52,16 @@
 	return [layoutManager usedRectForTextContainer:textContainer].size.height + 6.0; // This value is empiric. Why it's always so hard to have a good computation of a text size ?
 }
 
-- (NSString *)realPath
-{
-	const char	*path = [self UTF8String];
-	char		*rpath;
-	NSString	*result;
-		
-	if (!path)
-		return nil;
-
-	rpath = realpath(path, NULL);
-
-	if (!rpath)
-		return nil;
-
-	result = [NSString stringWithUTF8String:rpath];
-	
-	free(rpath);
-	
-	return result;
-}
-
-- (NSString *)stringByEscapingXMLEntities
-{
-	return (__bridge_transfer NSString *)CFXMLCreateStringByEscapingEntities(kCFAllocatorDefault, (__bridge CFStringRef)self, NULL);
-}
-
 @end
 
 
 
 /*
-** NSAttributedString - TCExtension
+** NSAttributedString - TCLayoutExtension
 */
-#pragma mark - NSAttributedString - TCExtension
+#pragma mark - NSAttributedString - TCLayoutExtension
 
-@implementation NSAttributedString (TCExtension)
+@implementation NSAttributedString (TCLayoutExtension)
 
 // == Compute string height ==
 - (CGFloat)heightForDrawingWithWidth:(float)width
