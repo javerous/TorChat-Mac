@@ -1,5 +1,5 @@
 /*
- *  NSString+TCExtension.h
+ *  NSString+TCLayoutExtension.h
  *
  *  Copyright 2014 Avérous Julien-Pierre
  *
@@ -21,33 +21,28 @@
  */
 
 
-
 #import <Cocoa/Cocoa.h>
 
 
 /*
-** NSString - TCExtension
+** NSString - TCLayoutExtension
 */
-#pragma mark - NSString - TCExtension
+#pragma mark - NSString - TCLayoutExtension
 
-@interface NSString (TCExtension)
+@interface NSString (TCLayoutExtension)
 
 - (CGFloat)heightForDrawingWithFont:(NSFont *)font andWidth:(CGFloat)width;
-
-- (NSString *)realPath;
-
-- (NSString *)stringByEscapingXMLEntities;
 
 @end
 
 
 
 /*
-** NSAttributedString - TCExtension
+** NSAttributedString - TCLayoutExtension
 */
-#pragma mark - NSAttributedString - TCExtension
+#pragma mark - NSAttributedString - TCLayoutExtension
 
-@interface NSAttributedString (TCExtension)
+@interface NSAttributedString (TCLayoutExtension)
 
 - (CGFloat)heightForDrawingWithWidth:(float)width;
 
