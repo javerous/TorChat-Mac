@@ -24,7 +24,7 @@
 
 #import "TCChatTextField.h"
 
-#import "NSString+TCExtension.h"
+#import "NSString+TCLayoutExtension.h"
 
 
 

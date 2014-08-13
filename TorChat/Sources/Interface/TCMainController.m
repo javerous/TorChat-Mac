@@ -224,10 +224,6 @@
 			_torManager = [[TCTorManager alloc] initWithConfiguration:_configuration];
 			
 			[_torManager startWithHandler:^(TCInfo *info) {
-				
-				NSLog(@"> '%@'", info);
-				NSLog(@"> '%@'", [info render]);
-				
 				[[TCLogsManager sharedManager] addGlobalLogEntry:[info render]];
 			}];
 		}
