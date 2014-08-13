@@ -38,6 +38,8 @@
 		E85923F7120A9E060035C420 /* FilesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E85923F5120A9E060035C420 /* FilesWindow.xib */; };
 		E86B5A1817AE7C6C00C715CA /* TCFileCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E86B5A1717AE7C6C00C715CA /* TCFileCellView.m */; };
 		E874146B12FAE0C200BD4862 /* TCDropButton.m in Sources */ = {isa = PBXBuildFile; fileRef = E874146A12FAE0C200BD4862 /* TCDropButton.m */; };
+		E8742543199B682F002A34DD /* NSString+TCPathExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = E8742542199B682F002A34DD /* NSString+TCPathExtension.m */; };
+		E8742546199B6A61002A34DD /* NSString+TCXMLExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = E8742545199B6A61002A34DD /* NSString+TCXMLExtension.m */; };
 		E87833E819926D5100D0C67F /* TCFileSignature.m in Sources */ = {isa = PBXBuildFile; fileRef = E87833E719926D5100D0C67F /* TCFileSignature.m */; };
 		E878981617AFCC0900DB7709 /* TCBuddyCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E878981517AFCC0900DB7709 /* TCBuddyCellView.m */; };
 		E878983A17B05BC800DB7709 /* AssistantPanel_Welcome.xib in Resources */ = {isa = PBXBuildFile; fileRef = E878983817B05BC800DB7709 /* AssistantPanel_Welcome.xib */; };
@@ -47,7 +49,7 @@
 		E87CB85312508F7A00A75686 /* BuddyInfoWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E87CB85112508F7A00A75686 /* BuddyInfoWindow.xib */; };
 		E87D1B371990E14200846450 /* tor.tgz in Resources */ = {isa = PBXBuildFile; fileRef = E87D1B361990E12B00846450 /* tor.tgz */; };
 		E88879FF1303EA9F00C7D60E /* TCDragImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = E88879FE1303EA9900C7D60E /* TCDragImageView.m */; };
-		E889F09712531CFB000C36B2 /* NSString+TCExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F09612531CFB000C36B2 /* NSString+TCExtension.m */; };
+		E889F09712531CFB000C36B2 /* NSString+TCLayoutExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F09612531CFB000C36B2 /* NSString+TCLayoutExtension.m */; };
 		E889F09A12531D07000C36B2 /* TCButton.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F09912531D07000C36B2 /* TCButton.m */; };
 		E889F09D12531D12000C36B2 /* TCTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F09C12531D12000C36B2 /* TCTableView.m */; };
 		E889F0A012531D1E000C36B2 /* TCTorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F09F12531D1E000C36B2 /* TCTorManager.m */; };
@@ -131,6 +133,10 @@
 		E86B5A1717AE7C6C00C715CA /* TCFileCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCFileCellView.m; path = Interface/TCFileCellView.m; sourceTree = "<group>"; };
 		E874146912FAE0C200BD4862 /* TCDropButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCDropButton.h; path = Interface/TCDropButton.h; sourceTree = "<group>"; };
 		E874146A12FAE0C200BD4862 /* TCDropButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCDropButton.m; path = Interface/TCDropButton.m; sourceTree = "<group>"; };
+		E8742541199B682F002A34DD /* NSString+TCPathExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+TCPathExtension.h"; path = "Interface/NSString+TCPathExtension.h"; sourceTree = "<group>"; };
+		E8742542199B682F002A34DD /* NSString+TCPathExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+TCPathExtension.m"; path = "Interface/NSString+TCPathExtension.m"; sourceTree = "<group>"; };
+		E8742544199B6A61002A34DD /* NSString+TCXMLExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+TCXMLExtension.h"; path = "Interface/NSString+TCXMLExtension.h"; sourceTree = "<group>"; };
+		E8742545199B6A61002A34DD /* NSString+TCXMLExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+TCXMLExtension.m"; path = "Interface/NSString+TCXMLExtension.m"; sourceTree = "<group>"; };
 		E87833E619926D5100D0C67F /* TCFileSignature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCFileSignature.h; path = Interface/TCFileSignature.h; sourceTree = "<group>"; };
 		E87833E719926D5100D0C67F /* TCFileSignature.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCFileSignature.m; path = Interface/TCFileSignature.m; sourceTree = "<group>"; };
 		E87833E919926FF600D0C67F /* TCPublicKey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TCPublicKey.h; path = Interface/TCPublicKey.h; sourceTree = "<group>"; };
@@ -174,8 +180,8 @@
 		E882D1AC1429DD0B009CCD01 /* TCConfigProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCConfigProxy.h; path = Shared/TCConfigProxy.h; sourceTree = SOURCE_ROOT; };
 		E88879FD1303EA9600C7D60E /* TCDragImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCDragImageView.h; path = Interface/TCDragImageView.h; sourceTree = "<group>"; };
 		E88879FE1303EA9900C7D60E /* TCDragImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCDragImageView.m; path = Interface/TCDragImageView.m; sourceTree = "<group>"; };
-		E889F09512531CFB000C36B2 /* NSString+TCExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+TCExtension.h"; path = "Interface/NSString+TCExtension.h"; sourceTree = "<group>"; };
-		E889F09612531CFB000C36B2 /* NSString+TCExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+TCExtension.m"; path = "Interface/NSString+TCExtension.m"; sourceTree = "<group>"; };
+		E889F09512531CFB000C36B2 /* NSString+TCLayoutExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+TCLayoutExtension.h"; path = "Interface/NSString+TCLayoutExtension.h"; sourceTree = "<group>"; };
+		E889F09612531CFB000C36B2 /* NSString+TCLayoutExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+TCLayoutExtension.m"; path = "Interface/NSString+TCLayoutExtension.m"; sourceTree = "<group>"; };
 		E889F09812531D07000C36B2 /* TCButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCButton.h; path = Interface/TCButton.h; sourceTree = "<group>"; };
 		E889F09912531D07000C36B2 /* TCButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCButton.m; path = Interface/TCButton.m; sourceTree = "<group>"; };
 		E889F09B12531D12000C36B2 /* TCTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCTableView.h; path = Interface/TCTableView.h; sourceTree = "<group>"; };
@@ -640,8 +646,12 @@
 		E874146312FA970900BD4862 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
-				E889F09512531CFB000C36B2 /* NSString+TCExtension.h */,
-				E889F09612531CFB000C36B2 /* NSString+TCExtension.m */,
+				E889F09512531CFB000C36B2 /* NSString+TCLayoutExtension.h */,
+				E889F09612531CFB000C36B2 /* NSString+TCLayoutExtension.m */,
+				E8742541199B682F002A34DD /* NSString+TCPathExtension.h */,
+				E8742542199B682F002A34DD /* NSString+TCPathExtension.m */,
+				E8742544199B6A61002A34DD /* NSString+TCXMLExtension.h */,
+				E8742545199B6A61002A34DD /* NSString+TCXMLExtension.m */,
 				E809B1461859C5BC001664E1 /* NSImage+TCExtension.h */,
 				E809B1471859C5BC001664E1 /* NSImage+TCExtension.m */,
 				E8AB4D981995095300FF986D /* TCInfo+Render.h */,
@@ -816,7 +826,7 @@
 				E8CCCD7511FEE72500C8EEFF /* TCFileReceive.m in Sources */,
 				E8F16D3411FF7E9700DFA05F /* TCParser.m in Sources */,
 				E8C3982B1205D51000B9307B /* TCSocket.m in Sources */,
-				E889F09712531CFB000C36B2 /* NSString+TCExtension.m in Sources */,
+				E889F09712531CFB000C36B2 /* NSString+TCLayoutExtension.m in Sources */,
 				E8A6FE3817A995F100C4DEAB /* TCPanel_Basic.m in Sources */,
 				E8F96A3A1993D37B0050629B /* TCOperationsQueue.m in Sources */,
 				E8127AA91854CB1100FEDA7F /* TCChatTextField.m in Sources */,
@@ -837,7 +847,9 @@
 				E889F0CB12531DD6000C36B2 /* TorChatAppDelegate.m in Sources */,
 				E82B7D7A125A08A800B7BA8A /* TCPreferencesWindowController.m in Sources */,
 				E852235217B504CA00C6F585 /* TCChatCellView.m in Sources */,
+				E8742543199B682F002A34DD /* NSString+TCPathExtension.m in Sources */,
 				E809B1481859C5BC001664E1 /* NSImage+TCExtension.m in Sources */,
+				E8742546199B6A61002A34DD /* NSString+TCXMLExtension.m in Sources */,
 				E82B7D8F125A115400B7BA8A /* TCMainController.m in Sources */,
 				E8A2CC49185CC2AF00624448 /* TCThreePartImageView.m in Sources */,
 				E835491917A810E1003C08BB /* TCInfo.m in Sources */,

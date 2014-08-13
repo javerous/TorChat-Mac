@@ -26,8 +26,6 @@
 
 #import "TCChatTranscriptViewController.h"
 
-#import "NSString+TCExtension.h"
-
 #import "TCThreePartImageView.h"
 
 

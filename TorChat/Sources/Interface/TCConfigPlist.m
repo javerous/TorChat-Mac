@@ -23,7 +23,7 @@
 
 #import "TCConfigPlist.h"
 
-#import "NSString+TCExtension.h"
+#import "NSString+TCPathExtension.h"
 
 #import "TCImage.h"
 
@@ -133,7 +133,7 @@
 		NSData			*data = nil;
 		
 		// Resolve path
-		npath = [filepath realPath];
+		npath = [filepath stringByCanonizingPath];
 		
 		if (npath)
 			filepath = npath;
