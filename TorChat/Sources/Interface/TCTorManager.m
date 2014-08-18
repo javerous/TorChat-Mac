@@ -36,8 +36,9 @@
 #import "TCBuffer.h"
 #import "TCOperationsQueue.h"
 
-#import "TCFileSignature.h"
 #import "TCPublicKey.h"
+#import "TCFileSignature.h"
+#import "TCDataSignature.h"
 
 #import "TCInfo.h"
 
@@ -284,16 +285,18 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 			// Stage the archive.
 			NSURL *archiveUrl = [[NSBundle mainBundle] URLForResource:@"tor" withExtension:@"tgz"];
 			
-			[self operationStageArchiveFile:archiveUrl completionHandler:^(TCInfo *error) {
+			[self operationStageArchiveFile:archiveUrl completionHandler:^(TCInfo *info) {
 				
-				if (error)
+				if (info.kind == TCInfoError)
 				{
-					handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoStartDomain code:TCTorManagerErrorStartUnarchive info:error]);
+					handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoStartDomain code:TCTorManagerErrorStartUnarchive info:info]);
 					ctrl(TCOperationsControlFinish);
-					return;
 				}
-				
-				ctrl(TCOperationsControlContinue);
+				else if (info.kind == TCInfoInfo)
+				{
+					if (info.code == TCTorManagerEventDone)
+						ctrl(TCOperationsControlContinue);
+				}
 			}];
 		}];
 		
@@ -319,16 +322,19 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		// -- Launch binary --
 		[_opQueue scheduleBlock:^(TCOperationsControl ctrl) {
 
-			[self operationLaunchTor:^(TCInfo *error) {
+			[self operationLaunchTor:^(TCInfo *info) {
 				
-				if (error)
+				if (info.kind == TCInfoError)
 				{
-					handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoStartDomain code:TCTorManagerErrorStartLaunch info:error]);
+					handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoStartDomain code:TCTorManagerErrorStartLaunch info:info]);
 					ctrl(TCOperationsControlFinish);
 					return;
 				}
-				
-				ctrl(TCOperationsControlContinue);
+				else if (info.kind == TCInfoInfo)
+				{
+					if (info.code == TCTorManagerEventDone)
+						ctrl(TCOperationsControlContinue);
+				}
 			}];
 		}];
 		
@@ -452,49 +458,36 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	
 	TCOperationsQueue *queue = [[TCOperationsQueue alloc] init];
 	
-	// -- Get remote version --
+	
+	// -- Retrieve remote info --
 	__block NSString *remoteVersion = nil;
 	
 	[queue scheduleBlock:^(TCOperationsControl ctrl) {
 		
-		// Create session configuration, and setup it to use tor.
-		NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
-		
-		sessionConfiguration.connectionProxyDictionary =  @{ (NSString *)kCFStreamPropertySOCKSProxyHost : ([_configuration torAddress] ?: @"localhost"),
-															 (NSString *)kCFStreamPropertySOCKSProxyPort : @([_configuration torPort]) };
-		
-		sessionConfiguration.timeoutIntervalForRequest = 30;
-		sessionConfiguration.timeoutIntervalForResource = 10;
-		
-		// Create session and send request.
-		NSURL			*url = [NSURL URLWithString:@"http://www.sourcemac.com/tor/version.txt"];
-		NSURLSession	*session = [NSURLSession sessionWithConfiguration:sessionConfiguration];
-		
-		[[session dataTaskWithRequest:[NSURLRequest requestWithURL:url] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+		[self operationRetrieveRemoteArchiveInfoWithCompletionHandler:^(TCInfo *info) {
 			
-			// Check error.
-			if (error)
+			if (info.kind == TCInfoError)
 			{
-				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoUpdateDomain code:TCTorManagerErrorUpdateNetworkRequest context:error]);
+				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoUpdateDomain code:TCTorManagerErrorUpdateRemoteInfo info:info]);
 				ctrl(TCOperationsControlFinish);
-				return;
 			}
-			
-			// Check content.
-			if ([data length] == 0 || [data length] > 50 || (remoteVersion = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]) == nil)
+			if (info.code == TCTorManagerEventInfo)
 			{
-				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoUpdateDomain code:TCTorManagerErrorUpdateBadServerReply]);
-				ctrl(TCOperationsControlFinish);
-				return;
+				if (info.code == TCTorManagerEventInfo)
+				{
+					NSDictionary *remoteInfo = info.context;
+					
+					remoteVersion = remoteInfo[@"version"];
+					
+					NSLog(@"remoteVersion: %@", remoteVersion);
+					
+					ctrl(TCOperationsControlContinue);
+				}
 			}
-
-			NSLog(@"remoteVersion: '%@'", remoteVersion);
-			
-			ctrl(TCOperationsControlContinue);
-		}] resume];
+		}];
 	}];
-	
-	// -- Check signature --
+
+	// -- Check local signature --
 	__block NSString *localVersion = nil;
 	
 	[queue scheduleBlock:^(TCOperationsControl ctrl) {
@@ -511,6 +504,7 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 				if (info.code == TCTorManagerEventInfo)
 				{
 					localVersion = ((NSDictionary *)info.context)[TCTorManagerKeyTorVersion];
+					
 					NSLog(@"localVersion: %@", localVersion);
 				}
 				else if (info.code == TCTorManagerEventDone)
@@ -525,7 +519,11 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	[queue scheduleBlock:^(TCOperationsControl ctrl) {
 
 		if (version_greater(localVersion, remoteVersion))
-			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoUpdateDomain code:TCTorManagerEventUpdateAvailable context:remoteVersion]);
+		{
+			NSDictionary *context = @{ @"old_version" : localVersion, @"new_version" : remoteVersion };
+			
+			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoUpdateDomain code:TCTorManagerEventUpdateAvailable context:context]);
+		}
 		else
 			handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoUpdateDomain code:TCTorManagerErrorUpdateNothingNew]);
 		
@@ -549,7 +547,7 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 */
 #pragma mark - TCTorManager - Operations
 
-- (void)operationStageArchiveFile:(NSURL *)fileURL completionHandler:(void (^)(TCInfo *error))handler
+- (void)operationStageArchiveFile:(NSURL *)fileURL completionHandler:(void (^)(TCInfo *info))handler
 {
 	NSLog(@"Staging...");
 	
@@ -627,7 +625,7 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		if ([aTask terminationStatus] != 0)
 			handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorExtract context:@([aTask terminationStatus])]);
 		else
-			handler(nil);
+			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventDone]);
 		
 		[fileManager removeItemAtPath:newFilePath error:nil];
 	};
@@ -647,7 +645,7 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 
 	// Check parameters.
 	if (!handler)
-		handler = ^(TCInfo *error) { };
+		handler = ^(TCInfo *info) { };
 	
 	// Get tor path.
 	NSString *torBinPath = [_configuration pathForDomain:TConfigPathDomainTorBinary];
@@ -715,12 +713,12 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventDone]);
 }
 
-- (void)operationLaunchTor:(void (^)(TCInfo *error))handler
+- (void)operationLaunchTor:(void (^)(TCInfo *info))handler
 {
 	NSLog(@"Launching...");
 
 	if (!handler)
-		handler = ^(TCInfo *error) { };
+		handler = ^(TCInfo *info) { };
 	
 	NSString	*torPath = [_configuration pathForDomain:TConfigPathDomainTorBinary];
 	NSString	*dataPath = [_configuration pathForDomain:TConfigPathDomainTorData];
@@ -857,8 +855,102 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		return;
 	}
 	
-	// Notify the laund.
-	handler(nil);
+	// Notify the launch.
+	handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventDone]);
+}
+
+- (void)operationRetrieveRemoteArchiveInfoWithCompletionHandler:(void (^)(TCInfo *info))handler
+{
+	if (!handler)
+		return;
+	
+	TCOperationsQueue *queue = [[TCOperationsQueue alloc] init];
+	
+	// Create session configuration, and setup it to use tor.
+	NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+	
+	sessionConfiguration.connectionProxyDictionary =  @{ (NSString *)kCFStreamPropertySOCKSProxyHost : ([_configuration torAddress] ?: @"localhost"),
+														 (NSString *)kCFStreamPropertySOCKSProxyPort : @([_configuration torPort]) };
+	
+	sessionConfiguration.timeoutIntervalForRequest = 30;
+	sessionConfiguration.timeoutIntervalForResource = 10;
+	
+	// -- Get remote info --
+	__block NSData	*remoteInfoData = nil;
+	
+	[queue scheduleBlock:^(TCOperationsControl ctrl) {
+		
+		// Create session and send request.
+		NSURL			*url = [NSURL URLWithString:@"http://www.sourcemac.com/tor/info.plist"];
+		NSURLSession	*session = [NSURLSession sessionWithConfiguration:sessionConfiguration];
+		
+		[[session dataTaskWithRequest:[NSURLRequest requestWithURL:url] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+			
+			// Check error.
+			if (error)
+			{
+				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorNetwork context:error]);
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+
+			// Hold data.
+			remoteInfoData = data;
+			
+			// Continue.
+			ctrl(TCOperationsControlContinue);
+		}] resume];
+	}];
+	
+	// -- Get signature, check it & parse plist --
+	__block NSDictionary *remoteInfo = nil;
+	
+	[queue scheduleBlock:^(TCOperationsControl ctrl) {
+		
+		// Create session and send request.
+		NSURL			*url = [NSURL URLWithString:@"http://www.sourcemac.com/tor/signature"];
+		NSURLSession	*session = [NSURLSession sessionWithConfiguration:sessionConfiguration];
+		
+		[[session dataTaskWithRequest:[NSURLRequest requestWithURL:url] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+			
+			// Check error.
+			if (error)
+			{
+				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorNetwork context:error]);
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+			
+			// Check content.
+			NSData *publicKey = [[NSData alloc] initWithBytesNoCopy:(void *)kPublicKey length:sizeof(kPublicKey) freeWhenDone:NO];
+			
+			if ([TCDataSignature validateSignature:data forData:remoteInfoData withPublicKey:publicKey] == NO)
+			{
+				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorSignature context:error]);
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+			
+			// Parse content.
+			NSError *pError = nil;
+			
+			remoteInfo = [NSPropertyListSerialization propertyListWithData:remoteInfoData options:NSPropertyListImmutable format:nil error:&pError];
+			
+			if (!remoteInfo)
+			{
+				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorInternal context:pError]);
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+
+			// Give result.
+			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventInfo context:remoteInfo]);
+			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventDone context:remoteInfo]);
+		}] resume];
+	}];
+
+	// Queue start.
+	[queue start];
 }
 
 

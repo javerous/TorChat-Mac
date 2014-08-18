@@ -26,8 +26,9 @@
 
 #import "TCConfigPlist.h"
 #import "TCLogsManager.h"
-#import "TCBuddiesWindowController.h"
 
+#import "TCBuddiesWindowController.h"
+#import "TCUpdateWindowController.h"
 #import "TCAssistantWindowController.h"
 #import "TCPanel_Welcome.h"
 #import "TCPanel_Mode.h"
@@ -235,12 +236,30 @@
 // <DEBUG
 #warning DEBUG
 	
+	//[[TCUpdateWindowController sharedController] showWindow:nil];
+	
+	//[[TCUpdateWindowController sharedController] handleUpdateFromVersion:@"1.2.0" toVersion:@"1.2.1" torManager:_torManager];
+
+	
 	[_torManager checkForUpdateWithCompletionHandler:^(TCInfo *info) {
 		
-		NSLog(@"info: %@", [info render]);
+		if (info.kind == TCInfoInfo)
+		{
+			if ([info.domain isEqualToString:TCTorManagerInfoUpdateDomain])
+			{
+				if (info.code == TCTorManagerEventUpdateAvailable)
+				{
+					NSDictionary	*context = info.context;
+					NSString		*oldVersion = context[@"old_version"];
+					NSString		*newVersion = context[@"new_version"];
+
+					[[TCUpdateWindowController sharedController] handleUpdateFromVersion:oldVersion toVersion:newVersion torManager:_torManager];
+				}
+			}
+		}
 		
+		//NSLog(@"info: %@", [info render]);
 	}];
-	
 // DEBUG>
 }
 

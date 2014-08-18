@@ -1,5 +1,5 @@
 /*
- *  TCPreferencesWindowController.h
+ *  TCUpdateWindowController.h
  *
  *  Copyright 2014 Avérous Julien-Pierre
  *
@@ -25,13 +25,25 @@
 
 
 /*
-** TCPreferencesWindowController
+** Forward
 */
-#pragma mark - TCPreferencesWindowController
+#pragma mark - Forward
 
-@interface TCPreferencesWindowController : NSWindowController
+@class TCTorManager;
+
+
+
+/*
+** TCUpdateWindowController
+*/
+#pragma mark - TCUpdateWindowController
+
+@interface TCUpdateWindowController : NSWindowController
 
 // -- Singleton --
-+ (TCPreferencesWindowController *)sharedController;
++ (TCUpdateWindowController *)sharedController;
+
+// -- Tools --
+- (void)handleUpdateFromVersion:(NSString *)oldVersion toVersion:(NSString *)newVersion torManager:(TCTorManager *)torManager;
 
 @end
