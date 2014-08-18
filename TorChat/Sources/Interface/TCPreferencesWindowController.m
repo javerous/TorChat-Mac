@@ -142,9 +142,9 @@
 
 
 /*
-** TCPreferencesWindowController - Constructor & Destructor
+** TCPreferencesWindowController - Instance
 */
-#pragma mark - TCPreferencesWindowController - Constructor & Destructor
+#pragma mark - TCPreferencesWindowController - Instance
 
 + (TCPreferencesWindowController *)sharedController
 {
@@ -329,7 +329,7 @@
 		[self.config setDomain:TConfigPathDomainDownloads place:TConfigPathPlaceAbsolute subpath:path];
 		
 		if ([[path lastPathComponent] isEqualToString:@"Downloads"])
-			[[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"]];
+			[[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"] atomically:NO];
 	}
 	else
 		NSBeep();
@@ -355,7 +355,7 @@
 		[[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
 		
 		if ([[path lastPathComponent] isEqualToString:@"Downloads"])
-			[[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"]];
+			[[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"] atomically:NO];
 	}
 	
 	[_downloadPath setURL:[NSURL fileURLWithPath:path]];

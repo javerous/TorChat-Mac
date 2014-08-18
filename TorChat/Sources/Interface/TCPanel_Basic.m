@@ -161,7 +161,7 @@
 		[[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
 		
 		if ([[path lastPathComponent] isEqualToString:@"Downloads"])
-			[[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"]];
+			[[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"] atomically:NO];
 	}
 	
 	[_imDownloadPath setURL:[NSURL fileURLWithPath:path]];
@@ -237,7 +237,7 @@
 		[_config setDomain:TConfigPathDomainDownloads place:TConfigPathPlaceAbsolute subpath:path];
 		
 		if ([[path lastPathComponent] isEqualToString:@"Downloads"])
-			[[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"]];
+			[[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"] atomically:NO];
 	}
 	else
 		NSBeep();

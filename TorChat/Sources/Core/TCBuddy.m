@@ -1319,7 +1319,7 @@ static char gLocalQueueContext;
 	[[NSFileManager defaultManager] createDirectoryAtPath:downPath withIntermediateDirectories:YES attributes:nil error:nil];
 	
 	if ([[downPath lastPathComponent] isEqualToString:@"Downloads"])
-		[[NSData data] writeToFile:[downPath stringByAppendingPathComponent:@".localized"]];
+		[[NSData data] writeToFile:[downPath stringByAppendingPathComponent:@".localized"] atomically:NO];
 	
 	// Parse values
 	uint64_t		ifsize = strtoull([fileSize cStringUsingEncoding:NSASCIIStringEncoding], NULL, 10);

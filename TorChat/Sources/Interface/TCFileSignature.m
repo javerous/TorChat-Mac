@@ -29,6 +29,8 @@
 
 #import "TCFileSignature.h"
 
+#import "TCSignatureHelper.h"
+
 
 /*
 ** TCFileSignature
@@ -85,7 +87,7 @@
 		return nil;
 
 	// Import key.
-	SecKeyRef sPrivateKey = [self copyKeyFromData:privateKey isPrivate:YES];
+	SecKeyRef sPrivateKey = [TCSignatureHelper copyKeyFromData:privateKey isPrivate:YES];
 
 	if (!sPrivateKey)
 		return nil;
@@ -147,7 +149,7 @@ end:
 		return NO;
 	
 	// Import key.
-	SecKeyRef sPublicKey = [self copyKeyFromData:publicKey isPrivate:NO];
+	SecKeyRef sPublicKey = [TCSignatureHelper copyKeyFromData:publicKey isPrivate:NO];
 	
 	if (!sPublicKey)
 		return NO;
@@ -210,55 +212,7 @@ end:
 */
 #pragma mark - TCFileSignature - Key Serialization
 
-+ (SecKeyRef)copyKeyFromData:(NSData *)data isPrivate:(BOOL)private
-{
-	if (!data)
-		return NULL;
-	
-	// Set import settings.
-	CFArrayRef							attributes = NULL;
-	SecItemImportExportKeyParameters	params;
 
-	attributes = (__bridge_retained CFArrayRef)@[ @(CSSM_KEYATTR_EXTRACTABLE) ];
-	
-    params.version = SEC_KEY_IMPORT_EXPORT_PARAMS_VERSION;
-    params.flags = 0;
-    params.passphrase = NULL;
-    params.alertTitle = NULL;
-    params.alertPrompt = NULL;
-    params.accessRef = NULL;
-	params.keyUsage =  NULL;
-	params.keyAttributes = attributes;
-
-	// Import the key from data.
-	OSStatus			err;
-	CFArrayRef			items = NULL;
-	SecExternalFormat	externalFormat = kSecFormatOpenSSL;
-	SecExternalItemType	externalType;
-
-	if (private)
-		externalType = kSecItemTypePrivateKey;
-	else
-		externalType = kSecItemTypePublicKey;
-	
-	err = SecItemImport((__bridge CFDataRef)data, NULL, &externalFormat, &externalType, 0, &params, NULL, &items);
-	
-	CFRelease(attributes);
-	
-	if (err != noErr)
-		return nil;
-	
-	// Cast to NSArray.
-	NSArray *result;
-
-	result = (__bridge_transfer NSArray *)items;
-	
-	if ([result count] == 0)
-		return nil;
-
-	// Give result.
-	return (__bridge_retained SecKeyRef)result[0];
-}
 
 + (NSData *)dataFromKey:(SecKeyRef)cryptoKey
 {

@@ -79,11 +79,12 @@ typedef enum
 typedef enum
 {
 	// -- Event --
-	TCTorManagerEventUpdateAvailable,		// context: NSString (<new version>)
+	TCTorManagerEventUpdateAvailable,		// context: @{ @"old_version" : NSString, @"new_version" : NSString }
 	
 	// -- Error --
 	TCTorManagerErrorUpdateNetworkRequest,	// context: NSError
 	TCTorManagerErrorUpdateBadServerReply,
+	TCTorManagerErrorUpdateRemoteInfo,		// info: TCInfo (<operation error>)
 	TCTorManagerErrorUpdateLocalSignature,	// info: TCInfo (<operation error>)
 
 	TCTorManagerErrorUpdateNothingNew,
@@ -99,6 +100,7 @@ typedef enum
 	// -- Error --
 	TCTorManagerErrorConfiguration,
 	TCTorManagerErrorIO,
+	TCTorManagerErrorNetwork,		// context
 	TCTorManagerErrorExtract,		// context: NSNumber (<tar result>)
 	TCTorManagerErrorSignature,		// context: NSString (<path to the problematic file>)
 	TCTorManagerErrorTor,			// context: NSNumber (<tor result>)
