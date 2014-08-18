@@ -136,7 +136,7 @@
 	if ([[NSFileManager defaultManager] fileExistsAtPath:path] == NO)
 	{
 		[[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-		[[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"]];
+		[[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"] atomically:NO];
 	}
 	
 	[_imDownloadPath setURL:[NSURL fileURLWithPath:path]];
