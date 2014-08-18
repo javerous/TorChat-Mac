@@ -1,5 +1,5 @@
 /*
- *  TCPreferencesWindowController.h
+ *  TCDataSignature.h
  *
  *  Copyright 2014 Avérous Julien-Pierre
  *
@@ -21,17 +21,16 @@
  */
 
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 
 /*
-** TCPreferencesWindowController
+** TCDataSignature
 */
-#pragma mark - TCPreferencesWindowController
+#pragma mark - TCDataSignature
 
-@interface TCPreferencesWindowController : NSWindowController
+@interface TCDataSignature : NSObject
 
-// -- Singleton --
-+ (TCPreferencesWindowController *)sharedController;
++ (BOOL)validateSignature:(NSData *)signature forData:(NSData *)data withPublicKey:(NSData *)publicKey;
 
 @end

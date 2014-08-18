@@ -1,5 +1,5 @@
 /*
- *  TCPreferencesWindowController.h
+ *  TCSignatureHelper.h
  *
  *  Copyright 2014 Avérous Julien-Pierre
  *
@@ -21,17 +21,16 @@
  */
 
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 
 /*
-** TCPreferencesWindowController
+** TCSignatureHelper
 */
-#pragma mark - TCPreferencesWindowController
+#pragma mark - TCSignatureHelper
 
-@interface TCPreferencesWindowController : NSWindowController
+@interface TCSignatureHelper : NSObject
 
-// -- Singleton --
-+ (TCPreferencesWindowController *)sharedController;
++ (SecKeyRef)copyKeyFromData:(NSData *)data isPrivate:(BOOL)private;
 
 @end

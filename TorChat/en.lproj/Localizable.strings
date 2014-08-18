@@ -108,6 +108,10 @@
 "logs_error_title" = "TorChat Error";
 
 
+/* Update */
+"update_available_subtitle" = "Tor %@ is now available—you have %@. Would you like to download it now?";
+
+
 /* Core - Buddy */
 "core_bd_error_tor_resolve" = "The tor SOCKS address can't be resolved.";
 "core_bd_error_tor_connect" = "Unable to make a connection to the tor SOCKS.";

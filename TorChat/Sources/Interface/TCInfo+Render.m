@@ -598,6 +598,12 @@
 							TCInfoNameKey : @"TCTorManagerErrorUpdateBadServerReply",
 							TCInfoTextKey : @"<fixme>", // FIXME
 						},
+
+					@(TCTorManagerErrorUpdateRemoteInfo) :
+						@{
+							TCInfoNameKey : @"TCTorManagerErrorUpdateRemoteInfo",
+							TCInfoTextKey : @"<fixme>", // FIXME
+						},
 					
 					@(TCTorManagerErrorUpdateLocalSignature) :
 						@{
