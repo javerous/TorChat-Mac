@@ -99,21 +99,24 @@
 	if (!oldVersion || !newVersion || !torManager)
 		return;
 	
-	// Place availableView.
-	[_workingView removeFromSuperview];
-	
-	_availableView.alphaValue = 1.0;
-	_workingView.alphaValue = 0.0;
-	
-	[self.window.contentView addSubview:_availableView];
-	
-	// Configure available view.
-	NSString *subtitle = [NSString stringWithFormat:NSLocalizedString(@"update_available_subtitle", @""), newVersion, oldVersion];
-	
-	_subtitleField.stringValue = subtitle;
-	
-	// Show window.
-	[self showWindow:nil];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		// Place availableView.
+		[_workingView removeFromSuperview];
+		
+		_availableView.alphaValue = 1.0;
+		_workingView.alphaValue = 0.0;
+		
+		[self.window.contentView addSubview:_availableView];
+		
+		// Configure available view.
+		NSString *subtitle = [NSString stringWithFormat:NSLocalizedString(@"update_available_subtitle", @""), newVersion, oldVersion];
+		
+		_subtitleField.stringValue = subtitle;
+		
+		// Show window.
+		[self showWindow:nil];
+	});
 }
 
 
