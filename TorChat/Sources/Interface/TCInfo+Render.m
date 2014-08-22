@@ -577,43 +577,43 @@
 				},
 			
 				// == TCTorManagerInfoUpdateDomain ==
-				TCTorManagerInfoUpdateDomain : @{
+				TCTorManagerInfoCheckUpdateDomain : @{
 					// -- Event --
-					@(TCTorManagerEventUpdateAvailable) :
+					@(TCTorManagerEventCheckUpdateAvailable) :
 						@{
-							TCInfoNameKey : @"TCTorManagerEventUpdateAvailable",
+							TCInfoNameKey : @"TCTorManagerEventCheckUpdateAvailable",
 							TCInfoTextKey : @"<fixme>", // FIXME
 						},
 					
 					// -- Error --
-					@(TCTorManagerErrorUpdateNetworkRequest) :
+					@(TCTorManagerErrorCheckUpdateNetworkRequest) :
 						@{
-							TCInfoNameKey : @"TCTorManagerErrorUpdateNetworkRequest",
+							TCInfoNameKey : @"TCTorManagerErrorCheckUpdateNetworkRequest",
 							TCInfoTextKey : @"<fixme>", // FIXME
 						},
 					
 					
-					@(TCTorManagerErrorUpdateBadServerReply) :
+					@(TCTorManagerErrorCheckUpdateBadServerReply) :
 						@{
-							TCInfoNameKey : @"TCTorManagerErrorUpdateBadServerReply",
+							TCInfoNameKey : @"TCTorManagerErrorCheckUpdateBadServerReply",
 							TCInfoTextKey : @"<fixme>", // FIXME
 						},
 
-					@(TCTorManagerErrorUpdateRemoteInfo) :
+					@(TCTorManagerErrorCheckUpdateRemoteInfo) :
 						@{
-							TCInfoNameKey : @"TCTorManagerErrorUpdateRemoteInfo",
+							TCInfoNameKey : @"TCTorManagerErrorCheckUpdateRemoteInfo",
 							TCInfoTextKey : @"<fixme>", // FIXME
 						},
 					
-					@(TCTorManagerErrorUpdateLocalSignature) :
+					@(TCTorManagerErrorCheckUpdateLocalSignature) :
 						@{
-							TCInfoNameKey : @"TCTorManagerErrorUpdateLocalSignature",
+							TCInfoNameKey : @"TCTorManagerErrorCheckUpdateLocalSignature",
 							TCInfoTextKey : @"<fixme>", // FIXME
 						},
 					
-					@(TCTorManagerErrorUpdateNothingNew) :
+					@(TCTorManagerErrorCheckUpdateNothingNew) :
 						@{
-							TCInfoNameKey : @"TCTorManagerErrorUpdateNothingNew",
+							TCInfoNameKey : @"TCTorManagerErrorCheckUpdateNothingNew",
 							TCInfoTextKey : @"<fixme>", // FIXME
 						},
 				},

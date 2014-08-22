@@ -240,7 +240,7 @@
 	
 	//[[TCUpdateWindowController sharedController] handleUpdateFromVersion:@"1.2.0" toVersion:@"1.2.1" torManager:_torManager];
 
-	
+	/*
 	[_torManager checkForUpdateWithCompletionHandler:^(TCInfo *info) {
 		
 		if (info.kind == TCInfoInfo)
@@ -259,6 +259,50 @@
 		}
 		
 		//NSLog(@"info: %@", [info render]);
+	}];*/
+	
+	
+	__block NSUInteger archiveSize = 0;
+	
+	[_torManager updateWithHandler:^(TCInfo *info){
+		
+		if (info.kind == TCInfoInfo)
+		{
+			switch (info.code)
+			{
+				case TCTorManagerEventUpdateArchiveInfoRetrieving:
+					NSLog(@"Retrieving archive info...");
+					break;
+					
+				case TCTorManagerEventUpdateArchiveSize:
+					NSLog(@"Archive size: %@ bytes", info.context);
+					archiveSize = [info.context unsignedIntegerValue];
+					break;
+					
+				case TCTorManagerEventUpdateArchiveDownloading:
+					//NSLog(@"Downloading: %@ bytes (%f)", info.context, ((float)[info.context unsignedIntegerValue] * 100.0) / (float)archiveSize);
+
+					break;
+					
+				case TCTorManagerEventUpdateArchiveStage:
+					NSLog(@"Archive staging...");
+					break;
+					
+				case TCTorManagerEventUpdateSignatureCheck:
+					NSLog(@"Checking signature...");
+					break;
+					
+				case TCTorManagerEventUpdateRelaunch:
+					NSLog(@"Relaunching binary...");
+					break;
+					
+				case TCTorManagerEventUpdateDone:
+					NSLog(@"Update done.");
+					break;
+			}
+		}
+		else
+			NSLog(@"Error: %@", [info render]);
 	}];
 // DEBUG>
 }
