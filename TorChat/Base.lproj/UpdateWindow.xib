@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6205" systemVersion="13E28" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6206.8" systemVersion="13E28" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6205"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6206.8"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCUpdateWindowController">
@@ -98,14 +98,14 @@ Gw
             <point key="canvasLocation" x="122.5" y="116.5"/>
         </customView>
         <customView translatesAutoresizingMaskIntoConstraints="NO" id="w9G-xk-fMY" userLabel="WorkingView">
-            <rect key="frame" x="0.0" y="0.0" width="380" height="109"/>
+            <rect key="frame" x="0.0" y="0.0" width="400" height="125"/>
             <subviews>
                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Ygf-Z9-Pgn">
-                    <rect key="frame" x="20" y="23" width="64" height="64"/>
+                    <rect key="frame" x="20" y="31" width="64" height="64"/>
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="tor_logo" id="yAe-i0-tkT"/>
                 </imageView>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bHE-da-88h">
-                    <rect key="frame" x="90" y="75" width="210" height="17"/>
+                    <rect key="frame" x="90" y="92" width="210" height="17"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;STATUS-DONT-TRANSLATE>" id="w3E-Q4-Mdy">
                         <font key="font" metaFont="systemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -113,15 +113,18 @@ Gw
                     </textFieldCell>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="aHi-3Y-GCR">
-                    <rect key="frame" x="105" y="22" width="160" height="17"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;DOWN-DONT-TRANS>" id="Mzx-LX-amq">
-                        <font key="font" metaFont="system"/>
+                    <rect key="frame" x="90" y="50" width="133" height="11"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;DOWN-DONT-TRANSLATE>" id="Mzx-LX-amq">
+                        <font key="font" metaFont="miniSystem"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
+                <progressIndicator maxValue="100" indeterminate="YES" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="X5o-U3-jQn">
+                    <rect key="frame" x="92" y="64" width="288" height="20"/>
+                </progressIndicator>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="HMl-dq-XNj">
-                    <rect key="frame" x="284" y="13" width="82" height="32"/>
+                    <rect key="frame" x="304" y="13" width="82" height="32"/>
                     <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="TwA-CR-dpK">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
@@ -130,28 +133,25 @@ Gw
 </string>
                     </buttonCell>
                 </button>
-                <progressIndicator maxValue="100" indeterminate="YES" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="X5o-U3-jQn">
-                    <rect key="frame" x="92" y="47" width="268" height="20"/>
-                </progressIndicator>
             </subviews>
             <constraints>
-                <constraint firstItem="bHE-da-88h" firstAttribute="top" secondItem="w9G-xk-fMY" secondAttribute="top" constant="17" id="0Aa-et-i6f"/>
+                <constraint firstItem="bHE-da-88h" firstAttribute="top" secondItem="w9G-xk-fMY" secondAttribute="top" constant="16" id="0Aa-et-i6f"/>
                 <constraint firstItem="bHE-da-88h" firstAttribute="leading" secondItem="Ygf-Z9-Pgn" secondAttribute="trailing" constant="8" id="0hW-N2-p6Y"/>
-                <constraint firstItem="aHi-3Y-GCR" firstAttribute="centerY" secondItem="HMl-dq-XNj" secondAttribute="centerY" id="BKv-Ur-lkw"/>
                 <constraint firstItem="X5o-U3-jQn" firstAttribute="top" secondItem="bHE-da-88h" secondAttribute="bottom" constant="9" id="Enj-qF-WuM"/>
                 <constraint firstItem="Ygf-Z9-Pgn" firstAttribute="leading" secondItem="w9G-xk-fMY" secondAttribute="leading" constant="20" symbolic="YES" id="GKS-0U-tmx"/>
                 <constraint firstAttribute="trailing" secondItem="X5o-U3-jQn" secondAttribute="trailing" constant="20" symbolic="YES" id="GvI-QB-vWm"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="bHE-da-88h" secondAttribute="trailing" constant="20" symbolic="YES" id="U3w-5C-8F2"/>
-                <constraint firstItem="HMl-dq-XNj" firstAttribute="top" secondItem="X5o-U3-jQn" secondAttribute="bottom" constant="7" id="X5N-Aw-8BV"/>
-                <constraint firstItem="aHi-3Y-GCR" firstAttribute="leading" secondItem="X5o-U3-jQn" secondAttribute="leading" constant="15" id="Ywr-LC-h8n"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="aHi-3Y-GCR" secondAttribute="trailing" constant="20" symbolic="YES" id="Wqq-AL-D6h"/>
+                <constraint firstItem="aHi-3Y-GCR" firstAttribute="leading" secondItem="X5o-U3-jQn" secondAttribute="leading" id="Ywr-LC-h8n"/>
                 <constraint firstAttribute="bottom" secondItem="HMl-dq-XNj" secondAttribute="bottom" constant="20" id="cGI-Cf-daf"/>
                 <constraint firstItem="X5o-U3-jQn" firstAttribute="leading" secondItem="Ygf-Z9-Pgn" secondAttribute="trailing" constant="8" id="e1O-03-wTR"/>
-                <constraint firstAttribute="height" constant="109" id="e7H-ZN-AVD"/>
+                <constraint firstAttribute="height" constant="125" id="e7H-ZN-AVD"/>
                 <constraint firstAttribute="centerY" secondItem="Ygf-Z9-Pgn" secondAttribute="centerY" constant="0.5" id="kaX-s8-vFu"/>
-                <constraint firstAttribute="width" constant="380" id="urv-dK-iRZ"/>
+                <constraint firstItem="aHi-3Y-GCR" firstAttribute="top" secondItem="X5o-U3-jQn" secondAttribute="bottom" constant="4" id="oHZ-lm-xy2"/>
+                <constraint firstAttribute="width" constant="400" id="urv-dK-iRZ"/>
                 <constraint firstAttribute="trailing" secondItem="HMl-dq-XNj" secondAttribute="trailing" constant="20" id="vVB-Tr-59B"/>
             </constraints>
-            <point key="canvasLocation" x="20" y="296.5"/>
+            <point key="canvasLocation" x="30" y="312.5"/>
         </customView>
     </objects>
     <resources>
