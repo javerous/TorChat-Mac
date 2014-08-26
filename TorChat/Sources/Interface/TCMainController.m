@@ -263,12 +263,14 @@
 	
 	
 	__block NSUInteger archiveSize = 0;
+	dispatch_block_t cancelBlock = NULL;
+
 	
-	[_torManager updateWithHandler:^(TCInfo *info){
-		
+	cancelBlock = [_torManager updateWithEventHandler:^(TCInfo *info){
+
 		if (info.kind == TCInfoInfo)
 		{
-			switch (info.code)
+			switch ((TCTorManagerEventUpdate)info.code)
 			{
 				case TCTorManagerEventUpdateArchiveInfoRetrieving:
 					NSLog(@"Retrieving archive info...");
@@ -304,6 +306,10 @@
 		else
 			NSLog(@"Error: %@", [info render]);
 	}];
+	
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+		cancelBlock();
+	});
 // DEBUG>
 }
 

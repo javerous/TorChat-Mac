@@ -619,17 +619,41 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	}];
 }
 
-- (void)updateWithHandler:(void (^)(TCInfo *info))handler
+- (dispatch_block_t)updateWithEventHandler:(void (^)(TCInfo *info))handler
 {
 	if (!handler)
 		handler = ^(TCInfo *info){ };
 	
-	[_opQueue scheduleBlock:^(TCOperationsControl opCtrl) {
+	__block dispatch_block_t	currentBlock = NULL;
+	__block BOOL				cancelled = NO;
+	
+	dispatch_block_t cancelBlock = ^{
+		NSLog(@"Cancel <updateWithEventHandler>");
 		
+		dispatch_async(_localQueue, ^{
+			
+			if (cancelled)
+				return;
+			
+			cancelled = YES;
+			
+			if (currentBlock)
+				currentBlock();
+		});
+	};
+	
+	[_opQueue scheduleBlock:^(TCOperationsControl opCtrl) {
+	
 		TCOperationsQueue *queue = [[TCOperationsQueue alloc] init];
 		
 		// -- Check that we are running --
 		[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
+			
+			if (cancelled)
+			{
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
 			
 			if (!_isRunning)
 			{
@@ -646,11 +670,22 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		__block NSData		*remoteHash = nil;
 		__block NSNumber	*remoteSize = nil;
 		
-		[queue scheduleBlock:^(TCOperationsControl ctrl) {
+		[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
 			
+			dispatch_block_t opCancel;
+			
+			// Check cancel state.
+			if (cancelled)
+			{
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+
+			// Notify step.
 			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoUpdateDomain code:TCTorManagerEventUpdateArchiveInfoRetrieving]);
-			
-			[self operationRetrieveRemoteInfoWithCompletionHandler:^(TCInfo *info) {
+	
+			// Retrieve remote informations.
+			opCancel = [self operationRetrieveRemoteInfoWithCompletionHandler:^(TCInfo *info) {
 				
 				if (info.kind == TCInfoError)
 				{
@@ -673,17 +708,31 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 					}
 				}
 			}];
+			
+			// Update current cancellation block.
+			currentBlock = ^{
+				NSLog(@"Cancel 1");
+				opCancel();
+				ctrl(TCOperationsControlFinish);
+			};
 		}];
 		
 		// -- Retrieve remote archive --
 		NSString *downloadPath = [[_configuration pathForDomain:TConfigPathDomainDownloads] stringByAppendingPathComponent:@"_update"];
 		NSString *downloadArchivePath = [downloadPath stringByAppendingPathComponent:@"tor.tgz"];
 		
-		[queue scheduleBlock:^(TCOperationsControl ctrl) {
+		[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
+			
+			// Check cancel state.
+			if (cancelled)
+			{
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
 			
 			// Create task.
 			NSString				*urlString = [NSString stringWithFormat:@"http://www.sourcemac.com/tor/%@", remoteName];
-			NSURLSessionDataTask	*task = [[self torURLSession] dataTaskWithURL:[NSURL URLWithString:urlString]];
+			NSURLSessionDataTask	*task = [[self _torURLSession] dataTaskWithURL:[NSURL URLWithString:urlString]];
 			
 			// Get download path.
 			if (!downloadPath)
@@ -744,29 +793,52 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 			};
 			
 			// Handle context.
-			dispatch_async(_localQueue, ^{
-				[_torDownloadContexts setObject:context forKey:@(task.taskIdentifier)];
-			});
+			[_torDownloadContexts setObject:context forKey:@(task.taskIdentifier)];
 			
 			// Resume task.
 			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoUpdateDomain code:TCTorManagerEventUpdateArchiveSize context:remoteSize]);
 			
 			[task resume];
+			
+			// Update current cancellation block.
+			currentBlock = ^{
+				NSLog(@"Cancel 2");
+				[task cancel];
+				ctrl(TCOperationsControlFinish);
+			};
 		}];
 		
 		// -- Stop tor --
 		[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
 			
+			// Check cancel state.
+			if (cancelled)
+			{
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+			
+			// Stop tor.
 			[self _stop];
 			
+			// Continue steps.
 			ctrl(TCOperationsControlContinue);
 		}];
 		
 		// -- Stage archive --
-		[queue scheduleBlock:^(TCOperationsControl ctrl) {
+		[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
 			
+			// Check cancel state.
+			if (cancelled)
+			{
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+			
+			// Notify step.
 			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoUpdateDomain code:TCTorManagerEventUpdateArchiveStage]);
 			
+			// Stage file.
 			[self operationStageArchiveFile:[NSURL fileURLWithPath:downloadArchivePath] completionHandler:^(TCInfo *info) {
 				
 				if (info.kind == TCInfoError)
@@ -784,10 +856,19 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		}];
 		
 		// -- Check signature --
-		[queue scheduleBlock:^(TCOperationsControl ctrl) {
+		[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
 			
+			// Check cancel state.
+			if (cancelled)
+			{
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+			
+			// Notify step.
 			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoUpdateDomain code:TCTorManagerEventUpdateSignatureCheck]);
 			
+			// Check signature.
 			[self operationCheckSignatureWithCompletionHandler:^(TCInfo *info) {
 				
 				if (info.kind == TCInfoError)
@@ -805,10 +886,19 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		}];
 		
 		// -- Launch binary --
-		[queue scheduleBlock:^(TCOperationsControl ctrl) {
+		[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
 			
+			// Check cancel state.
+			if (cancelled)
+			{
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+			
+			// Notify step.
 			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoUpdateDomain code:TCTorManagerEventUpdateRelaunch]);
 			
+			// Launch tor.
 			[self operationLaunchTor:^(TCInfo *info) {
 				
 				if (info.kind == TCInfoError)
@@ -826,8 +916,19 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		}];
 		
 		// -- Done --
-		[queue scheduleBlock:^(TCOperationsControl ctrl) {
+		[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
+			
+			// Check cancel state.
+			if (cancelled)
+			{
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+			
+			// Notify step.
 			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoUpdateDomain code:TCTorManagerEventUpdateDone]);
+			
+			// Continue.
 			ctrl(TCOperationsControlContinue);
 		}];
 		
@@ -842,6 +943,8 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		// Start.
 		[queue start];
 	}];
+	
+	return cancelBlock;
 }
 
 
@@ -851,24 +954,49 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 */
 #pragma mark - TCTorManager - Operations
 
-- (void)operationRetrieveRemoteInfoWithCompletionHandler:(void (^)(TCInfo *info))handler
+- (dispatch_block_t)operationRetrieveRemoteInfoWithCompletionHandler:(void (^)(TCInfo *info))handler
 {
 	if (!handler)
-		return;
+		return NULL;
+	
+	__block dispatch_block_t	currentBlock = NULL;
+	__block BOOL				cancelled = NO;
+	
+	dispatch_block_t cancelBlock = ^{
+		NSLog(@"Cancel <operationRetrieveRemoteInfoWithCompletionHandler>");
+		
+		dispatch_async(_localQueue, ^{
+			
+			if (cancelled)
+				return;
+			
+			cancelled = YES;
+			
+			if (currentBlock)
+				currentBlock();
+		});
+	};
 	
 	TCOperationsQueue *queue = [[TCOperationsQueue alloc] init];
 	
 	// -- Get remote info --
 	__block NSData	*remoteInfoData = nil;
 	
-	[queue scheduleBlock:^(TCOperationsControl ctrl) {
+	[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
 		
-		// Create session and send request.
-		NSURL			*url = [NSURL URLWithString:@"http://www.sourcemac.com/tor/info.plist"];
-		NSURLSession	*session = [self torURLSession];
+		// Check cancellation.
+		if (cancelled)
+		{
+			ctrl(TCOperationsControlFinish);
+			return;
+		}
 		
-		[[session dataTaskWithRequest:[NSURLRequest requestWithURL:url] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-			
+		// Create task.
+		NSURL					*url = [NSURL URLWithString:@"http://www.sourcemac.com/tor/info.plist"];
+		NSURLSessionDataTask	*task;
+		
+		task = [[self _torURLSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+
 			// Check error.
 			if (error)
 			{
@@ -882,19 +1010,35 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 			
 			// Continue.
 			ctrl(TCOperationsControlContinue);
-		}] resume];
+		}];
+		
+		// Resume task.
+		[task resume];
+		
+		// Cancellation block.
+		currentBlock = ^{
+			[task cancel];
+			ctrl(TCOperationsControlFinish);
+		};
 	}];
 	
 	// -- Get signature, check it & parse plist --
 	__block NSDictionary *remoteInfo = nil;
 	
-	[queue scheduleBlock:^(TCOperationsControl ctrl) {
+	[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
 		
-		// Create session and send request.
-		NSURL			*url = [NSURL URLWithString:@"http://www.sourcemac.com/tor/info.plist.sig"];
-		NSURLSession	*session = [self torURLSession];
+		// Check cancellation.
+		if (cancelled)
+		{
+			ctrl(TCOperationsControlFinish);
+			return;
+		}
 		
-		[[session dataTaskWithRequest:[NSURLRequest requestWithURL:url] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+		// Create task.
+		NSURL					*url = [NSURL URLWithString:@"http://www.sourcemac.com/tor/info.plist.sig"];
+		NSURLSessionDataTask	*task;
+		
+		task = [[self _torURLSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
 			
 			// Check error.
 			if (error)
@@ -929,11 +1073,22 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 			// Give result.
 			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventInfo context:remoteInfo]);
 			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventDone context:remoteInfo]);
-		}] resume];
+		}];
+		
+		// Resume task.
+		[task resume];
+		
+		// Cancellation block.
+		currentBlock = ^{
+			[task cancel];
+			ctrl(TCOperationsControlFinish);
+		};
 	}];
 	
 	// Queue start.
 	[queue start];
+	
+	return cancelBlock;
 }
 
 
@@ -1306,25 +1461,28 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	__block NSURLSession *result = nil;
 	
 	dispatch_sync(_localQueue, ^{
-		
-		if (_torURLSession)
-		{
-			result = _torURLSession;
-			return;
-		}
-		
-		// Create session configuration, and setup it to use tor.
-		NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
-		
-		sessionConfiguration.connectionProxyDictionary =  @{ (NSString *)kCFStreamPropertySOCKSProxyHost : ([_configuration torAddress] ?: @"localhost"),
-															 (NSString *)kCFStreamPropertySOCKSProxyPort : @([_configuration torPort]) };
-		
-		_torURLSession = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:nil];
-		
-		result = _torURLSession;
+		result = [self _torURLSession];
 	});
 	
 	return result;
+}
+
+- (NSURLSession *)_torURLSession
+{
+	// > localQueue <
+	
+	if (_torURLSession)
+		return _torURLSession;
+	
+	// Create session configuration, and setup it to use tor.
+	NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+	
+	sessionConfiguration.connectionProxyDictionary =  @{ (NSString *)kCFStreamPropertySOCKSProxyHost : ([_configuration torAddress] ?: @"localhost"),
+														 (NSString *)kCFStreamPropertySOCKSProxyPort : @([_configuration torPort]) };
+	
+	_torURLSession = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:nil];
+	
+	return _torURLSession;
 }
 
 

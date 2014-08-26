@@ -62,28 +62,32 @@ typedef enum
 	TCTorManagerLogError
 } TCTorManagerLogKind;
 
+// == TCTorManagerStart ==
 typedef enum
 {
-	// -- Event --
 	TCTorManagerEventStartHostname,
 	TCTorManagerEventStartDone,
-	
-	// -- Error --
+} TCTorManagerEventStart;
+
+typedef enum
+{
 	TCTorManagerErrorStartAlreadyRunning,
 	
 	TCTorManagerErrorStartConfiguration,
 	TCTorManagerErrorStartUnarchive,
 	TCTorManagerErrorStartSignature,
 	TCTorManagerErrorStartLaunch,
-} TCTorManagerInfoStart;
+} TCTorManagerErrorStart;
 
+
+// == TCTorManagerInfoCheckUpdateEvent ==
+typedef enum
+{
+	TCTorManagerEventCheckUpdateAvailable,		// context: @{ @"old_version" : NSString, @"new_version" : NSString }
+} TCTorManagerEventCheckUpdate;
 
 typedef enum
 {
-	// -- Event --
-	TCTorManagerEventCheckUpdateAvailable,		// context: @{ @"old_version" : NSString, @"new_version" : NSString }
-	
-	// -- Error --
 	TCTorManagerErrorCheckUpdateTorNotRunning,
 	TCTorManagerErrorCheckUpdateNetworkRequest,	// context: NSError
 	TCTorManagerErrorCheckUpdateBadServerReply,
@@ -91,13 +95,12 @@ typedef enum
 	TCTorManagerErrorCheckUpdateLocalSignature,	// info: TCInfo (<operation error>)
 
 	TCTorManagerErrorCheckUpdateNothingNew,
-	
-} TCTorManagerInfoCheckUpdate;
+} TCTorManagerErrorCheckUpdate;
 
 
+// == TCTorManagerUpdate ==
 typedef enum
 {
-	// -- Event --
 	TCTorManagerEventUpdateArchiveInfoRetrieving,
 	TCTorManagerEventUpdateArchiveSize,			// context: NSNumber (<archive size>)
 	TCTorManagerEventUpdateArchiveDownloading,	// context: NSNumber (<archive bytes downloaded>)
@@ -105,27 +108,29 @@ typedef enum
 	TCTorManagerEventUpdateSignatureCheck,
 	TCTorManagerEventUpdateRelaunch,
 	TCTorManagerEventUpdateDone,
+} TCTorManagerEventUpdate;
 
-	// -- Error --
+typedef enum
+{
 	TCTorManagerErrorUpdateTorNotRunning,
 	TCTorManagerErrorUpdateConfiguration,
 	TCTorManagerErrorUpdateInternal,
 	TCTorManagerErrorUpdateArchiveInfo,		// info: TCInfo (<operation error>)
 	TCTorManagerErrorUpdateArchiveDownload,	// context: NSError
 	TCTorManagerErrorUpdateArchiveStage,	// info: TCInfo (<operation error>)
-	TCTorManagerErrorUpdateRelaunch,	// info: TCInfo (<operation error>)
+	TCTorManagerErrorUpdateRelaunch,		// info: TCInfo (<operation error>)
+} TCTorManagerErrorUpdate;
 
 
-} TCTorManagerInfoUpdate;
-
+// == TCTorManagerOperation ==
+typedef enum
+{
+	TCTorManagerEventInfo,			// context: NSDictionary
+	TCTorManagerEventDone,
+} TCTorManagerEventOperation;
 
 typedef enum
 {
-	// -- Event --
-	TCTorManagerEventInfo,			// context: NSDictionary
-	TCTorManagerEventDone,
-
-	// -- Error --
 	TCTorManagerErrorConfiguration,
 	TCTorManagerErrorIO,
 	TCTorManagerErrorNetwork,		// context
@@ -134,8 +139,7 @@ typedef enum
 	TCTorManagerErrorTor,			// context: NSNumber (<tor result>)
 
 	TCTorManagerErrorInternal
-
-} TCTorManagerInfoOperation;
+} TCTorManagerErrorOperation;
 
 
 
@@ -157,7 +161,7 @@ typedef enum
 
 // -- Update --
 - (void)checkForUpdateWithCompletionHandler:(void (^)(TCInfo *info))handler;
-- (void)updateWithHandler:(void (^)(TCInfo *info))handler;
+- (dispatch_block_t)updateWithEventHandler:(void (^)(TCInfo *info))handler;
 
 // -- Property --
 - (NSString *)hiddenHostname;
