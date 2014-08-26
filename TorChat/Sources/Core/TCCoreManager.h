@@ -28,6 +28,7 @@
 #import "TCBuddy.h"
 
 
+
 /*
 ** Globals
 */
@@ -55,7 +56,6 @@
 // == Info Code ==
 typedef enum
 {
-	// -- Events --
 	TCCoreEventStarted,
 	TCCoreEventStopped,
 	TCCoreEventStatus,			// context: NSNumber (TCStatus)
@@ -68,8 +68,10 @@ typedef enum
 	
 	TCCoreEventClientStarted,
 	TCCoreEventClientStopped,
-	
-	// -- Errors --
+} TCCoreEvent;
+
+typedef enum
+{
 	TCCoreErrorServAccept,
 	TCCoreErrorServAcceptAsync,
 	
@@ -103,7 +105,7 @@ typedef enum
 	TCCoreErrorClientCmdFileDataError,		// context: NSString (<parser_error>)
 	TCCoreErrorClientCmdFileStopSending,	// context: NSString (<parser_error>)
 	TCCoreErrorClientCmdFileStopReceiving,	// context: NSString (<parser_error>)
-} TCCoreInfo;
+} TCCoreError;
 
 // -- Delegate --
 @protocol TCCoreManagerDelegate <NSObject>

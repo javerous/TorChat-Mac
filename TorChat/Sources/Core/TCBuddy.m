@@ -215,12 +215,12 @@ static char gLocalQueueContext;
 - (void)_runPendingFileWrite;
 
 // -- Helper --
-- (void)_error:(TCBuddyInfo)code fatal:(BOOL)fatal;
-- (void)_error:(TCBuddyInfo)code context:(id)ctx fatal:(BOOL)fatal;
-- (void)_error:(TCBuddyInfo)code info:(TCInfo *)subInfo fatal:(BOOL)fatal;
+- (void)_error:(TCBuddyError)code fatal:(BOOL)fatal;
+- (void)_error:(TCBuddyError)code context:(id)ctx fatal:(BOOL)fatal;
+- (void)_error:(TCBuddyError)code info:(TCInfo *)subInfo fatal:(BOOL)fatal;
 
-- (void)_notify:(TCBuddyInfo)notice;
-- (void)_notify:(TCBuddyInfo)notice context:(id)ctx;
+- (void)_notify:(TCBuddyEvent)notice;
+- (void)_notify:(TCBuddyEvent)notice context:(id)ctx;
 
 - (void)_sendEvent:(TCInfo *)info;
 
@@ -1979,7 +1979,7 @@ static char gLocalQueueContext;
 */
 #pragma mark - Helpers
 
-- (void)_error:(TCBuddyInfo)code fatal:(BOOL)fatal
+- (void)_error:(TCBuddyError)code fatal:(BOOL)fatal
 {
 	// > localQueue <
 	
@@ -1992,7 +1992,7 @@ static char gLocalQueueContext;
 		[self stop];
 }
 
-- (void)_error:(TCBuddyInfo)code context:(id)ctx fatal:(BOOL)fatal
+- (void)_error:(TCBuddyError)code context:(id)ctx fatal:(BOOL)fatal
 {
 	// > localQueue <
 	
@@ -2005,7 +2005,7 @@ static char gLocalQueueContext;
 		[self stop];
 }
 
-- (void)_error:(TCBuddyInfo)code info:(TCInfo *)subInfo fatal:(BOOL)fatal
+- (void)_error:(TCBuddyError)code info:(TCInfo *)subInfo fatal:(BOOL)fatal
 {
 	// > localQueue <
 	
@@ -2018,7 +2018,7 @@ static char gLocalQueueContext;
 		[self stop];
 }
 
-- (void)_notify:(TCBuddyInfo)notice
+- (void)_notify:(TCBuddyEvent)notice
 {
 	// > localQueue <
 	
@@ -2027,7 +2027,7 @@ static char gLocalQueueContext;
 	[self _sendEvent:ifo];
 }
 
-- (void)_notify:(TCBuddyInfo)notice context:(id)ctx
+- (void)_notify:(TCBuddyEvent)notice context:(id)ctx
 {
 	// > localQueue <
 	

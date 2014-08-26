@@ -90,11 +90,11 @@
 - (void)removeConnection:(TCConnection *)connection;
 
 // -- Helpers --
-- (void)_error:(TCCoreInfo)code fatal:(BOOL)fatal;
-- (void)_error:(TCCoreInfo)code context:(id)ctx fatal:(BOOL)fatal;
+- (void)_error:(TCCoreError)code fatal:(BOOL)fatal;
+- (void)_error:(TCCoreError)code context:(id)ctx fatal:(BOOL)fatal;
 
-- (void)_notify:(TCCoreInfo)notice;
-- (void)_notify:(TCCoreInfo)notice context:(id)ctx;
+- (void)_notify:(TCCoreEvent)notice;
+- (void)_notify:(TCCoreEvent)notice context:(id)ctx;
 
 - (void)_sendEvent:(TCInfo *)info;
 
@@ -846,7 +846,7 @@
 */
 #pragma mark - TCCoreManager - Helpers
 
-- (void)_error:(TCCoreInfo)code fatal:(BOOL)fatal
+- (void)_error:(TCCoreError)code fatal:(BOOL)fatal
 {
 	// > localQueue <
 	
@@ -858,7 +858,7 @@
 		[self stop];
 }
 
-- (void)_error:(TCCoreInfo)code context:(id)ctx fatal:(BOOL)fatal
+- (void)_error:(TCCoreError)code context:(id)ctx fatal:(BOOL)fatal
 {
 	// > localQueue <
 		
@@ -870,7 +870,7 @@
 		[self stop];
 }
 
-- (void)_notify:(TCCoreInfo)notice
+- (void)_notify:(TCCoreEvent)notice
 {
 	// > localQueue <
 		
@@ -879,7 +879,7 @@
 	[self _sendEvent:ifo];
 }
 
-- (void)_notify:(TCCoreInfo)notice context:(id)ctx
+- (void)_notify:(TCCoreEvent)notice context:(id)ctx
 {
 	// > localQueue <
 	
