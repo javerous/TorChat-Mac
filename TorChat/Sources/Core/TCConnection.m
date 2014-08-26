@@ -61,11 +61,11 @@
 }
 
 // -- Helpers --
-- (void)error:(TCCoreInfo)code fatal:(BOOL)fatal;
-- (void)error:(TCCoreInfo)code context:(id)ctx fatal:(BOOL)fatal;
-- (void)error:(TCCoreInfo)code info:(TCInfo *)subInfo fatal:(BOOL)fatal;
+- (void)error:(TCCoreError)code fatal:(BOOL)fatal;
+- (void)error:(TCCoreError)code context:(id)ctx fatal:(BOOL)fatal;
+- (void)error:(TCCoreError)code info:(TCInfo *)subInfo fatal:(BOOL)fatal;
 
-- (void)notify:(TCCoreInfo)notice;
+- (void)notify:(TCCoreEvent)notice;
 
 @end
 
@@ -231,7 +231,7 @@
 
 - (void)parser:(TCParser *)parser errorWithCode:(TCParserError)error andInformation:(NSString *)information
 {
-	TCCoreInfo nerr = TCCoreErrorClientCmdUnknownCommand;
+	TCCoreError nerr = TCCoreErrorClientCmdUnknownCommand;
 	
 	// Convert parser error to controller errors
 	switch (error)
@@ -352,7 +352,7 @@
 */
 #pragma mark - TCConnection - Helpers
 
-- (void)error:(TCCoreInfo)code fatal:(BOOL)fatal
+- (void)error:(TCCoreError)code fatal:(BOOL)fatal
 {
 	id <TCConnectionDelegate> delegate = _delegate;
 	
@@ -363,7 +363,7 @@
 		[self stop];
 }
 
-- (void)error:(TCCoreInfo)code context:(id)ctx fatal:(BOOL)fatal
+- (void)error:(TCCoreError)code context:(id)ctx fatal:(BOOL)fatal
 {
 	id <TCConnectionDelegate> delegate = _delegate;
 	
@@ -374,7 +374,7 @@
 		[self stop];
 }
 
-- (void)error:(TCCoreInfo)code info:(TCInfo *)subInfo fatal:(BOOL)fatal
+- (void)error:(TCCoreError)code info:(TCInfo *)subInfo fatal:(BOOL)fatal
 {
 	id <TCConnectionDelegate> delegate = _delegate;
 
@@ -385,7 +385,7 @@
 		[self stop];
 }
 
-- (void)notify:(TCCoreInfo)notice
+- (void)notify:(TCCoreEvent)notice
 {
 	id <TCConnectionDelegate> delegate = _delegate;
 
