@@ -23,6 +23,9 @@
 
 #import "TCUpdateWindowController.h"
 
+#import "TCTorManager.h"
+#import "TCInfo.h"
+
 
 /*
 ** TCUpdateWindowController - Private
@@ -30,14 +33,27 @@
 #pragma mark - TCUpdateWindowController - Private
 
 @interface TCUpdateWindowController ()
+{
+	TCTorManager		*_torManager;
+	
+	dispatch_block_t	_currentCancelBlock;
+	BOOL				_updateDone;
+}
 
 @property (strong, nonatomic)	IBOutlet NSView			*availableView;
 @property (strong, nonatomic)	IBOutlet NSTextField	*subtitleField;
 
 @property (strong, nonatomic)	IBOutlet NSView			*workingView;
+@property (strong, nonatomic)	IBOutlet NSTextField	*workingStatusField;
+@property (strong, nonatomic)	IBOutlet NSProgressIndicator *workingProgress;
+@property (strong, nonatomic)	IBOutlet NSTextField	*workingDownloadInfo;
+@property (strong, nonatomic)	IBOutlet NSButton		*workingButton;
+
 
 - (IBAction)doRemindMeLater:(id)sender;
 - (IBAction)doInstallUpdate:(id)sender;
+
+- (IBAction)doWorkingButton:(id)sender;
 
 @end
 
@@ -101,6 +117,9 @@
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
+		// Handle tor manager.
+		_torManager = torManager;
+		
 		// Place availableView.
 		[_workingView removeFromSuperview];
 		
@@ -119,6 +138,109 @@
 	});
 }
 
+- (void)_doUpdate
+{
+	// > main queue <
+	
+	// Init view state.
+	_workingStatusField.stringValue = @"Launching update…"; // FIXME: localize
+	
+	_workingDownloadInfo.stringValue = @"";
+	_workingDownloadInfo.hidden = YES;
+	
+	_workingProgress.doubleValue = 0.0;
+	_workingProgress.indeterminate = YES;
+	[_workingProgress startAnimation:nil];
+	
+	_workingButton.title = @"Cancel"; // FIXME: localize
+	_workingButton.keyEquivalent = @"\e";
+	
+	_updateDone = NO;
+	
+	// Launch update.
+	__block NSUInteger archiveTotal = 0;
+	
+	_currentCancelBlock = [_torManager updateWithEventHandler:^(TCInfo *info){
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			
+			if (info.kind == TCInfoInfo)
+			{
+				switch ((TCTorManagerEventUpdate)info.code)
+				{
+					case TCTorManagerEventUpdateArchiveInfoRetrieving:
+					{
+						_workingStatusField.stringValue = @"Retrieving archive info…"; // FIXME: localize
+						break;
+					}
+						
+					case TCTorManagerEventUpdateArchiveSize:
+					{
+						_workingStatusField.stringValue = @"Downloading…"; // FIXME: localize
+
+						_workingProgress.indeterminate = NO;
+						_workingDownloadInfo.hidden = NO;
+
+						archiveTotal = [info.context unsignedIntegerValue];
+
+						break;
+					}
+					
+					case TCTorManagerEventUpdateArchiveDownloading:
+					{
+						NSUInteger archiveCurrent = [info.context unsignedIntegerValue];
+						
+						_workingProgress.doubleValue = (double)archiveCurrent / (double)archiveTotal;
+						_workingDownloadInfo.stringValue = [NSString stringWithFormat:@"%lu of %lu", (unsigned long)archiveCurrent, (unsigned long)archiveTotal];
+						
+						if (archiveCurrent == archiveTotal)
+						{
+							_workingProgress.indeterminate = YES;
+							_workingDownloadInfo.hidden = YES;
+						}
+						
+						break;
+					}
+						
+					case TCTorManagerEventUpdateArchiveStage:
+					{
+						_workingStatusField.stringValue = @"Archive staging…"; // FIXME: localize
+						break;
+					}
+					
+					case TCTorManagerEventUpdateSignatureCheck:
+					{
+						_workingStatusField.stringValue = @"Checking signature…"; // FIXME: localize
+						break;
+					}
+						
+					case TCTorManagerEventUpdateRelaunch:
+					{
+						_workingStatusField.stringValue = @"Relaunching tor…"; // FIXME: localize
+						break;
+					}
+						
+					case TCTorManagerEventUpdateDone:
+					{
+						_workingStatusField.stringValue = @"Update done."; // FIXME: localize
+						
+						_workingButton.title = @"Done"; // FIXME: localize
+						_workingButton.keyEquivalent = @"\r";
+						
+						_updateDone = YES;
+						
+						break;
+					}
+				}
+			}
+			else if (info.kind == TCInfoError)
+			{
+#warning FIXME
+			//	NSLog(@"Error: %@", [info render]);
+			}
+		});
+	}];
+}
 
 
 /*
@@ -155,7 +277,18 @@
 		[self.window.animator setFrame:rect display:YES];
 	} completionHandler:^{
 		[_availableView removeFromSuperview];
+		[self _doUpdate];
 	}];
+}
+
+- (IBAction)doWorkingButton:(id)sender
+{
+	if (!_updateDone && _currentCancelBlock)
+		_currentCancelBlock();
+	
+	_currentCancelBlock = nil;
+	
+	[self close];
 }
 
 @end
