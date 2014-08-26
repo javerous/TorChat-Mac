@@ -12,6 +12,10 @@
                 <outlet property="doRemindMeLater" destination="bah-D8-xm4" id="6xO-YM-je7"/>
                 <outlet property="subtitleField" destination="rRV-wf-tdQ" id="6OI-0y-bPg"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="Lgo-FM-tO7"/>
+                <outlet property="workingButton" destination="HMl-dq-XNj" id="URc-gg-E4o"/>
+                <outlet property="workingDownloadInfo" destination="aHi-3Y-GCR" id="a9x-a4-h4r"/>
+                <outlet property="workingProgress" destination="X5o-U3-jQn" id="F0r-s3-7sK"/>
+                <outlet property="workingStatusField" destination="bHE-da-88h" id="Vj2-tu-C0d"/>
                 <outlet property="workingView" destination="w9G-xk-fMY" id="zlR-Ns-Rtk"/>
             </connections>
         </customObject>
@@ -21,7 +25,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="585" height="155"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1578"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
             <view key="contentView" id="EiT-Mj-1SZ">
                 <rect key="frame" x="0.0" y="0.0" width="585" height="155"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -120,18 +124,18 @@ Gw
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <progressIndicator maxValue="100" indeterminate="YES" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="X5o-U3-jQn">
+                <progressIndicator maxValue="1" indeterminate="YES" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="X5o-U3-jQn">
                     <rect key="frame" x="92" y="64" width="288" height="20"/>
                 </progressIndicator>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="HMl-dq-XNj">
-                    <rect key="frame" x="304" y="13" width="82" height="32"/>
-                    <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="TwA-CR-dpK">
+                    <rect key="frame" x="209" y="13" width="177" height="32"/>
+                    <buttonCell key="cell" type="push" title="&lt;DONT-TRANSLATE>" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="TwA-CR-dpK">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
-                        <string key="keyEquivalent" base64-UTF8="YES">
-Gw
-</string>
                     </buttonCell>
+                    <connections>
+                        <action selector="doWorkingButton:" target="-2" id="sgR-So-lYg"/>
+                    </connections>
                 </button>
             </subviews>
             <constraints>

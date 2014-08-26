@@ -231,7 +231,30 @@
 		
 		// > Start buddy controller.
 		[[TCBuddiesWindowController sharedController] startWithConfiguration:conf];
+		
+		// > Check for update.
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+			
+			[_torManager checkForUpdateWithCompletionHandler:^(TCInfo *info) {
+				
+				if (info.kind == TCInfoInfo)
+				{
+					if ([info.domain isEqualToString:TCTorManagerInfoCheckUpdateDomain])
+					{
+						if (info.code == TCTorManagerEventCheckUpdateAvailable)
+						{
+							NSDictionary	*context = info.context;
+							NSString		*oldVersion = context[@"old_version"];
+							NSString		*newVersion = context[@"new_version"];
+							
+							[[TCUpdateWindowController sharedController] handleUpdateFromVersion:oldVersion toVersion:newVersion torManager:_torManager];
+						}
+					}
+				}
+			}];
+		});
 	}
+	
 
 // <DEBUG
 #warning DEBUG
@@ -260,7 +283,7 @@
 		
 		//NSLog(@"info: %@", [info render]);
 	}];*/
-	
+	/*
 	
 	__block NSUInteger archiveSize = 0;
 	dispatch_block_t cancelBlock = NULL;
@@ -310,6 +333,7 @@
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 		cancelBlock();
 	});
+	 */
 // DEBUG>
 }
 
