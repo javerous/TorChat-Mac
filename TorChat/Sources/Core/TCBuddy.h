@@ -64,7 +64,6 @@ typedef enum
 // == Info Codes ==
 typedef enum
 {
-	// -- Events --
 	TCBuddyEventConnectedTor,
 	TCBuddyEventConnectedBuddy,
 	TCBuddyEventDisconnected,
@@ -91,8 +90,10 @@ typedef enum
 	TCBuddyEventProfileText,		// context: NSString (<text>)
 	TCBuddyEventProfileName,		// context: NSString (<name>)
 	TCBuddyEventProfileAvatar,		// context: TCImage
-	
-	// -- Errors --
+} TCBuddyEvent;
+
+typedef enum
+{
 	TCBuddyErrorResolveTor,
 	TCBuddyErrorConnectTor,
 	
@@ -110,7 +111,7 @@ typedef enum
 	TCBuddyErrorFileBlocked,		// context: NSString (<file_path>)
 	
 	TCBuddyErrorParse				// info: TCInfo (TCSocketInfoDomain)
-} TCBuddyInfo;
+} TCBuddyError;
 
 // == File ==
 typedef enum
