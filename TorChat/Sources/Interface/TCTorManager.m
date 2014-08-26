@@ -559,8 +559,6 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 						
 						remoteVersion = remoteInfo[@"version"];
 						
-						NSLog(@"remoteVersion: %@", remoteVersion);
-						
 						ctrl(TCOperationsControlContinue);
 					}
 				}
@@ -584,8 +582,6 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 					if (info.code == TCTorManagerEventInfo)
 					{
 						localVersion = ((NSDictionary *)info.context)[TCTorManagerKeyTorVersion];
-						
-						NSLog(@"localVersion: %@", localVersion);
 					}
 					else if (info.code == TCTorManagerEventDone)
 					{
