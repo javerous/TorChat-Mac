@@ -13,12 +13,14 @@
 		E809B1701859CAFE001664E1 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = E809B16E1859CAFE001664E1 /* Credits.rtf */; };
 		E809B1731859CAFE001664E1 /* TCAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E809B1721859CAFE001664E1 /* TCAppDelegate.m */; };
 		E809B1761859CAFE001664E1 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = E809B1741859CAFE001664E1 /* MainMenu.xib */; };
-		E809B1991859CB46001664E1 /* TCChatTranscriptViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E809B1941859CB46001664E1 /* TCChatTranscriptViewController.m */; };
-		E809B19A1859CB46001664E1 /* NSImage+TCExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = E809B1961859CB46001664E1 /* NSImage+TCExtension.m */; };
-		E809B19B1859CB46001664E1 /* NSString+TCExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = E809B1981859CB46001664E1 /* NSString+TCExtension.m */; };
 		E809B1A11859CB4F001664E1 /* ChatTemplate.plist in Resources */ = {isa = PBXBuildFile; fileRef = E809B19E1859CB4F001664E1 /* ChatTemplate.plist */; };
 		E809B1A31859CB8D001664E1 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E809B1A21859CB8D001664E1 /* WebKit.framework */; };
 		E812A5CA1859FE1700B0D248 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E812A5C91859FE1700B0D248 /* Images.xcassets */; };
+		E8A381911A672DF800C96FA0 /* TCChatTranscriptViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A381901A672DF800C96FA0 /* TCChatTranscriptViewController.m */; };
+		E8A381941A672E0B00C96FA0 /* NSImage+TCExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A381931A672E0B00C96FA0 /* NSImage+TCExtension.m */; };
+		E8A3819B1A672E2700C96FA0 /* NSString+TCLayoutExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A381961A672E2700C96FA0 /* NSString+TCLayoutExtension.m */; };
+		E8A3819C1A672E2700C96FA0 /* NSString+TCPathExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A381981A672E2700C96FA0 /* NSString+TCPathExtension.m */; };
+		E8A3819D1A672E2700C96FA0 /* NSString+TCXMLExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A3819A1A672E2700C96FA0 /* NSString+TCXMLExtension.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,15 +37,19 @@
 		E809B1711859CAFE001664E1 /* TCAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TCAppDelegate.h; sourceTree = "<group>"; };
 		E809B1721859CAFE001664E1 /* TCAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TCAppDelegate.m; sourceTree = "<group>"; };
 		E809B1751859CAFE001664E1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		E809B1931859CB46001664E1 /* TCChatTranscriptViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatTranscriptViewController.h; path = ../../../TorChat/Sources/Interface/TCChatTranscriptViewController.h; sourceTree = "<group>"; };
-		E809B1941859CB46001664E1 /* TCChatTranscriptViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCChatTranscriptViewController.m; path = ../../../TorChat/Sources/Interface/TCChatTranscriptViewController.m; sourceTree = "<group>"; };
-		E809B1951859CB46001664E1 /* NSImage+TCExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSImage+TCExtension.h"; path = "../../../TorChat/Sources/Interface/NSImage+TCExtension.h"; sourceTree = "<group>"; };
-		E809B1961859CB46001664E1 /* NSImage+TCExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSImage+TCExtension.m"; path = "../../../TorChat/Sources/Interface/NSImage+TCExtension.m"; sourceTree = "<group>"; };
-		E809B1971859CB46001664E1 /* NSString+TCExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+TCExtension.h"; path = "../../../TorChat/Sources/Interface/NSString+TCExtension.h"; sourceTree = "<group>"; };
-		E809B1981859CB46001664E1 /* NSString+TCExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+TCExtension.m"; path = "../../../TorChat/Sources/Interface/NSString+TCExtension.m"; sourceTree = "<group>"; };
-		E809B19E1859CB4F001664E1 /* ChatTemplate.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = ChatTemplate.plist; path = ../../../TorChat/Resources/ChatTemplate.plist; sourceTree = "<group>"; };
+		E809B19E1859CB4F001664E1 /* ChatTemplate.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = ChatTemplate.plist; path = ../../../TorChat/TorChat/ChatTemplate.plist; sourceTree = "<group>"; };
 		E809B1A21859CB8D001664E1 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
-		E812A5C91859FE1700B0D248 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ../../../TorChat/Medias/Images.xcassets; sourceTree = "<group>"; };
+		E812A5C91859FE1700B0D248 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ../../../TorChat/TorChat/Images.xcassets; sourceTree = "<group>"; };
+		E8A3818F1A672DF800C96FA0 /* TCChatTranscriptViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCChatTranscriptViewController.h; path = ../../../TorChat/TorChat/TCChatTranscriptViewController.h; sourceTree = "<group>"; };
+		E8A381901A672DF800C96FA0 /* TCChatTranscriptViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TCChatTranscriptViewController.m; path = ../../../TorChat/TorChat/TCChatTranscriptViewController.m; sourceTree = "<group>"; };
+		E8A381921A672E0B00C96FA0 /* NSImage+TCExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSImage+TCExtension.h"; path = "../../../TorChat/TorChat/NSImage+TCExtension.h"; sourceTree = "<group>"; };
+		E8A381931A672E0B00C96FA0 /* NSImage+TCExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSImage+TCExtension.m"; path = "../../../TorChat/TorChat/NSImage+TCExtension.m"; sourceTree = "<group>"; };
+		E8A381951A672E2700C96FA0 /* NSString+TCLayoutExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+TCLayoutExtension.h"; path = "../../../TorChat/TorChat/NSString+TCLayoutExtension.h"; sourceTree = "<group>"; };
+		E8A381961A672E2700C96FA0 /* NSString+TCLayoutExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+TCLayoutExtension.m"; path = "../../../TorChat/TorChat/NSString+TCLayoutExtension.m"; sourceTree = "<group>"; };
+		E8A381971A672E2700C96FA0 /* NSString+TCPathExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+TCPathExtension.h"; path = "../../../TorChat/TorChat/NSString+TCPathExtension.h"; sourceTree = "<group>"; };
+		E8A381981A672E2700C96FA0 /* NSString+TCPathExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+TCPathExtension.m"; path = "../../../TorChat/TorChat/NSString+TCPathExtension.m"; sourceTree = "<group>"; };
+		E8A381991A672E2700C96FA0 /* NSString+TCXMLExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+TCXMLExtension.h"; path = "../../../TorChat/TorChat/NSString+TCXMLExtension.h"; sourceTree = "<group>"; };
+		E8A3819A1A672E2700C96FA0 /* NSString+TCXMLExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+TCXMLExtension.m"; path = "../../../TorChat/TorChat/NSString+TCXMLExtension.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,12 +107,16 @@
 			children = (
 				E809B1711859CAFE001664E1 /* TCAppDelegate.h */,
 				E809B1721859CAFE001664E1 /* TCAppDelegate.m */,
-				E809B1931859CB46001664E1 /* TCChatTranscriptViewController.h */,
-				E809B1941859CB46001664E1 /* TCChatTranscriptViewController.m */,
-				E809B1951859CB46001664E1 /* NSImage+TCExtension.h */,
-				E809B1961859CB46001664E1 /* NSImage+TCExtension.m */,
-				E809B1971859CB46001664E1 /* NSString+TCExtension.h */,
-				E809B1981859CB46001664E1 /* NSString+TCExtension.m */,
+				E8A3818F1A672DF800C96FA0 /* TCChatTranscriptViewController.h */,
+				E8A381901A672DF800C96FA0 /* TCChatTranscriptViewController.m */,
+				E8A381921A672E0B00C96FA0 /* NSImage+TCExtension.h */,
+				E8A381931A672E0B00C96FA0 /* NSImage+TCExtension.m */,
+				E8A381951A672E2700C96FA0 /* NSString+TCLayoutExtension.h */,
+				E8A381961A672E2700C96FA0 /* NSString+TCLayoutExtension.m */,
+				E8A381971A672E2700C96FA0 /* NSString+TCPathExtension.h */,
+				E8A381981A672E2700C96FA0 /* NSString+TCPathExtension.m */,
+				E8A381991A672E2700C96FA0 /* NSString+TCXMLExtension.h */,
+				E8A3819A1A672E2700C96FA0 /* NSString+TCXMLExtension.m */,
 				E809B1741859CAFE001664E1 /* MainMenu.xib */,
 				E812A5C91859FE1700B0D248 /* Images.xcassets */,
 				E809B1661859CAFE001664E1 /* Supporting Files */,
@@ -195,11 +205,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E809B1991859CB46001664E1 /* TCChatTranscriptViewController.m in Sources */,
+				E8A381911A672DF800C96FA0 /* TCChatTranscriptViewController.m in Sources */,
+				E8A3819C1A672E2700C96FA0 /* NSString+TCPathExtension.m in Sources */,
+				E8A381941A672E0B00C96FA0 /* NSImage+TCExtension.m in Sources */,
 				E809B16C1859CAFE001664E1 /* main.m in Sources */,
-				E809B19B1859CB46001664E1 /* NSString+TCExtension.m in Sources */,
+				E8A3819D1A672E2700C96FA0 /* NSString+TCXMLExtension.m in Sources */,
+				E8A3819B1A672E2700C96FA0 /* NSString+TCLayoutExtension.m in Sources */,
 				E809B1731859CAFE001664E1 /* TCAppDelegate.m in Sources */,
-				E809B19A1859CB46001664E1 /* NSImage+TCExtension.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
