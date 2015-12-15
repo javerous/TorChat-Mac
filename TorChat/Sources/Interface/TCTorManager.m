@@ -38,6 +38,24 @@
 
 
 /*
+** Globals
+*/
+#pragma mark - Globals
+
+static pid_t gTorPid = -1;
+
+
+
+/*
+** Prototypes
+*/
+#pragma mark - Prototypes
+
+void catch_signal(int sig);
+
+
+
+/*
 ** TCTorManager - Private
 */
 #pragma mark - TCTorManager - Private
@@ -55,8 +73,6 @@
 	
 	dispatch_queue_t	_localQueue;
 	dispatch_source_t	_testTimer;
-	
-	dispatch_source_t	_termSource;
 }
 
 - (void)postNotification:(NSString *)notice;
@@ -85,6 +101,8 @@
 	
 	dispatch_once(&pred, ^{
 		shr = [[TCTorManager alloc] init];
+		
+		signal(SIGINT, catch_signal);
 	});
 	
 	return shr;
@@ -96,24 +114,10 @@
 	
     if (self)
 	{
-		// Create queues.
         _localQueue = dispatch_queue_create("com.torchat.cocoa.tormanager.local", DISPATCH_QUEUE_SERIAL);
 		
-		// Handle application standard termination.
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillTerminate:) name:NSApplicationWillTerminateNotification object:nil];
-		
-		// SIGTERM handle.
-		signal(SIGTERM, SIG_IGN);
-
-		_termSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_SIGNAL, SIGTERM, 0, _localQueue);
-		
-		dispatch_source_set_event_handler(_termSource, ^{
-			[self terminateTor];
-			exit(0);
-		});
-		
-		dispatch_resume(_termSource);
-	}
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillQuit:) name:NSApplicationWillTerminateNotification object:nil];
+    }
     
     return self;
 }
@@ -127,6 +131,7 @@
 	[_task waitUntilExit];
 	
 	_task = nil;
+	gTorPid = -1;
 	
 	_outHandle.readabilityHandler = nil;
 	_errHandle.readabilityHandler = nil;
@@ -146,9 +151,17 @@
 */
 #pragma mark - TCTorManager - Notification
 
-- (void)applicationWillTerminate:(NSNotification *)notice
+- (void)appWillQuit:(NSNotification *)notice
 {
-	[self terminateTor];
+	if (_task)
+	{
+		[_task terminate];
+		
+		[_task waitUntilExit];
+		
+		_task = nil;
+		gTorPid = -1;
+	}
 }
 
 
@@ -345,6 +358,8 @@
 			return;
 		}
 		
+		gTorPid = [_task processIdentifier];
+		
 		// Check the existence of the hostname file
 		NSString *htname = [configuration realPath:[[configuration torDataPath] stringByAppendingPathComponent:@"hidden/hostname"]];
 		
@@ -412,9 +427,18 @@
 			return;
 		
 		_running = NO;
+		
 
-		// Terminate tor.
-		[self terminateTor];
+		// kill tor.
+		if (_task)
+		{
+			[_task terminate];
+			
+			[_task waitUntilExit];
+			
+			_task = nil;
+			gTorPid = -1;
+		}
 		
 		// Stop handle.
 		_errHandle.readabilityHandler = nil;
@@ -490,16 +514,17 @@
 	});
 }
 
-- (void)terminateTor
-{
-	if (_task)
-	{
-		[_task terminate];
-		
-		[_task waitUntilExit];
-		
-		_task = nil;
-	}
-}
-
 @end
+
+
+
+/*
+** C Tools
+*/
+#pragma mark - C Tools
+
+void catch_signal(int sig)
+{
+	if (gTorPid > 0)
+		kill(gTorPid, SIGINT);
+}
