@@ -1,7 +1,7 @@
 /*
  *  TCChatView.h
  *
- *  Copyright 2014 Avérous Julien-Pierre
+ *  Copyright 2016 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -56,7 +56,7 @@
 @interface TCChatViewController : NSViewController
 
 // -- Property --
-@property (strong, nonatomic, readonly) NSString *identifier;
+@property (strong, nonatomic, readonly) NSString *bidentifier;
 @property (strong, nonatomic)			NSString *name;
 
 @property (weak, atomic)				id <TCChatViewDelegate> delegate;

@@ -1,7 +1,7 @@
 /*
  *  TCConfigPlist.m
  *
- *  Copyright 2014 Avérous Julien-Pierre
+ *  Copyright 2016 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -75,10 +75,10 @@
 #define TCCONF_KEY_PATH_TOR_IDENTITY		@"tor_identity"
 #define TCCONF_KEY_PATH_DOWNLOADS			@"downloads"
 
-#define TCCONF_KEY_PATH_PLACE				@"place"
-#define TCCONF_VALUE_PATH_PLACE_REFERAL		@"<referal>"
-#define TCCONF_VALUE_PATH_PLACE_STANDARD	@"<standard>"
-#define TCCONF_VALUE_PATH_PLACE_ABSOLUTE	@"<absolute>"
+#define TCCONF_KEY_PATH_TYPE				@"type"
+#define TCCONF_VALUE_PATH_TYPE_REFERAL		@"<referal>"
+#define TCCONF_VALUE_PATH_TYPE_STANDARD		@"<standard>"
+#define TCCONF_VALUE_PATH_TYPE_ABSOLUTE		@"<absolute>"
 
 #define TCCONF_KEY_PATH_SUBPATH				@"subpath"
 
@@ -91,17 +91,20 @@
 
 @interface TCConfigPlist ()
 {
-	// Vars
+	dispatch_queue_t	_localQueue;
+	
 	NSString			*_fpath;
 	NSMutableDictionary	*_fcontent;
+	
+	NSMutableDictionary *_pathObservers;
+
+	BOOL _isDirty;
 	
 #if defined(PROXY_ENABLED) && PROXY_ENABLED
 	id <TCConfigProxy>	_proxy;
 #endif
 }
 
-- (NSMutableDictionary *)loadConfig:(NSData *)data;
-- (void)saveConfig;
 
 @end
 
@@ -133,7 +136,7 @@
 		NSString		*npath;
 		NSData			*data = nil;
 		
-		// Resolve path
+		// Resolve path.
 		npath = [filepath stringByCanonizingPath];
 		
 		if (npath)
@@ -142,10 +145,10 @@
 		if (!filepath)
 			return nil;
 		
-		// Hold path
+		// Hold path.
 		_fpath = filepath;
 		
-		// Load file
+		// Load file.
 		if ([mng fileExistsAtPath:_fpath])
 		{
 			// Load config data
@@ -155,11 +158,14 @@
 				return nil;
 		}
 		
-		// Load config
+		// Load config.
 		_fcontent = [self loadConfig:data];
 		
 		if (!_fcontent)
 			return nil;
+		
+		// Create queue.
+		_localQueue = dispatch_queue_create("com.sourcemac.torchat.config-plist", DISPATCH_QUEUE_CONCURRENT);
 	}
 	
 	return self;
@@ -175,17 +181,20 @@
 	{
 		NSData *data = nil;
 		
-		// Hold proxy
+		// Hold proxy.
 		_proxy = proxy;
 		
-		// Load data
+		// Load data.
 		data = [proxy configContent];
 		
-		// Load config
+		// Load config.
 		_fcontent = [self loadConfig:data];
 		
 		if (!_fcontent)
 			return nil;
+		
+		// Create queue.
+		_localQueue = dispatch_queue_create("com.sourcemac.torchat.config-plist", DISPATCH_QUEUE_CONCURRENT);
 	}
 	
 	return self;
@@ -202,7 +211,11 @@
 
 - (NSString *)torAddress
 {
-	NSString *value = [_fcontent objectForKey:TCCONF_KEY_TOR_ADDRESS];
+	__block NSString *value;
+ 
+	dispatch_sync(_localQueue, ^{
+		value = [_fcontent objectForKey:TCCONF_KEY_TOR_ADDRESS];
+	});
 	
 	if (value)
 		return value;
@@ -215,15 +228,19 @@
 	if (!address)
 		return;
 	
-	[_fcontent setObject:address forKey:TCCONF_KEY_TOR_ADDRESS];
-		
-	// Save
-	[self saveConfig];
+	dispatch_barrier_async(_localQueue, ^{
+		[_fcontent setObject:address forKey:TCCONF_KEY_TOR_ADDRESS];
+		[self _markDirty];
+	});
 }
 
 - (uint16_t)torPort
 {
-	NSNumber *value = [_fcontent objectForKey:TCCONF_KEY_TOR_PORT];
+	__block NSNumber *value;
+ 
+	dispatch_sync(_localQueue, ^{
+		value = [_fcontent objectForKey:TCCONF_KEY_TOR_PORT];
+	});
 	
 	if (value)
 		return [value unsignedShortValue];
@@ -233,10 +250,10 @@
 
 - (void)setTorPort:(uint16_t)port
 {
-	[_fcontent setObject:@(port) forKey:TCCONF_KEY_TOR_PORT];
-	
-	// Save
-	[self saveConfig];
+	dispatch_barrier_async(_localQueue, ^{
+		[_fcontent setObject:@(port) forKey:TCCONF_KEY_TOR_PORT];
+		[self _markDirty];
+	});
 }
 
 
@@ -248,7 +265,11 @@
 
 - (NSString *)selfAddress
 {
-	NSString *value = [_fcontent objectForKey:TCCONF_KEY_IM_ADDRESS];
+	__block NSString *value;
+ 
+	dispatch_sync(_localQueue, ^{
+		value = [_fcontent objectForKey:TCCONF_KEY_IM_ADDRESS];
+	});
 	
 	if (value)
 		return value;
@@ -261,15 +282,19 @@
 	if (!address)
 		return;
 	
-	[_fcontent setObject:address forKey:TCCONF_KEY_IM_ADDRESS];
-	
-	// Save
-	[self saveConfig];
+	dispatch_barrier_async(_localQueue, ^{
+		[_fcontent setObject:address forKey:TCCONF_KEY_IM_ADDRESS];
+		[self _markDirty];
+	});
 }
 
 - (uint16_t)clientPort
 {
-	NSNumber *value = [_fcontent objectForKey:TCCONF_KEY_IM_PORT];
+	__block NSNumber *value;
+ 
+	dispatch_sync(_localQueue, ^{
+		value = [_fcontent objectForKey:TCCONF_KEY_IM_PORT];
+	});
 	
 	if (value)
 		return [value unsignedShortValue];
@@ -279,10 +304,10 @@
 
 - (void)setClientPort:(uint16_t)port
 {
-	[_fcontent setObject:@(port) forKey:TCCONF_KEY_IM_PORT];
-	
-	// Save
-	[self saveConfig];
+	dispatch_barrier_async(_localQueue, ^{
+		[_fcontent setObject:@(port) forKey:TCCONF_KEY_IM_PORT];
+		[self _markDirty];
+	});
 }
 
 
@@ -294,7 +319,11 @@
 
 - (TCConfigMode)mode
 {
-	NSNumber *value = [_fcontent objectForKey:TCCONF_KEY_MODE];
+	__block NSNumber *value;
+ 
+	dispatch_sync(_localQueue, ^{
+		value = [_fcontent objectForKey:TCCONF_KEY_MODE];
+	});
 	
 	if (value)
 	{
@@ -313,10 +342,10 @@
 
 - (void)setMode:(TCConfigMode)mode
 {
-	[_fcontent setObject:@(mode) forKey:TCCONF_KEY_MODE];
-	
-	// Save
-	[self saveConfig];
+	dispatch_barrier_async(_localQueue, ^{
+		[_fcontent setObject:@(mode) forKey:TCCONF_KEY_MODE];
+		[self _markDirty];
+	});
 }
 
 
@@ -328,7 +357,11 @@
 
 - (NSString *)profileName
 {
-	NSString *value = [_fcontent objectForKey:TCCONF_KEY_PROFILE_NAME];
+	__block NSString *value;
+ 
+	dispatch_sync(_localQueue, ^{
+		value = [_fcontent objectForKey:TCCONF_KEY_PROFILE_NAME];
+	});
 	
 	if (value)
 		return value;
@@ -341,15 +374,19 @@
 	if (!name)
 		return;
 	
-	[_fcontent setObject:name forKey:TCCONF_KEY_PROFILE_NAME];
-		
-	// Save
-	[self saveConfig];
+	dispatch_barrier_async(_localQueue, ^{
+		[_fcontent setObject:name forKey:TCCONF_KEY_PROFILE_NAME];
+		[self _markDirty];
+	});
 }
 
 - (NSString *)profileText
 {
-	NSString *value = [_fcontent objectForKey:TCCONF_KEY_PROFILE_TEXT];
+	__block NSString *value;
+ 
+	dispatch_sync(_localQueue, ^{
+		value = [_fcontent objectForKey:TCCONF_KEY_PROFILE_TEXT];
+	});
 	
 	if (value)
 		return value;
@@ -362,16 +399,19 @@
 	if (!text)
 		return;
 	
-	[_fcontent setObject:text forKey:TCCONF_KEY_PROFILE_TEXT];
-		
-	// Save
-	[self saveConfig];
-
+	dispatch_barrier_async(_localQueue, ^{
+		[_fcontent setObject:text forKey:TCCONF_KEY_PROFILE_TEXT];
+		[self _markDirty];
+	});
 }
 
 - (TCImage *)profileAvatar
 {
-	id avatar = [_fcontent objectForKey:TCCONF_KEY_PROFILE_AVATAR];
+	__block id avatar;
+ 
+	dispatch_sync(_localQueue, ^{
+		avatar = [_fcontent objectForKey:TCCONF_KEY_PROFILE_AVATAR];
+	});
 	
 	if ([avatar isKindOfClass:[NSDictionary class]])
 	{
@@ -412,11 +452,11 @@
 	// Remove avatar.
 	if (!picture)
 	{
-		[_fcontent removeObjectForKey:TCCONF_KEY_PROFILE_AVATAR];
-		
-		// Save
-		[self saveConfig];
-		
+		dispatch_barrier_async(_localQueue, ^{
+			[_fcontent removeObjectForKey:TCCONF_KEY_PROFILE_AVATAR];
+			[self _markDirty];
+		});
+
 		return;
 	}
 	
@@ -433,15 +473,15 @@
 	if (!tiffData)
 		return;
 	
-	pngData = [[[NSBitmapImageRep alloc] initWithData:tiffData] representationUsingType:NSPNGFileType properties:nil];
+	pngData = [[[NSBitmapImageRep alloc] initWithData:tiffData] representationUsingType:NSPNGFileType properties:@{ }];
 	
 	if (!pngData)
 		return;
 
-	[_fcontent setObject:pngData forKey:TCCONF_KEY_PROFILE_AVATAR];
-	
-	// Save
-	[self saveConfig];
+	dispatch_barrier_async(_localQueue, ^{
+		[_fcontent setObject:pngData forKey:TCCONF_KEY_PROFILE_AVATAR];
+		[self _markDirty];
+	});
 }
 
 
@@ -453,7 +493,13 @@
 
 - (NSArray *)buddies
 {
-	return [[_fcontent objectForKey:TCCONF_KEY_BUDDIES] copy];
+	__block NSArray *buddies;
+	
+	dispatch_sync(_localQueue, ^{
+		buddies = [[_fcontent objectForKey:TCCONF_KEY_BUDDIES] copy];
+	});
+	
+	return buddies;
 }
 
 - (void)addBuddy:(NSString *)address alias:(NSString *)alias notes:(NSString *)notes
@@ -467,54 +513,60 @@
 	if (!notes)
 		notes = @"";
 	
-	// Get buddies list.
-	NSMutableArray *buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-	
-	if (!buddies)
-	{
-		buddies = [[NSMutableArray alloc] init];
-		[_fcontent setObject:buddies forKey:TCCONF_KEY_BUDDIES];
-	}
-	
-	// Create buddy entry.
-	NSMutableDictionary *buddy = [[NSMutableDictionary alloc] init];
-	
-	[buddy setObject:address forKey:TCConfigBuddyAddress];
-	[buddy setObject:alias forKey:TCConfigBuddyAlias];
-	[buddy setObject:notes forKey:TCConfigBuddyNotes];
-	[buddy setObject:@"" forKey:TCConfigBuddyLastName];
-	
-	[buddies addObject:buddy];
+	dispatch_barrier_async(_localQueue, ^{
 		
-	// Save & Release
-	[self saveConfig];
+		// Get buddies list.
+		NSMutableArray *buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		
+		if (!buddies)
+		{
+			buddies = [[NSMutableArray alloc] init];
+			[_fcontent setObject:buddies forKey:TCCONF_KEY_BUDDIES];
+		}
+		
+		// Create buddy entry.
+		NSMutableDictionary *buddy = [[NSMutableDictionary alloc] init];
+		
+		[buddy setObject:address forKey:TCConfigBuddyAddress];
+		[buddy setObject:alias forKey:TCConfigBuddyAlias];
+		[buddy setObject:notes forKey:TCConfigBuddyNotes];
+		[buddy setObject:@"" forKey:TCConfigBuddyLastName];
+		
+		[buddies addObject:buddy];
+		
+		// Mark dirty.
+		[self _markDirty];
+	});
 }
 
 - (BOOL)removeBuddy:(NSString *)address
 {
-	BOOL found = NO;
+	__block BOOL found = NO;
 	
 	if (!address)
 		return NO;
 	
-	// Remove from Cocoa version
-	NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-	NSUInteger		i, cnt = [array count];
-	
-	for (i = 0; i < cnt; i++)
-	{
-		NSDictionary *buddy = [array objectAtIndex:i];
+	dispatch_barrier_sync(_localQueue, ^{
 		
-		if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
+		// Remove from Cocoa version.
+		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		NSUInteger		i, cnt = [array count];
+		
+		for (i = 0; i < cnt; i++)
 		{
-			[array removeObjectAtIndex:i];
-			found = YES;
-			break;
+			NSDictionary *buddy = [array objectAtIndex:i];
+			
+			if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
+			{
+				[array removeObjectAtIndex:i];
+				found = YES;
+				break;
+			}
 		}
-	}
-	
-	// Save
-	[self saveConfig];
+		
+		// Mark dirty.
+		[self _markDirty];
+	});
 	
 	return found;
 }
@@ -527,23 +579,26 @@
 	if (!alias)
 		alias = @"";
 	
-	// Change from Cocoa version
-	NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-	NSUInteger		i, cnt = [array count];
-	
-	for (i = 0; i < cnt; i++)
-	{
-		NSMutableDictionary *buddy = [array objectAtIndex:i];
+	dispatch_barrier_async(_localQueue, ^{
 		
-		if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
+		// Change from Cocoa version.
+		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		NSUInteger		i, cnt = [array count];
+		
+		for (i = 0; i < cnt; i++)
 		{
-			[buddy setObject:alias forKey:TCConfigBuddyAlias];
-			break;
+			NSMutableDictionary *buddy = [array objectAtIndex:i];
+			
+			if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
+			{
+				[buddy setObject:alias forKey:TCConfigBuddyAlias];
+				break;
+			}
 		}
-	}
-	
-	// Save
-	[self saveConfig];
+		
+		// Mark dirty.
+		[self _markDirty];
+	});
 }
 
 - (void)setBuddy:(NSString *)address notes:(NSString *)notes
@@ -554,23 +609,26 @@
 	if (!notes)
 		notes = @"";
 	
-	// Change from Cocoa version
-	NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-	NSUInteger		i, cnt = [array count];
+	dispatch_barrier_async(_localQueue, ^{
 	
-	for (i = 0; i < cnt; i++)
-	{
-		NSMutableDictionary *buddy = [array objectAtIndex:i];
+		// Change from Cocoa version.
+		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		NSUInteger		i, cnt = [array count];
 		
-		if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
+		for (i = 0; i < cnt; i++)
 		{
-			[buddy setObject:notes forKey:TCConfigBuddyNotes];
-			break;
+			NSMutableDictionary *buddy = [array objectAtIndex:i];
+			
+			if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
+			{
+				[buddy setObject:notes forKey:TCConfigBuddyNotes];
+				break;
+			}
 		}
-	}
-	
-	// Save
-	[self saveConfig];
+		
+		// Mark dirty.
+		[self _markDirty];
+	});
 }
 
 - (void)setBuddy:(NSString *)address lastProfileName:(NSString *)lastName
@@ -581,23 +639,26 @@
 	if (!lastName)
 		lastName = @"";
 	
-	// Change from Cocoa version
-	NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-	NSUInteger		i, cnt = [array count];
-	
-	for (i = 0; i < cnt; i++)
-	{
-		NSMutableDictionary *buddy = [array objectAtIndex:i];
+	dispatch_barrier_async(_localQueue, ^{
 		
-		if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
+		// Change from Cocoa version
+		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		NSUInteger		i, cnt = [array count];
+		
+		for (i = 0; i < cnt; i++)
 		{
-			[buddy setObject:lastName forKey:TCConfigBuddyLastName];
-			break;
+			NSMutableDictionary *buddy = [array objectAtIndex:i];
+			
+			if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
+			{
+				[buddy setObject:lastName forKey:TCConfigBuddyLastName];
+				break;
+			}
 		}
-	}
-	
-	// Save
-	[self saveConfig];
+		
+		// Mark dirty.
+		[self _markDirty];
+	});
 }
 
 - (void)setBuddy:(NSString *)address lastProfileText:(NSString *)lastText
@@ -608,23 +669,26 @@
 	if (!lastText)
 		lastText = @"";
 	
-	// Change from Cocoa version
-	NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-	NSUInteger		i, cnt = [array count];
-	
-	for (i = 0; i < cnt; i++)
-	{
-		NSMutableDictionary *buddy = [array objectAtIndex:i];
+	dispatch_barrier_async(_localQueue, ^{
 		
-		if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
+		// Change from Cocoa version
+		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		NSUInteger		i, cnt = [array count];
+		
+		for (i = 0; i < cnt; i++)
 		{
-			[buddy setObject:lastText forKey:TCConfigBuddyLastText];
-			break;
+			NSMutableDictionary *buddy = [array objectAtIndex:i];
+			
+			if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
+			{
+				[buddy setObject:lastText forKey:TCConfigBuddyLastText];
+				break;
+			}
 		}
-	}
-	
-	// Save
-	[self saveConfig];
+		
+		// Mark dirty.
+		[self _markDirty];
+	});
 }
 
 - (void)setBuddy:(NSString *)address lastProfileAvatar:(TCImage *)lastAvatar
@@ -640,28 +704,31 @@
 	if (!tiffData)
 		return;
 	
-	pngData = [[[NSBitmapImageRep alloc] initWithData:tiffData] representationUsingType:NSPNGFileType properties:nil];
+	pngData = [[[NSBitmapImageRep alloc] initWithData:tiffData] representationUsingType:NSPNGFileType properties:@{ }];
 	
 	if (!pngData)
 		return;
 	
 	// Change item.
-	NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-	NSUInteger		i, cnt = [array count];
-	
-	for (i = 0; i < cnt; i++)
-	{
-		NSMutableDictionary *buddy = [array objectAtIndex:i];
+	dispatch_barrier_async(_localQueue, ^{
 		
-		if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
+		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		NSUInteger		i, cnt = [array count];
+		
+		for (i = 0; i < cnt; i++)
 		{
-			[buddy setObject:pngData forKey:TCConfigBuddyLastAvatar];
-			break;
+			NSMutableDictionary *buddy = [array objectAtIndex:i];
+			
+			if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
+			{
+				[buddy setObject:pngData forKey:TCConfigBuddyLastAvatar];
+				break;
+			}
 		}
-	}
-	
-	// Save
-	[self saveConfig];
+		
+		// Mark dirty.
+		[self _markDirty];
+	});
 }
 
 - (NSString *)getBuddyAlias:(NSString *)address
@@ -669,15 +736,23 @@
 	if (!address)
 		return @"";
 	
-	NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-
-	for (NSDictionary *buddy in buddies)
-	{
-		if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
-			return buddy[TCConfigBuddyAlias];
-	}
+	__block NSString *result = @"";
 	
-	return @"";
+	dispatch_sync(_localQueue, ^{
+		
+		NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		
+		for (NSDictionary *buddy in buddies)
+		{
+			if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
+			{
+				result = buddy[TCConfigBuddyAlias];
+				return;
+			}
+		}
+	});
+	
+	return result;
 }
 
 - (NSString *)getBuddyNotes:(NSString *)address
@@ -685,15 +760,23 @@
 	if (!address)
 		return @"";
 	
-	NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	__block NSString *result = @"";
 	
-	for (NSDictionary *buddy in buddies)
-	{
-		if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
-			return buddy[TCConfigBuddyNotes];
-	}
+	dispatch_sync(_localQueue, ^{
+		
+		NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		
+		for (NSDictionary *buddy in buddies)
+		{
+			if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
+			{
+				result = buddy[TCConfigBuddyNotes];
+				return;
+			}
+		}
+	});
 	
-	return @"";
+	return result;
 }
 
 - (NSString *)getBuddyLastProfileName:(NSString *)address
@@ -701,15 +784,23 @@
 	if (!address)
 		return @"";
 	
-	NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	__block NSString *result = @"";
+
+	dispatch_sync(_localQueue, ^{
+		
+		NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		
+		for (NSDictionary *buddy in buddies)
+		{
+			if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
+			{
+				result = buddy[TCConfigBuddyLastName];
+				return;
+			}
+		}
+	});
 	
-	for (NSDictionary *buddy in buddies)
-	{
-		if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
-			return buddy[TCConfigBuddyLastName];
-	}
-	
-	return @"";
+	return result;
 }
 
 - (NSString *)getBuddyLastProfileText:(NSString *)address
@@ -717,15 +808,23 @@
 	if (!address)
 		return @"";
 	
-	NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	__block NSString *result = @"";
 	
-	for (NSDictionary *buddy in buddies)
-	{
-		if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
-			return buddy[TCConfigBuddyLastText];
-	}
+	dispatch_sync(_localQueue, ^{
+		
+		NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		
+		for (NSDictionary *buddy in buddies)
+		{
+			if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
+			{
+				result = buddy[TCConfigBuddyLastText];
+				return;
+			}
+		}
+	});
 	
-	return @"";
+	return result;
 }
 
 - (TCImage *)getBuddyLastProfileAvatar:(NSString *)address
@@ -733,26 +832,30 @@
 	if (!address)
 		return nil;
 	
-	NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	__block NSData *result = nil;
 	
-	for (NSDictionary *buddy in buddies)
-	{
-		if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
+	dispatch_sync(_localQueue, ^{
+		NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		
+		for (NSDictionary *buddy in buddies)
 		{
-			NSData *data = buddy[TCConfigBuddyLastAvatar];
-			
-			if (data)
+			if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
 			{
-				NSImage *image = [[NSImage alloc] initWithData:data];
-				
-				return [[TCImage alloc] initWithImage:image];
+				result = buddy[TCConfigBuddyLastAvatar];
+				return;
 			}
-			else
-				return nil;
 		}
-	}
+	});
 	
-	return nil;
+	
+	if (result)
+	{
+		NSImage *image = [[NSImage alloc] initWithData:result];
+		
+		return [[TCImage alloc] initWithImage:image];
+	}
+	else
+		return nil;
 }
 
 
@@ -764,56 +867,73 @@
 
 - (NSArray *)blockedBuddies
 {
-	return [[_fcontent objectForKey:TCCONF_KEY_BLOCKED] copy];
+	__block NSArray *result;
+	
+	dispatch_sync(_localQueue, ^{
+		result = [[_fcontent objectForKey:TCCONF_KEY_BLOCKED] copy];
+	});
+	
+	return result;
 }
 
 - (BOOL)addBlockedBuddy:(NSString *)address
 {
-	// Add to cocoa version
-	NSMutableArray *list = [_fcontent objectForKey:TCCONF_KEY_BLOCKED];
+	__block BOOL result = NO;
 	
-	if (list && [list indexOfObject:address] != NSNotFound)
-		return NO;
+	dispatch_barrier_sync(_localQueue, ^{
+		
+		// Add to cocoa version
+		NSMutableArray *list = [_fcontent objectForKey:TCCONF_KEY_BLOCKED];
+		
+		if (list && [list indexOfObject:address] != NSNotFound)
+			return;
+		
+		if (!list)
+		{
+			list = [[NSMutableArray alloc] init];
+			[_fcontent setObject:list forKey:TCCONF_KEY_BLOCKED];
+		}
+		
+		[list addObject:address];
+		
+		// Mark dirty.
+		[self _markDirty];
+		
+		result = YES;
+	});
 	
-	if (!list)
-	{
-		list = [[NSMutableArray alloc] init];
-		[_fcontent setObject:list forKey:TCCONF_KEY_BLOCKED];
-	}
-	
-	[list addObject:address];
-	
-	// Save & Release
-	[self saveConfig];
-	
-	return YES;
+	return result;
 }
 
 - (BOOL)removeBlockedBuddy:(NSString *)address
 {
-	BOOL found = NO;
+	__block BOOL found = NO;
 	
 	if (!address)
 		return NO;
 	
-	// Remove from Cocoa version
-	NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BLOCKED];
-	NSUInteger		i, cnt = [array count];
-	
-	for (i = 0; i < cnt; i++)
-	{
-		NSString *buddy = [array objectAtIndex:i];
+	dispatch_barrier_sync(_localQueue, ^{
 		
-		if ([buddy isEqualToString:address])
+		// Remove from Cocoa version.
+		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BLOCKED];
+		NSUInteger		i, cnt = [array count];
+		
+		for (i = 0; i < cnt; i++)
 		{
-			[array removeObjectAtIndex:i];
-			found = YES;
-			break;
+			NSString *buddy = [array objectAtIndex:i];
+			
+			if ([buddy isEqualToString:address])
+			{
+				[array removeObjectAtIndex:i];
+				found = YES;
+				break;
+			}
 		}
-	}
 
-	// Save
-	[self saveConfig];
+		// Mark dirty.
+		[self _markDirty];
+	});
+
 	
 	return found;
 }
@@ -827,7 +947,11 @@
 
 - (TCConfigTitle)modeTitle
 {
-	NSNumber *value = [_fcontent objectForKey:TCCONF_KEY_UI_TITLE];
+	__block NSNumber *value;
+ 
+	dispatch_barrier_sync(_localQueue, ^{
+		value = [_fcontent objectForKey:TCCONF_KEY_UI_TITLE];
+	});
 	
 	if (!value)
 		return TCConfigTitleAddress;
@@ -837,10 +961,10 @@
 
 - (void)setModeTitle:(TCConfigTitle)mode
 {
-	[_fcontent setObject:@(mode) forKey:TCCONF_KEY_UI_TITLE];
-	
-	// Save
-	[self saveConfig];
+	dispatch_barrier_async(_localQueue, ^{
+		[_fcontent setObject:@(mode) forKey:TCCONF_KEY_UI_TITLE];
+		[self _markDirty];
+	});
 }
 
 
@@ -866,7 +990,11 @@
 			
 		case TCConfigGetDefined:
 		{
-			NSString *value = [_fcontent objectForKey:TCCONF_KEY_CLIENT_VERSION];
+			__block NSString *value;
+			
+			dispatch_sync(_localQueue, ^{
+				value = [_fcontent objectForKey:TCCONF_KEY_CLIENT_VERSION];
+			});
 			
 			if (value)
 				return value;
@@ -893,10 +1021,10 @@
 	if (!version)
 		return;
 
-	[_fcontent setObject:version forKey:TCCONF_KEY_CLIENT_VERSION];
-		
-	// Save
-	[self saveConfig];
+	dispatch_barrier_async(_localQueue, ^{
+		[_fcontent setObject:version forKey:TCCONF_KEY_CLIENT_VERSION];
+		[self _markDirty];
+	});
 }
 
 - (NSString *)clientName:(TCConfigGet)get
@@ -910,7 +1038,11 @@
 			
 		case TCConfigGetDefined:
 		{
-			NSString *value = [_fcontent objectForKey:TCCONF_KEY_CLIENT_NAME];
+			__block NSString *value;
+			
+			dispatch_sync(_localQueue, ^{
+				value = [_fcontent objectForKey:TCCONF_KEY_CLIENT_NAME];
+			});
 			
 			if (value)
 				return value;
@@ -937,10 +1069,10 @@
 	if (!name)
 		return;
 	
-	[_fcontent setObject:name forKey:TCCONF_KEY_CLIENT_NAME];
-		
-	// Save
-	[self saveConfig];
+	dispatch_barrier_async(_localQueue, ^{
+		[_fcontent setObject:name forKey:TCCONF_KEY_CLIENT_NAME];
+		[self _markDirty];
+	});
 }
 
 
@@ -950,202 +1082,401 @@
 */
 #pragma mark - TCConfigPlist - Paths
 
-- (NSString *)pathForDomain:(TConfigPathDomain)domain
-{
-	NSString *pathKey = nil;
-	
-	NSSearchPathDirectory	standardPathDirectory;
-	NSString				*standardSubPath = nil;
-	NSString				*referalSubPath = nil;
+#pragma mark Public - Paths
 
-	// Handle domain.
-	switch (domain)
+- (BOOL)setPathForComponent:(TConfigPathComponent)component pathType:(TConfigPathType)pathType path:(NSString *)path
+{
+	// Handle special referal component.
+	if (component == TConfigPathComponentReferal)
 	{
-		case TConfigPathDomainReferal:
-		{
-			// Referal = configuration path file directory.
-			return [_fpath stringByDeletingLastPathComponent];
-		}
+		__block BOOL result = NO;
 		
-		case TConfigPathDomainTorBinary:
-		{
-			pathKey = TCCONF_KEY_PATH_TOR_BIN;
-			standardPathDirectory = NSApplicationSupportDirectory;
-			standardSubPath = @"TorChat/Tor/";
-			referalSubPath = @"tor/bin/";
-			break;
-		}
+		dispatch_barrier_sync(_localQueue, ^{
+#warning handle notification + cascade change notification
+			// Check parameter.
+			BOOL isDirectory = NO;
+			
+			if ([[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDirectory] && isDirectory == NO)
+				return;
+			
+			// Prepare move.
+			NSString *configFileName = [_fpath lastPathComponent];
+			NSString *newPath = [path stringByAppendingPathComponent:configFileName];
+			
+			// Move.
+			if ([[NSFileManager defaultManager] moveItemAtPath:_fpath toPath:newPath error:nil] == NO)
+				return;
+			
+			// Hold new path.
+			_fpath = newPath;
+			
+			result = YES;
+		});
 		
-		case TConfigPathDomainTorData:
-		{
-			pathKey = TCCONF_KEY_PATH_TOR_DATA;
-			standardPathDirectory = NSApplicationSupportDirectory;
-			standardSubPath = @"TorChat/TorData/";
-			referalSubPath = @"tor/data/";
-			break;
-		}
-		
-		case TConfigPathDomainTorIdentity:
-		{
-			pathKey = TCCONF_KEY_PATH_TOR_IDENTITY;
-			standardPathDirectory = NSApplicationSupportDirectory;
-			standardSubPath = @"TorChat/TorIdentity/";
-			referalSubPath = @"tor/identity/";
-			break;
-		}
-		
-		case TConfigPathDomainDownloads:
-		{
-			pathKey = TCCONF_KEY_PATH_DOWNLOADS;
-			standardPathDirectory = NSDownloadsDirectory;
-			standardSubPath = @"TorChat/";
-			referalSubPath = @"Downloads/";
-			break;
-		}
+		return result;
 	}
 	
-	if (!pathKey)
+	// Handle common components.
+	dispatch_barrier_async(_localQueue, ^{
+		
+		// Store old path.
+		NSString *oldPath;
+		
+		if ([self _componentIsObserved:component])
+			oldPath = [self _pathForComponent:component fullPath:YES];
+
+		// Handle paths.
+		NSMutableDictionary *paths = _fcontent[TCCONF_KEY_PATHS];
+		
+		if (!paths)
+		{
+			paths = [[NSMutableDictionary alloc] init];
+			
+			_fcontent[TCCONF_KEY_PATHS] = paths;
+		}
+		
+		// Handle components.
+		NSString			*componentKey = [self componentKeyForComponent:component];
+		NSMutableDictionary	*componentConfig = paths[componentKey];
+		
+		// > Create component if not exist.
+		if (!componentConfig)
+		{
+			componentConfig = [[NSMutableDictionary alloc] init];
+			
+			paths[componentKey] = componentConfig;
+		}
+		
+		// > Store / remove component subpath.
+		if (path)
+			componentConfig[TCCONF_KEY_PATH_SUBPATH] = path;
+		else
+			[componentConfig removeObjectForKey:TCCONF_KEY_PATH_SUBPATH];
+		
+		// > Store component path type.
+		componentConfig[TCCONF_KEY_PATH_TYPE] = [self pathTypeValueForPathType:pathType];
+
+		// > Mark dirty.
+		[self _markDirty];
+		
+		// Notify.
+		[self _notifyPathChangeForComponent:component oldPath:oldPath];
+	});
+	
+	return YES;
+}
+
+- (NSString *)pathForComponent:(TConfigPathComponent)component fullPath:(BOOL)fullPath
+{
+	__block NSString *result;
+	
+	dispatch_sync(_localQueue, ^{
+		result = [self _pathForComponent:component fullPath:fullPath];
+	});
+	
+	return result;
+}
+
+- (TConfigPathType)pathTypeForComponent:(TConfigPathComponent)component
+{
+	__block TConfigPathType result;
+	
+	dispatch_sync(_localQueue, ^{
+		result = [self _pathTypeForComponent:component];
+	});
+	
+	return result;
+}
+
+
+#pragma mark Public - Observers
+
+- (id)addPathObserverForComponent:(TConfigPathComponent)component queue:(dispatch_queue_t)queue usingBlock:(void (^)(NSString *previousPath, NSString *newPath))block
+{
+	// Check parameters.
+	if (!block)
 		return nil;
 	
-	// Handle places.
-	NSMutableDictionary *domainConfig = _fcontent[TCCONF_KEY_PATHS][pathKey];
-	NSString			*domainPlace = domainConfig[TCCONF_KEY_PATH_PLACE];
-	NSString			*domainSubpath = domainConfig[TCCONF_KEY_PATH_SUBPATH];
-
-	if (!domainPlace)
-		domainPlace = TCCONF_VALUE_PATH_PLACE_REFERAL;
+	if (!queue)
+		queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 	
-	if ([domainPlace isEqualToString:TCCONF_VALUE_PATH_PLACE_REFERAL])
-	{
-		NSString *path = [self pathForDomain:TConfigPathDomainReferal];
+	// Create result object.
+	NSDictionary *result = @{ @"component" : @(component), @"queue" : queue, @"block" : block };
+	
+	// Add to observers.
+	dispatch_barrier_async(_localQueue, ^{
 		
-		if (domainSubpath)
-			return [path stringByAppendingPathComponent:domainSubpath];
-		else
-			return [path stringByAppendingPathComponent:referalSubPath];
-	}
-	else if ([domainPlace isEqualToString:TCCONF_VALUE_PATH_PLACE_STANDARD])
-	{
-		NSURL *url = [[NSFileManager defaultManager] URLForDirectory:standardPathDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:YES error:nil];
+		// > Create master observers.
+		if (!_pathObservers)
+			_pathObservers = [[NSMutableDictionary alloc] init];
 		
-		if (!url)
+		// > Get observers for this component.
+		NSMutableArray *observers = _pathObservers[@(component)];
+		
+		if (!observers)
+		{
+			observers = [[NSMutableArray alloc] init];
+			_pathObservers[@(component)] = observers;
+		}
+		
+		// > Add this observer to the list.
+		[observers addObject:result];
+	});
+
+	return result;
+}
+
+- (void)removePathObserver:(id)observer
+{
+	if (!observer)
+		return;
+	
+	NSDictionary	*info = observer;
+	NSNumber		*component = info[@"component"];
+	
+	dispatch_barrier_async(_localQueue, ^{
+
+		NSMutableArray *array = _pathObservers[component];
+		
+		[array removeObjectIdenticalTo:info];
+	});
+}
+
+
+#pragma mark Helpers - Path
+
+- (NSString *)componentKeyForComponent:(TConfigPathComponent)component
+{
+	switch (component)
+	{
+		case TConfigPathComponentReferal:
 			return nil;
-		
-		url = [url URLByAppendingPathComponent:standardSubPath isDirectory:YES];
-		
-		if (!url)
-			return nil;
-		
-		return [url path];
-	}
-	else if ([domainPlace isEqualToString:TCCONF_VALUE_PATH_PLACE_ABSOLUTE])
-	{
-		return domainSubpath;
+			
+		case TConfigPathComponentTorBinary:
+			return TCCONF_KEY_PATH_TOR_BIN;
+			
+		case TConfigPathComponentTorData:
+			return TCCONF_KEY_PATH_TOR_DATA;
+			
+		case TConfigPathComponentTorIdentity:
+			return TCCONF_KEY_PATH_TOR_IDENTITY;
+			
+		case TConfigPathComponentDownloads:
+			return TCCONF_KEY_PATH_DOWNLOADS;
 	}
 	
 	return nil;
 }
 
-
-- (BOOL)setDomain:(TConfigPathDomain)domain place:(TConfigPathPlace)place subpath:(NSString *)subpath
+- (NSString *)pathTypeValueForPathType:(TConfigPathType)pathType
 {
-	// Handle domain.
-	NSString *pathKey = nil;
-
-	switch (domain)
+	switch (pathType)
 	{
-		case TConfigPathDomainReferal:
-		{
-			// Check parameter.
-			BOOL isDirectory = NO;
+		case TConfigPathTypeReferal:
+			return TCCONF_VALUE_PATH_TYPE_REFERAL;
 			
-			if ([[NSFileManager defaultManager] fileExistsAtPath:subpath isDirectory:&isDirectory] && isDirectory == NO)
-				return NO;
+		case TConfigPathTypeStandard:
+			return TCCONF_VALUE_PATH_TYPE_STANDARD;
 			
-			// Prepare move.
-			NSString *configFileName = [_fpath lastPathComponent];
-			NSString *newPath = [subpath stringByAppendingPathComponent:configFileName];
-			
-			// Move.
-			if ([[NSFileManager defaultManager] moveItemAtPath:_fpath toPath:newPath error:nil] == NO)
-				return NO;
-			
-			// Hold new path.
-			_fpath = newPath;
-			
-			return YES;
-		}
-			
-		case TConfigPathDomainTorBinary:
-		{
-			pathKey = TCCONF_KEY_PATH_TOR_BIN;
-			break;
-		}
-			
-		case TConfigPathDomainTorData:
-		{
-			pathKey = TCCONF_KEY_PATH_TOR_DATA;
-			break;
-		}
-			
-		case TConfigPathDomainTorIdentity:
-		{
-			pathKey = TCCONF_KEY_PATH_TOR_IDENTITY;
-			break;
-		}
-			
-		case TConfigPathDomainDownloads:
-		{
-			pathKey = TCCONF_KEY_PATH_DOWNLOADS;
-			break;
-		}
+		case TConfigPathTypeAbsolute:
+			return TCCONF_VALUE_PATH_TYPE_ABSOLUTE;
 	}
 	
-	// Handle paths.
-	NSMutableDictionary *paths = _fcontent[TCCONF_KEY_PATHS];
-	
-	if (!paths)
-	{
-		paths = [[NSMutableDictionary alloc] init];
-		
-		_fcontent[TCCONF_KEY_PATHS] = paths;
-	}
-	
-	// Handle places.
-	NSMutableDictionary *domainConfig = paths[pathKey];
-	
-	if (!domainConfig)
-	{
-		domainConfig = [[NSMutableDictionary alloc] init];
-		
-		paths[pathKey] = domainConfig;
-	}
-	
-	if (!subpath)
-		[paths removeObjectForKey:pathKey];
-	else
-		domainConfig[TCCONF_KEY_PATH_SUBPATH] = subpath;
-	
-	switch (place)
-	{
-		case TConfigPathPlaceReferal:
-			domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_REFERAL;
-			break;
-			
-		case TConfigPathPlaceStandard:
-			domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_STANDARD;
-			break;
-			
-		case TConfigPathPlaceAbsolute:
-			domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_ABSOLUTE;
-			break;
-	}
-	
-	// Save
-	[self saveConfig];
-	
-	return YES;
+	return nil;
 }
+
+- (NSString *)_pathForComponent:(TConfigPathComponent)component fullPath:(BOOL)fullPath
+{
+	// > localQueue <
+	
+	// Get default subpath.
+	NSString	*standardSubPath = nil;
+	NSString	*referalSubPath = nil;
+	
+	switch (component)
+	{
+		case TConfigPathComponentReferal:
+		{
+			if (fullPath)
+				return [_fpath stringByDeletingLastPathComponent];
+			else
+				return nil;
+		}
+			
+		case TConfigPathComponentTorBinary:
+		{
+			standardSubPath = @"/TorChat/Tor/";
+			referalSubPath = @"/tor/bin/";
+			break;
+		}
+			
+		case TConfigPathComponentTorData:
+		{
+			standardSubPath = @"/TorChat/TorData/";
+			referalSubPath = @"/tor/data/";
+			break;
+		}
+			
+		case TConfigPathComponentTorIdentity:
+		{
+			standardSubPath = @"/TorChat/TorIdentity/";
+			referalSubPath = @"/tor/identity/";
+			break;
+		}
+			
+		case TConfigPathComponentDownloads:
+		{
+			standardSubPath = @"/TorChat/";
+			referalSubPath = @"/Downloads/";
+			break;
+		}
+	}
+	
+	// Get component key.
+	NSString *componentKey = [self componentKeyForComponent:component];
+	
+	if (!componentKey)
+		return nil;
+	
+	// Get component config.
+	NSDictionary	*componentConfig = _fcontent[TCCONF_KEY_PATHS][componentKey];
+	TConfigPathType	componentPathType = [self _pathTypeForComponent:component];
+	NSString		*componentPath = componentConfig[TCCONF_KEY_PATH_SUBPATH];
+ 
+	// Compose path according to path type.
+	switch (componentPathType)
+	{
+		case TConfigPathTypeReferal:
+		{
+			// > Get subpath.
+			NSString *subPath;
+			
+			if (componentPath)
+				subPath = componentPath;
+			else
+				subPath = referalSubPath;
+			
+			// > Compose path.
+			if (fullPath)
+			{
+				NSString *path = [self _pathForComponent:TConfigPathComponentReferal fullPath:YES];
+				
+				return [[path stringByAppendingPathComponent:subPath] stringByStandardizingPath];
+			}
+			else
+				return subPath;
+		}
+			
+		case TConfigPathTypeStandard:
+		{
+			// > Compose path.
+			if (fullPath)
+			{
+				// >> Get standard path directory.
+				NSSearchPathDirectory standardPathDirectory;
+				
+				switch (component)
+				{
+					case TConfigPathComponentReferal	: return nil; // never called.
+					case TConfigPathComponentTorBinary	: standardPathDirectory = NSApplicationSupportDirectory; break;
+					case TConfigPathComponentTorData	: standardPathDirectory = NSApplicationSupportDirectory; break;
+					case TConfigPathComponentTorIdentity: standardPathDirectory = NSApplicationSupportDirectory; break;
+					case TConfigPathComponentDownloads	: standardPathDirectory = NSDownloadsDirectory;	break;
+				}
+				
+				// >> Get URL of the standard path directory.
+				NSURL *url = [[NSFileManager defaultManager] URLForDirectory:standardPathDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:YES error:nil];
+				
+				if (!url)
+					return nil;
+				
+				// >> Create full path.
+				url = [url URLByAppendingPathComponent:standardSubPath isDirectory:YES];
+				
+				if (!url)
+					return nil;
+				
+				return [[url path] stringByStandardizingPath];
+			}
+			else
+				return standardSubPath;
+		}
+			
+		case TConfigPathTypeAbsolute:
+		{
+			if (fullPath)
+				return [componentPath stringByStandardizingPath];
+			else
+				return componentPath;
+		}
+	}
+	
+	return nil;
+}
+
+- (TConfigPathType)_pathTypeForComponent:(TConfigPathComponent)component
+{
+	// > localQueue <
+	
+	NSString *componentKey = [self componentKeyForComponent:component];
+	
+	if (!componentKey)
+		return TConfigPathTypeReferal;
+	
+	NSDictionary	*componentConfig = _fcontent[TCCONF_KEY_PATHS][componentKey];
+	NSString		*componentPathType = componentConfig[TCCONF_KEY_PATH_TYPE];
+	
+	if ([componentPathType isEqualToString:TCCONF_VALUE_PATH_TYPE_REFERAL])
+		return TConfigPathTypeReferal;
+	else if ([componentPathType isEqualToString:TCCONF_VALUE_PATH_TYPE_STANDARD])
+		return TConfigPathTypeStandard;
+	else if ([componentPathType isEqualToString:TCCONF_VALUE_PATH_TYPE_ABSOLUTE])
+		return TConfigPathTypeAbsolute;
+	
+	return TConfigPathTypeReferal;
+}
+
+
+#pragma mark Helpers - Observers
+
+- (BOOL)_componentIsObserved:(TConfigPathComponent)component
+{
+	// > localQueue <
+
+	return (_pathObservers[@(component)] != nil);
+}
+
+- (void)_notifyPathChangeForComponent:(TConfigPathComponent)component oldPath:(NSString *)oldPath
+{
+	// > localQueue <
+	
+	if (!oldPath)
+		return;
+	
+	// Get observers for this component.
+	NSArray *observers = _pathObservers[@(component)];
+	
+	if (!observers)
+		return;
+	
+	// Compute new path.
+	NSString *newPath = [self _pathForComponent:component fullPath:YES];
+	
+	if ([oldPath isEqualToString:newPath])
+		return;
+	
+	// Notify each observers.
+	for (NSDictionary *observer in observers)
+	{
+		void (^block)(NSString *previousPath, NSString *newPath) = observer[@"block"];
+		dispatch_queue_t queue = observer[@"queue"];
+		
+		dispatch_async(queue, ^{
+			block(oldPath, newPath);
+		});
+	}
+}
+
 
 
 
@@ -1168,9 +1499,35 @@
 
 
 /*
+** TCConfigPlist - synchronize
+*/
+#pragma mark - TCConfigPlist - synchronize
+
+- (void)synchronize
+{
+	dispatch_barrier_sync(_localQueue, ^{
+		
+		if (_isDirty)
+		{
+			[self saveConfig:_fcontent toFile:_fpath];
+			_isDirty = NO;
+		}
+	});
+}
+
+
+
+/*
 ** TCConfigPlist - Helpers
 */
 #pragma mark - TCConfigPlist - Helpers
+
+- (void)_markDirty
+{
+	_isDirty = YES;
+	// > localQueue <
+#warning FIXME : create a timer to save data after a while.
+}
 
 - (NSMutableDictionary *)loadConfig:(NSData *)data
 {
@@ -1206,23 +1563,23 @@
 				
 				if (oldTorData)
 				{
-					NSMutableDictionary *domainConfig = [[NSMutableDictionary alloc] init];
+					NSMutableDictionary *componentConfig = [[NSMutableDictionary alloc] init];
 					
-					domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_ABSOLUTE;
-					domainConfig[TCCONF_KEY_PATH_SUBPATH] = [oldTorData stringByExpandingTildeInPath];
+					componentConfig[TCCONF_KEY_PATH_TYPE] = TCCONF_VALUE_PATH_TYPE_ABSOLUTE;
+					componentConfig[TCCONF_KEY_PATH_SUBPATH] = [oldTorData stringByExpandingTildeInPath];
 
-					paths[TCCONF_KEY_PATH_TOR_DATA] = domainConfig;
+					paths[TCCONF_KEY_PATH_TOR_DATA] = componentConfig;
 					
 					[content removeObjectForKey:@"tor_data_path"];
 				}
 				else
 				{
-					NSMutableDictionary *domainConfig = [[NSMutableDictionary alloc] init];
+					NSMutableDictionary *componentConfig = [[NSMutableDictionary alloc] init];
 
-					domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_REFERAL;
-					domainConfig[TCCONF_KEY_PATH_SUBPATH] = @"tordata/";
+					componentConfig[TCCONF_KEY_PATH_TYPE] = TCCONF_VALUE_PATH_TYPE_REFERAL;
+					componentConfig[TCCONF_KEY_PATH_SUBPATH] = @"tordata/";
 					
-					paths[TCCONF_KEY_PATH_TOR_DATA] = domainConfig;
+					paths[TCCONF_KEY_PATH_TOR_DATA] = componentConfig;
 				}
 				
 				// > Tor hidden path.
@@ -1230,21 +1587,21 @@
 				
 				if (oldTorHidden)
 				{
-					NSMutableDictionary *domainConfig = [[NSMutableDictionary alloc] init];
+					NSMutableDictionary *componentConfig = [[NSMutableDictionary alloc] init];
 					
-					domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_ABSOLUTE;
-					domainConfig[TCCONF_KEY_PATH_SUBPATH] = [oldTorHidden stringByExpandingTildeInPath];
+					componentConfig[TCCONF_KEY_PATH_TYPE] = TCCONF_VALUE_PATH_TYPE_ABSOLUTE;
+					componentConfig[TCCONF_KEY_PATH_SUBPATH] = [oldTorHidden stringByExpandingTildeInPath];
 					
-					paths[TCCONF_KEY_PATH_TOR_IDENTITY] = domainConfig;
+					paths[TCCONF_KEY_PATH_TOR_IDENTITY] = componentConfig;
 				}
 				else
 				{
-					NSMutableDictionary *domainConfig = [[NSMutableDictionary alloc] init];
+					NSMutableDictionary *componentConfig = [[NSMutableDictionary alloc] init];
 					
-					domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_REFERAL;
-					domainConfig[TCCONF_KEY_PATH_SUBPATH] = @"tordata/hidden/";
+					componentConfig[TCCONF_KEY_PATH_TYPE] = TCCONF_VALUE_PATH_TYPE_REFERAL;
+					componentConfig[TCCONF_KEY_PATH_SUBPATH] = @"tordata/hidden/";
 					
-					paths[TCCONF_KEY_PATH_TOR_IDENTITY] = domainConfig;
+					paths[TCCONF_KEY_PATH_TOR_IDENTITY] = componentConfig;
 				}
 				
 				// > Download path.
@@ -1252,23 +1609,23 @@
 
 				if (oldDownload)
 				{
-					NSMutableDictionary *domainConfig = [[NSMutableDictionary alloc] init];
+					NSMutableDictionary *componentConfig = [[NSMutableDictionary alloc] init];
 					
-					domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_ABSOLUTE;
-					domainConfig[TCCONF_KEY_PATH_SUBPATH] = [oldDownload stringByExpandingTildeInPath];
+					componentConfig[TCCONF_KEY_PATH_TYPE] = TCCONF_VALUE_PATH_TYPE_ABSOLUTE;
+					componentConfig[TCCONF_KEY_PATH_SUBPATH] = [oldDownload stringByExpandingTildeInPath];
 					
-					paths[TCCONF_KEY_PATH_DOWNLOADS] = domainConfig;
+					paths[TCCONF_KEY_PATH_DOWNLOADS] = componentConfig;
 					
 					[content removeObjectForKey:@"download_path"];
 				}
 				else
 				{
-					NSMutableDictionary *domainConfig = [[NSMutableDictionary alloc] init];
+					NSMutableDictionary *componentConfig = [[NSMutableDictionary alloc] init];
 					
-					domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_REFERAL;
-					domainConfig[TCCONF_KEY_PATH_SUBPATH] = @"Downloads/";
+					componentConfig[TCCONF_KEY_PATH_TYPE] = TCCONF_VALUE_PATH_TYPE_REFERAL;
+					componentConfig[TCCONF_KEY_PATH_SUBPATH] = @"Downloads/";
 					
-					paths[TCCONF_KEY_PATH_DOWNLOADS] = domainConfig;
+					paths[TCCONF_KEY_PATH_DOWNLOADS] = componentConfig;
 				}
 
 				content[TCCONF_KEY_PATHS] = paths;
@@ -1297,35 +1654,44 @@
 	return content;
 }
 
-- (void)saveConfig
+- (BOOL)saveConfig:(NSDictionary *)config toFile:(NSString *)path
 {
-	NSData *data = [NSPropertyListSerialization dataWithPropertyList:_fcontent format:NSPropertyListXMLFormat_v1_0 options:0 error:nil];
+	if (!config)
+		return NO;
+	
+	// Serialize data.
+	NSData *data = [NSPropertyListSerialization dataWithPropertyList:config format:NSPropertyListXMLFormat_v1_0 options:0 error:nil];
 	
 	if (!data)
-		return;
+		return NO;
 	
 #if defined(PROXY_ENABLED) && PROXY_ENABLED
 	
-	// Save by using proxy
+	// Save by using proxy.
 	if (_proxy)
 	{
 		@try
 		{
 			[_proxy setConfigContent:data];
+			return YES;
 		}
 		@catch (NSException *exception)
 		{
 			_proxy = nil;
 			
 			NSLog(@"Configuration proxy unavailable");
+			
+			return NO;
 		}
 	}
 	
 #endif
 	
-	// Save by using file
-	if (_fpath)
-		[data writeToFile:_fpath atomically:YES];
+	// Save by using file.
+	if (path)
+		return [data writeToFile:path atomically:YES];
+	
+	return NO;
 }
 
 @end

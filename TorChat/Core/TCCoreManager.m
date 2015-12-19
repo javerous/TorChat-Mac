@@ -1,7 +1,7 @@
 /*
  *  TCContoller.h
  *
- *  Copyright 2014 Avérous Julien-Pierre
+ *  Copyright 2016 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -694,7 +694,6 @@
 	if (!_config)
 		return;
 	
-	// XXX not thread safe
 	NSArray	*blocked = [_config blockedBuddies];
 	size_t	i, cnt = [blocked count];
 	

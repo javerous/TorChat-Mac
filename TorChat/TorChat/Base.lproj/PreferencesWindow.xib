@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6724" systemVersion="14B25" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6724"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9531"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCPreferencesWindowController">
             <connections>
-                <outlet property="mainWindow" destination="1" id="3"/>
                 <outlet property="window" destination="1" id="lvS-OI-Gaa"/>
             </connections>
         </customObject>
@@ -37,7 +36,7 @@
                             <action selector="doToolbarItem:" target="-2" id="198"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="503AF026-181D-4DA5-A645-F94CA7A8C303" explicitItemIdentifier="locations" label="Locations" paletteLabel="Locations" tag="-1" id="UEu-Ia-LhZ">
+                    <toolbarItem implicitItemIdentifier="503AF026-181D-4DA5-A645-F94CA7A8C303" explicitItemIdentifier="locations" label="Locations" paletteLabel="Locations" tag="-1" image="locations" selectable="YES" id="UEu-Ia-LhZ">
                         <connections>
                             <action selector="doToolbarItem:" target="-2" id="dHM-hm-xrG"/>
                         </connections>
@@ -61,5 +60,6 @@
         <image name="NSNetwork" width="32" height="32"/>
         <image name="NSPreferencesGeneral" width="32" height="32"/>
         <image name="NSUserGroup" width="32" height="32"/>
+        <image name="locations" width="32" height="32"/>
     </resources>
 </document>

@@ -1,7 +1,7 @@
 /*
  *  TCChatViewController.m
  *
- *  Copyright 2014 Avérous Julien-Pierre
+ *  Copyright 2016 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -46,7 +46,7 @@
 @property (strong, nonatomic) IBOutlet NSBox				*lineView;
 @property (strong, nonatomic) IBOutlet TCThreePartImageView	*backView;
 
-@property (strong, nonatomic) NSString *identifier;
+@property (strong, nonatomic) NSString *bidentifier;
 
 // -- IBAction --
 - (IBAction)textAction:(id)sender;
@@ -79,7 +79,7 @@
 	TCChatViewController *result = [[TCChatViewController alloc] init];
 	
 	result.name = name;
-	result.identifier = identifier;
+	result.bidentifier = identifier;
 	result.delegate = delegate;
 
 	return result;

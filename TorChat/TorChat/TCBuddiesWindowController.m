@@ -1,7 +1,7 @@
 /*
  *  TCBuddiesController.m
  *
- *  Copyright 2014 Avérous Julien-Pierre
+ *  Copyright 2016 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -1297,9 +1297,7 @@
 		return;
 	
 	TCChatWindowController	*chatCtrl = [TCChatWindowController sharedController];
-	NSString				*identifier;
-	
-	identifier = [buddy address];
+	NSString				*address = [buddy address];
 	
 	// Start chat.
 	TCImage *tcImage = [buddy profileAvatar];
@@ -1308,11 +1306,11 @@
 	if (!image)
 		image = [NSImage imageNamed:NSImageNameUser];
 	
-	[chatCtrl startChatWithIdentifier:identifier name:[buddy finalName] localAvatar:[_imAvatar image] remoteAvatar:image context:buddy delegate:self];
+	[chatCtrl startChatWithIdentifier:address name:[buddy finalName] localAvatar:[_imAvatar image] remoteAvatar:image context:buddy delegate:self];
 		
 	// Select it.
 	if (select)
-		[chatCtrl selectChatWithIdentifier:identifier];
+		[chatCtrl selectChatWithIdentifier:address];
 }
 
 - (TCBuddy *)selectedBuddy

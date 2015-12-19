@@ -1,7 +1,7 @@
 /*
  *  TCPreferencesWindowController.m
  *
- *  Copyright 2014 Avérous Julien-Pierre
+ *  Copyright 2016 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -92,13 +92,13 @@
 }
 
 - (void)windowDidLoad
-{	
+{
+	// Select the default view
+	[self loadViewIdentifier:@"general" animated:NO];
+	
 	// Place Window
 	[self.window center];
 	[self.window setFrameAutosaveName:@"PreferencesWindow"];
-	
-	// Select the default view
-	[self loadViewIdentifier:@"general" animated:NO];
 }
 
 
@@ -129,29 +129,30 @@
 	if ([[[self.window toolbar] selectedItemIdentifier] isEqualToString:identifier] == NO)
 		[[self.window toolbar] setSelectedItemIdentifier:identifier];
 	
-	// Save current view config
+	// Save current view config.
 	_currentCtrl.config = config;
 	[_currentCtrl saveConfig];
 	
-	// Load new view config
+	// Load new view config.
 	viewCtrl.config = config;
 	[viewCtrl loadConfig];
 		
-	// Load view
 	NSView *view = viewCtrl.view;
 	
+	// Compute target rect.
+	NSRect	rect = [self.window frame];
+	NSSize	csize = [[self.window contentView] frame].size;
+	NSSize	size = [view frame].size;
+	CGFloat	previous = rect.size.height;
+	
+	rect.size.width = (rect.size.width - csize.width) + size.width;
+	rect.size.height = (rect.size.height - csize.height) + size.height;
+	
+	rect.origin.y += (previous - rect.size.height);
+	
+	// Load view/
 	if (animated)
 	{
-		NSRect	rect = [self.window frame];
-		NSSize	csize = [[self.window contentView] frame].size;
-		NSSize	size = [view frame].size;
-		CGFloat	previous = rect.size.height;
-		
-		rect.size.width = (rect.size.width - csize.width) + size.width;
-		rect.size.height = (rect.size.height - csize.height) + size.height;
-				
-		rect.origin.y += (previous - rect.size.height);
-		
 		[NSAnimationContext beginGrouping];
 		{
 			[[NSAnimationContext currentContext] setDuration:0.125];
@@ -165,6 +166,7 @@
 	{
 		[_currentCtrl.view removeFromSuperview];
 		[[self.window contentView] addSubview:view];
+		[self.window setFrame:rect display:YES];
 	}
 	
 	// Hold the current controller.

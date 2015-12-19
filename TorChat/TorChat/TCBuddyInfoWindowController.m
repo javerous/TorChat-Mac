@@ -1,7 +1,7 @@
 /*
  *  TCBuddyInfoController.m
  *
- *  Copyright 2014 Avérous Julien-Pierre
+ *  Copyright 2016 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -366,6 +366,7 @@ static dispatch_queue_t	gQueue;
 
 - (void)windowDidResize:(NSNotification *)notification
 {
+#warning Call a methode which can be called in windowDidLoad
 	NSSize		sz = self.window.frame.size;
 	NSInteger	i, count = [_toolBar segmentCount];
 	CGFloat		swidth = sz.width / count;

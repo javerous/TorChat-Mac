@@ -1,7 +1,7 @@
 /*
  *  main.m
  *
- *  Copyright 2014 Avrous Julien-Pierre
+ *  Copyright 2016 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
