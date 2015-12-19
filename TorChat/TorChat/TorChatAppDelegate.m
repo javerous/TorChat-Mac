@@ -1,7 +1,7 @@
 /*
  *  TorChatAppDelegate.m
  *
- *  Copyright 2014 Avérous Julien-Pierre
+ *  Copyright 2016 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -80,37 +80,26 @@
 
 
 /*
-** TorChatAppDelegate - Launch
+** TorChatAppDelegate - Life
 */
-#pragma mark - TorChatAppDelegate - Launch
+#pragma mark - TorChatAppDelegate - Life
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-	/*
-	[[TCFilesWindowController sharedController] startFileTransfert:@"8888888" withFilePath:@"/" buddyAddress:@"xxxxx" buddyName:@"Truc" transfertWay:tcfile_download fileSize:1024];
-	[[TCFilesWindowController sharedController] startFileTransfert:@"8888888" withFilePath:@"/" buddyAddress:@"xxxxx" buddyName:@"Truc" transfertWay:tcfile_upload fileSize:1024];
-
-	return;
-	*/
-	
-	/*
-	[[TCChatWindowController sharedController] startChatWithIdentifier:@"xx" name:@"Tutu" localAvatar:nil remoteAvatar:nil context:nil delegate:nil];
-	[[TCChatWindowController sharedController] startChatWithIdentifier:@"yy" name:@"Toto" localAvatar:nil remoteAvatar:nil context:nil delegate:nil];
-
-	[[TCChatWindowController sharedController] receiveMessage:@"Ceci est un test" forIdentifier:@"yy"];
-	[[TCChatWindowController sharedController] receiveMessage:@"Ceci est un test" forIdentifier:@"yy"];
-
-	return;
-	*/
-	
-	// Observe buddy select change
+	// Observe buddy select change.
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddySelectChanged:) name:TCBuddiesWindowControllerSelectChanged object:nil];
 
-	// Observe buddy blocked change
+	// Observe buddy blocked change.
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddyBlockedChanged:) name:TCCocoaBuddyChangedBlockedNotification object:nil];
 	
-	// Start TorChat
+	// Start TorChat.
 	[[TCMainController sharedController] start];
+}
+
+- (void)applicationWillTerminate:(NSNotification *)notification
+{
+	// Stop TorChat
+	[[TCMainController sharedController] stop];
 }
 
 

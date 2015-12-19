@@ -1,7 +1,7 @@
 /*
  *  TCChatTranscriptViewController.m
  *
- *  Copyright 2014 Avérous Julien-Pierre
+ *  Copyright 2016 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -75,7 +75,7 @@ NSMutableDictionary	*gAvatarCache;
 */
 #pragma mark - TCChatTranscriptViewController - Private
 
-@interface TCChatTranscriptViewController ()
+@interface TCChatTranscriptViewController () <WebUIDelegate, WebFrameLoadDelegate>
 {
 	WebView			*_webView;
 	NSDictionary	*_template;

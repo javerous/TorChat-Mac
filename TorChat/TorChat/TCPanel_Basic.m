@@ -1,7 +1,7 @@
 /*
  *  TCPanel_Basic.m
  *
- *  Copyright 2014 Avérous Julien-Pierre
+ *  Copyright 2016 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -154,7 +154,7 @@
 	}
 	
 	// Set download path.
-	NSString *path = [_config pathForDomain:TConfigPathDomainDownloads];
+	NSString *path = [_config pathForComponent:TConfigPathComponentDownloads fullPath:YES];
 	
 	if ([[NSFileManager defaultManager] fileExistsAtPath:path] == NO)
 	{
@@ -234,7 +234,7 @@
 	
 	if (path)
 	{
-		[_config setDomain:TConfigPathDomainDownloads place:TConfigPathPlaceAbsolute subpath:path];
+		[_config setPathForComponent:TConfigPathComponentDownloads pathType:TConfigPathTypeAbsolute path:path];
 		
 		if ([[path lastPathComponent] isEqualToString:@"Downloads"])
 			[[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"] atomically:NO];

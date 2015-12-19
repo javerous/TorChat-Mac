@@ -3,7 +3,7 @@
 //  TorChat
 //
 //  Created by Julien-Pierre Avérous on 14/01/2015.
-//  Copyright (c) 2015 SourceMac. All rights reserved.
+//  Copyright (c) 2016 SourceMac. All rights reserved.
 //
 
 #import "TCPrefView_Network.h"

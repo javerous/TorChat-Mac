@@ -1,7 +1,7 @@
 /*
  *  TCBuddy.cpp
  *
- *  Copyright 2014 Avérous Julien-Pierre
+ *  Copyright 2016 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -1314,7 +1314,7 @@ static char gLocalQueueContext;
 	NSString *sfilename_2 = [sfilename_1 stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
 	
 	// Get the download folder
-	NSString *downPath = [[_config pathForDomain:TConfigPathDomainDownloads] stringByAppendingPathComponent:_address];
+	NSString *downPath = [[_config pathForComponent:TConfigPathComponentDownloads fullPath:YES] stringByAppendingPathComponent:_address];
 	
 	[[NSFileManager defaultManager] createDirectoryAtPath:downPath withIntermediateDirectories:YES attributes:nil error:nil];
 	

@@ -1,7 +1,7 @@
 /*
  *  TCPanel_Advanced.m
  *
- *  Copyright 2014 Avérous Julien-Pierre
+ *  Copyright 2016 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -113,7 +113,7 @@
 	// Set up the config with the fields
 	[aconfig setTorAddress:[_torAddressField stringValue]];
 	[aconfig setSelfAddress:[_imAddressField stringValue]];
-	[aconfig setDomain:TConfigPathDomainDownloads place:TConfigPathPlaceAbsolute subpath:[[_imDownloadPath URL] path]];
+	[aconfig setPathForComponent:TConfigPathComponentDownloads pathType:TConfigPathTypeAbsolute path:_imDownloadPath.URL.path];
 	
 	[aconfig setTorPort:(uint16_t)[_torPortField intValue]];
 	[aconfig setClientPort:(uint16_t)[_imInPortField intValue]];

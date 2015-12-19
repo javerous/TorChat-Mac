@@ -1,7 +1,7 @@
 /*
  *  TCTorManager.m
  *
- *  Copyright 2014 Avérous Julien-Pierre
+ *  Copyright 2016 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -50,14 +50,29 @@
 */
 #pragma mark - Defines
 
-#define TCTorManagerFileSignature	@"Signature"
-#define TCTorManagerFileBinaries	@"Binaries"
-#define TCTorManagerFileInfo		@"Info.plist"
-#define TCTorManagerFileTor			@"tor"
+// Binary
+#define TCTorManagerFileBinSignature	@"Signature"
+#define TCTorManagerFileBinBinaries		@"Binaries"
+#define TCTorManagerFileBinInfo			@"Info.plist"
+#define TCTorManagerFileBinTor			@"tor"
 
-#define TCTorManagerKeyFiles		@"files"
-#define TCTorManagerKeyTorVersion	@"tor_version"
-#define TCTorManagerKeyHash			@"hash"
+#define TCTorManagerKeyInfoFiles		@"files"
+#define TCTorManagerKeyInfoTorVersion	@"tor_version"
+#define TCTorManagerKeyInfoHash			@"hash"
+
+#define TCTorManagerKeyArchiveSize		@"size"
+#define TCTorManagerKeyArchiveName		@"name"
+#define TCTorManagerKeyArchiveVersion	@"version"
+#define TCTorManagerKeyArchiveHash		@"hash"
+
+// Identity
+#define TCTorManagerFileIdentityHostname	@"hostname"
+#define TCTorManagerFileIdentityPrivate		@"private_key"
+
+// Context
+#define TCTorManagerBaseUpdateURL			@"http://www.sourcemac.com/tor/%@"
+#define TCTorManagerInfoUpdateURL			@"http://www.sourcemac.com/tor/info.plist"
+#define TCTorManagerInfoSignatureUpdateURL	@"http://www.sourcemac.com/tor/info.plist.sig"
 
 
 
@@ -132,6 +147,8 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	NSFileHandle		*_outHandle;
 	
 	NSString			*_hidden;
+	
+	id <NSObject>		_terminationObserver;
 }
 
 @end
@@ -172,9 +189,12 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		
 		// Handle configuration.
 		_configuration = configuration;
+#warning Add observer for tor paths, so we can move datas.
 		
 		// Handle application standard termination.
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillTerminate:) name:NSApplicationWillTerminateNotification object:nil];
+		_terminationObserver = [[NSNotificationCenter defaultCenter] addObserverForName:NSApplicationWillTerminateNotification object:nil queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+			[self _terminateTor];
+		}];
 		
 		// SIGTERM handle.
 		signal(SIGTERM, SIG_IGN);
@@ -187,32 +207,6 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		});
 		
 		dispatch_resume(_termSource);
-		
-		/*
-		[self operationStageArchiveFile:[NSURL URLWithString:@"/Users/jp/Dropbox/Sources/TorChat-Mac/tor-update/TorChat/Resources/tor.tgz"] completionHandler:^(BOOL error) {
-			
-			if (error)
-			{
-				NSLog(@"Error: Can't stage archive");
-				return;
-			}
-			
-			[self operationCheckSignatureWithCompletionHandler:^(BOOL serror) {
-				
-				if (serror)
-				{
-					NSLog(@"Error: Signature invalid.");
-					return;
-				}
-				
-				NSLog(@"Info: Signature valid.");
-				
-				[self operationLaunchTor:^(BOOL terror) {
-					
-				}];
-			}];
-		}];
-		 */
 	}
     
     return self;
@@ -221,7 +215,7 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 - (void)dealloc
 {
 	// Stop notification.
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[[NSNotificationCenter defaultCenter] removeObserver:_terminationObserver];
 		
 	// Kill the task
 	[_task waitUntilExit];
@@ -234,18 +228,6 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	// Kill the timer
 	if (_testTimer)
 		dispatch_source_cancel(_testTimer);
-}
-
-
-
-/*
-** TCTorManager - Notification
-*/
-#pragma mark - TCTorManager - Notification
-
-- (void)applicationWillTerminate:(NSNotification *)notice
-{
-	[self _terminateTor];
 }
 
 
@@ -322,9 +304,9 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 			
 			// Check that the binary is already there.
 			NSFileManager	*manager = [NSFileManager defaultManager];
-			NSString		*path = [_configuration pathForDomain:TConfigPathDomainTorBinary];
+			NSString		*path = [_configuration pathForComponent:TConfigPathComponentTorBinary fullPath:YES];
 			
-			path = [[path stringByAppendingPathComponent:TCTorManagerFileBinaries] stringByAppendingPathComponent:TCTorManagerFileTor];
+			path = [[path stringByAppendingPathComponent:TCTorManagerFileBinBinaries] stringByAppendingPathComponent:TCTorManagerFileBinTor];
 			
 			if ([manager fileExistsAtPath:path] == YES)
 			{
@@ -400,7 +382,7 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 			NSLog(@"Wait hostname...");
 			
 			// Get the hostname file path.
-			NSString *htnamePath = [[_configuration pathForDomain:TConfigPathDomainTorIdentity] stringByAppendingPathComponent:@"hostname"];
+			NSString *htnamePath = [[_configuration pathForComponent:TConfigPathComponentTorIdentity fullPath:YES] stringByAppendingPathComponent:TCTorManagerFileIdentityHostname];
 			
 			if (!htnamePath)
 			{
@@ -557,7 +539,7 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 					{
 						NSDictionary *remoteInfo = info.context;
 						
-						remoteVersion = remoteInfo[@"version"];
+						remoteVersion = remoteInfo[TCTorManagerKeyArchiveVersion];
 						
 						ctrl(TCOperationsControlContinue);
 					}
@@ -581,7 +563,7 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 				{
 					if (info.code == TCTorManagerEventInfo)
 					{
-						localVersion = ((NSDictionary *)info.context)[TCTorManagerKeyTorVersion];
+						localVersion = ((NSDictionary *)info.context)[TCTorManagerKeyInfoTorVersion];
 					}
 					else if (info.code == TCTorManagerEventDone)
 					{
@@ -694,11 +676,9 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 					{
 						NSDictionary *remoteInfo = info.context;
 						
-						NSLog(@"info: %@", remoteInfo);
-						
-						remoteName = remoteInfo[@"name"];
-						remoteHash = remoteInfo[@"hash"];
-						remoteSize = remoteInfo[@"size"];
+						remoteName = remoteInfo[TCTorManagerKeyArchiveName];
+						remoteHash = remoteInfo[TCTorManagerKeyArchiveHash];
+						remoteSize = remoteInfo[TCTorManagerKeyArchiveSize];
 						
 						ctrl(TCOperationsControlContinue);
 					}
@@ -707,14 +687,14 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 			
 			// Update current cancellation block.
 			currentBlock = ^{
-				NSLog(@"Cancel 1");
+				NSLog(@"Cancel <retrieve remote info>");
 				opCancel();
 				ctrl(TCOperationsControlFinish);
 			};
 		}];
 		
 		// -- Retrieve remote archive --
-		NSString *downloadPath = [[_configuration pathForDomain:TConfigPathDomainDownloads] stringByAppendingPathComponent:@"_update"];
+		NSString *downloadPath = [[_configuration pathForComponent:TConfigPathComponentDownloads fullPath:YES] stringByAppendingPathComponent:@"_update"];
 		NSString *downloadArchivePath = [downloadPath stringByAppendingPathComponent:@"tor.tgz"];
 		
 		[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
@@ -727,7 +707,7 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 			}
 			
 			// Create task.
-			NSString				*urlString = [NSString stringWithFormat:@"http://www.sourcemac.com/tor/%@", remoteName];
+			NSString				*urlString = [NSString stringWithFormat:TCTorManagerBaseUpdateURL, remoteName];
 			NSURLSessionDataTask	*task = [[self _torURLSession] dataTaskWithURL:[NSURL URLWithString:urlString]];
 			
 			// Get download path.
@@ -988,7 +968,7 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		}
 		
 		// Create task.
-		NSURL					*url = [NSURL URLWithString:@"http://www.sourcemac.com/tor/info.plist"];
+		NSURL					*url = [NSURL URLWithString:TCTorManagerInfoUpdateURL];
 		NSURLSessionDataTask	*task;
 		
 		task = [[self _torURLSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -1031,7 +1011,7 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		}
 		
 		// Create task.
-		NSURL					*url = [NSURL URLWithString:@"http://www.sourcemac.com/tor/info.plist.sig"];
+		NSURL					*url = [NSURL URLWithString:TCTorManagerInfoSignatureUpdateURL];
 		NSURLSessionDataTask	*task;
 		
 		task = [[self _torURLSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -1104,7 +1084,7 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	
 	// Get target directory.
-	NSString *torBinPath = [_configuration pathForDomain:TConfigPathDomainTorBinary];
+	NSString *torBinPath = [_configuration pathForComponent:TConfigPathComponentTorBinary fullPath:YES];
 	
 	if ([torBinPath hasSuffix:@"/"])
 		torBinPath = [torBinPath substringToIndex:([torBinPath length] - 1)];
@@ -1145,8 +1125,8 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	[profile appendFormat:@"(allow file* (subpath \"%@\"))", [torBinPath stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""]];	// Allow to write result.
 	
 #if DEBUG
-	[profile appendFormat:@"(allow file-read* (subpath \"/System/Library\"))"];	// Allow to read tar.
-	[profile appendFormat:@"(allow file-read* (subpath \"/Applications\"))"];	// Allow to read tar.
+	[profile appendFormat:@"(allow file-read* (subpath \"/System/Library\"))"];	// Allow to read system things.
+	[profile appendFormat:@"(allow file-read* (subpath \"/Applications\"))"];	// Allow to read Applications.
 #endif
 	
 	// Create & launch task.
@@ -1186,7 +1166,7 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		handler = ^(TCInfo *info) { };
 	
 	// Get tor path.
-	NSString *torBinPath = [_configuration pathForDomain:TConfigPathDomainTorBinary];
+	NSString *torBinPath = [_configuration pathForComponent:TConfigPathComponentTorBinary fullPath:YES];
 	
 	if (!torBinPath)
 	{
@@ -1195,9 +1175,9 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	}
 	
 	// Build paths.
-	NSString *signaturePath = [torBinPath stringByAppendingPathComponent:TCTorManagerFileSignature];
-	NSString *binariesPath = [torBinPath stringByAppendingPathComponent:TCTorManagerFileBinaries];
-	NSString *infoPath = [torBinPath stringByAppendingPathComponent:TCTorManagerFileInfo];
+	NSString *signaturePath = [torBinPath stringByAppendingPathComponent:TCTorManagerFileBinSignature];
+	NSString *binariesPath = [torBinPath stringByAppendingPathComponent:TCTorManagerFileBinBinaries];
+	NSString *infoPath = [torBinPath stringByAppendingPathComponent:TCTorManagerFileBinInfo];
 	
 	// Read signature.
 	NSData *data = [NSData dataWithContentsOfFile:signaturePath];
@@ -1231,13 +1211,13 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventInfo context:info]);
 	
 	// Check files hash.
-	NSDictionary *files = info[TCTorManagerKeyFiles];
+	NSDictionary *files = info[TCTorManagerKeyInfoFiles];
 	
 	for (NSString *file in files)
 	{
 		NSString		*filePath = [binariesPath stringByAppendingPathComponent:file];
 		NSDictionary	*fileInfo = files[file];
-		NSData			*infoHash = fileInfo[TCTorManagerKeyHash];
+		NSData			*infoHash = fileInfo[TCTorManagerKeyInfoHash];
 		NSData			*diskHash = file_sha1([NSURL fileURLWithPath:filePath]);
 		
 		if (!diskHash || [infoHash isEqualToData:diskHash] == NO)
@@ -1256,9 +1236,9 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	if (!handler)
 		handler = ^(TCInfo *info) { };
 	
-	NSString	*torPath = [_configuration pathForDomain:TConfigPathDomainTorBinary];
-	NSString	*dataPath = [_configuration pathForDomain:TConfigPathDomainTorData];
-	NSString	*identityPath = [_configuration pathForDomain:TConfigPathDomainTorIdentity];
+	NSString	*torPath = [_configuration pathForComponent:TConfigPathComponentTorBinary fullPath:YES];
+	NSString	*dataPath = [_configuration pathForComponent:TConfigPathComponentTorData fullPath:YES];
+	NSString	*identityPath = [_configuration pathForComponent:TConfigPathComponentTorIdentity fullPath:YES];
 	
 	// Check conversion.
 	if (!torPath || !dataPath || !identityPath)
@@ -1368,7 +1348,7 @@ BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	};
 	
 	// Build tor task.
-	NSString *torExecPath = [[torPath stringByAppendingPathComponent:TCTorManagerFileBinaries] stringByAppendingPathComponent:TCTorManagerFileTor];
+	NSString *torExecPath = [[torPath stringByAppendingPathComponent:TCTorManagerFileBinBinaries] stringByAppendingPathComponent:TCTorManagerFileBinTor];
 	
 	_task = [[NSTask alloc] init];
 	
