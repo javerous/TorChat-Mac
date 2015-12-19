@@ -1,7 +1,7 @@
 /*
  *  TCConfig.h
  *
- *  Copyright 2014 Avérous Julien-Pierre
+ *  Copyright 2016 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -58,7 +58,7 @@ typedef enum
 	TCConfigGetDefault,	// Value used when the item was never set
 	TCConfigGetDefined,	// Value used when the item was set
 	TCConfigGetReal		// Value to use in standard case (eg. defined / default automatic choise)
-} TCConfigGet; // FIXME: use in all get_* functions
+} TCConfigGet;
 
 typedef enum
 {
@@ -66,27 +66,28 @@ typedef enum
 	TCConfigModeBasic
 } TCConfigMode;
 
-
+// -- Localization --
 typedef enum
 {
 	TCConfigStringItemMyselfBuddy,
 } TCConfigStringItem;
 
+// -- Paths --
 typedef enum
 {
-	TConfigPathDomainReferal,	// Referal path.
-	TConfigPathDomainTorBinary,	// Path to the tor binary (and its dependancies) directory.
-	TConfigPathDomainTorData,	// Path to the tor data directory.
-	TConfigPathDomainTorIdentity, // Path to tor hidden service (buddy address)
-	TConfigPathDomainDownloads,	// Path to the downloads directory.
-} TConfigPathDomain;
+	TConfigPathComponentReferal,		// Path used as referal.
+	TConfigPathComponentTorBinary,		// Path to the tor binary (and its dependancies) directory.
+	TConfigPathComponentTorData,		// Path to the tor data directory.
+	TConfigPathComponentTorIdentity,	// Path to tor hidden service (buddy address)
+	TConfigPathComponentDownloads,		// Path to the downloads directory.
+} TConfigPathComponent;
 
 typedef enum
 {
-	TConfigPathPlaceReferal,	// Path is relative to referal.
-	TConfigPathPlaceStandard,	// Path is relative to standard OS X directories in ~.
-	TConfigPathPlaceAbsolute,	// Path is absolute.
-} TConfigPathPlace;
+	TConfigPathTypeReferal,		// Path is relative to referal.
+	TConfigPathTypeStandard,	// Path is relative to standard OS X directories in ~.
+	TConfigPathTypeAbsolute,	// Path is absolute.
+} TConfigPathType;
 
 
 
@@ -155,10 +156,17 @@ typedef enum
 - (void)setClientName:(NSString *)name;
 
 // -- Paths --
-- (NSString *)pathForDomain:(TConfigPathDomain)domain;
-- (BOOL)setDomain:(TConfigPathDomain)domain place:(TConfigPathPlace)place subpath:(NSString *)subpath;
+- (BOOL)setPathForComponent:(TConfigPathComponent)component pathType:(TConfigPathType)pathType path:(NSString *)path;
+- (NSString *)pathForComponent:(TConfigPathComponent)component fullPath:(BOOL)fullPath;
+- (TConfigPathType)pathTypeForComponent:(TConfigPathComponent)component;
+
+- (id)addPathObserverForComponent:(TConfigPathComponent)component queue:(dispatch_queue_t)queue usingBlock:(void (^)(NSString *previousPath, NSString *newPath))block;
+- (void)removePathObserver:(id)observer;
 
 // -- Strings --
 - (NSString *)localizedString:(TCConfigStringItem)stringItem;
+
+// -- Synchronize --
+- (void)synchronize;
 
 @end

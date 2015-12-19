@@ -1,7 +1,7 @@
 /*
 *  Localizable.strings
 *
-*  Copyright 2014 Avérous Julien-Pierre
+*  Copyright 2016 Avérous Julien-Pierre
 *
 *  This file is part of TorChat.
 *
@@ -111,6 +111,11 @@
 /* Update */
 "update_available_subtitle" = "Tor %@ est disponible — vous utilisez la version %@. Voulez-vous la télécharger ?";
 
+/* Location */
+"location_reset_title" = "Réinitialiser au dossier par défaut";
+"location_reset_message" = "Vous-vous vraiment réinitialiser cet emplacement à sa valeur par défaut ?";
+"location_cancel" = "Annuler";
+"location_reset" = "Réinitialiser";
 
 /* Core - Buddy */
 "core_bd_error_tor_resolve" = "L'adresse SOCKS de tor ne peut pas être résolue.";

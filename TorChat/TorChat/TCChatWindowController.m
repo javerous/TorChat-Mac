@@ -1,7 +1,7 @@
 /*
  *  TCChatWindowController.m
  *
- *  Copyright 2014 Avérous Julien-Pierre
+ *  Copyright 2016 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -512,7 +512,7 @@
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		NSString	*identifier = chat.identifier;
+		NSString	*identifier = chat.bidentifier;
 		TCValue		*vdelegate = [[_identifiersContent objectForKey:identifier] objectForKey:TCChatDelegateKey];
 		id			context = [[_identifiersContent objectForKey:identifier] objectForKey:TCChatContextKey];
 		id <TCChatWindowControllerDelegate>	delegate = [vdelegate object];

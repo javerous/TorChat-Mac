@@ -1,7 +1,7 @@
 /*
  *  TCMainController.m
  *
- *  Copyright 2014 Avérous Julien-Pierre
+ *  Copyright 2016 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -101,9 +101,9 @@
 
 
 /*
-** TCMainController - Running
+** TCMainController - Life
 */
-#pragma mark - TCMainController - Running
+#pragma mark - TCMainController - Life
 
 - (void)start
 {
@@ -184,15 +184,6 @@
 			}
 		}
 	}
-
-// <DEBUG
-#warning DEBUG
-	NSLog(@"TConfigPathDomainReferal: %@", [conf pathForDomain:TConfigPathDomainReferal]);
-	NSLog(@"TConfigPathDomainTorBinary: %@", [conf pathForDomain:TConfigPathDomainTorBinary]);
-	NSLog(@"TConfigPathDomainTorData: %@", [conf pathForDomain:TConfigPathDomainTorData]);
-	NSLog(@"TConfigPathDomainTorIdentity: %@", [conf pathForDomain:TConfigPathDomainTorIdentity]);
-	NSLog(@"TConfigPathDomainDownloads: %@", [conf pathForDomain:TConfigPathDomainDownloads]);
-// DEBUG >
 	
 	// > Check if we should launch assistant.
 	if (!conf)
@@ -257,11 +248,11 @@
 	
 
 // <DEBUG
-#warning DEBUG
+#warning DEBUG UPDATE - TO BE REMOVED
 	
 	//[[TCUpdateWindowController sharedController] showWindow:nil];
 	
-	[[TCUpdateWindowController sharedController] handleUpdateFromVersion:@"1.2.0" toVersion:@"1.2.1" torManager:_torManager];
+	//[[TCUpdateWindowController sharedController] handleUpdateFromVersion:@"1.2.0" toVersion:@"1.2.1" torManager:_torManager];
 
 	/*
 	[_torManager checkForUpdateWithCompletionHandler:^(TCInfo *info) {
@@ -335,6 +326,11 @@
 	});
 	 */
 // DEBUG>
+}
+
+- (void)stop
+{
+	[_configuration synchronize];
 }
 
 @end

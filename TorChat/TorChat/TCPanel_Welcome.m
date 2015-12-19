@@ -1,7 +1,7 @@
 /*
  *  TCPanel_Welcome.m
  *
- *  Copyright 2014 Avérous Julien-Pierre
+ *  Copyright 2016 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -121,7 +121,7 @@
 	id <TCAssistantProxy> proxy = _proxy;
 	
 	NSMatrix	*mtr = sender;
-	NSButton	*obj = [mtr selectedCell];
+	NSCell		*obj = [mtr selectedCell];
 	NSInteger	tag = [obj tag];
 	
 	if (tag == 1)

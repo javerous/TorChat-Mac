@@ -3,7 +3,7 @@
 //  TorChat
 //
 //  Created by Julien-Pierre Avérous on 14/01/2015.
-//  Copyright (c) 2015 SourceMac. All rights reserved.
+//  Copyright (c) 2016 SourceMac. All rights reserved.
 //
 
 #import "TCPrefView_Buddies.h"
@@ -117,6 +117,7 @@
 	address = [_addBlockedField stringValue];
 	
 	// Add on controller
+#warning FIXME
 	// XXX Here, we break the fact that config is local to this view,
 	//	and it will not necessarily the one used by the controller in the future.
 	//	Try to find a better solution.
@@ -161,6 +162,7 @@
 	for (NSString *remove in removes)
 	{
 		// Remove on controller
+#warning FIXME
 		// XXX Here, we break the fact that config is local to this view,
 		//	and it will not necessarily the one used by the controller in the future.
 		//	Try to find a better solution.

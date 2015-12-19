@@ -1,18 +1,14 @@
 {
   "images" : [
     {
-      "idiom" : "universal",
+      "idiom" : "mac",
       "scale" : "1x",
       "filename" : "file_stop.png"
     },
     {
-      "idiom" : "universal",
+      "idiom" : "mac",
       "scale" : "2x",
       "filename" : "file_stop_2x.png"
-    },
-    {
-      "idiom" : "universal",
-      "scale" : "3x"
     }
   ],
   "info" : {

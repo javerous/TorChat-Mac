@@ -1,7 +1,7 @@
 /*
 *  Localizable.strings
 *
-*  Copyright 2014 Avérous Julien-Pierre
+*  Copyright 2016 Avérous Julien-Pierre
 *
 *  This file is part of TorChat.
 *
@@ -110,6 +110,12 @@
 
 /* Update */
 "update_available_subtitle" = "Tor %@ is now available—you have %@. Would you like to download it now?";
+
+/* Location */
+"location_reset_title" = "Reset to default directory";
+"location_reset_message" = "Do you really want to reset this location to its default value?";
+"location_cancel" = "Cancel";
+"location_reset" = "Reset";
 
 
 /* Core - Buddy */

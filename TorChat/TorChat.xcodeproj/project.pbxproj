@@ -15,6 +15,8 @@
 		E809B14E1859C6F9001664E1 /* ChatTemplate.plist in Resources */ = {isa = PBXBuildFile; fileRef = E809B14D1859C6F9001664E1 /* ChatTemplate.plist */; };
 		E809B1A51859CC4B001664E1 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E809B1A41859CC4B001664E1 /* WebKit.framework */; };
 		E809B1E71859F186001664E1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E809B1E61859F186001664E1 /* Images.xcassets */; };
+		E80A357C1A67F5FA00896518 /* LocationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E80A357A1A67F5FA00896518 /* LocationView.xib */; };
+		E80A357F1A67F61800896518 /* TCLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E80A357E1A67F61800896518 /* TCLocationViewController.m */; };
 		E8127AA91854CB1100FEDA7F /* TCChatTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = E8127AA81854CB1100FEDA7F /* TCChatTextField.m */; };
 		E81FD9F811E7259B000614D5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81FD9F711E7259B000614D5 /* Cocoa.framework */; };
 		E81FD9FD11E7259B000614D5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E81FD9FB11E7259B000614D5 /* InfoPlist.strings */; };
@@ -108,6 +110,9 @@
 		E809B14D1859C6F9001664E1 /* ChatTemplate.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = ChatTemplate.plist; path = TorChat/ChatTemplate.plist; sourceTree = SOURCE_ROOT; };
 		E809B1A41859CC4B001664E1 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		E809B1E61859F186001664E1 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = TorChat/Images.xcassets; sourceTree = "<group>"; };
+		E80A357B1A67F5FA00896518 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LocationView.xib; sourceTree = "<group>"; };
+		E80A357D1A67F61800896518 /* TCLocationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCLocationViewController.h; sourceTree = "<group>"; };
+		E80A357E1A67F61800896518 /* TCLocationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCLocationViewController.m; sourceTree = "<group>"; };
 		E8127AA71854CB1100FEDA7F /* TCChatTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCChatTextField.h; sourceTree = "<group>"; };
 		E8127AA81854CB1100FEDA7F /* TCChatTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatTextField.m; sourceTree = "<group>"; };
 		E81FD9F411E7259B000614D5 /* TorChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TorChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -209,7 +214,7 @@
 		E87E206617B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/MainMenu.strings; sourceTree = "<group>"; };
 		E87E206717B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		E87E206817B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		E882D1AC1429DD0B009CCD01 /* TCConfigProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCConfigProxy.h; path = Shared/TCConfigProxy.h; sourceTree = SOURCE_ROOT; };
+		E882D1AC1429DD0B009CCD01 /* TCConfigProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCConfigProxy.h; sourceTree = "<group>"; };
 		E88879FD1303EA9600C7D60E /* TCDragImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCDragImageView.h; sourceTree = "<group>"; };
 		E88879FE1303EA9900C7D60E /* TCDragImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCDragImageView.m; sourceTree = "<group>"; };
 		E889F09512531CFB000C36B2 /* NSString+TCLayoutExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+TCLayoutExtension.h"; sourceTree = "<group>"; };
@@ -261,6 +266,8 @@
 		E8C1EFF212F7169400E24C42 /* TCImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCImage.h; sourceTree = "<group>"; };
 		E8C398291205D51000B9307B /* TCSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCSocket.m; sourceTree = "<group>"; };
 		E8C3982A1205D51000B9307B /* TCSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCSocket.h; sourceTree = "<group>"; };
+		E8C3DD061C23092C00129415 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LocationView.strings; sourceTree = "<group>"; };
+		E8C3DD081C23093600129415 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LocationView.strings; sourceTree = "<group>"; };
 		E8C4CEE917B05EC600014783 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/AssistantPanel_Welcome.strings; sourceTree = "<group>"; };
 		E8C4CEEC17B0605800014783 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/AssistantPanel_Advanced.strings; sourceTree = "<group>"; };
 		E8C4CEEE17B0605800014783 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/AssistantPanel_Basic.strings; sourceTree = "<group>"; };
@@ -282,12 +289,12 @@
 		E8D717FB1A66EF9500304109 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/PrefView_Buddies.strings; sourceTree = "<group>"; };
 		E8D717FD1A66EFA200304109 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/PrefView_Network.strings; sourceTree = "<group>"; };
 		E8D717FF1A66EFA700304109 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/PrefView_Network.strings; sourceTree = "<group>"; };
-		E8D718011A66EFBF00304109 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/PrefView_Locations.strings; sourceTree = "<group>"; };
-		E8D718031A66EFC600304109 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/PrefView_Locations.strings; sourceTree = "<group>"; };
 		E8D718301A66F25500304109 /* TCInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TCInfo.h; sourceTree = "<group>"; };
 		E8D718321A66F7F500304109 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UpdateWindow.xib; sourceTree = "<group>"; };
 		E8EDBCD217AA4C6500172B9C /* TCLogsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCLogsManager.h; sourceTree = "<group>"; };
 		E8EDBCD317AA4C6500172B9C /* TCLogsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCLogsManager.m; sourceTree = "<group>"; };
+		E8EE82AA1C245FF900E1D453 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/PrefView_Locations.strings; sourceTree = "<group>"; };
+		E8EE82AC1C24600500E1D453 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/PrefView_Locations.strings; sourceTree = "<group>"; };
 		E8F15A78130425A4000593E1 /* TCKeyedText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCKeyedText.h; sourceTree = "<group>"; };
 		E8F15A79130425A4000593E1 /* TCKeyedText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCKeyedText.m; sourceTree = "<group>"; };
 		E8F16D3211FF7E9700DFA05F /* TCParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCParser.m; sourceTree = "<group>"; };
@@ -313,6 +320,7 @@
 		E81FD9E511E7259B000614D5 = {
 			isa = PBXGroup;
 			children = (
+				E864BFFB1A67FE140013D5A5 /* Shared */,
 				E837DAD411E7739D004BC524 /* Core */,
 				E837DAD311E7739D004BC524 /* TorChat */,
 				E81FD9ED11E7259B000614D5 /* Supporting Files */,
@@ -473,6 +481,8 @@
 			children = (
 				E82B7D72125A074600B7BA8A /* TCPreferencesWindowController.h */,
 				E82B7D79125A08A800B7BA8A /* TCPreferencesWindowController.m */,
+				E80A357D1A67F61800896518 /* TCLocationViewController.h */,
+				E80A357E1A67F61800896518 /* TCLocationViewController.m */,
 				E8643D6E1A66D97800B8C55F /* Views */,
 				E870BD8C17A84A0A00DFA076 /* Resources */,
 			);
@@ -525,13 +535,22 @@
 			name = Views;
 			sourceTree = "<group>";
 		};
+		E864BFFB1A67FE140013D5A5 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				E882D1AC1429DD0B009CCD01 /* TCConfigProxy.h */,
+			);
+			name = Shared;
+			path = ../Shared;
+			sourceTree = "<group>";
+		};
 		E870BD7B17A8482300DFA076 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
 				E83AD976127B545E00538925 /* Main */,
+				E83AD979127B549100538925 /* Assistant */,
 				E83AD977127B546800538925 /* Buddies */,
 				E870BD8117A848D000DFA076 /* Chat */,
-				E83AD979127B549100538925 /* Assistant */,
 				E83AD97A127B54A300538925 /* Files */,
 				E83AD97B127B54B300538925 /* Logs */,
 				E83AD97C127B54C200538925 /* Preferences */,
@@ -545,7 +564,6 @@
 			children = (
 				E8455D3B17A425F00046307B /* TCValue.h */,
 				E8455D3C17A425F00046307B /* TCValue.m */,
-				E882D1AC1429DD0B009CCD01 /* TCConfigProxy.h */,
 				E8643D441A66C7EB00B8C55F /* TCConfigInterface.h */,
 				E889F0A112531D33000C36B2 /* TCConfigPlist.h */,
 				E889F0A212531D33000C36B2 /* TCConfigPlist.m */,
@@ -674,6 +692,7 @@
 				E8D717F31A66EF8600304109 /* PrefView_Network.xib */,
 				E8D717EF1A66EF8600304109 /* PrefView_Buddies.xib */,
 				E8D717F11A66EF8600304109 /* PrefView_Locations.xib */,
+				E80A357A1A67F5FA00896518 /* LocationView.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -831,7 +850,7 @@
 		E81FD9E711E7259B000614D5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0620;
+				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = SourceMac;
 			};
 			buildConfigurationList = E81FD9EA11E7259B000614D5 /* Build configuration list for PBXProject "TorChat" */;
@@ -871,6 +890,7 @@
 				E83423F111F6FA2100922152 /* Localizable.strings in Resources */,
 				E8D717F51A66EF8600304109 /* PrefView_Buddies.xib in Resources */,
 				E849BDB11A66EEA60040E294 /* PrefView_General.xib in Resources */,
+				E80A357C1A67F5FA00896518 /* LocationView.xib in Resources */,
 				E878984817B05C0B00DB7709 /* AssistantPanel_Basic.xib in Resources */,
 				E878984917B05C0B00DB7709 /* AssistantPanel_Mode.xib in Resources */,
 				E809B14E1859C6F9001664E1 /* ChatTemplate.plist in Resources */,
@@ -945,6 +965,7 @@
 				E889F0CB12531DD6000C36B2 /* TorChatAppDelegate.m in Sources */,
 				E832B27319A20CAB00B06194 /* TCDataSignature.m in Sources */,
 				E82B7D7A125A08A800B7BA8A /* TCPreferencesWindowController.m in Sources */,
+				E80A357F1A67F61800896518 /* TCLocationViewController.m in Sources */,
 				E8643D791A66DBF900B8C55F /* TCPrefView_General.m in Sources */,
 				E852235217B504CA00C6F585 /* TCChatCellView.m in Sources */,
 				E8742543199B682F002A34DD /* NSString+TCPathExtension.m in Sources */,
@@ -984,6 +1005,16 @@
 				E87E206417B1084A00FAB545 /* fr */,
 			);
 			name = LogsWindow.xib;
+			sourceTree = "<group>";
+		};
+		E80A357A1A67F5FA00896518 /* LocationView.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E80A357B1A67F5FA00896518 /* Base */,
+				E8C3DD061C23092C00129415 /* en */,
+				E8C3DD081C23093600129415 /* fr */,
+			);
+			name = LocationView.xib;
 			sourceTree = "<group>";
 		};
 		E81FD9FB11E7259B000614D5 /* InfoPlist.strings */ = {
@@ -1151,8 +1182,8 @@
 			isa = PBXVariantGroup;
 			children = (
 				E8D717F21A66EF8600304109 /* Base */,
-				E8D718011A66EFBF00304109 /* en */,
-				E8D718031A66EFC600304109 /* fr */,
+				E8EE82AA1C245FF900E1D453 /* en */,
+				E8EE82AC1C24600500E1D453 /* fr */,
 			);
 			name = PrefView_Locations.xib;
 			sourceTree = "<group>";
@@ -1200,6 +1231,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
@@ -1293,6 +1325,7 @@
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/system",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.SourceMac.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = TorChat;
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
@@ -1314,6 +1347,7 @@
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/system",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.SourceMac.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = TorChat;
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
