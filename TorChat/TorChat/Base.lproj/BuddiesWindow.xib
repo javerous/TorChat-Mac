@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6185.7" systemVersion="13E28" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6185.7"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9531"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCBuddiesWindowController">
@@ -25,12 +26,12 @@
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
-        <customObject id="-3" userLabel="Application"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <window title="Buddy List" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="1" userLabel="Window - Buddy List">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" texturedBackground="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="390" width="280" height="315"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
             <value key="minSize" type="size" width="280" height="315"/>
             <view key="contentView" id="2">
                 <rect key="frame" x="0.0" y="0.0" width="280" height="315"/>
@@ -45,13 +46,14 @@
                     <scrollView borderType="line" horizontalLineScroll="42" horizontalPageScroll="10" verticalLineScroll="42" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="13">
                         <rect key="frame" x="-1" y="33" width="282" height="237"/>
                         <clipView key="contentView" id="Kgb-04-BiO">
-                            <rect key="frame" x="1" y="1" width="269" height="235"/>
+                            <rect key="frame" x="1" y="1" width="280" height="235"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="40" viewBased="YES" id="14" userLabel="Table View">
+                                    <rect key="frame" x="0.0" y="0.0" width="280" height="235"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <size key="intercellSpacing" width="3" height="2"/>
-                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                     <tableColumns>
                                         <tableColumn identifier="state" editable="NO" width="277" minWidth="19" maxWidth="3000" id="17">
@@ -69,7 +71,7 @@
                                                     <rect key="frame" x="1" y="1" width="277" height="40"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
-                                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="oq1-kh-KnK">
+                                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oq1-kh-KnK">
                                                             <rect key="frame" x="24" y="21" width="41" height="17"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Name" id="JZ4-BS-rcf">
                                                                 <font key="font" metaFont="system"/>
@@ -243,14 +245,14 @@
                                     <action selector="doStatus:" target="-2" id="59"/>
                                 </connections>
                             </popUpButton>
-                            <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="207">
+                            <popUpButton verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="207">
                                 <rect key="frame" x="24" y="23" width="99" height="17"/>
-                                <popUpButtonCell key="cell" type="recessed" title="&lt;&lt;Address>>" bezelStyle="recessed" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="border" tag="-1" imageScaling="proportionallyDown" inset="2" pullsDown="YES" arrowPosition="noArrow" selectedItem="210" id="208">
+                                <popUpButtonCell key="cell" type="recessed" title="&lt;&lt;Address&gt;&gt;" bezelStyle="recessed" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="border" tag="-1" imageScaling="proportionallyDown" inset="2" pullsDown="YES" arrowPosition="noArrow" selectedItem="210" id="208">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="cellTitle"/>
                                     <menu key="menu" title="OtherViews" id="209">
                                         <items>
-                                            <menuItem title="&lt;&lt;Address>>" state="on" tag="-1" hidden="YES" id="210"/>
+                                            <menuItem title="&lt;&lt;Address&gt;&gt;" state="on" tag="-1" hidden="YES" id="210"/>
                                             <menuItem title="View as Name" id="211"/>
                                             <menuItem title="View as Address" tag="1" id="212"/>
                                             <menuItem isSeparatorItem="YES" id="213"/>
@@ -327,13 +329,13 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="340" y="419" width="309" height="237"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
             <value key="minSize" type="size" width="309" height="237"/>
             <view key="contentView" id="66">
                 <rect key="frame" x="0.0" y="0.0" width="309" height="237"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="67">
+                    <textField verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="67">
                         <rect key="frame" x="37" y="198" width="49" height="17"/>
                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Name: " usesSingleLineMode="YES" id="68">
                             <font key="font" metaFont="system"/>
@@ -341,7 +343,7 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="71">
+                    <textField verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="71">
                         <rect key="frame" x="23" y="166" width="63" height="17"/>
                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Address: " usesSingleLineMode="YES" id="72">
                             <font key="font" metaFont="system"/>
@@ -468,12 +470,12 @@ Gw
             <windowStyleMask key="styleMask" titled="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="425" y="527" width="480" height="280"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
             <view key="contentView" id="224">
                 <rect key="frame" x="0.0" y="0.0" width="480" height="280"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="227">
+                    <textField verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="227">
                         <rect key="frame" x="18" y="243" width="89" height="17"/>
                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Profile Name:" usesSingleLineMode="YES" id="228">
                             <font key="font" metaFont="system"/>
@@ -481,7 +483,7 @@ Gw
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="229">
+                    <textField verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="229">
                         <rect key="frame" x="18" y="188" width="79" height="17"/>
                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Profile Text:" usesSingleLineMode="YES" id="230">
                             <font key="font" metaFont="system"/>
@@ -582,8 +584,8 @@ Gw
         </window>
     </objects>
     <resources>
-        <image name="NSAddTemplate" width="8" height="8"/>
-        <image name="NSRemoveTemplate" width="8" height="8"/>
+        <image name="NSAddTemplate" width="11" height="11"/>
+        <image name="NSRemoveTemplate" width="11" height="11"/>
         <image name="NSUser" width="32" height="32"/>
         <image name="stat_away" width="12.800000190734863" height="12.800000190734863"/>
         <image name="stat_offline" width="16" height="16"/>

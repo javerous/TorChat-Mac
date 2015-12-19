@@ -1,18 +1,14 @@
 {
   "images" : [
     {
-      "idiom" : "universal",
+      "idiom" : "mac",
       "scale" : "1x",
       "filename" : "balloon_right.png"
     },
     {
-      "idiom" : "universal",
+      "idiom" : "mac",
       "scale" : "2x",
       "filename" : "balloon_right_2x.png"
-    },
-    {
-      "idiom" : "universal",
-      "scale" : "3x"
     }
   ],
   "info" : {

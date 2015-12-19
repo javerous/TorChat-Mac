@@ -3,7 +3,7 @@
 //  TorChat
 //
 //  Created by Julien-Pierre Avérous on 08/08/2014.
-//  Copyright (c) 2014 SourceMac. All rights reserved.
+//  Copyright (c) 2016 SourceMac. All rights reserved.
 //
 
 #import "TCInfo+Render.h"
@@ -552,13 +552,15 @@
 							@(TCTorManagerEventStartHostname) :
 								@{
 									TCInfoNameKey : @"TCTorManagerInfoStartHostname",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 							
 							@(TCTorManagerEventStartDone) :
 								@{
 									TCInfoNameKey : @"TCTorManagerInfoStartDone",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 					},
 					
@@ -567,31 +569,37 @@
 							@(TCTorManagerErrorStartAlreadyRunning) :
 								@{
 									TCInfoNameKey : @"TCTorManagerInfoStartHostname",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>"
+#warning FIXME: add text
 								},
 							
 							@(TCTorManagerErrorStartConfiguration) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorStartConfiguration",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
+
 								},
 							
 							@(TCTorManagerErrorStartUnarchive) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorStartUnarchive",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 							
 							@(TCTorManagerErrorStartSignature) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorStartSignature",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 							
 							@(TCTorManagerErrorStartLaunch) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorStartLaunch",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 						}
 				},
@@ -603,7 +611,8 @@
 							@(TCTorManagerEventCheckUpdateAvailable) :
 								@{
 									TCInfoNameKey : @"TCTorManagerEventCheckUpdateAvailable",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 						},
 					   
@@ -612,32 +621,37 @@
 							@(TCTorManagerErrorCheckUpdateNetworkRequest) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorCheckUpdateNetworkRequest",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 							   
 							   
 							@(TCTorManagerErrorCheckUpdateBadServerReply) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorCheckUpdateBadServerReply",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 							   
 							@(TCTorManagerErrorCheckUpdateRemoteInfo) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorCheckUpdateRemoteInfo",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 							   
 							@(TCTorManagerErrorCheckUpdateLocalSignature) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorCheckUpdateLocalSignature",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 							   
 							@(TCTorManagerErrorCheckUpdateNothingNew) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorCheckUpdateNothingNew",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 						}
 				},
@@ -649,43 +663,50 @@
 							@(TCTorManagerEventUpdateArchiveInfoRetrieving) :
 								@{
 									TCInfoNameKey : @"TCTorManagerEventUpdateArchiveInfoRetrieving",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 							
 							@(TCTorManagerEventUpdateArchiveSize) :
 								@{
 									TCInfoNameKey : @"TCTorManagerEventUpdateArchiveSize",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 							
 							@(TCTorManagerEventUpdateArchiveDownloading) :
 								@{
 									TCInfoNameKey : @"TCTorManagerEventUpdateArchiveDownloading",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 							
 							@(TCTorManagerEventUpdateArchiveStage) :
 								@{
 									TCInfoNameKey : @"TCTorManagerEventUpdateArchiveStage",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 							
 							@(TCTorManagerEventUpdateSignatureCheck) :
 								@{
 									TCInfoNameKey : @"TCTorManagerEventUpdateSignatureCheck",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 							
 							@(TCTorManagerEventUpdateRelaunch) :
 								@{
 									TCInfoNameKey : @"TCTorManagerEventUpdateRelaunch",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 							
 							@(TCTorManagerEventUpdateDone) :
 								@{
 									TCInfoNameKey : @"TCTorManagerEventUpdateDone",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 						},
 					
@@ -694,43 +715,50 @@
 							@(TCTorManagerErrorUpdateTorNotRunning) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorUpdateTorNotRunning",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 							
 							@(TCTorManagerErrorUpdateConfiguration) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorUpdateConfiguration",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 							
 							@(TCTorManagerErrorUpdateInternal) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorUpdateInternal",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 							
 							@(TCTorManagerErrorUpdateArchiveInfo) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorUpdateArchiveInfo",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 							
 							@(TCTorManagerErrorUpdateArchiveDownload) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorUpdateArchiveDownload",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 							
 							@(TCTorManagerErrorUpdateArchiveStage) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorUpdateArchiveStage",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 							
 							@(TCTorManagerErrorUpdateRelaunch) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorUpdateRelaunch",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 						}
 				},
@@ -742,13 +770,15 @@
 							@(TCTorManagerEventInfo) :
 								@{
 									TCInfoNameKey : @"TCTorManagerEventInfo",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 							
 							@(TCTorManagerEventDone) :
 								@{
 									TCInfoNameKey : @"TCTorManagerEventDone",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 						},
 					
@@ -757,43 +787,50 @@
 							@(TCTorManagerErrorConfiguration) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorConfiguration",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 					
 							@(TCTorManagerErrorIO) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorIO",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 							
 							@(TCTorManagerErrorNetwork) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorNetwork",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 					
 							@(TCTorManagerErrorExtract) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorExtract",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 					
 							@(TCTorManagerErrorSignature) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorSignature",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 					
 							@(TCTorManagerErrorTor) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorTor",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 					
 							@(TCTorManagerErrorInternal) :
 								@{
 									TCInfoNameKey : @"TCTorManagerErrorInternal",
-									TCInfoTextKey : @"<fixme>", // FIXME
+									TCInfoTextKey : @"<fixme>",
+#warning FIXME: add text
 								},
 						}
 				},

@@ -1,7 +1,7 @@
 /*
  *  TCUpdateWindowController.m
  *
- *  Copyright 2014 Avérous Julien-Pierre
+ *  Copyright 2016 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -143,7 +143,8 @@
 	// > main queue <
 	
 	// Init view state.
-	_workingStatusField.stringValue = @"Launching update…"; // FIXME: localize
+#warning FIXME: localize
+	_workingStatusField.stringValue = @"Launching update…";
 	
 	_workingDownloadInfo.stringValue = @"";
 	_workingDownloadInfo.hidden = YES;
@@ -152,7 +153,8 @@
 	_workingProgress.indeterminate = YES;
 	[_workingProgress startAnimation:nil];
 	
-	_workingButton.title = @"Cancel"; // FIXME: localize
+#warning FIXME: localize
+	_workingButton.title = @"Cancel";
 	_workingButton.keyEquivalent = @"\e";
 	
 	_updateDone = NO;
@@ -170,13 +172,15 @@
 				{
 					case TCTorManagerEventUpdateArchiveInfoRetrieving:
 					{
-						_workingStatusField.stringValue = @"Retrieving archive info…"; // FIXME: localize
+#warning FIXME: localize
+						_workingStatusField.stringValue = @"Retrieving archive info…";
 						break;
 					}
 						
 					case TCTorManagerEventUpdateArchiveSize:
 					{
-						_workingStatusField.stringValue = @"Downloading…"; // FIXME: localize
+#warning FIXME: localize
+						_workingStatusField.stringValue = @"Downloading…";
 
 						_workingProgress.indeterminate = NO;
 						_workingDownloadInfo.hidden = NO;
@@ -192,6 +196,7 @@
 						
 						_workingProgress.doubleValue = (double)archiveCurrent / (double)archiveTotal;
 						_workingDownloadInfo.stringValue = [NSString stringWithFormat:@"%lu of %lu", (unsigned long)archiveCurrent, (unsigned long)archiveTotal];
+#warning FIXME: use a nicer value (KB, etc.) + see if it's easy to compute speed + termination prevision.
 						
 						if (archiveCurrent == archiveTotal)
 						{
@@ -204,27 +209,31 @@
 						
 					case TCTorManagerEventUpdateArchiveStage:
 					{
-						_workingStatusField.stringValue = @"Archive staging…"; // FIXME: localize
+#warning FIXME: localize
+						_workingStatusField.stringValue = @"Archive staging…";
 						break;
 					}
 					
 					case TCTorManagerEventUpdateSignatureCheck:
 					{
-						_workingStatusField.stringValue = @"Checking signature…"; // FIXME: localize
+#warning FIXME: localize
+						_workingStatusField.stringValue = @"Checking signature…";
 						break;
 					}
 						
 					case TCTorManagerEventUpdateRelaunch:
 					{
-						_workingStatusField.stringValue = @"Relaunching tor…"; // FIXME: localize
+#warning FIXME: localize
+						_workingStatusField.stringValue = @"Relaunching tor…";
 						break;
 					}
 						
 					case TCTorManagerEventUpdateDone:
 					{
-						_workingStatusField.stringValue = @"Update done."; // FIXME: localize
+#warning FIXME: localize
+						_workingStatusField.stringValue = @"Update done.";
 						
-						_workingButton.title = @"Done"; // FIXME: localize
+						_workingButton.title = @"Done";
 						_workingButton.keyEquivalent = @"\r";
 						
 						_updateDone = YES;
@@ -235,8 +244,8 @@
 			}
 			else if (info.kind == TCInfoError)
 			{
-#warning FIXME
-			//	NSLog(@"Error: %@", [info render]);
+#warning FIXME Handle error. Show it in window ? in log manager too ?
+			NSLog(@"Error: %@", info );
 			}
 		});
 	}];

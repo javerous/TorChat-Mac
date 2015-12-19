@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6245" systemVersion="13E28" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6245"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9531"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCUpdateWindowController">
             <connections>
                 <outlet property="availableView" destination="gg3-aF-JJu" id="Hj5-3A-mWZ"/>
-                <outlet property="avilableView" destination="gg3-aF-JJu" id="ewr-cH-IXl"/>
-                <outlet property="doInstallUpdate" destination="ofH-Xp-0Zg" id="j0j-7g-tmO"/>
-                <outlet property="doRemindMeLater" destination="bah-D8-xm4" id="6xO-YM-je7"/>
                 <outlet property="subtitleField" destination="rRV-wf-tdQ" id="6OI-0y-bPg"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="Lgo-FM-tO7"/>
                 <outlet property="workingButton" destination="HMl-dq-XNj" id="URc-gg-E4o"/>
@@ -25,7 +23,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="585" height="155"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <view key="contentView" id="EiT-Mj-1SZ">
                 <rect key="frame" x="0.0" y="0.0" width="585" height="155"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -39,24 +37,24 @@
                     <rect key="frame" x="20" y="71" width="64" height="64"/>
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="tor_logo" id="Rjc-li-Xza"/>
                 </imageView>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="PBn-wq-Cgn">
-                    <rect key="frame" x="90" y="118" width="229" height="17"/>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PBn-wq-Cgn">
+                    <rect key="frame" x="90" y="118" width="219" height="17"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="A new version of Tor is available." id="3Bd-81-Mj6">
                         <font key="font" metaFont="systemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rRV-wf-tdQ">
-                    <rect key="frame" x="90" y="96" width="175" height="14"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;SUBTITLE-DONT-TRANSLATE>" id="2T2-T1-cLr">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rRV-wf-tdQ">
+                    <rect key="frame" x="90" y="96" width="178" height="14"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;SUBTITLE-DONT-TRANSLATE&gt;" id="2T2-T1-cLr">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ofH-Xp-0Zg">
-                    <rect key="frame" x="444" y="13" width="127" height="32"/>
+                <button verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ofH-Xp-0Zg">
+                    <rect key="frame" x="445" y="13" width="126" height="32"/>
                     <buttonCell key="cell" type="push" title="Install Update" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pfM-iA-SkK">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
@@ -68,8 +66,8 @@ DQ
                         <action selector="doInstallUpdate:" target="-2" id="wDf-tU-EOv"/>
                     </connections>
                 </button>
-                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bah-D8-xm4">
-                    <rect key="frame" x="298" y="13" width="146" height="32"/>
+                <button verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bah-D8-xm4">
+                    <rect key="frame" x="299" y="13" width="146" height="32"/>
                     <buttonCell key="cell" type="push" title="Remind Me Later" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="CX4-xf-EQL">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
@@ -108,17 +106,17 @@ Gw
                     <rect key="frame" x="20" y="31" width="64" height="64"/>
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="tor_logo" id="yAe-i0-tkT"/>
                 </imageView>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bHE-da-88h">
-                    <rect key="frame" x="90" y="92" width="210" height="17"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;STATUS-DONT-TRANSLATE>" id="w3E-Q4-Mdy">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bHE-da-88h">
+                    <rect key="frame" x="90" y="92" width="200" height="17"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;STATUS-DONT-TRANSLATE&gt;" id="w3E-Q4-Mdy">
                         <font key="font" metaFont="systemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="aHi-3Y-GCR">
-                    <rect key="frame" x="90" y="50" width="133" height="11"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;DOWN-DONT-TRANSLATE>" id="Mzx-LX-amq">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aHi-3Y-GCR">
+                    <rect key="frame" x="90" y="50" width="134" height="11"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;DOWN-DONT-TRANSLATE&gt;" id="Mzx-LX-amq">
                         <font key="font" metaFont="miniSystem"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -127,9 +125,9 @@ Gw
                 <progressIndicator maxValue="1" indeterminate="YES" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="X5o-U3-jQn">
                     <rect key="frame" x="92" y="64" width="288" height="20"/>
                 </progressIndicator>
-                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="HMl-dq-XNj">
-                    <rect key="frame" x="209" y="13" width="177" height="32"/>
-                    <buttonCell key="cell" type="push" title="&lt;DONT-TRANSLATE>" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="TwA-CR-dpK">
+                <button verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HMl-dq-XNj">
+                    <rect key="frame" x="212" y="13" width="174" height="32"/>
+                    <buttonCell key="cell" type="push" title="&lt;DONT-TRANSLATE&gt;" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="TwA-CR-dpK">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
