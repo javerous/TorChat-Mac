@@ -20,11 +20,17 @@
  *
  */
 
-
 #import "TCUpdateWindowController.h"
 
+#import "TCLogsManager.h"
 #import "TCTorManager.h"
+
 #import "TCInfo.h"
+#import "TCInfo+Render.h"
+
+#import "TCSpeedHelper.h"
+#import "TCAmountHelper.h"
+#import "TCTimeHelper.h"
 
 
 /*
@@ -129,7 +135,7 @@
 		[self.window.contentView addSubview:_availableView];
 		
 		// Configure available view.
-		NSString *subtitle = [NSString stringWithFormat:NSLocalizedString(@"update_available_subtitle", @""), newVersion, oldVersion];
+		NSString *subtitle = [NSString stringWithFormat:NSLocalizedString(@"update_subtitle_available", @""), newVersion, oldVersion];
 		
 		_subtitleField.stringValue = subtitle;
 		
@@ -143,25 +149,46 @@
 	// > main queue <
 	
 	// Init view state.
-#warning FIXME: localize
-	_workingStatusField.stringValue = @"Launching update…";
+	_workingStatusField.stringValue = NSLocalizedString(@"update_status_launching", @"");
 	
 	_workingDownloadInfo.stringValue = @"";
 	_workingDownloadInfo.hidden = YES;
 	
 	_workingProgress.doubleValue = 0.0;
 	_workingProgress.indeterminate = YES;
+	_workingProgress.hidden = NO;
 	[_workingProgress startAnimation:nil];
 	
-#warning FIXME: localize
-	_workingButton.title = @"Cancel";
+	_workingButton.title = NSLocalizedString(@"update_button_cancel", @"");
 	_workingButton.keyEquivalent = @"\e";
 	
 	_updateDone = NO;
 	
 	// Launch update.
-	__block NSUInteger archiveTotal = 0;
+	__block NSUInteger		archiveTotal = 0;
+	__block NSUInteger		archiveCurrent  = 0;
+	__block TCSpeedHelper	*speedHelper = nil;
+	__block	double			lastTimestamp = 0.0;
+	__block	BOOL			loggedDownload = NO;
+
+	// UI update snippet.
+	void (^updateDownloadProgressMessage)(NSTimeInterval) = ^(NSTimeInterval remainingTime){
+		// > main queue <
+		NSString *currentStr = TCStringFromBytesAmount(archiveCurrent);
+		NSString *totalStr = TCStringFromBytesAmount(archiveTotal);
+		NSString *str = @"";
+		
+		if (remainingTime == -2.0)
+			str = [NSString stringWithFormat:NSLocalizedString(@"update_download_progress", @""), currentStr, totalStr];
+		else if (remainingTime == -1.0)
+			str = [NSString stringWithFormat:NSLocalizedString(@"update_download_progress_stalled", @""), currentStr, totalStr];
+		else if (remainingTime > 0.0)
+			str = [NSString stringWithFormat:NSLocalizedString(@"update_download_progress_remaining", @""), currentStr, totalStr, TCStringFromSecondsAmount(remainingTime)];
+		
+		_workingDownloadInfo.stringValue = str;
+	};
 	
+	// Launch update.
 	_currentCancelBlock = [_torManager updateWithEventHandler:^(TCInfo *info){
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
@@ -172,36 +199,69 @@
 				{
 					case TCTorManagerEventUpdateArchiveInfoRetrieving:
 					{
-#warning FIXME: localize
-						_workingStatusField.stringValue = @"Retrieving archive info…";
+						// Log.
+						[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
+
+						// Update UI.
+						_workingStatusField.stringValue = NSLocalizedString(@"update_status_retrieving_info", @"");
+						
 						break;
 					}
 						
 					case TCTorManagerEventUpdateArchiveSize:
 					{
-#warning FIXME: localize
-						_workingStatusField.stringValue = @"Downloading…";
+						// Log.
+						[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
+
+						// Update UI.
+						_workingStatusField.stringValue = NSLocalizedString(@"update_status_downloading_archive", @"");
 
 						_workingProgress.indeterminate = NO;
 						_workingDownloadInfo.hidden = NO;
 
 						archiveTotal = [info.context unsignedIntegerValue];
-
+						
+						// Create speed helper.
+						speedHelper = [[TCSpeedHelper alloc] initWithCompleteAmount:archiveTotal];
+						
+						speedHelper.updateHandler = ^(NSTimeInterval remainingTime) {
+							dispatch_async(dispatch_get_main_queue(), ^{
+								updateDownloadProgressMessage(remainingTime);
+							});
+						};
 						break;
 					}
 					
 					case TCTorManagerEventUpdateArchiveDownloading:
 					{
-						NSUInteger archiveCurrent = [info.context unsignedIntegerValue];
+						// Log.
+						if (loggedDownload == NO)
+						{
+							[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
+							loggedDownload = YES;
+						}
+						
+						// Update speed computation.
+						archiveCurrent = [info.context unsignedIntegerValue];
+
+						[speedHelper setCurrentAmount:archiveCurrent];
+
+						// Update UI (throttled).
+						if (TCTimeStamp() - lastTimestamp > 0.2)
+						{
+							updateDownloadProgressMessage([speedHelper remainingTime]);
+							
+							lastTimestamp = TCTimeStamp();
+						}
 						
 						_workingProgress.doubleValue = (double)archiveCurrent / (double)archiveTotal;
-						_workingDownloadInfo.stringValue = [NSString stringWithFormat:@"%lu of %lu", (unsigned long)archiveCurrent, (unsigned long)archiveTotal];
-#warning FIXME: use a nicer value (KB, etc.) + see if it's easy to compute speed + termination prevision.
 						
+						// Handle download termination.
 						if (archiveCurrent == archiveTotal)
 						{
 							_workingProgress.indeterminate = YES;
 							_workingDownloadInfo.hidden = YES;
+							speedHelper = nil;
 						}
 						
 						break;
@@ -209,47 +269,74 @@
 						
 					case TCTorManagerEventUpdateArchiveStage:
 					{
-#warning FIXME: localize
-						_workingStatusField.stringValue = @"Archive staging…";
+						// Log.
+						[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
+
+						// Update UI.
+						_workingStatusField.stringValue = NSLocalizedString(@"update_status_staging_archive", @"");
+						
 						break;
 					}
 					
 					case TCTorManagerEventUpdateSignatureCheck:
 					{
-#warning FIXME: localize
-						_workingStatusField.stringValue = @"Checking signature…";
+						// Log.
+						[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
+						
+						// Update UI.
+						_workingStatusField.stringValue = NSLocalizedString(@"update_status_checking_signature", @"");
+						
 						break;
 					}
 						
 					case TCTorManagerEventUpdateRelaunch:
 					{
-#warning FIXME: localize
-						_workingStatusField.stringValue = @"Relaunching tor…";
+						// Log.
+						[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
+
+						// Update UI.
+						_workingStatusField.stringValue = NSLocalizedString(@"update_status_relaunching_tor", @"");
+						
 						break;
 					}
 						
 					case TCTorManagerEventUpdateDone:
 					{
-#warning FIXME: localize
-						_workingStatusField.stringValue = @"Update done.";
+						// Log.
+						[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
 						
-						_workingButton.title = @"Done";
+						// Update UI.
+						_workingStatusField.stringValue = NSLocalizedString(@"update_status_update_done", @"");
+						
+						_workingButton.title = NSLocalizedString(@"update_button_done", @"");
 						_workingButton.keyEquivalent = @"\r";
 						
 						_updateDone = YES;
-						
+
 						break;
 					}
 				}
 			}
 			else if (info.kind == TCInfoError)
 			{
-#warning FIXME Handle error. Show it in window ? in log manager too ?
-			NSLog(@"Error: %@", info );
+				speedHelper = nil;
+
+				// Log.
+				[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
+				
+				// Update UI.
+				_workingProgress.hidden = YES;
+
+				_workingDownloadInfo.stringValue = [NSString stringWithFormat:NSLocalizedString(@"update_error_fmt", @""), [info renderMessage]];
+				_workingDownloadInfo.hidden = NO;
+
+				_workingStatusField.stringValue = NSLocalizedString(@"update_status_error", @"");
+				_workingButton.title = NSLocalizedString(@"update_button_close", @"");
 			}
 		});
 	}];
 }
+
 
 
 /*

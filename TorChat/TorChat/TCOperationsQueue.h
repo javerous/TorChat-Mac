@@ -20,9 +20,7 @@
  *
  */
 
-
 #import <Foundation/Foundation.h>
-
 
 
 /*
@@ -39,6 +37,8 @@ typedef enum
 typedef void (^TCOperationsControl)(TCOperationsControlType type);
 typedef void (^TCOperationsBlock)(TCOperationsControl ctrl);
 
+typedef void (^TCOperationsAddCancelBlock)(dispatch_block_t block);
+typedef void (^TCOperationsCancelableBlock)(TCOperationsControl ctrl, TCOperationsAddCancelBlock addCancelBlock);
 
 
 /*
@@ -59,10 +59,17 @@ typedef void (^TCOperationsBlock)(TCOperationsControl ctrl);
 - (void)scheduleBlock:(TCOperationsBlock)block;
 - (void)scheduleOnQueue:(dispatch_queue_t)queue block:(TCOperationsBlock)block;
 
+- (void)scheduleCancelableBlock:(TCOperationsCancelableBlock)block;
+- (void)scheduleCancelableOnQueue:(dispatch_queue_t)queue block:(TCOperationsCancelableBlock)block;
+
+
 // -- Life --
 - (void)start;
 
+- (void)cancel;
+
+
 // -- Handler --
-@property (strong, atomic) dispatch_block_t finishHandler; // Called each time the operation queue become empty.
+@property (strong, atomic) void (^finishHandler)(BOOL canceled); // Called each time the operation queue become empty or queue was canceled.
 
 @end

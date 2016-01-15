@@ -20,14 +20,12 @@
  *
  */
 
-
 #import <CommonCrypto/CommonCrypto.h>
 
 #include <stdlib.h>
 #include <fcntl.h>
 
 #import "TCTools.h"
-
 
 
 /*

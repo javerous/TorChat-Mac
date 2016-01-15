@@ -20,9 +20,7 @@
  *
  */
 
-
 #import "TCImage.h"
-
 
 
 /*

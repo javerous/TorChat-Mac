@@ -25,7 +25,6 @@
 #import "TCDebugLog.h"
 
 
-
 /*
 ** Types
 */
@@ -107,7 +106,7 @@ size_t memsearch(const uint8_t *token, size_t token_sz, const uint8_t *data, siz
 
 - (void)dealloc
 {
-	TCDebugLog("TCBuffer Destructor");
+	TCDebugLog(@"TCBuffer Destructor");
 	
 	[self clean];
 	

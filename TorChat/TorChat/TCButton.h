@@ -20,10 +20,7 @@
  *
  */
 
-
-
 #import <Cocoa/Cocoa.h>
-
 
 
 /*

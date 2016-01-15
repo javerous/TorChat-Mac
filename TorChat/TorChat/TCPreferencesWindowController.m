@@ -20,18 +20,16 @@
  *
  */
 
-
-
 #import "TCPreferencesWindowController.h"
 
 #import "TCMainController.h"
+#import "TCBuddiesWindowController.h"
 
 #import "TCPrefView.h"
 #import "TCPrefView_General.h"
 #import "TCPrefView_Network.h"
 #import "TCPrefView_Buddies.h"
 #import "TCPrefView_Locations.h"
-
 
 
 /*
@@ -93,10 +91,11 @@
 
 - (void)windowDidLoad
 {
-	// Select the default view
+	// Select the default view.
 	[self loadViewIdentifier:@"general" animated:NO];
 	
-	// Place Window
+#warning XXX There is something to fix somewhere :  frame saving on a larger window frame make the window to move down next time the window is opened on a smaller frame. Perhaps simply retain current selected tab ?
+	// Place Window.
 	[self.window center];
 	[self.window setFrameAutosaveName:@"PreferencesWindow"];
 }
@@ -112,6 +111,7 @@
 {
 	TCPrefView				*viewCtrl = nil;
 	id <TCConfigInterface>	config = [[TCMainController sharedController] configuration];
+	TCCoreManager			*core = [[TCMainController sharedController] core];
 
 	if ([identifier isEqualToString:@"general"])
 		viewCtrl = [[TCPrefView_General alloc] init];
@@ -131,10 +131,15 @@
 	
 	// Save current view config.
 	_currentCtrl.config = config;
-	[_currentCtrl saveConfig];
+	_currentCtrl.core = core;
+	
+	if ([_currentCtrl saveConfig])
+		[[TCMainController sharedController] reload];
 	
 	// Load new view config.
 	viewCtrl.config = config;
+	viewCtrl.core = core;
+	
 	[viewCtrl loadConfig];
 		
 	NSView *view = viewCtrl.view;
@@ -197,11 +202,14 @@
 
 - (void)windowWillClose:(NSNotification *)notification
 {
-	id <TCConfigInterface> config = [[TCMainController sharedController] configuration];
-
-	_currentCtrl.config = config;
+	id <TCConfigInterface>	config = [[TCMainController sharedController] configuration];
+	TCCoreManager			*core = [[TCMainController sharedController] core];
 	
-	[_currentCtrl saveConfig];
+	_currentCtrl.config = config;
+	_currentCtrl.core = core;
+	
+	if ([_currentCtrl saveConfig])
+		[[TCMainController sharedController] reload];
 }
 
 @end

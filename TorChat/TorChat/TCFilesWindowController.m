@@ -20,12 +20,9 @@
  *
  */
 
-
-
 #import "TCFilesWindowController.h"
 
 #import "TCFileCellView.h"
-
 
 
 /*

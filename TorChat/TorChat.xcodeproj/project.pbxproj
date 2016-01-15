@@ -17,6 +17,8 @@
 		E809B1E71859F186001664E1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E809B1E61859F186001664E1 /* Images.xcassets */; };
 		E80A357C1A67F5FA00896518 /* LocationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E80A357A1A67F5FA00896518 /* LocationView.xib */; };
 		E80A357F1A67F61800896518 /* TCLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E80A357E1A67F61800896518 /* TCLocationViewController.m */; };
+		E80D527E1C280B6500BE3D10 /* TCSpeedHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = E80D527D1C280B6500BE3D10 /* TCSpeedHelper.m */; };
+		E80D52811C281D4200BE3D10 /* TCAmountHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = E80D52801C281D4200BE3D10 /* TCAmountHelper.m */; };
 		E8127AA91854CB1100FEDA7F /* TCChatTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = E8127AA81854CB1100FEDA7F /* TCChatTextField.m */; };
 		E81FD9F811E7259B000614D5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81FD9F711E7259B000614D5 /* Cocoa.framework */; };
 		E81FD9FD11E7259B000614D5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E81FD9FB11E7259B000614D5 /* InfoPlist.strings */; };
@@ -35,6 +37,8 @@
 		E837DAE011E7739D004BC524 /* TCBuddy.m in Sources */ = {isa = PBXBuildFile; fileRef = E837DAD511E7739D004BC524 /* TCBuddy.m */; };
 		E837DAE111E7739D004BC524 /* TCBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = E837DAD711E7739D004BC524 /* TCBuffer.m */; };
 		E837DAE311E7739D004BC524 /* TCCoreManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E837DADB11E7739D004BC524 /* TCCoreManager.m */; };
+		E844DEE91C490A9E005D92C4 /* TorWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E844DEEB1C490A9E005D92C4 /* TorWindow.xib */; };
+		E844DEF21C490B56005D92C4 /* TCTorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E844DEF11C490B56005D92C4 /* TCTorWindowController.m */; };
 		E8455D3D17A425F00046307B /* TCValue.m in Sources */ = {isa = PBXBuildFile; fileRef = E8455D3C17A425F00046307B /* TCValue.m */; };
 		E8455D4617A4386C0046307B /* NSData+TCTools.m in Sources */ = {isa = PBXBuildFile; fileRef = E8455D4517A438660046307B /* NSData+TCTools.m */; };
 		E849BDB11A66EEA60040E294 /* PrefView_General.xib in Resources */ = {isa = PBXBuildFile; fileRef = E849BDAF1A66EEA60040E294 /* PrefView_General.xib */; };
@@ -51,6 +55,7 @@
 		E874146B12FAE0C200BD4862 /* TCDropButton.m in Sources */ = {isa = PBXBuildFile; fileRef = E874146A12FAE0C200BD4862 /* TCDropButton.m */; };
 		E8742543199B682F002A34DD /* NSString+TCPathExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = E8742542199B682F002A34DD /* NSString+TCPathExtension.m */; };
 		E8742546199B6A61002A34DD /* NSString+TCXMLExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = E8742545199B6A61002A34DD /* NSString+TCXMLExtension.m */; };
+		E8758BFA1C28507B00EE708A /* TCTimeHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = E8758BF91C28507B00EE708A /* TCTimeHelper.m */; };
 		E87833E819926D5100D0C67F /* TCFileSignature.m in Sources */ = {isa = PBXBuildFile; fileRef = E87833E719926D5100D0C67F /* TCFileSignature.m */; };
 		E878981617AFCC0900DB7709 /* TCBuddyCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E878981517AFCC0900DB7709 /* TCBuddyCellView.m */; };
 		E878983A17B05BC800DB7709 /* AssistantPanel_Welcome.xib in Resources */ = {isa = PBXBuildFile; fileRef = E878983817B05BC800DB7709 /* AssistantPanel_Welcome.xib */; };
@@ -66,7 +71,7 @@
 		E889F0A012531D1E000C36B2 /* TCTorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F09F12531D1E000C36B2 /* TCTorManager.m */; };
 		E889F0A312531D33000C36B2 /* TCConfigPlist.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0A212531D33000C36B2 /* TCConfigPlist.m */; };
 		E889F0A612531D3F000C36B2 /* TCBuddiesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0A512531D3F000C36B2 /* TCBuddiesWindowController.m */; };
-		E889F0A912531D48000C36B2 /* TCBuddyInfoWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0A812531D48000C36B2 /* TCBuddyInfoWindowController.m */; };
+		E889F0A912531D48000C36B2 /* TCBuddyInfoWindowsController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0A812531D48000C36B2 /* TCBuddyInfoWindowsController.m */; };
 		E889F0AF12531D62000C36B2 /* TCChatWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0AE12531D62000C36B2 /* TCChatWindowController.m */; };
 		E889F0BB12531D92000C36B2 /* TCAssistantWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0BA12531D92000C36B2 /* TCAssistantWindowController.m */; };
 		E889F0BE12531D9C000C36B2 /* TCAssistantBack.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0BD12531D9C000C36B2 /* TCAssistantBack.m */; };
@@ -113,6 +118,10 @@
 		E80A357B1A67F5FA00896518 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LocationView.xib; sourceTree = "<group>"; };
 		E80A357D1A67F61800896518 /* TCLocationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCLocationViewController.h; sourceTree = "<group>"; };
 		E80A357E1A67F61800896518 /* TCLocationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCLocationViewController.m; sourceTree = "<group>"; };
+		E80D527C1C280B6500BE3D10 /* TCSpeedHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCSpeedHelper.h; sourceTree = "<group>"; };
+		E80D527D1C280B6500BE3D10 /* TCSpeedHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCSpeedHelper.m; sourceTree = "<group>"; };
+		E80D527F1C281D4200BE3D10 /* TCAmountHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCAmountHelper.h; sourceTree = "<group>"; };
+		E80D52801C281D4200BE3D10 /* TCAmountHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCAmountHelper.m; sourceTree = "<group>"; };
 		E8127AA71854CB1100FEDA7F /* TCChatTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCChatTextField.h; sourceTree = "<group>"; };
 		E8127AA81854CB1100FEDA7F /* TCChatTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatTextField.m; sourceTree = "<group>"; };
 		E81FD9F411E7259B000614D5 /* TorChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TorChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -138,6 +147,11 @@
 		E837DADA11E7739D004BC524 /* TCConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCConfig.h; sourceTree = "<group>"; };
 		E837DADB11E7739D004BC524 /* TCCoreManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCCoreManager.m; sourceTree = "<group>"; };
 		E837DADC11E7739D004BC524 /* TCCoreManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCCoreManager.h; sourceTree = "<group>"; };
+		E844DEEA1C490A9E005D92C4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/TorWindow.xib; sourceTree = "<group>"; };
+		E844DEED1C490AB1005D92C4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/TorWindow.strings; sourceTree = "<group>"; };
+		E844DEEF1C490AB7005D92C4 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/TorWindow.strings; sourceTree = "<group>"; };
+		E844DEF01C490B56005D92C4 /* TCTorWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCTorWindowController.h; sourceTree = "<group>"; };
+		E844DEF11C490B56005D92C4 /* TCTorWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCTorWindowController.m; sourceTree = "<group>"; };
 		E8455D3B17A425F00046307B /* TCValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCValue.h; sourceTree = "<group>"; };
 		E8455D3C17A425F00046307B /* TCValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCValue.m; sourceTree = "<group>"; };
 		E8455D4417A438660046307B /* NSData+TCTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+TCTools.h"; sourceTree = "<group>"; };
@@ -174,6 +188,8 @@
 		E8742542199B682F002A34DD /* NSString+TCPathExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+TCPathExtension.m"; sourceTree = "<group>"; };
 		E8742544199B6A61002A34DD /* NSString+TCXMLExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+TCXMLExtension.h"; sourceTree = "<group>"; };
 		E8742545199B6A61002A34DD /* NSString+TCXMLExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+TCXMLExtension.m"; sourceTree = "<group>"; };
+		E8758BF81C28507B00EE708A /* TCTimeHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCTimeHelper.h; sourceTree = "<group>"; };
+		E8758BF91C28507B00EE708A /* TCTimeHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCTimeHelper.m; sourceTree = "<group>"; };
 		E87833E619926D5100D0C67F /* TCFileSignature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCFileSignature.h; sourceTree = "<group>"; };
 		E87833E719926D5100D0C67F /* TCFileSignature.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCFileSignature.m; sourceTree = "<group>"; };
 		E87833E919926FF600D0C67F /* TCPublicKey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TCPublicKey.h; sourceTree = "<group>"; };
@@ -229,8 +245,8 @@
 		E889F0A212531D33000C36B2 /* TCConfigPlist.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCConfigPlist.m; sourceTree = "<group>"; };
 		E889F0A412531D3F000C36B2 /* TCBuddiesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCBuddiesWindowController.h; sourceTree = "<group>"; };
 		E889F0A512531D3F000C36B2 /* TCBuddiesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = TCBuddiesWindowController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		E889F0A712531D48000C36B2 /* TCBuddyInfoWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCBuddyInfoWindowController.h; sourceTree = "<group>"; };
-		E889F0A812531D48000C36B2 /* TCBuddyInfoWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCBuddyInfoWindowController.m; sourceTree = "<group>"; };
+		E889F0A712531D48000C36B2 /* TCBuddyInfoWindowsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCBuddyInfoWindowsController.h; sourceTree = "<group>"; };
+		E889F0A812531D48000C36B2 /* TCBuddyInfoWindowsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCBuddyInfoWindowsController.m; sourceTree = "<group>"; };
 		E889F0AD12531D62000C36B2 /* TCChatWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCChatWindowController.h; sourceTree = "<group>"; };
 		E889F0AE12531D62000C36B2 /* TCChatWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatWindowController.m; sourceTree = "<group>"; };
 		E889F0B912531D92000C36B2 /* TCAssistantWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCAssistantWindowController.h; sourceTree = "<group>"; };
@@ -261,7 +277,6 @@
 		E8A7F6DD185D22F8002A4495 /* TCChatTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatTableView.m; sourceTree = "<group>"; };
 		E8AB4D981995095300FF986D /* TCInfo+Render.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TCInfo+Render.h"; sourceTree = "<group>"; };
 		E8AB4D991995095300FF986D /* TCInfo+Render.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TCInfo+Render.m"; sourceTree = "<group>"; };
-		E8AB4D9C199522CF00FF986D /* TCTextConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TCTextConstants.h; sourceTree = "<group>"; };
 		E8C1EFF112F7169400E24C42 /* TCImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCImage.m; sourceTree = "<group>"; };
 		E8C1EFF212F7169400E24C42 /* TCImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCImage.h; sourceTree = "<group>"; };
 		E8C398291205D51000B9307B /* TCSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCSocket.m; sourceTree = "<group>"; };
@@ -434,8 +449,8 @@
 			children = (
 				E889F0A412531D3F000C36B2 /* TCBuddiesWindowController.h */,
 				E889F0A512531D3F000C36B2 /* TCBuddiesWindowController.m */,
-				E889F0A712531D48000C36B2 /* TCBuddyInfoWindowController.h */,
-				E889F0A812531D48000C36B2 /* TCBuddyInfoWindowController.m */,
+				E889F0A712531D48000C36B2 /* TCBuddyInfoWindowsController.h */,
+				E889F0A812531D48000C36B2 /* TCBuddyInfoWindowsController.m */,
 				E870BD8317A8490500DFA076 /* Views */,
 				E870BD8717A8498400DFA076 /* Resources */,
 			);
@@ -487,6 +502,24 @@
 				E870BD8C17A84A0A00DFA076 /* Resources */,
 			);
 			name = Preferences;
+			sourceTree = "<group>";
+		};
+		E844DEE51C49079B005D92C4 /* Tor */ = {
+			isa = PBXGroup;
+			children = (
+				E844DEF01C490B56005D92C4 /* TCTorWindowController.h */,
+				E844DEF11C490B56005D92C4 /* TCTorWindowController.m */,
+				E844DEE61C4907A3005D92C4 /* Resources */,
+			);
+			name = Tor;
+			sourceTree = "<group>";
+		};
+		E844DEE61C4907A3005D92C4 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				E844DEEB1C490A9E005D92C4 /* TorWindow.xib */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 		E8455D4017A4382C0046307B /* Categories */ = {
@@ -555,6 +588,7 @@
 				E83AD97B127B54B300538925 /* Logs */,
 				E83AD97C127B54C200538925 /* Preferences */,
 				E84C327E199CA3AF00D576F7 /* Update */,
+				E844DEE51C49079B005D92C4 /* Tor */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -710,10 +744,10 @@
 			isa = PBXGroup;
 			children = (
 				E85923F8120A9E3E0035C420 /* AssistantWindow.xib */,
-				E878984517B05C0B00DB7709 /* AssistantPanel_Mode.xib */,
-				E878984117B05C0B00DB7709 /* AssistantPanel_Advanced.xib */,
-				E878984317B05C0B00DB7709 /* AssistantPanel_Basic.xib */,
 				E878983817B05BC800DB7709 /* AssistantPanel_Welcome.xib */,
+				E878984517B05C0B00DB7709 /* AssistantPanel_Mode.xib */,
+				E878984317B05C0B00DB7709 /* AssistantPanel_Basic.xib */,
+				E878984117B05C0B00DB7709 /* AssistantPanel_Advanced.xib */,
 			);
 			name = XIB;
 			sourceTree = "<group>";
@@ -809,6 +843,12 @@
 				E8F96A391993D37B0050629B /* TCOperationsQueue.m */,
 				E8F15A78130425A4000593E1 /* TCKeyedText.h */,
 				E8F15A79130425A4000593E1 /* TCKeyedText.m */,
+				E80D527C1C280B6500BE3D10 /* TCSpeedHelper.h */,
+				E80D527D1C280B6500BE3D10 /* TCSpeedHelper.m */,
+				E80D527F1C281D4200BE3D10 /* TCAmountHelper.h */,
+				E80D52801C281D4200BE3D10 /* TCAmountHelper.m */,
+				E8758BF81C28507B00EE708A /* TCTimeHelper.h */,
+				E8758BF91C28507B00EE708A /* TCTimeHelper.m */,
 				E832B27419A20DD300B06194 /* Signature */,
 			);
 			name = Tools;
@@ -818,7 +858,6 @@
 			isa = PBXGroup;
 			children = (
 				E87833E919926FF600D0C67F /* TCPublicKey.h */,
-				E8AB4D9C199522CF00FF986D /* TCTextConstants.h */,
 			);
 			name = Constants;
 			sourceTree = "<group>";
@@ -900,6 +939,7 @@
 				E8D718331A66F7F500304109 /* UpdateWindow.xib in Resources */,
 				E8D717F71A66EF8600304109 /* PrefView_Network.xib in Resources */,
 				E809B1E71859F186001664E1 /* Images.xcassets in Resources */,
+				E844DEE91C490A9E005D92C4 /* TorWindow.xib in Resources */,
 				E8D5E26514DACFA200973297 /* ChatView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -930,6 +970,8 @@
 			files = (
 				E8AB4D9A1995095300FF986D /* TCInfo+Render.m in Sources */,
 				E837DAE011E7739D004BC524 /* TCBuddy.m in Sources */,
+				E80D52811C281D4200BE3D10 /* TCAmountHelper.m in Sources */,
+				E844DEF21C490B56005D92C4 /* TCTorWindowController.m in Sources */,
 				E837DAE111E7739D004BC524 /* TCBuffer.m in Sources */,
 				E837DAE311E7739D004BC524 /* TCCoreManager.m in Sources */,
 				E84C3281199CA3F700D576F7 /* TCUpdateWindowController.m in Sources */,
@@ -946,12 +988,13 @@
 				E8F96A3A1993D37B0050629B /* TCOperationsQueue.m in Sources */,
 				E8127AA91854CB1100FEDA7F /* TCChatTextField.m in Sources */,
 				E889F09A12531D07000C36B2 /* TCButton.m in Sources */,
+				E80D527E1C280B6500BE3D10 /* TCSpeedHelper.m in Sources */,
 				E889F09D12531D12000C36B2 /* TCTableView.m in Sources */,
 				E889F0A012531D1E000C36B2 /* TCTorManager.m in Sources */,
 				E889F0A312531D33000C36B2 /* TCConfigPlist.m in Sources */,
 				E8643D731A66D9C100B8C55F /* TCPrefView_Buddies.m in Sources */,
 				E889F0A612531D3F000C36B2 /* TCBuddiesWindowController.m in Sources */,
-				E889F0A912531D48000C36B2 /* TCBuddyInfoWindowController.m in Sources */,
+				E889F0A912531D48000C36B2 /* TCBuddyInfoWindowsController.m in Sources */,
 				E889F0AF12531D62000C36B2 /* TCChatWindowController.m in Sources */,
 				E8643D7C1A66DCD700B8C55F /* TCPrefView_Network.m in Sources */,
 				E889F0BB12531D92000C36B2 /* TCAssistantWindowController.m in Sources */,
@@ -991,6 +1034,7 @@
 				E8455D4617A4386C0046307B /* NSData+TCTools.m in Sources */,
 				E86B5A1817AE7C6C00C715CA /* TCFileCellView.m in Sources */,
 				E80414C917A557B7008220C9 /* NSArray+TCTools.m in Sources */,
+				E8758BFA1C28507B00EE708A /* TCTimeHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1056,6 +1100,16 @@
 			);
 			name = Localizable.strings;
 			path = TorChat;
+			sourceTree = "<group>";
+		};
+		E844DEEB1C490A9E005D92C4 /* TorWindow.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E844DEEA1C490A9E005D92C4 /* Base */,
+				E844DEED1C490AB1005D92C4 /* en */,
+				E844DEEF1C490AB7005D92C4 /* fr */,
+			);
+			name = TorWindow.xib;
 			sourceTree = "<group>";
 		};
 		E849BDAF1A66EEA60040E294 /* PrefView_General.xib */ = {

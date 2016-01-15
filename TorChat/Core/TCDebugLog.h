@@ -24,7 +24,11 @@
 # define TCDEBUGLOG_H_
 
 # ifdef DEBUG
-#	define TCDebugLog(Str, Arg...) fprintf(stderr, Str"\n", ## Arg)
+#   if __OBJC__
+#	  define TCDebugLog(Str, Arg...) NSLog(Str, ## Arg)
+#   else
+#	  define TCDebugLog(Str, Arg...) fprintf(stderr, Str"\n", ## Arg)
+#   endif
 #else
 #	define TCDebugLog(Str, ...) ((void)0)
 # endif

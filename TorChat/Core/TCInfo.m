@@ -32,7 +32,7 @@
 
 // -- Properties (RW) --
 @property (assign, nonatomic) TCInfoKind	kind;
-@property (assign, nonatomic) NSString		*domain;
+@property (strong, nonatomic) NSString		*domain;
 @property (assign, nonatomic) int			code;
 @property (strong, nonatomic) id			context;
 @property (strong, nonatomic) TCInfo		*subInfo;
@@ -108,7 +108,7 @@
 	
     if (self)
 	{
-		_date = [NSDate date];
+		_timestamp = [NSDate date];
     }
 	
     return self;

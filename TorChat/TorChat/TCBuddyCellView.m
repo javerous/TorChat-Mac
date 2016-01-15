@@ -20,13 +20,10 @@
  *
  */
 
-
-
 #import "TCBuddyCellView.h"
 
 #import "TCBuddy.h"
 #import "TCImage.h"
-
 
 
 /*

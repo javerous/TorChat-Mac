@@ -20,13 +20,11 @@
  *
  */
 
-
 #import <Foundation/Foundation.h>
 
 #import "TCInfo.h"
 #import "TCConfig.h"
 #import "TCBuddy.h"
-
 
 
 /*
@@ -65,7 +63,11 @@ typedef enum
 	TCCoreEventProfileText,		// context: NSString (<text>)
 	
 	TCCoreEventBuddyNew,		// context: TCBuddy
-	
+	TCCoreEventBuddyRemove,		// context: TCBuddy
+
+	TCCoreEventBuddyBlocked,	// context: TCBuddy
+	TCCoreEventBuddyUnblocked,	// context: TCBuddy
+
 	TCCoreEventClientStarted,
 	TCCoreEventClientStopped,
 } TCCoreEvent;
@@ -107,8 +109,8 @@ typedef enum
 	TCCoreErrorClientCmdFileStopReceiving,	// context: NSString (<parser_error>)
 } TCCoreError;
 
-// -- Delegate --
-@protocol TCCoreManagerDelegate <NSObject>
+// -- Observer --
+@protocol TCCoreManagerObserver <NSObject>
 
 - (void)torchatManager:(TCCoreManager *)manager information:(TCInfo *)info;
 
@@ -124,8 +126,6 @@ typedef enum
 
 @interface TCCoreManager : NSObject
 
-// -- Properties --
-@property (weak, atomic) id <TCCoreManagerDelegate> delegate;
 
 // -- Instance --
 - (id)initWithConfiguration:(id <TCConfig>)config;
@@ -158,5 +158,9 @@ typedef enum
 // -- Blocked Buddies --
 - (BOOL)addBlockedBuddy:(NSString *)address;
 - (BOOL)removeBlockedBuddy:(NSString *)address;
+
+// -- Observers --
+- (void)addObserver:(id <TCCoreManagerObserver>)observer;
+- (void)removeObserver:(id <TCCoreManagerObserver>)observer;
 
 @end

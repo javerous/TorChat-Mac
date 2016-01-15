@@ -20,7 +20,6 @@
  *
  */
 
-
 #import "TCAssistantWindowController.h"
 
 #import "TCConfigPlist.h"
@@ -30,7 +29,6 @@
 #import "TCPanel.h"
 
 #import "TCDebugLog.h"
-
 
 
 /*
@@ -124,7 +122,7 @@
 
 - (void)dealloc
 {
-    TCDebugLog("TCAssistantWindowController dealloc");
+    TCDebugLog(@"TCAssistantWindowController dealloc");
 }
 
 
