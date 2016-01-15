@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCConfigPlist.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,26 +20,25 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import "TCConfigInterface.h"
+
+#if defined(PROXY_ENABLED) && PROXY_ENABLED
+# import "TCConfigProxy.h"
+#endif
 
 
 /*
-** Defines
+** TCConfigPlist
 */
-#pragma mark - Defines
+#pragma mark - TCConfigPlist
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@interface TCConfigPlist : NSObject <TCConfigInterface>
 
+// -- Instance --
+- (id)initWithFile:(NSString *)filepath;
 
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+#if defined(PROXY_ENABLED) && PROXY_ENABLED
+- (id)initWithFileProxy:(id <TCConfigProxy>)proxy;
+#endif
 
 @end

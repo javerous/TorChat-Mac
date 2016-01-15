@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  NSArray+TCTools.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -24,22 +24,12 @@
 
 
 /*
-** Defines
+** NSArray (TCTools)
 */
-#pragma mark - Defines
+#pragma mark - NSArray (TCTools)
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@interface NSArray (TCTools)
 
-
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+- (NSData *)joinWithCStr:(const char *)str;
 
 @end

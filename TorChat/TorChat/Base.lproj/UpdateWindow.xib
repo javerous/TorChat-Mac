@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10089" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10089"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="TCUpdateWindowController">
+            <connections>
+                <outlet property="availableView" destination="gg3-aF-JJu" id="Hj5-3A-mWZ"/>
+                <outlet property="subtitleField" destination="rRV-wf-tdQ" id="6OI-0y-bPg"/>
+                <outlet property="window" destination="QvC-M9-y7g" id="Lgo-FM-tO7"/>
+                <outlet property="workingButton" destination="HMl-dq-XNj" id="URc-gg-E4o"/>
+                <outlet property="workingDownloadInfo" destination="aHi-3Y-GCR" id="a9x-a4-h4r"/>
+                <outlet property="workingProgress" destination="X5o-U3-jQn" id="F0r-s3-7sK"/>
+                <outlet property="workingStatusField" destination="bHE-da-88h" id="Vj2-tu-C0d"/>
+                <outlet property="workingView" destination="w9G-xk-fMY" id="zlR-Ns-Rtk"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <window title="Tor Update" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="QvC-M9-y7g">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="196" y="240" width="585" height="155"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <view key="contentView" id="EiT-Mj-1SZ">
+                <rect key="frame" x="0.0" y="0.0" width="585" height="155"/>
+                <autoresizingMask key="autoresizingMask"/>
+            </view>
+            <point key="canvasLocation" x="122.5" y="-94.5"/>
+        </window>
+        <customView translatesAutoresizingMaskIntoConstraints="NO" id="gg3-aF-JJu" userLabel="AvailableView">
+            <rect key="frame" x="0.0" y="0.0" width="585" height="155"/>
+            <subviews>
+                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Qd2-i4-sFp">
+                    <rect key="frame" x="20" y="71" width="64" height="64"/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="tor_logo" id="Rjc-li-Xza"/>
+                </imageView>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="PBn-wq-Cgn">
+                    <rect key="frame" x="90" y="118" width="214" height="17"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="A new version of Tor is available." id="3Bd-81-Mj6">
+                        <font key="font" metaFont="systemBold"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rRV-wf-tdQ">
+                    <rect key="frame" x="90" y="96" width="176" height="14"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;SUBTITLE-DONT-TRANSLATE&gt;" id="2T2-T1-cLr">
+                        <font key="font" metaFont="smallSystem"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ofH-Xp-0Zg">
+                    <rect key="frame" x="447" y="13" width="124" height="32"/>
+                    <buttonCell key="cell" type="push" title="Install Update" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pfM-iA-SkK">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                        <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                    </buttonCell>
+                    <connections>
+                        <action selector="doInstallUpdate:" target="-2" id="wDf-tU-EOv"/>
+                    </connections>
+                </button>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bah-D8-xm4">
+                    <rect key="frame" x="304" y="13" width="143" height="32"/>
+                    <buttonCell key="cell" type="push" title="Remind Me Later" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="CX4-xf-EQL">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                        <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                    </buttonCell>
+                    <connections>
+                        <action selector="doRemindMeLater:" target="-2" id="U4y-A6-nL8"/>
+                    </connections>
+                </button>
+            </subviews>
+            <constraints>
+                <constraint firstAttribute="width" constant="585" id="9nz-AD-45u"/>
+                <constraint firstItem="Qd2-i4-sFp" firstAttribute="centerY" secondItem="rRV-wf-tdQ" secondAttribute="centerY" id="AXC-iI-Lzn"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="PBn-wq-Cgn" secondAttribute="trailing" constant="20" symbolic="YES" id="BuX-3z-ZFh"/>
+                <constraint firstItem="Qd2-i4-sFp" firstAttribute="top" secondItem="gg3-aF-JJu" secondAttribute="top" constant="20" symbolic="YES" id="Gug-TT-5MS"/>
+                <constraint firstItem="PBn-wq-Cgn" firstAttribute="leading" secondItem="Qd2-i4-sFp" secondAttribute="trailing" constant="8" symbolic="YES" id="LpK-Vi-nzA"/>
+                <constraint firstItem="ofH-Xp-0Zg" firstAttribute="leading" secondItem="bah-D8-xm4" secondAttribute="trailing" constant="12" symbolic="YES" id="LpV-dz-dqj"/>
+                <constraint firstItem="bah-D8-xm4" firstAttribute="top" secondItem="Qd2-i4-sFp" secondAttribute="bottom" constant="30" id="WX0-uX-YE5"/>
+                <constraint firstAttribute="trailing" secondItem="ofH-Xp-0Zg" secondAttribute="trailing" constant="20" symbolic="YES" id="gbV-Z3-S1U"/>
+                <constraint firstAttribute="bottom" secondItem="ofH-Xp-0Zg" secondAttribute="bottom" constant="20" symbolic="YES" id="hb3-rx-3ud"/>
+                <constraint firstItem="rRV-wf-tdQ" firstAttribute="leading" secondItem="Qd2-i4-sFp" secondAttribute="trailing" constant="8" symbolic="YES" id="ryM-Ki-0Xc"/>
+                <constraint firstItem="Qd2-i4-sFp" firstAttribute="leading" secondItem="gg3-aF-JJu" secondAttribute="leading" constant="20" symbolic="YES" id="ssI-JN-PEI"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="rRV-wf-tdQ" secondAttribute="trailing" constant="20" symbolic="YES" id="tW3-4q-S56"/>
+                <constraint firstItem="ofH-Xp-0Zg" firstAttribute="centerY" secondItem="bah-D8-xm4" secondAttribute="centerY" id="uj2-DC-TFb"/>
+                <constraint firstAttribute="height" constant="155" id="v03-9o-l99"/>
+                <constraint firstItem="PBn-wq-Cgn" firstAttribute="top" secondItem="Qd2-i4-sFp" secondAttribute="top" id="yWC-ou-6dy"/>
+            </constraints>
+            <point key="canvasLocation" x="122.5" y="116.5"/>
+        </customView>
+        <customView translatesAutoresizingMaskIntoConstraints="NO" id="w9G-xk-fMY" userLabel="WorkingView">
+            <rect key="frame" x="0.0" y="0.0" width="400" height="125"/>
+            <subviews>
+                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Ygf-Z9-Pgn">
+                    <rect key="frame" x="20" y="31" width="64" height="64"/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="tor_logo" id="yAe-i0-tkT"/>
+                </imageView>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bHE-da-88h">
+                    <rect key="frame" x="90" y="92" width="201" height="17"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;STATUS-DONT-TRANSLATE&gt;" id="w3E-Q4-Mdy">
+                        <font key="font" metaFont="systemBold"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="aHi-3Y-GCR">
+                    <rect key="frame" x="90" y="50" width="133" height="11"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;DOWN-DONT-TRANSLATE&gt;" id="Mzx-LX-amq">
+                        <font key="font" metaFont="miniSystem"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <progressIndicator maxValue="1" indeterminate="YES" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="X5o-U3-jQn">
+                    <rect key="frame" x="92" y="64" width="288" height="20"/>
+                </progressIndicator>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="HMl-dq-XNj">
+                    <rect key="frame" x="214" y="13" width="172" height="32"/>
+                    <buttonCell key="cell" type="push" title="&lt;DONT-TRANSLATE&gt;" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="TwA-CR-dpK">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="doWorkingButton:" target="-2" id="sgR-So-lYg"/>
+                    </connections>
+                </button>
+            </subviews>
+            <constraints>
+                <constraint firstItem="bHE-da-88h" firstAttribute="top" secondItem="w9G-xk-fMY" secondAttribute="top" constant="16" id="0Aa-et-i6f"/>
+                <constraint firstItem="bHE-da-88h" firstAttribute="leading" secondItem="Ygf-Z9-Pgn" secondAttribute="trailing" constant="8" id="0hW-N2-p6Y"/>
+                <constraint firstItem="X5o-U3-jQn" firstAttribute="top" secondItem="bHE-da-88h" secondAttribute="bottom" constant="9" id="Enj-qF-WuM"/>
+                <constraint firstItem="Ygf-Z9-Pgn" firstAttribute="leading" secondItem="w9G-xk-fMY" secondAttribute="leading" constant="20" symbolic="YES" id="GKS-0U-tmx"/>
+                <constraint firstAttribute="trailing" secondItem="X5o-U3-jQn" secondAttribute="trailing" constant="20" symbolic="YES" id="GvI-QB-vWm"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="bHE-da-88h" secondAttribute="trailing" constant="20" symbolic="YES" id="U3w-5C-8F2"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="aHi-3Y-GCR" secondAttribute="trailing" constant="20" symbolic="YES" id="Wqq-AL-D6h"/>
+                <constraint firstItem="aHi-3Y-GCR" firstAttribute="leading" secondItem="X5o-U3-jQn" secondAttribute="leading" id="Ywr-LC-h8n"/>
+                <constraint firstAttribute="bottom" secondItem="HMl-dq-XNj" secondAttribute="bottom" constant="20" id="cGI-Cf-daf"/>
+                <constraint firstItem="X5o-U3-jQn" firstAttribute="leading" secondItem="Ygf-Z9-Pgn" secondAttribute="trailing" constant="8" id="e1O-03-wTR"/>
+                <constraint firstAttribute="height" constant="125" id="e7H-ZN-AVD"/>
+                <constraint firstAttribute="centerY" secondItem="Ygf-Z9-Pgn" secondAttribute="centerY" constant="0.5" id="kaX-s8-vFu"/>
+                <constraint firstItem="aHi-3Y-GCR" firstAttribute="top" secondItem="X5o-U3-jQn" secondAttribute="bottom" constant="4" id="oHZ-lm-xy2"/>
+                <constraint firstAttribute="width" constant="400" id="urv-dK-iRZ"/>
+                <constraint firstAttribute="trailing" secondItem="HMl-dq-XNj" secondAttribute="trailing" constant="20" id="vVB-Tr-59B"/>
+            </constraints>
+            <point key="canvasLocation" x="30" y="312.5"/>
+        </customView>
+    </objects>
+    <resources>
+        <image name="tor_logo" width="64" height="64"/>
+    </resources>
+</document>

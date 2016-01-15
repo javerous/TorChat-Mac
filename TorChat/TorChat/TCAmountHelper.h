@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCAmountHelper.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -24,22 +24,10 @@
 
 
 /*
-** Defines
+** Functions
 */
-#pragma mark - Defines
+#pragma mark - Functions
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+NSString * TCStringFromBytesAmount(uint64_t size);
 
-
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
-
-@end
+NSString * TCStringFromSecondsAmount(NSTimeInterval seconds);

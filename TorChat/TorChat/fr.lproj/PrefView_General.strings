@@ -1,0 +1,9 @@
+
+/* Class = "NSTextFieldCell"; title = "TorChat Client Version :"; ObjectID = "Bhc-4g-w2A"; */
+"Bhc-4g-w2A.title" = "Version du client TorChat :";
+
+/* Class = "NSBox"; title = "Masquerade"; ObjectID = "RqU-qW-Fpu"; */
+"RqU-qW-Fpu.title" = "Camouflage";
+
+/* Class = "NSTextFieldCell"; title = "TorChat Client Name :"; ObjectID = "Wbm-Mq-qe0"; */
+"Wbm-Mq-qe0.title" = "Nom du client TorChat :";

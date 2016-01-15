@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  NSData+TCTools.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -24,22 +24,25 @@
 
 
 /*
-** Defines
+** NSData (TCTools)
 */
-#pragma mark - Defines
+#pragma mark - NSData (TCTools)
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@interface NSData (TCTools)
+
+- (NSArray *)explodeWithMaxFields:(NSUInteger)count withFieldSeparator:(const char *)separator;
+
+@end
 
 
 
 /*
-** TCConfigProxy
+** NSMutableData (TCTools)
 */
-#pragma mark - TCConfigProxy
+#pragma mark - NSMutableData (TCTools)
 
-@protocol TCConfigProxy <NSObject>
+@interface NSMutableData (TCTools)
 
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+- (void)replaceCStr:(const char *)str withCStr:(const char *)replace;
 
 @end

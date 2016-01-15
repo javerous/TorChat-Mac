@@ -1,0 +1,279 @@
+/*
+*  Localizable.strings
+*
+*  Copyright 2016 Avérous Julien-Pierre
+*
+*  This file is part of TorChat.
+*
+*  TorChat is free software: you can redistribute it and/or modify
+*  it under the terms of the GNU General Public License as published by
+*  the Free Software Foundation, either version 3 of the License, or
+*  (at your option) any later version.
+*
+*  TorChat is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU General Public License for more details.
+*
+*  You should have received a copy of the GNU General Public License
+*  along with TorChat.  If not, see <http://www.gnu.org/licenses/>.
+*
+*/
+
+
+
+/* Assistant Pannel */
+"ac_title_welcome" = "Configure TorChat for Mac";
+"ac_title_mode" = "Select a mode";
+"ac_title_advanced" = "Setup the advanced mode";
+"ac_title_basic" = "Setup the basic mode";
+
+"ac_next_continue" = "Continue";
+"ac_next_finish" = "Finish";
+
+"ac_error_build_path" = "Can't build the configuration path because of a system error";
+"ac_error_write_file" = "Can't build a configuration file (%@). Please check write access on your TorChat folder.";
+"ac_error_read_file" = "Can't open the configuration file (%@). Please check read access on your file.";
+"ac_error_read_proxy" = "Can't get the configuration data. Please check the proxy.";
+"ac_error_config" = "Error";
+
+
+/* Menu */
+"menu_block_buddy" = "Block Buddy";
+"menu_unblock_buddy" = "Unblock Buddy";
+
+
+/* Buddy */
+"bd_status_offline" = "Offline";
+"bd_status_available" = "Available";
+"bd_status_away" = "Away";
+"bd_status_xa" = "Extended Away";
+
+"bd_error_offline" = "Message can't be sent because the user is offline: \"%@\"";
+"bd_error_blocked" = "Message can't be sent because the user is blocked: \"%@\"";
+
+
+/* Buddy Info */
+"bdi_profile_name" = "Profile Name";
+"bdi_profile_text" = "Profile Text";
+"bdi_peer_client" = "Client Name";
+"bdi_peer_version" = "Client Version";
+"bdi_isblocked" = "Blocked";
+
+"bdi_yes" = "Yes";
+"bdi_no" = "No";
+
+
+/* File */
+"file_canceling" = "Canceling...";
+"file_upload_done" = "Upload done.";
+"file_upload_stopped" = "Upload stopped.";
+"file_download_done" = "Download done.";
+"file_download_stopped" = "Download stopped.";
+"file_uploading" = "Uploading...";
+"file_downloading" = "Downloading...";
+"file_uploads" = "%u uploads";
+"one_upload" = "1 upload";
+"file_downloads" = "%u downloads";
+"one_download" = "1 download";
+"file_progress_of" = "of";
+"file_progress_from" = "From:";
+"file_progress_to" = "To:";
+
+
+/* Chat */
+"chat_want_close" = "Would you like to delete this conversation?";
+"chat_want_close_info" = "You can't undo this action.";
+"chat_cancel" = "Cancel";
+"chat_close" = "Delete";
+
+
+/* Logs */
+"logs_all_logs" = "All logs";
+"logs_global_logs" = "Globals";
+"logs_error_title" = "TorChat Error";
+
+
+/* Update */
+"update_subtitle_available" = "Tor %@ is now available—you have %@. Would you like to download it now?";
+"update_button_cancel" = "Cancel";
+"update_button_close" = "Close";
+"update_button_done" = "Done";
+
+"update_status_launching" = "Launching update…";
+"update_status_retrieving_info" = "Retrieving archive info…";
+"update_status_downloading_archive" = "Downloading…";
+"update_status_staging_archive" = "Archive staging…";
+"update_status_checking_signature" = "Checking signature…";
+"update_status_relaunching_tor" = "Relaunching tor…";
+"update_status_update_done" = "Update done.";
+"update_status_error" = "Update error.";
+
+"update_error_fmt" = "Error: %@";
+
+"update_download_progress" = "%@ of %@";
+"update_download_progress_stalled" = "%@ of %@ (stalled)";
+"update_download_progress_remaining" = "%@ of %@ (%@ remaining)";
+
+
+/* Tor */
+"tor_button_close" = "Close";
+
+
+/* Amounts */
+"size_gb" = "GB";
+"size_mb" = "MB";
+"size_kb" = "KB";
+"size_b" = "B";
+
+"time_days" = "days";
+"time_hours" = "hours";
+"time_minutes" = "minutes";
+"time_seconds" = "seconds";
+
+
+/* Location */
+"location_reset_title" = "Reset to default directory";
+"location_reset_message" = "Do you really want to reset this location to its default value?";
+"location_cancel" = "Cancel";
+"location_reset" = "Reset";
+
+
+/* Core */
+// General
+"core_mng_myself" = "myself";
+
+// TCBuddyInfoDomain
+"core_bd_event_connected" = "Buddy is connected on the remote buddy through tor SOCKS.";
+"core_bd_event_tor_connected" = "Buddy connected on tor SOCKS.";
+"core_bd_event_stopped" = "Buddy is stopped.";
+"core_bd_event_identified" = "Buddy is fully identified. All action are activated.";
+"core_bd_event_status_changed" = "Buddy status has changed (%@).";
+"core_bd_event_new_message" = "Received a new message";
+"core_bd_event_alias_changed" = "The alias of the buddy changed.";
+"core_bd_event_notes_changed" = "The notes of the buddy changed.";
+"core_bd_event_new_version" = "Peer version received";
+"core_bd_event_new_client" = "Peer name received";
+"core_bd_event_file_send_start" = "New file sending session.";
+"core_bd_event_file_chunk_send" = "New file chunk sent";
+"core_bd_event_file_send_finish" = "File send finished.";
+"core_bd_event_file_send_canceled" = "File sending was canceled.";
+"core_bd_event_file_receive_start" = "New file receiving session.";
+"core_bd_event_file_chunk_receive" = "New file chunk received";
+"core_bd_event_file_receive_finish" = "File receive finished.";
+"core_bd_event_file_receive_stopped" = "File receive was stopped by the remote peer.";
+"core_bd_event_new_profile_text" = "Buddy profile text received";
+"core_bd_event_new_profile_name" = "Buddy profile name received";
+"core_bd_event_new_profile_avatar" = "Buddy profile avatar received";
+
+"core_bd_error_tor_resolve" = "The tor SOCKS address can't be resolved.";
+"core_bd_error_tor_connect" = "Unable to make a connection to the tor SOCKS.";
+"core_bd_error_socket" = "Buddy socket error.";
+"core_bd_error_socks_91" = "SOCKS request rejected or failed.";
+"core_bd_error_socks_92" = "SOCKS request rejected because SOCKS server cannot connect to identd on the client.";
+"core_bd_error_socks_93" = "SOCKS request rejected because the client program and identd report different user-ids.";
+"core_bd_error_socks_unknown" = "SOCKS request failed for an unknown reason.";
+"core_bd_error_socks_request" = "Can't send the SOCKS request.";
+"core_bd_error_message_offline" = "Can't send a message to an offline buddy.";
+"core_bd_error_message_blocked" = "Can't send a message to an blocked buddy";
+"core_bd_error_filesend" = "Can't open file for sending.";
+"core_bd_error_filereceive" = "Can't open file to receive incoming file.";
+"core_bd_error_file_offline" = "Can't send a file to an offline buddy.";
+"core_bd_error_file_blocked" = "Can't send a file to an blocked buddy.";
+
+// TCSocketInfoDomain
+"core_socket_read_error" = "Socket read error.";
+"core_socket_read_closed" = "Socket was closed by remote peer on read.";
+"core_socker_read_full" = "Socket buffer is full. Unable to buffer more data.";
+"core_socket_write_error" = "Socket write error.";
+"core_socket_write_closed" = "Socket was closed by remote peer on write.";
+
+// TCConnectionInfoDomain
+"core_cnx_event_started" = "Connection controller was started.";
+"core_cnx_event_stopped" = "Connection controller was stopped.";
+
+"core_cnx_error_socket" = "Client controller socket error.";
+"core_cnx_error_fake_ping" = "A remote peer sent a faked ping hostname. It was killed.";
+
+// TCCoreManagerInfoDomain
+"core_mng_event_new_buddy" = "A new buddy was added on your buddy list (%@).";
+"core_mng_event_remove_buddy" = "A buddy was removed from your buddy list (%@).";
+"core_mng_event_blocked_buddy" = "A buddy was blocked (%@)";
+"core_mng_event_unblock_buddy" = "A buddy was unblocked (%@)";
+"core_mng_event_started" = "TorChat controller is started.";
+"core_mng_event_stopped" = "TorChat controller is stopped.";
+"core_mng_event_status" = "Status changed (%@).";
+"core_mng_event_profile_avatar" = "Profile avatar changed.";
+"core_mng_event_profile_name" = "Profile name changed.";
+"core_mng_event_profile_text" = "Profile text changed.";
+
+"core_mng_error_socket" = "Can't build a system socket object.";
+"core_mng_error_setsockopt" = "Can't change system socket option.";
+"core_mng_error_bind" = "Can't set system socket address.";
+"core_mng_error_listen" = "Can't listen on the system socket.";
+"core_mng_error_accept" = "Can't accept new client because of a system error.";
+"core_mng_error_async" = "Can't use async I/O on system socket.";
+"core_cnx_error_already_pinged" = "A remote peer try to ping a buddy already pinged. It was killed.";
+"core_cnx_error_masquerade" = "A remote peer try a masquerade with our address. It was killed.";
+"core_cnx_error_add_buddy" = "Can't add a new buddy on TorChat controller.";
+"core_cnx_error_pong" = "A remote peer try to do a pong, but the buddy can't be found. It was killed.";
+
+
+/* Tor Manager */
+// General
+"tor_out_log" = "Tor: %@";
+"tor_error_log" = "Tor-Error: %@";
+
+// TCTorManagerInfoStartDomain
+"tor_start_info_bootstrap" = "Tor bootstrapping %lu%% (%@).";
+"tor_start_info_hostname" = "Tor started with hostname '%@'.";
+"tor_start_info_url_session" = "Tor proxy ready.";
+"tor_start_info_done" = "Tor is ready.";
+
+"tor_start_warning_canceled" = "Tor start was canceled.";
+
+"tor_start_err_already_running" = "Tor is already running.";
+"tor_start_err_configuration" = "Can't obtain some informations from configuration.";
+"tor_start_err_unarchive" = "Can't unarchive tor.";
+"tor_start_err_signature" = "Can't validate signature.";
+"tor_start_err_launch" = "System can't launch tor binary.";
+"tor_start_err_control_connect" = "Can't connect to tor control port.";
+"tor_start_err_control_authenticate" = "Can't authenticate to control tor.";
+"tor_start_err_control_monitor" = "Can't monitor tor.";
+
+// TCTorManagerInfoCheckUpdateDomain
+"tor_checkupdate_info_version_available" = "Version available on server: %@";
+
+"tor_checkupdate_error_not_running" = "Tor is not running.";
+"tor_checkupdate_error_check_remote_info" = "Can't retrieve remote informations.";
+"tor_checkupdate_error_validate_local_signature" = "Can't validate local signature.";
+"tor_checkupdate_error_nothing_new" = "There is no update available (already up-to-date).";
+
+// TCTorManagerInfoUpdateDomain
+"tor_update_info_retrieve_info" = "Retrieve remote tor informations.";
+"tor_update_info_archive_size" = "Remote archive size: %llu";
+"tor_update_info_downloading" = "Download…";
+"tor_update_info_stage" = "Stage the archive.";
+"tor_update_info_signature_check" = "Check signature.";
+"tor_update_info_relaunch" = "Relaunch.";
+"tor_update_info_done" = "Done.";
+
+"tor_update_err_not_running" = "Tor is not running.";
+"tor_update_err_configuration" = "Can't obtain some informations from configuration.";
+"tor_update_err_internal" = "Internal system error.";
+"tor_update_err_archive_info" = "Can't retrieve remove tor archive informations.";
+"tor_update_err_archive_download" = "Can't download remote tor archive.";
+"tor_update_err_archive_stage" = "Can't stage tor archive.";
+"tor_update_err_relaunch" = "Can't relaunch tor.";
+
+// TCTorManagerInfoOperationDomain
+"tor_operation_info_info" = "Extracted informations";
+"tor_operation_info_done" = "Operation done";
+
+"tor_operation_err_configuration" = "Can't obtain some informations from configuration";
+"tor_operation_err_io" = "I/O error";
+"tor_operation_err_network" = "Network error";
+"tor_operation_err_extract" = "Extraction error";
+"tor_operation_err_signature" = "Signature error";
+"tor_operation_err_tor" = "Tor error";
+"tor_operation_err_internal" = "Internal error";

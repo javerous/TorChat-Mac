@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  NSImage+TCExtension.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,26 +20,33 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import "NSImage+TCExtension.h"
 
 
 /*
-** Defines
+** NSImage + TCExtension
 */
-#pragma mark - Defines
+#pragma mark - NSImage + TCExtension
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@implementation NSImage (TCExtension)
 
-
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+- (NSImage *)flipHorizontally
+{
+    NSSize	size = self.size;
+    NSImage	*result = [NSImage imageWithSize:size flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
+		
+		NSAffineTransform *translate = [NSAffineTransform transform];
+		
+		[translate translateXBy:size.width yBy:0];
+		[translate scaleXBy:-1 yBy:1];
+		[translate concat];
+		
+		[self drawAtPoint:NSZeroPoint fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0];
+		
+		return YES;
+	}];
+	
+    return result;
+}
 
 @end

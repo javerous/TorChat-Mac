@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCDebugLog.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,26 +20,17 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#ifndef TCDEBUGLOG_H_
+# define TCDEBUGLOG_H_
 
+# ifdef DEBUG
+#   if __OBJC__
+#	  define TCDebugLog(Str, Arg...) NSLog(Str, ## Arg)
+#   else
+#	  define TCDebugLog(Str, Arg...) fprintf(stderr, Str"\n", ## Arg)
+#   endif
+#else
+#	define TCDebugLog(Str, ...) ((void)0)
+# endif
 
-/*
-** Defines
-*/
-#pragma mark - Defines
-
-#define TCProxyName @"com.sourcemac.torchat.proxy"
-
-
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
-
-@end
+#endif

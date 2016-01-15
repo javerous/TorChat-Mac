@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCPanel_Welcome.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,26 +20,16 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
+
+#import "TCPanel.h"
 
 
 /*
-** Defines
+** TCPanel_Welcome
 */
-#pragma mark - Defines
+#pragma mark - TCPanel_Welcome
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
-
-
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+@interface TCPanel_Welcome : NSViewController <TCAssistantPanel>
 
 @end

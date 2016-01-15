@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCSpeedHelper.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -24,22 +24,23 @@
 
 
 /*
-** Defines
+** TCSpeedHelper
 */
-#pragma mark - Defines
+#pragma mark - TCSpeedHelper
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@interface TCSpeedHelper : NSObject
 
+// -- Instance --
+- (instancetype)initWithCompleteAmount:(NSUInteger)amount;
 
+// -- Update --
+- (void)setCurrentAmount:(NSUInteger)amount;
+- (void)addAmount:(NSUInteger)amount;
 
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
+// -- Compute --
+- (double)averageSpeed;
+- (NSTimeInterval)remainingTime;
 
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+@property (strong, atomic) void (^updateHandler)(NSTimeInterval remainingTime);
 
 @end
