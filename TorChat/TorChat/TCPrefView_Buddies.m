@@ -1,15 +1,28 @@
-//
-//  TCPrefsView_Buddies.m
-//  TorChat
-//
-//  Created by Julien-Pierre Avérous on 14/01/2015.
-//  Copyright (c) 2016 SourceMac. All rights reserved.
-//
+/*
+ *  TCPrefView_Buddies.m
+ *
+ *  Copyright 2016 Avérous Julien-Pierre
+ *
+ *  This file is part of TorChat.
+ *
+ *  TorChat is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  TorChat is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with TorChat.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
 #import "TCPrefView_Buddies.h"
 
-#import "TCBuddiesWindowController.h"
-
+#import "TCCoreManager.h"
 
 
 /*
@@ -17,7 +30,7 @@
 */
 #pragma mark - TCPrefView_Buddies - Private
 
-@interface TCPrefView_Buddies ()
+@interface TCPrefView_Buddies () <TCCoreManagerObserver>
 
 @property (strong, nonatomic) IBOutlet NSTableView	*tableView;
 @property (strong, nonatomic) IBOutlet NSButton		*removeButton;
@@ -72,13 +85,15 @@
 	// Load view.
 	[self view];
 	
-	// Register notifications.
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddyBlockedChanged:) name:TCCocoaBuddyChangedBlockedNotification object:nil];
+	// Observe core info.
+	[self.core addObserver:self];
 }
 
-- (void)saveConfig
+- (BOOL)saveConfig
 {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[self.core removeObserver:self];
+	
+	return NO;
 }
 
 
@@ -96,15 +111,13 @@
 	// Show add window
 	[_addBlockedField setStringValue:@""];
 	
-	[[NSApplication sharedApplication] beginSheet:_addBlockedWindow modalForWindow:self.view.window modalDelegate:nil didEndSelector:NULL contextInfo:NULL];
+	[self.view.window beginSheet:_addBlockedWindow completionHandler:nil];
 }
 
 
 - (IBAction)doAddBlockedCancel:(id)sender
 {
-	// Close
-	[[NSApplication sharedApplication] endSheet:_addBlockedWindow];
-	[_addBlockedWindow orderOut:self];
+	[self.view.window endSheet:_addBlockedWindow];
 }
 
 - (IBAction)doAddBlockedOK:(id)sender
@@ -116,24 +129,18 @@
 	
 	address = [_addBlockedField stringValue];
 	
-	// Add on controller
-#warning FIXME
-	// XXX Here, we break the fact that config is local to this view,
-	//	and it will not necessarily the one used by the controller in the future.
-	//	Try to find a better solution.
-	if ([[TCBuddiesWindowController sharedController] addBlockedBuddy:address] == NO)
+	// Add on blocked list.
+	if ([self.core addBlockedBuddy:address] == NO)
 	{
 		NSBeep();
+		return;
 	}
-	else
-	{
-		// Reload
-		[_tableView reloadData];
+	
+	// Reload list.
+	[_tableView reloadData];
 		
-		// Close
-		[[NSApplication sharedApplication] endSheet:_addBlockedWindow];
-		[_addBlockedWindow orderOut:self];
-	}
+	// Close.
+	[self.view.window endSheet:_addBlockedWindow];
 }
 
 - (IBAction)doRemoveBlockedUser:(id)sender
@@ -146,45 +153,48 @@
 	NSMutableArray	*removes = [NSMutableArray arrayWithCapacity:[set count]];
 	NSUInteger		index = [set firstIndex];
 	
-	// Resolve indexes
+	// Resolve indexes.
 	while (index != NSNotFound)
 	{
-		// Add to address to remove
+		// Add to address to remove.
 		NSString *address = blocked[index];
 		
 		[removes addObject:address];
 		
-		// Next index
+		// Next index.
 		index = [set indexGreaterThanIndex:index];
 	}
 	
-	// Remove
+	// Remove from blocked list.
 	for (NSString *remove in removes)
-	{
-		// Remove on controller
-#warning FIXME
-		// XXX Here, we break the fact that config is local to this view,
-		//	and it will not necessarily the one used by the controller in the future.
-		//	Try to find a better solution.
-		[[TCBuddiesWindowController sharedController] removeBlockedBuddy:remove];
-	}
+		[self.core removeBlockedBuddy:remove];
 	
-	// Reload list
+	// Reload list.
 	[_tableView reloadData];
 }
 
-- (void)buddyBlockedChanged:(NSNotification *)notice
+
+/*
+** TCPrefView_Buddies - TCCoreManagerObserver
+*/
+#pragma mark - TCPrefView_Buddies - TCCoreManagerObserver
+
+- (void)torchatManager:(TCCoreManager *)manager information:(TCInfo *)info
 {
-	// Reload list
-	[_tableView reloadData];
+	if (info.kind == TCInfoInfo && (info.code == TCCoreEventBuddyBlocked || info.code == TCCoreEventBuddyUnblocked))
+	{
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[_tableView reloadData];
+		});
+	}
 }
 
 
 
 /*
-** TCPrefView_Buddies - TableView Delegate
+** TCPrefView_Buddies - NSTableViewDelegate
 */
-#pragma mark - TCPrefView_Buddies - TableView Delegate
+#pragma mark - TCPrefView_Buddies - NSTableViewDelegate
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {

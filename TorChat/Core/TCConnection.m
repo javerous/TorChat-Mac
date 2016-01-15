@@ -31,7 +31,6 @@
 #import "TCBuddy.h"
 
 
-
 /*
 ** TCConnection - Private
 */
@@ -115,7 +114,7 @@
 
 - (void)dealloc
 {
-	TCDebugLog("TCConnection Destructor");
+	TCDebugLog(@"TCConnection Destructor");
 	
 	if (_sock)
 		[_sock stop];

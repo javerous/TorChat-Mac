@@ -20,7 +20,6 @@
  *
  */
 
-
 #import <Foundation/Foundation.h>
 
 
@@ -98,7 +97,8 @@ typedef enum
 @property (weak, atomic) id <TCSocketDelegate> delegate;
 
 // -- Instance --
-- (id)initWithSocket:(int)descriptor;
+- (instancetype)initWithIP:(NSString *)ip port:(uint16_t)port;
+- (instancetype)initWithSocket:(int)descriptor;
 
 // -- Sending --
 - (BOOL)sendBytes:(const void *)bytes ofSize:(NSUInteger)size copy:(BOOL)copy;

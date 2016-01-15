@@ -20,14 +20,11 @@
  *
  */
 
-
-
 #import "TCChatViewController.h"
 
 #import "TCChatTranscriptViewController.h"
 
 #import "TCThreePartImageView.h"
-
 
 
 /*

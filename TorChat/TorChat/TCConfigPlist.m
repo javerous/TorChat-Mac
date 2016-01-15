@@ -20,7 +20,6 @@
  *
  */
 
-
 #import "TCConfigPlist.h"
 
 #import "NSString+TCPathExtension.h"
@@ -98,8 +97,9 @@
 	
 	NSMutableDictionary *_pathObservers;
 
-	BOOL _isDirty;
-	
+	BOOL				_isDirty;
+	dispatch_source_t	_timer;
+
 #if defined(PROXY_ENABLED) && PROXY_ENABLED
 	id <TCConfigProxy>	_proxy;
 #endif
@@ -165,7 +165,26 @@
 			return nil;
 		
 		// Create queue.
-		_localQueue = dispatch_queue_create("com.sourcemac.torchat.config-plist", DISPATCH_QUEUE_CONCURRENT);
+		_localQueue = dispatch_queue_create("com.torchat.app.config-plist", DISPATCH_QUEUE_CONCURRENT);
+		
+		// Save timer.
+		_timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _localQueue);
+
+		dispatch_source_set_timer(_timer, DISPATCH_TIME_FOREVER, 0, 0);
+		
+		dispatch_source_set_event_handler(_timer, ^{
+			dispatch_source_set_timer(_timer, DISPATCH_TIME_FOREVER, 0, 0);
+			
+			if (_isDirty == NO)
+				return;
+			
+			dispatch_barrier_async(_localQueue, ^{
+				if ([self saveConfig:_fcontent toFile:_fpath])
+					_isDirty = NO;
+			});
+		});
+		
+		dispatch_resume(_timer);
 	}
 	
 	return self;
@@ -194,7 +213,7 @@
 			return nil;
 		
 		// Create queue.
-		_localQueue = dispatch_queue_create("com.sourcemac.torchat.config-plist", DISPATCH_QUEUE_CONCURRENT);
+		_localQueue = dispatch_queue_create("com.torchat.app.config-plist", DISPATCH_QUEUE_CONCURRENT);
 	}
 	
 	return self;
@@ -1082,17 +1101,17 @@
 */
 #pragma mark - TCConfigPlist - Paths
 
-#pragma mark Public - Paths
+#pragma mark > Set
 
-- (BOOL)setPathForComponent:(TConfigPathComponent)component pathType:(TConfigPathType)pathType path:(NSString *)path
+- (BOOL)setPathForComponent:(TCConfigPathComponent)component pathType:(TCConfigPathType)pathType path:(NSString *)path
 {
 	// Handle special referal component.
-	if (component == TConfigPathComponentReferal)
+	if (component == TCConfigPathComponentReferal)
 	{
 		__block BOOL result = NO;
 		
 		dispatch_barrier_sync(_localQueue, ^{
-#warning handle notification + cascade change notification
+
 			// Check parameter.
 			BOOL isDirectory = NO;
 			
@@ -1110,6 +1129,16 @@
 			// Hold new path.
 			_fpath = newPath;
 			
+			// Notify this component.
+			[self _notifyPathChangeForComponent:TCConfigPathComponentReferal];
+			
+			// Notify components using this component.
+			[self componentsEnumerateWithBlock:^(TCConfigPathComponent aComponent) {
+				if ([self _pathTypeForComponent:aComponent] == TCConfigPathTypeReferal)
+					[self _notifyPathChangeForComponent:aComponent];
+			}];
+			
+			// Flag success.
 			result = YES;
 		});
 		
@@ -1119,12 +1148,6 @@
 	// Handle common components.
 	dispatch_barrier_async(_localQueue, ^{
 		
-		// Store old path.
-		NSString *oldPath;
-		
-		if ([self _componentIsObserved:component])
-			oldPath = [self _pathForComponent:component fullPath:YES];
-
 		// Handle paths.
 		NSMutableDictionary *paths = _fcontent[TCCONF_KEY_PATHS];
 		
@@ -1160,13 +1183,16 @@
 		[self _markDirty];
 		
 		// Notify.
-		[self _notifyPathChangeForComponent:component oldPath:oldPath];
+		[self _notifyPathChangeForComponent:component];
 	});
 	
 	return YES;
 }
 
-- (NSString *)pathForComponent:(TConfigPathComponent)component fullPath:(BOOL)fullPath
+
+#pragma mark > Get
+
+- (NSString *)pathForComponent:(TCConfigPathComponent)component fullPath:(BOOL)fullPath
 {
 	__block NSString *result;
 	
@@ -1177,9 +1203,158 @@
 	return result;
 }
 
-- (TConfigPathType)pathTypeForComponent:(TConfigPathComponent)component
+- (NSString *)_pathForComponent:(TCConfigPathComponent)component fullPath:(BOOL)fullPath
 {
-	__block TConfigPathType result;
+	// > localQueue <
+	
+	// Get default subpath.
+	NSString	*standardSubPath = nil;
+	NSString	*referalSubPath = nil;
+	
+	switch (component)
+	{
+		case TCConfigPathComponentReferal:
+		{
+			if (fullPath)
+				return [_fpath stringByDeletingLastPathComponent];
+			else
+				return nil;
+		}
+			
+		case TCConfigPathComponentTorBinary:
+		{
+			standardSubPath = @"/TorChat/Tor/";
+			referalSubPath = @"/tor/bin/";
+			break;
+		}
+			
+		case TCConfigPathComponentTorData:
+		{
+			standardSubPath = @"/TorChat/TorData/";
+			referalSubPath = @"/tor/data/";
+			break;
+		}
+			
+		case TCConfigPathComponentTorIdentity:
+		{
+			standardSubPath = @"/TorChat/TorIdentity/";
+			referalSubPath = @"/tor/identity/";
+			break;
+		}
+			
+		case TCConfigPathComponentDownloads:
+		{
+			standardSubPath = @"/TorChat/";
+			referalSubPath = @"/Downloads/";
+			break;
+		}
+	}
+	
+	// Get component key.
+	NSString *componentKey = [self componentKeyForComponent:component];
+	
+	if (!componentKey)
+		return nil;
+	
+	// Get component config.
+	NSDictionary	*componentConfig = _fcontent[TCCONF_KEY_PATHS][componentKey];
+	TCConfigPathType	componentPathType = [self _pathTypeForComponent:component];
+	NSString		*componentPath = componentConfig[TCCONF_KEY_PATH_SUBPATH];
+ 
+	// Compose path according to path type.
+	switch (componentPathType)
+	{
+		case TCConfigPathTypeReferal:
+		{
+			// > Get subpath.
+			NSString *subPath;
+			
+			if (componentPath)
+				subPath = componentPath;
+			else
+				subPath = referalSubPath;
+			
+			// > Compose path.
+			if (fullPath)
+			{
+				NSString *path = [self _pathForComponent:TCConfigPathComponentReferal fullPath:YES];
+				
+				return [[path stringByAppendingPathComponent:subPath] stringByStandardizingPath];
+			}
+			else
+				return subPath;
+		}
+			
+		case TCConfigPathTypeStandard:
+		{
+			// > Compose path.
+			if (fullPath)
+			{
+				// >> Get standard path directory.
+				NSSearchPathDirectory standardPathDirectory;
+				
+				switch (component)
+				{
+					case TCConfigPathComponentReferal	: return nil; // never called.
+					case TCConfigPathComponentTorBinary	: standardPathDirectory = NSApplicationSupportDirectory; break;
+					case TCConfigPathComponentTorData	: standardPathDirectory = NSApplicationSupportDirectory; break;
+					case TCConfigPathComponentTorIdentity: standardPathDirectory = NSApplicationSupportDirectory; break;
+					case TCConfigPathComponentDownloads	: standardPathDirectory = NSDownloadsDirectory;	break;
+				}
+				
+				// >> Get URL of the standard path directory.
+				NSURL *url = [[NSFileManager defaultManager] URLForDirectory:standardPathDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:YES error:nil];
+				
+				if (!url)
+					return nil;
+				
+				// >> Create full path.
+				url = [url URLByAppendingPathComponent:standardSubPath isDirectory:YES];
+				
+				if (!url)
+					return nil;
+				
+				return [[url path] stringByStandardizingPath];
+			}
+			else
+				return standardSubPath;
+		}
+			
+		case TCConfigPathTypeAbsolute:
+		{
+			if (fullPath)
+				return [componentPath stringByStandardizingPath];
+			else
+				return componentPath;
+		}
+	}
+	
+	return nil;
+}
+
+
+#pragma mark > Type
+
+- (NSString *)pathTypeValueForPathType:(TCConfigPathType)pathType
+{
+	switch (pathType)
+	{
+		case TCConfigPathTypeReferal:
+			return TCCONF_VALUE_PATH_TYPE_REFERAL;
+			
+		case TCConfigPathTypeStandard:
+			return TCCONF_VALUE_PATH_TYPE_STANDARD;
+			
+		case TCConfigPathTypeAbsolute:
+			return TCCONF_VALUE_PATH_TYPE_ABSOLUTE;
+	}
+	
+	return nil;
+}
+
+- (TCConfigPathType)pathTypeForComponent:(TCConfigPathComponent)component
+{
+	__block TCConfigPathType result;
 	
 	dispatch_sync(_localQueue, ^{
 		result = [self _pathTypeForComponent:component];
@@ -1188,10 +1363,66 @@
 	return result;
 }
 
+- (TCConfigPathType)_pathTypeForComponent:(TCConfigPathComponent)component
+{
+	// > localQueue <
+	
+	NSString *componentKey = [self componentKeyForComponent:component];
+	
+	if (!componentKey)
+		return TCConfigPathTypeReferal;
+	
+	NSDictionary	*componentConfig = _fcontent[TCCONF_KEY_PATHS][componentKey];
+	NSString		*componentPathType = componentConfig[TCCONF_KEY_PATH_TYPE];
+	
+	if ([componentPathType isEqualToString:TCCONF_VALUE_PATH_TYPE_REFERAL])
+		return TCConfigPathTypeReferal;
+	else if ([componentPathType isEqualToString:TCCONF_VALUE_PATH_TYPE_STANDARD])
+		return TCConfigPathTypeStandard;
+	else if ([componentPathType isEqualToString:TCCONF_VALUE_PATH_TYPE_ABSOLUTE])
+		return TCConfigPathTypeAbsolute;
+	
+	return TCConfigPathTypeReferal;
+}
 
-#pragma mark Public - Observers
 
-- (id)addPathObserverForComponent:(TConfigPathComponent)component queue:(dispatch_queue_t)queue usingBlock:(void (^)(NSString *previousPath, NSString *newPath))block
+#pragma mark > Component
+
+- (NSString *)componentKeyForComponent:(TCConfigPathComponent)component
+{
+	switch (component)
+	{
+		case TCConfigPathComponentReferal:
+			return nil;
+			
+		case TCConfigPathComponentTorBinary:
+			return TCCONF_KEY_PATH_TOR_BIN;
+			
+		case TCConfigPathComponentTorData:
+			return TCCONF_KEY_PATH_TOR_DATA;
+			
+		case TCConfigPathComponentTorIdentity:
+			return TCCONF_KEY_PATH_TOR_IDENTITY;
+			
+		case TCConfigPathComponentDownloads:
+			return TCCONF_KEY_PATH_DOWNLOADS;
+	}
+	
+	return nil;
+}
+
+- (void)componentsEnumerateWithBlock:(void (^)(TCConfigPathComponent component))block
+{
+	block(TCConfigPathComponentTorBinary);
+	block(TCConfigPathComponentTorData);
+	block(TCConfigPathComponentTorIdentity);
+	block(TCConfigPathComponentDownloads);
+}
+
+
+#pragma mark > Observers
+
+- (id)addPathObserverForComponent:(TCConfigPathComponent)component queue:(dispatch_queue_t)queue usingBlock:(dispatch_block_t)block
 {
 	// Check parameters.
 	if (!block)
@@ -1242,216 +1473,9 @@
 	});
 }
 
-
-#pragma mark Helpers - Path
-
-- (NSString *)componentKeyForComponent:(TConfigPathComponent)component
-{
-	switch (component)
-	{
-		case TConfigPathComponentReferal:
-			return nil;
-			
-		case TConfigPathComponentTorBinary:
-			return TCCONF_KEY_PATH_TOR_BIN;
-			
-		case TConfigPathComponentTorData:
-			return TCCONF_KEY_PATH_TOR_DATA;
-			
-		case TConfigPathComponentTorIdentity:
-			return TCCONF_KEY_PATH_TOR_IDENTITY;
-			
-		case TConfigPathComponentDownloads:
-			return TCCONF_KEY_PATH_DOWNLOADS;
-	}
-	
-	return nil;
-}
-
-- (NSString *)pathTypeValueForPathType:(TConfigPathType)pathType
-{
-	switch (pathType)
-	{
-		case TConfigPathTypeReferal:
-			return TCCONF_VALUE_PATH_TYPE_REFERAL;
-			
-		case TConfigPathTypeStandard:
-			return TCCONF_VALUE_PATH_TYPE_STANDARD;
-			
-		case TConfigPathTypeAbsolute:
-			return TCCONF_VALUE_PATH_TYPE_ABSOLUTE;
-	}
-	
-	return nil;
-}
-
-- (NSString *)_pathForComponent:(TConfigPathComponent)component fullPath:(BOOL)fullPath
+- (void)_notifyPathChangeForComponent:(TCConfigPathComponent)component
 {
 	// > localQueue <
-	
-	// Get default subpath.
-	NSString	*standardSubPath = nil;
-	NSString	*referalSubPath = nil;
-	
-	switch (component)
-	{
-		case TConfigPathComponentReferal:
-		{
-			if (fullPath)
-				return [_fpath stringByDeletingLastPathComponent];
-			else
-				return nil;
-		}
-			
-		case TConfigPathComponentTorBinary:
-		{
-			standardSubPath = @"/TorChat/Tor/";
-			referalSubPath = @"/tor/bin/";
-			break;
-		}
-			
-		case TConfigPathComponentTorData:
-		{
-			standardSubPath = @"/TorChat/TorData/";
-			referalSubPath = @"/tor/data/";
-			break;
-		}
-			
-		case TConfigPathComponentTorIdentity:
-		{
-			standardSubPath = @"/TorChat/TorIdentity/";
-			referalSubPath = @"/tor/identity/";
-			break;
-		}
-			
-		case TConfigPathComponentDownloads:
-		{
-			standardSubPath = @"/TorChat/";
-			referalSubPath = @"/Downloads/";
-			break;
-		}
-	}
-	
-	// Get component key.
-	NSString *componentKey = [self componentKeyForComponent:component];
-	
-	if (!componentKey)
-		return nil;
-	
-	// Get component config.
-	NSDictionary	*componentConfig = _fcontent[TCCONF_KEY_PATHS][componentKey];
-	TConfigPathType	componentPathType = [self _pathTypeForComponent:component];
-	NSString		*componentPath = componentConfig[TCCONF_KEY_PATH_SUBPATH];
- 
-	// Compose path according to path type.
-	switch (componentPathType)
-	{
-		case TConfigPathTypeReferal:
-		{
-			// > Get subpath.
-			NSString *subPath;
-			
-			if (componentPath)
-				subPath = componentPath;
-			else
-				subPath = referalSubPath;
-			
-			// > Compose path.
-			if (fullPath)
-			{
-				NSString *path = [self _pathForComponent:TConfigPathComponentReferal fullPath:YES];
-				
-				return [[path stringByAppendingPathComponent:subPath] stringByStandardizingPath];
-			}
-			else
-				return subPath;
-		}
-			
-		case TConfigPathTypeStandard:
-		{
-			// > Compose path.
-			if (fullPath)
-			{
-				// >> Get standard path directory.
-				NSSearchPathDirectory standardPathDirectory;
-				
-				switch (component)
-				{
-					case TConfigPathComponentReferal	: return nil; // never called.
-					case TConfigPathComponentTorBinary	: standardPathDirectory = NSApplicationSupportDirectory; break;
-					case TConfigPathComponentTorData	: standardPathDirectory = NSApplicationSupportDirectory; break;
-					case TConfigPathComponentTorIdentity: standardPathDirectory = NSApplicationSupportDirectory; break;
-					case TConfigPathComponentDownloads	: standardPathDirectory = NSDownloadsDirectory;	break;
-				}
-				
-				// >> Get URL of the standard path directory.
-				NSURL *url = [[NSFileManager defaultManager] URLForDirectory:standardPathDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:YES error:nil];
-				
-				if (!url)
-					return nil;
-				
-				// >> Create full path.
-				url = [url URLByAppendingPathComponent:standardSubPath isDirectory:YES];
-				
-				if (!url)
-					return nil;
-				
-				return [[url path] stringByStandardizingPath];
-			}
-			else
-				return standardSubPath;
-		}
-			
-		case TConfigPathTypeAbsolute:
-		{
-			if (fullPath)
-				return [componentPath stringByStandardizingPath];
-			else
-				return componentPath;
-		}
-	}
-	
-	return nil;
-}
-
-- (TConfigPathType)_pathTypeForComponent:(TConfigPathComponent)component
-{
-	// > localQueue <
-	
-	NSString *componentKey = [self componentKeyForComponent:component];
-	
-	if (!componentKey)
-		return TConfigPathTypeReferal;
-	
-	NSDictionary	*componentConfig = _fcontent[TCCONF_KEY_PATHS][componentKey];
-	NSString		*componentPathType = componentConfig[TCCONF_KEY_PATH_TYPE];
-	
-	if ([componentPathType isEqualToString:TCCONF_VALUE_PATH_TYPE_REFERAL])
-		return TConfigPathTypeReferal;
-	else if ([componentPathType isEqualToString:TCCONF_VALUE_PATH_TYPE_STANDARD])
-		return TConfigPathTypeStandard;
-	else if ([componentPathType isEqualToString:TCCONF_VALUE_PATH_TYPE_ABSOLUTE])
-		return TConfigPathTypeAbsolute;
-	
-	return TConfigPathTypeReferal;
-}
-
-
-#pragma mark Helpers - Observers
-
-- (BOOL)_componentIsObserved:(TConfigPathComponent)component
-{
-	// > localQueue <
-
-	return (_pathObservers[@(component)] != nil);
-}
-
-- (void)_notifyPathChangeForComponent:(TConfigPathComponent)component oldPath:(NSString *)oldPath
-{
-	// > localQueue <
-	
-	if (!oldPath)
-		return;
 	
 	// Get observers for this component.
 	NSArray *observers = _pathObservers[@(component)];
@@ -1459,24 +1483,17 @@
 	if (!observers)
 		return;
 	
-	// Compute new path.
-	NSString *newPath = [self _pathForComponent:component fullPath:YES];
-	
-	if ([oldPath isEqualToString:newPath])
-		return;
-	
 	// Notify each observers.
 	for (NSDictionary *observer in observers)
 	{
-		void (^block)(NSString *previousPath, NSString *newPath) = observer[@"block"];
+		dispatch_block_t block = observer[@"block"];
 		dispatch_queue_t queue = observer[@"queue"];
 		
 		dispatch_async(queue, ^{
-			block(oldPath, newPath);
+			block();
 		});
 	}
 }
-
 
 
 
@@ -1524,9 +1541,10 @@
 
 - (void)_markDirty
 {
+	// > /localQueue <
+
 	_isDirty = YES;
-	// > localQueue <
-#warning FIXME : create a timer to save data after a while.
+	dispatch_source_set_timer(_timer, dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), 0, 1 * NSEC_PER_SEC);
 }
 
 - (NSMutableDictionary *)loadConfig:(NSData *)data

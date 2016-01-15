@@ -20,13 +20,10 @@
  *
  */
 
-
-
 #import "TCChatCellView.h"
 
 #import "TCButton.h"
 #import "TCThreePartImageView.h"
-
 
 
 /*

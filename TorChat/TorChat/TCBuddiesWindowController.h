@@ -20,8 +20,6 @@
  *
  */
 
-
-
 #import <Cocoa/Cocoa.h>
 
 #import "TCConfigInterface.h"
@@ -46,25 +44,6 @@
 #define  TCBuddiesWindowControllerSelectChanged		@"TCBuddiesWindowControllerSelectChanged"
 #define  TCBuddiesWindowControllerBuddyKey			@"buddy"
 
-#define  TCBuddiesWindowControllerAvatarChanged		@"TCBuddiesWindowControllerAvatarChanged"
-#define  TCBuddiesWindowControllerNameChanged		@"TCBuddiesWindowControllerNameChanged"
-#define  TCBuddiesWindowControllerTextChanged		@"TCBuddiesWindowControllerTextChanged"
-
-#define  TCBuddiesWindowControllerRemovedBuddy		@"TCBuddiesWindowControllerRemovedBuddy"
-
-
-#define TCCocoaBuddyChangedStatusNotification		@"TCCocoaBuddyChangedStatus"
-#define TCCocoaBuddyChangedAvatarNotification		@"TCCocoaBuddyChangedAvatar"
-#define TCCocoaBuddyChangedNameNotification			@"TCCocoaBuddyChangedName"
-#define TCCocoaBuddyChangedTextNotification			@"TCCocoaBuddyChangedText"
-#define TCCocoaBuddyChangedAliasNotification		@"TCCocoaBuddyChangedAlias"
-
-#define TCCocoaBuddyChangedPeerVersionNotification	@"TCCocoaBuddyChangedPeerVersion"
-#define TCCocoaBuddyChangedPeerClientNotification	@"TCCocoaBuddyChangedPeerClient"
-
-#define	TCCocoaBuddyChangedBlockedNotification		@"TCCocoaBuddyChangedBlocked"
-
-
 
 
 /*
@@ -78,6 +57,7 @@
 + (TCBuddiesWindowController *)sharedController;
 
 // -- IBAction --
+- (IBAction)doShowInfo:(id)sender;
 - (IBAction)doRemove:(id)sender;
 - (IBAction)doAdd:(id)sender;
 - (IBAction)doChat:(id)sender;
@@ -92,11 +72,6 @@
 - (TCBuddy *)selectedBuddy;
 
 // -- Running --
+- (void)startWithConfiguration:(id <TCConfigInterface>)configuration coreManager:(TCCoreManager *)coreMananager;
 - (void)stop;
-- (void)startWithConfiguration:(id <TCConfigInterface>)configuration;
-
-// -- Blocked Buddies --
-- (BOOL)addBlockedBuddy:(NSString *)address;
-- (BOOL)removeBlockedBuddy:(NSString *)address;
-
 @end

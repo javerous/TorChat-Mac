@@ -24,25 +24,14 @@
 
 
 /*
- ** TCValue
- */
-#pragma mark - TCValue
-
-@interface TCValue ()
-{
-	__weak id _object;
-}
-
-@end
-
-
-
-/*
 ** TCValue
 */
 #pragma mark - TCValue
 
 @implementation TCValue
+{
+	__weak id _object;
+}
 
 + (TCValue *)valueWithWeakObject:(id)object
 {

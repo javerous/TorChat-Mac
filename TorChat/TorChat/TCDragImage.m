@@ -20,9 +20,7 @@
  *
  */
 
-
 #import "TCDragImage.h"
-
 
 
 /*

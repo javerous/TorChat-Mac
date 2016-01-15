@@ -20,15 +20,12 @@
  *
  */
 
-
-
 #import "TCPanel_Advanced.h"
 
 #import "TCLogsManager.h"
 #import "TCConfigPlist.h"
 
 #import "TCDebugLog.h"
-
 
 
 /*
@@ -62,7 +59,7 @@
 
 - (void)dealloc
 {
-    TCDebugLog("TCPanel_Advanced dealloc");
+    TCDebugLog(@"TCPanel_Advanced dealloc");
 }
 
 /*
@@ -105,7 +102,7 @@
 		// Log error
 		NSString *key = NSLocalizedString(@"ac_error_write_file", @"");
 		
-		[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_error_write_file", path];
+		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_write_file", path];
 		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:key, path] runModal];
 		return nil;
 	}
@@ -113,14 +110,14 @@
 	// Set up the config with the fields
 	[aconfig setTorAddress:[_torAddressField stringValue]];
 	[aconfig setSelfAddress:[_imAddressField stringValue]];
-	[aconfig setPathForComponent:TConfigPathComponentDownloads pathType:TConfigPathTypeAbsolute path:_imDownloadPath.URL.path];
+	[aconfig setPathForComponent:TCConfigPathComponentDownloads pathType:TCConfigPathTypeAbsolute path:_imDownloadPath.URL.path];
 	
 	[aconfig setTorPort:(uint16_t)[_torPortField intValue]];
 	[aconfig setClientPort:(uint16_t)[_imInPortField intValue]];
 	[aconfig setMode:TCConfigModeAdvanced];
 	
 	// Return the config
-	return @{ @"configuration" : aconfig };
+	return aconfig;
 }
 
 - (void)showPanel

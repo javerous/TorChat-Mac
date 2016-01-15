@@ -23,7 +23,6 @@
 #import <Foundation/Foundation.h>
 
 
-
 /*
 ** Defines
 */
@@ -75,19 +74,19 @@ typedef enum
 // -- Paths --
 typedef enum
 {
-	TConfigPathComponentReferal,		// Path used as referal.
-	TConfigPathComponentTorBinary,		// Path to the tor binary (and its dependancies) directory.
-	TConfigPathComponentTorData,		// Path to the tor data directory.
-	TConfigPathComponentTorIdentity,	// Path to tor hidden service (buddy address)
-	TConfigPathComponentDownloads,		// Path to the downloads directory.
-} TConfigPathComponent;
+	TCConfigPathComponentReferal,		// Path used as referal.
+	TCConfigPathComponentTorBinary,		// Path to the tor binary (and its dependancies) directory.
+	TCConfigPathComponentTorData,		// Path to the tor data directory.
+	TCConfigPathComponentTorIdentity,	// Path to tor hidden service (buddy address)
+	TCConfigPathComponentDownloads,		// Path to the downloads directory.
+} TCConfigPathComponent;
 
 typedef enum
 {
-	TConfigPathTypeReferal,		// Path is relative to referal.
-	TConfigPathTypeStandard,	// Path is relative to standard OS X directories in ~.
-	TConfigPathTypeAbsolute,	// Path is absolute.
-} TConfigPathType;
+	TCConfigPathTypeReferal,		// Path is relative to referal.
+	TCConfigPathTypeStandard,	// Path is relative to standard OS X directories in ~.
+	TCConfigPathTypeAbsolute,	// Path is absolute.
+} TCConfigPathType;
 
 
 
@@ -156,11 +155,11 @@ typedef enum
 - (void)setClientName:(NSString *)name;
 
 // -- Paths --
-- (BOOL)setPathForComponent:(TConfigPathComponent)component pathType:(TConfigPathType)pathType path:(NSString *)path;
-- (NSString *)pathForComponent:(TConfigPathComponent)component fullPath:(BOOL)fullPath;
-- (TConfigPathType)pathTypeForComponent:(TConfigPathComponent)component;
+- (BOOL)setPathForComponent:(TCConfigPathComponent)component pathType:(TCConfigPathType)pathType path:(NSString *)path;
+- (NSString *)pathForComponent:(TCConfigPathComponent)component fullPath:(BOOL)fullPath;
+- (TCConfigPathType)pathTypeForComponent:(TCConfigPathComponent)component;
 
-- (id)addPathObserverForComponent:(TConfigPathComponent)component queue:(dispatch_queue_t)queue usingBlock:(void (^)(NSString *previousPath, NSString *newPath))block;
+- (id)addPathObserverForComponent:(TCConfigPathComponent)component queue:(dispatch_queue_t)queue usingBlock:(dispatch_block_t)block;
 - (void)removePathObserver:(id)observer;
 
 // -- Strings --

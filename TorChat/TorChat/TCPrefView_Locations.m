@@ -1,10 +1,24 @@
-//
-//  TCPrefView_Locations.m
-//  TorChat
-//
-//  Created by Julien-Pierre Avérous on 14/01/2015.
-//  Copyright (c) 2016 SourceMac. All rights reserved.
-//
+/*
+ *  TCPrefView_Locations.m
+ *
+ *  Copyright 2016 Avérous Julien-Pierre
+ *
+ *  This file is part of TorChat.
+ *
+ *  TorChat is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  TorChat is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with TorChat.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
 #import "TCPrefView_Locations.h"
 
@@ -30,7 +44,10 @@
 	TCLocationViewController *_torDataLocation;
 	TCLocationViewController *_torIdentityLocation;
 	TCLocationViewController *_torDownloadsLocation;
+	
+	id _pathObserver;
 }
+
 
 
 /*
@@ -55,22 +72,22 @@
 	[super viewDidLoad];
 	
 	// Load tor binary view.
-	_torBinaryLocation = [[TCLocationViewController alloc] initWithConfiguration:self.config component:TConfigPathComponentTorBinary];
+	_torBinaryLocation = [[TCLocationViewController alloc] initWithConfiguration:self.config component:TCConfigPathComponentTorBinary];
 	
 	[_torBinaryLocation addToView:torBinaryView];
 	
 	// Load tor data view.
-	_torDataLocation = [[TCLocationViewController alloc] initWithConfiguration:self.config component:TConfigPathComponentTorData];
+	_torDataLocation = [[TCLocationViewController alloc] initWithConfiguration:self.config component:TCConfigPathComponentTorData];
 	
 	[_torDataLocation addToView:torDataView];
 	
 	// Load tor identity view.
-	_torIdentityLocation = [[TCLocationViewController alloc] initWithConfiguration:self.config component:TConfigPathComponentTorIdentity];
+	_torIdentityLocation = [[TCLocationViewController alloc] initWithConfiguration:self.config component:TCConfigPathComponentTorIdentity];
 	
 	[_torIdentityLocation addToView:torIdentityView];
 	
 	// Load downloads view.
-	_torDownloadsLocation = [[TCLocationViewController alloc] initWithConfiguration:self.config component:TConfigPathComponentDownloads];
+	_torDownloadsLocation = [[TCLocationViewController alloc] initWithConfiguration:self.config component:TCConfigPathComponentDownloads];
 	
 	[_torDownloadsLocation addToView:downloadsView];
 }
@@ -88,12 +105,22 @@
 	[self view];
 
 	// Load configuration.
-	[self loadConfiguration];
+	[self reloadConfiguration];
+	
+	// Observe referal change.
+	__weak TCPrefView_Locations *weakSelf = self;
+	
+	_pathObserver = [self.config addPathObserverForComponent:TCConfigPathComponentReferal queue:dispatch_get_main_queue() usingBlock:^{
+		[weakSelf reloadConfiguration];
+	}];
 }
 
-- (void)saveConfig
+- (BOOL)saveConfig
 {
+	// Remove observer.
+	[self.config removePathObserver:_pathObserver];
 	
+	return NO;
 }
 
 
@@ -132,24 +159,20 @@
 				NSString *path = [[bundle bundlePath] stringByDeletingLastPathComponent];
 
 				// > Replace current value.
-				[self.config setPathForComponent:TConfigPathComponentReferal pathType:TConfigPathTypeAbsolute path:path];
-				
-				// > Reload configuration.
-				[self loadConfiguration];
+				[self.config setPathForComponent:TCConfigPathComponentReferal pathType:TCConfigPathTypeAbsolute path:path];
 			});
 		}];
-
-		
 	}
 	else
 	{
 		// Configure open panel.
-		NSString	*fullPath = [self.config pathForComponent:TConfigPathComponentReferal fullPath:YES];
+		NSString	*fullPath = [self.config pathForComponent:TCConfigPathComponentReferal fullPath:YES];
 		NSOpenPanel	*openPanel = [NSOpenPanel openPanel];
 		
 		openPanel.canChooseDirectories = YES;
 		openPanel.canChooseFiles = NO;
 		openPanel.resolvesAliases = NO;
+		openPanel.canCreateDirectories = YES;
 		
 		if (fullPath)
 			openPanel.directoryURL = [NSURL fileURLWithPath:fullPath];
@@ -163,17 +186,12 @@
 			// > Set selected directory.
 			NSString *selectedPath = openPanel.URL.path;
 			
+			// > Replace current value.
 			dispatch_async(dispatch_get_main_queue(), ^{
-				// > Replace current value.
-				[self.config setPathForComponent:TConfigPathComponentReferal pathType:TConfigPathTypeAbsolute path:selectedPath];
-				
-				// > Reload configuration.
-				[self loadConfiguration];
+				[self.config setPathForComponent:TCConfigPathComponentReferal pathType:TCConfigPathTypeAbsolute path:selectedPath];
 			});
 		}];
 	}
-
-#warning FIXME Changing referal domain can change other path. Notify other domains of that (probably that each full path should be computed before).
 }
 
 - (IBAction)doRevealReferal:(id)sender
@@ -196,17 +214,12 @@
 */
 #pragma mark - TCPrefView_Locations - Helpers
 
-- (void)loadConfiguration
+- (void)reloadConfiguration
 {
-	NSString *refPath = [self.config pathForComponent:TConfigPathComponentReferal fullPath:YES];
+	NSString *refPath = [self.config pathForComponent:TCConfigPathComponentReferal fullPath:YES];
 	
 	[referalTextField setStringValue:refPath];
 	[configPath setURL:[[NSURL fileURLWithPath:refPath] URLByAppendingPathComponent:@"torchat.conf"]];
-	
-	[_torBinaryLocation reloadConfiguration];
-	[_torDataLocation reloadConfiguration];
-	[_torIdentityLocation reloadConfiguration];
-	[_torDownloadsLocation reloadConfiguration];
 }
 
 @end
