@@ -20,8 +20,6 @@
  *
  */
 
-
-
 #import "TCLogsWindowController.h"
 
 #import "TCLogsManager.h"
@@ -29,9 +27,10 @@
 #define TCLogsAllKey		@"_all_"
 #define TCLogsSeparatorKey	@"_separator_"
 
-#define TCLogsContentKey	@"content"
-#define TCLogsTitleKey		@"title"
+#define TCLogsEntryKey		@"entry"
+#define TCLogsTextKey		@"text"
 
+#define TCLogsTitleKey		@"title"
 
 
 /*
@@ -98,6 +97,8 @@
 	
 	NSCell					*_separatorCell;
 	NSCell					*_textCell;
+	
+	NSDateFormatter			*_dateFormatter;
 }
 
 // -- Properties --
@@ -153,11 +154,24 @@
 		_separatorCell = [[TCCellSeparator alloc] initTextCell:@""];
 		_textCell = [[NSTextFieldCell alloc] initTextCell:@""];
 		
+		// Date formatter.
+		_dateFormatter = [[NSDateFormatter alloc] init];
+		
+		[_dateFormatter setDateStyle:NSDateFormatterShortStyle];
+		[_dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
+		
 		// Add logs observer.
 		[[TCLogsManager sharedManager] addObserver:self forKey:nil];
     }
     
     return self;
+}
+
+- (void)windowDidLoad
+{
+	// Place Window.
+	[self.window center];
+	[self.window setFrameAutosaveName:@"LogsWindow"];
 }
 
 
@@ -222,29 +236,37 @@
 	else if (aTableView == _logsView)
 	{
 		NSInteger kindex = [_entriesView selectedRow];
-		
+		NSString *identifier = aTableColumn.identifier;
+
 		if (kindex < 0 || kindex >= [_klogs count])
 			return nil;
 		
-		NSString *key = [_klogs objectAtIndex:(NSUInteger)kindex];
+		NSString	*key = [_klogs objectAtIndex:(NSUInteger)kindex];
+		TCLogEntry *entry;
 		
+		// Select the content to show.
 		if ([key isEqualToString:TCLogsAllKey])
 		{
 			if (rowIndex < 0 || rowIndex >= [_allLogs count])
 				return nil;
 			
-			NSDictionary	*item = [_allLogs objectAtIndex:(NSUInteger)rowIndex];
-			NSString		*str = [item objectForKey:TCLogsContentKey];
+			NSDictionary *item = [_allLogs objectAtIndex:(NSUInteger)rowIndex];
 			
 			if ([[item objectForKey:TCLogsTitleKey] boolValue])
 			{
+				// Handle title case.
+				NSString *str = [item objectForKey:TCLogsTextKey];
+
 				if ([str isEqualToString:TCLogsGlobalKey])
 					return NSLocalizedString(@"logs_global_logs", @"");
 				else
 					return [NSString stringWithFormat:@"%@ (%@)", [[TCLogsManager sharedManager] nameForKey:str], str];
 			}
-			
-			return str;
+			else
+			{
+				// Use entry.
+				entry = [item objectForKey:TCLogsEntryKey];
+			}
 		}
 		else if ([key isEqualToString:TCLogsGlobalKey])
 		{
@@ -252,8 +274,8 @@
 			
 			if (rowIndex < 0 || rowIndex >= [array count])
 				return nil;
-			
-			return [array objectAtIndex:(NSUInteger)rowIndex];
+
+			entry = [array objectAtIndex:(NSUInteger)rowIndex];
 		}
 		else if ([key isEqualToString:TCLogsSeparatorKey])
 		{
@@ -265,7 +287,28 @@
 			if (rowIndex < 0 || rowIndex >= [array count])
 				return nil;
 			
-			return [array objectAtIndex:(NSUInteger)rowIndex];
+			entry = [array objectAtIndex:(NSUInteger)rowIndex];
+		}
+		
+		// Show content.
+		if (entry)
+		{
+			if ([identifier isEqualToString:@"kind"])
+			{
+				switch (entry.kind)
+				{
+					case TCLogError:
+						return [NSImage imageNamed:NSImageNameStatusUnavailable];
+					case TCLogWarning:
+						return [NSImage imageNamed:NSImageNameStatusPartiallyAvailable];
+					case TCLogInfo:
+						return [NSImage imageNamed:NSImageNameStatusNone];
+				}
+			}
+			else if ([identifier isEqualToString:@"date"])
+				return [_dateFormatter stringFromDate:entry.timestamp];
+			else if ([identifier isEqualToString:@"message"])
+				return entry.message;
 		}
 	}
 	
@@ -317,19 +360,29 @@
 {
 	if (tableView == _entriesView)
 	{
-		NSString *key;
-		
-		if (rowIndex < 0 || rowIndex >= [_klogs count])
-			return [tableColumn dataCell];
-		
-		key = [_klogs objectAtIndex:(NSUInteger)rowIndex];
+		// Handle row styles.
+		NSString *key = [_klogs objectAtIndex:(NSUInteger)rowIndex];
 		
 		if ([key isEqualToString:TCLogsSeparatorKey])
 			return _separatorCell;
 		else
 			return _textCell;
 	}
-	
+	else if (tableView == _logsView)
+	{
+		NSInteger	kindex = [_entriesView selectedRow];
+		NSString	*key = [_klogs objectAtIndex:(NSUInteger)kindex];
+		
+		// Handle title case.
+		if ([key isEqualToString:TCLogsAllKey])
+		{
+			NSDictionary *item = [_allLogs objectAtIndex:(NSUInteger)rowIndex];
+			
+			if ([[item objectForKey:TCLogsTitleKey] boolValue])
+				return _textCell;
+		}
+	}
+
 	return [tableColumn dataCell];
 }
 
@@ -395,12 +448,9 @@
 */
 #pragma mark - TCLogsWindowController - TCLogsObserver
 
-- (void)logManager:(TCLogsManager *)manager updateForKey:(NSString *)key withContent:(id)content
+- (void)logManager:(TCLogsManager *)manager updateForKey:(NSString *)key withEntries:(NSArray *)entries
 {
-	if ([content isKindOfClass:[NSArray class]])
-		[self addLogEntries:content forKey:key];
-	else if ([content isKindOfClass:[NSString class]])
-		[self addLogEntries:@[ content ] forKey:key];
+	[self addLogEntries:entries forKey:key];
 }
 
 
@@ -410,7 +460,7 @@
 */
 #pragma mark - TCLogsWindowController - Helpers
 
-- (void)addLogEntries:(NSArray *)entries forKey:(NSString *)key
+- (void)addLogEntries:(NSArray *)items forKey:(NSString *)key
 {
 	// Hold it
 	dispatch_async(dispatch_get_main_queue(), ^{
@@ -442,8 +492,8 @@
 			[array removeObjectAtIndex:0];
 		
 		// > Add
-		for (NSString *text in entries)
-			[array addObject:text];
+		for (TCLogEntry *entry in items)
+			[array addObject:entry];
 		
 		// -- Add the item in the full log --
 		// > Remove the first item (and item until we reach a title) if more than 2000
@@ -467,13 +517,13 @@
 		{
 			_allLastKey = key;
 			
-			[_allLogs addObject:@{ TCLogsContentKey : key, TCLogsTitleKey : @YES }];
+			[_allLogs addObject:@{ TCLogsTextKey : key, TCLogsTitleKey : @YES }];
 		}
 		
 		// > Add
-		for (NSString *text in entries)
-			[_allLogs addObject:@{ TCLogsContentKey : text }];
-								
+		for (TCLogEntry *entry in items)
+			[_allLogs addObject:@{ TCLogsEntryKey : entry }];
+		
 		// Refresh
 		[_entriesView reloadData];
 		[_logsView reloadData];

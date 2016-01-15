@@ -20,10 +20,7 @@
  *
  */
 
-
-
 #import <Foundation/Foundation.h>
-
 
 
 /*
@@ -41,6 +38,23 @@
 #pragma mark - Forward
 
 @class TCLogsManager;
+@class TCLogEntry;
+
+@class TCInfo;
+
+
+
+/*
+** Types
+*/
+#pragma mark - Types
+
+typedef enum
+{
+	TCLogError,
+	TCLogWarning,
+	TCLogInfo
+} TCLogKind;
 
 
 
@@ -49,7 +63,7 @@
 */
 @protocol TCLogsObserver <NSObject>
 
-- (void)logManager:(TCLogsManager *)manager updateForKey:(NSString *)key withContent:(id)content;
+- (void)logManager:(TCLogsManager *)manager updateForKey:(NSString *)key withEntries:(NSArray *)entries;
 
 @end
 
@@ -66,10 +80,11 @@
 + (TCLogsManager *)sharedManager;
 
 // -- Logs --
-- (void)addBuddyLogEntryFromAddress:(NSString *)address name:(NSString *)name andText:(NSString *)log, ...;
-- (void)addGlobalLogEntry:(NSString *)log, ...;
-- (void)addGlobalAlertLog:(NSString *)log, ...;
+- (void)addBuddyLogWithAddress:(NSString *)address name:(NSString *)name kind:(TCLogKind)kind message:(NSString *)message, ...;
+- (void)addBuddyLogWithAddress:(NSString *)address name:(NSString *)name info:(TCInfo *)info;
 
+- (void)addGlobalLogWithKind:(TCLogKind)kind message:(NSString *)message, ...;
+- (void)addGlobalLogWithInfo:(TCInfo *)info;
 
 
 // -- Properties --
@@ -78,5 +93,20 @@
 // -- Observer --
 - (void)addObserver:(id <TCLogsObserver>)observer forKey:(NSString *)key; // observer is weak referenced.
 - (void)removeObserverForKey:(NSString *)key;
+
+@end
+
+
+
+/*
+** TCLogEntry
+*/
+#pragma mark - TCLogEntry
+
+@interface TCLogEntry : NSObject
+
+@property (readonly, nonatomic) TCLogKind	kind;
+@property (readonly, nonatomic) NSDate		*timestamp;
+@property (readonly, nonatomic) NSString	*message;
 
 @end

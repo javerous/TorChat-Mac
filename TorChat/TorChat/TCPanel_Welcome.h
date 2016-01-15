@@ -20,12 +20,9 @@
  *
  */
 
-
-
 #import <Cocoa/Cocoa.h>
 
 #import "TCPanel.h"
-
 
 
 /*

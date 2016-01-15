@@ -26,7 +26,6 @@
 #import "TCDebugLog.h"
 
 
-
 /*
 ** TCFileSend - Private
 */
@@ -107,7 +106,7 @@
 
 - (void)dealloc
 {
-	TCDebugLog("TCFileSend destructor");
+	TCDebugLog(@"TCFileSend destructor");
 	
 	if (_file)
 		fclose(_file);

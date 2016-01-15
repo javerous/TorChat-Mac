@@ -20,21 +20,18 @@
  *
  */
 
-
-
 #import "TorChatAppDelegate.h"
 
 #import "TCMainController.h"
 #import "TCBuddiesWindowController.h"
 #import "TCFilesWindowController.h"
-#import "TCBuddyInfoWindowController.h"
+#import "TCBuddyInfoWindowsController.h"
 #import "TCLogsWindowController.h"
 #import "TCPreferencesWindowController.h"
 #import "TCChatWindowController.h"
 
 #import "TCBuddy.h"
-
-
+#import "TCCoreManager.h"
 
 
 /*
@@ -42,7 +39,7 @@
 */
 #pragma mark - TorChatAppDelegate - Private
 
-@interface TorChatAppDelegate ()
+@interface TorChatAppDelegate () <TCCoreManagerObserver>
 
 @property (strong, nonatomic) IBOutlet NSMenuItem	*buddyShowMenu;
 @property (strong, nonatomic) IBOutlet NSMenuItem	*buddyDeleteMenu;
@@ -89,11 +86,10 @@
 	// Observe buddy select change.
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddySelectChanged:) name:TCBuddiesWindowControllerSelectChanged object:nil];
 
-	// Observe buddy blocked change.
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddyBlockedChanged:) name:TCCocoaBuddyChangedBlockedNotification object:nil];
-	
 	// Start TorChat.
-	[[TCMainController sharedController] start];
+	[[TCMainController sharedController] startWithCompletionHandler:^(id<TCConfigInterface> configuration, TCCoreManager *core) {
+		[core addObserver:self];
+	}];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification
@@ -142,6 +138,32 @@
 }
 
 
+/*
+** TorChatAppDelegate - TCCoreManagerObserver
+*/
+#pragma mark - TCCoreManagerObserver
+
+- (void)torchatManager:(TCCoreManager *)manager information:(TCInfo *)info
+{
+	if (info.kind == TCInfoInfo && (info.code == TCCoreEventBuddyBlocked || info.code == TCCoreEventBuddyUnblocked))
+	{
+		dispatch_async(dispatch_get_main_queue(), ^{
+
+			TCBuddy		*buddy = info.context;
+			NSString	*selected = [[[TCBuddiesWindowController sharedController] selectedBuddy] address];
+			
+			if ([buddy.address isEqualToString:selected])
+			{
+				if (info.code == TCCoreEventBuddyBlocked)
+					[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_unblock_buddy", @"")];
+				else
+					[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_block_buddy", @"")];
+			}
+		});
+	}
+}
+
+
 
 /*
 ** TorChatAppDelegate - Buddies
@@ -150,7 +172,7 @@
 
 - (IBAction)doBuddyShowInfo:(id)sender
 {
-	[TCBuddyInfoWindowController showInfo];
+	[[TCBuddiesWindowController sharedController] doShowInfo:sender];
 }
 
 - (IBAction)doBuddyAdd:(id)sender
@@ -227,22 +249,6 @@
 
 		[_buddyFileMenu setTarget:nil];
 		[_buddyFileMenu setAction:NULL];
-	}
-}
-
-- (void)buddyBlockedChanged:(NSNotification *)notice
-{
-	NSDictionary	*ui = [notice userInfo];
-	NSNumber		*blocked = [ui objectForKey:@"blocked"];
-	NSString		*buddy = [(TCBuddy *)[notice object] address];
-	NSString		*selected = [[[TCBuddiesWindowController sharedController] selectedBuddy] address];
-	
-	if ([buddy isEqualToString:selected])
-	{
-		if ([blocked boolValue])
-			[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_unblock_buddy", @"")];
-		else
-			[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_block_buddy", @"")];
 	}
 }
 

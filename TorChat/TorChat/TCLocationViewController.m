@@ -1,13 +1,28 @@
-//
-//  TCLocationViewController.m
-//  TorChat
-//
-//  Created by Julien-Pierre Avérous on 15/01/2015.
-//  Copyright (c) 2016 SourceMac. All rights reserved.
-//
+/*
+ *  TCLocationViewController.m
+ *
+ *  Copyright 2016 Avérous Julien-Pierre
+ *
+ *  This file is part of TorChat.
+ *
+ *  TorChat is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  TorChat is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with TorChat.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
 #import "TCLocationViewController.h"
 
+#import "TCDebugLog.h"
 
 
 /*
@@ -23,8 +38,11 @@
 	IBOutlet NSPathControl	*pathView;
 	
 	id <TCConfig>			_configuration;
-	TConfigPathComponent	_component;
+	TCConfigPathComponent	_component;
+	
+	id _pathObserver;
 }
+
 
 
 /*
@@ -32,20 +50,33 @@
 */
 #pragma mark - TCLocationViewController - Instance
 
-- (instancetype)initWithConfiguration:(id <TCConfig>)configuration component:(TConfigPathComponent)component
+- (instancetype)initWithConfiguration:(id <TCConfig>)configuration component:(TCConfigPathComponent)component
 {
 	self = [super initWithNibName:@"LocationView" bundle:nil];
 	
 	if (self)
 	{
-		if (!configuration || component == TConfigPathComponentReferal)
+		if (!configuration || component == TCConfigPathComponentReferal)
 			return nil;
 		
 		_configuration = configuration;
 		_component = component;
+		
+		// Observe change.
+		__weak TCLocationViewController *weakSelf = self;
+		
+		_pathObserver = [configuration addPathObserverForComponent:component queue:dispatch_get_main_queue() usingBlock:^{
+			[weakSelf reloadConfiguration];
+		}];
 	}
 	
 	return self;
+}
+
+- (void)dealloc
+{
+	TCDebugLog(@"TCLocationViewController Dealloc");
+	[_configuration removePathObserver:_pathObserver];
 }
 
 
@@ -53,7 +84,7 @@
 {
 	[super viewDidLoad];
 
-	[self loadConfiguration];
+	[self reloadConfiguration];
 }
 
 
@@ -66,26 +97,26 @@
 - (IBAction)doChangePlace:(id)sender
 {
 	NSInteger			index = [placePopupButton indexOfSelectedItem];
-	TConfigPathType		pathType;
+	TCConfigPathType		pathType;
 
 	// Compute domain & new path.
 	NSString *path = nil;
 	
 	if (index == 0)
 	{
-		NSString	*refPath = [_configuration pathForComponent:TConfigPathComponentReferal fullPath:YES];
+		NSString	*refPath = [_configuration pathForComponent:TCConfigPathComponentReferal fullPath:YES];
 		NSString	*fullPath = [_configuration pathForComponent:_component fullPath:YES];
 
-		pathType = TConfigPathTypeReferal;
+		pathType = TCConfigPathTypeReferal;
 		path = [[self stringWithPath:fullPath relativeTo:refPath] stringByAppendingString:@"/"];
 	}
 	else if (index == 1)
 	{
-		pathType = TConfigPathTypeStandard;
+		pathType = TCConfigPathTypeStandard;
 	}
 	else if (index == 2)
 	{
-		pathType = TConfigPathTypeAbsolute;
+		pathType = TCConfigPathTypeAbsolute;
 		path = [_configuration pathForComponent:_component fullPath:YES];
 	}
 	else
@@ -95,18 +126,14 @@
 	}
 	
 	[_configuration setPathForComponent:_component pathType:pathType path:path];
-#warning FIXME: notify path changed for domain _domain, with old ful path = fullPath
-
-	// Reload configuration.
-	[self loadConfiguration];
 }
 
 - (IBAction)doSelectPlace:(id)sender
 {
 	// Get & check current path type.
-	TConfigPathType pathType = [_configuration pathTypeForComponent:_component];
+	TCConfigPathType pathType = [_configuration pathTypeForComponent:_component];
 	
-	if (pathType == TConfigPathTypeStandard)
+	if (pathType == TCConfigPathTypeStandard)
 	{
 		NSBeep();
 		return;
@@ -131,15 +158,9 @@
 			if (returnCode != NSAlertFirstButtonReturn)
 				return;
 			
+			// > Remove current value.
 			dispatch_async(dispatch_get_main_queue(), ^{
-				
-				// > Remove current value.
 				[_configuration setPathForComponent:_component pathType:pathType path:nil];
-				
-#warning FIXME: notify path changed for domain _domain, with old ful path = fullPath
-
-				// > Reload configuration.
-				[self loadConfiguration];
 			});
 		}];
 	}
@@ -152,7 +173,8 @@
 		openPanel.canChooseDirectories = YES;
 		openPanel.canChooseFiles = NO;
 		openPanel.resolvesAliases = NO;
-		
+		openPanel.canCreateDirectories = YES;
+
 		if (fullPath)
 			openPanel.directoryURL = [NSURL fileURLWithPath:fullPath];
 		
@@ -169,30 +191,25 @@
 				
 				switch (pathType)
 				{
-					case TConfigPathTypeReferal:
+					case TCConfigPathTypeReferal:
 					{
-						NSString *refPath = [_configuration pathForComponent:TConfigPathComponentReferal fullPath:YES];
+						NSString *refPath = [_configuration pathForComponent:TCConfigPathComponentReferal fullPath:YES];
 						NSString *subPath = [[self stringWithPath:selectedPath relativeTo:refPath] stringByAppendingString:@"/"];
 						
-						[_configuration setPathForComponent:_component pathType:TConfigPathTypeReferal path:subPath];
+						[_configuration setPathForComponent:_component pathType:TCConfigPathTypeReferal path:subPath];
 						
 						break;
 					}
 						
-					case TConfigPathTypeStandard:
+					case TCConfigPathTypeStandard:
 						break;
 						
-					case TConfigPathTypeAbsolute:
+					case TCConfigPathTypeAbsolute:
 					{
-						[_configuration setPathForComponent:_component pathType:TConfigPathTypeAbsolute path:selectedPath];
+						[_configuration setPathForComponent:_component pathType:TCConfigPathTypeAbsolute path:selectedPath];
 						break;
 					}
 				}
-				
-#warning FIXME: notify path changed for domain _domain, with old ful path = fullPath
-
-				// > Reload configuration.
-				[self loadConfiguration];
 			});
 		}];
 	}
@@ -213,8 +230,6 @@
 
 
 
-
-
 /*
 ** TCLocationViewController - Tools
 */
@@ -232,11 +247,6 @@
 	[view addSubview:self.view];
 }
 
-- (void)reloadConfiguration
-{
-	[self loadConfiguration];
-}
-
 
 
 /*
@@ -244,7 +254,7 @@
 */
 #pragma mark - TCLocationViewController - Helpers
 
-- (void)loadConfiguration
+- (void)reloadConfiguration
 {
 	// Show fullpath.
 	NSString *fullPath = [_configuration pathForComponent:_component fullPath:YES];
@@ -263,23 +273,23 @@
 	[subPathField setStringValue:subPath];
 	
 	// Show place.
-	TConfigPathType pathType = [_configuration pathTypeForComponent:_component];
+	TCConfigPathType pathType = [_configuration pathTypeForComponent:_component];
 	
 	switch (pathType)
 	{
-		case TConfigPathTypeReferal:
+		case TCConfigPathTypeReferal:
 			[placePopupButton selectItemAtIndex:0];
 			[subPathField setEnabled:YES];
 			[folderButton setEnabled:YES];
 			break;
 			
-		case TConfigPathTypeStandard:
+		case TCConfigPathTypeStandard:
 			[placePopupButton selectItemAtIndex:1];
 			[subPathField setEnabled:NO];
 			[folderButton setEnabled:NO];
 			break;
 			
-		case TConfigPathTypeAbsolute:
+		case TCConfigPathTypeAbsolute:
 			[placePopupButton selectItemAtIndex:2];
 			[subPathField setEnabled:YES];
 			[folderButton setEnabled:YES];

@@ -20,30 +20,50 @@
  *
  */
 
-
-
 #import "TCLogsManager.h"
 
+#import "TCInfo.h"
+#import "TCInfo+Render.h"
 
 
 /*
-** TCLogsManager - Private
+** TCLogEntry - Private
 */
-#pragma mark - TCLogsManager - Private
+#pragma mark - TCLogEntry - Private
 
-@interface TCLogsManager ()
+@interface TCLogEntry ()
+
++ (instancetype)logEntryWithKind:(TCLogKind)kind message:(NSString *)message;
++ (instancetype)logEntryWithTimestamp:(NSDate *)timestamp kind:(TCLogKind)kind message:(NSString *)message;
+
+@end
+
+@implementation TCLogEntry
+
++ (instancetype)logEntryWithKind:(TCLogKind)kind message:(NSString *)message
 {
-	dispatch_queue_t		_localQueue;
-	dispatch_queue_t		_observerQueue;
+	return [self logEntryWithTimestamp:nil kind:kind message:message];
+}
 
-	NSMapTable				*_keyObservers;
-	NSHashTable				*_allObserver;
++ (instancetype)logEntryWithTimestamp:(NSDate *)timestamp kind:(TCLogKind)kind message:(NSString *)message
+{
+	TCLogEntry *entry = [[TCLogEntry alloc] init];
 
-	NSMutableDictionary		*_logs;
-	NSMutableDictionary		*_names;
+	if (!message)
+		message = @"";
+	
+	if (!timestamp)
+		timestamp = [NSDate date];
+	
+	entry->_timestamp = timestamp;
+	entry->_kind = kind;
+	entry->_message = message;
+	
+	return entry;
 }
 
 @end
+
 
 
 
@@ -53,6 +73,16 @@
 #pragma mark - TCLogsManager
 
 @implementation TCLogsManager
+{
+	dispatch_queue_t		_localQueue;
+	dispatch_queue_t		_observerQueue;
+	
+	NSMapTable				*_keyObservers;
+	NSHashTable				*_allObserver;
+	
+	NSMutableDictionary		*_logs;
+	NSMutableDictionary		*_names;
+}
 
 
 /*
@@ -79,8 +109,8 @@
     if (self)
 	{
 		// Create queue.
-        _localQueue = dispatch_queue_create("com.torchat.cocoa.logmanager.local", DISPATCH_QUEUE_SERIAL);
-		_observerQueue = dispatch_queue_create("com.torchat.cocoa.logmanager.observer", DISPATCH_QUEUE_SERIAL);
+        _localQueue = dispatch_queue_create("com.torchat.app.logmanager.local", DISPATCH_QUEUE_SERIAL);
+		_observerQueue = dispatch_queue_create("com.torchat.app.logmanager.observer", DISPATCH_QUEUE_SERIAL);
 		
 		// Build observers container.
 		_keyObservers = [NSMapTable strongToWeakObjectsMapTable];
@@ -101,27 +131,30 @@
 */
 #pragma mark - TCLogsWindowController - Logs
 
-- (void)addLogEntry:(NSString *)key withContent:(NSString *)text
+- (void)addLogWithTimestamp:(NSDate *)timestamp key:(NSString *)key kind:(TCLogKind)kind content:(NSString *)content
 {
 	dispatch_sync(_localQueue, ^{
 		
-		NSMutableArray *array = [_logs objectForKey:key];
+		// Create entry.
+		TCLogEntry *entry = [TCLogEntry logEntryWithTimestamp:timestamp kind:kind message:content];
 		
 		// Build logs array for this key
-		if (!array)
+		NSMutableArray *logs = [_logs objectForKey:key];
+
+		if (!logs)
 		{
-			array = [[NSMutableArray alloc] init];
+			logs = [[NSMutableArray alloc] init];
 			
-			[_logs setObject:array forKey:key];
+			[_logs setObject:logs forKey:key];
 		}
 		
 		// Add the log in the array.
-		// > Remove first item if more than 500
-		if ([array count] > 500)
-			[array removeObjectAtIndex:0];
+		// > Remove first item if more than 500.
+		if ([logs count] > 500)
+			[logs removeObjectAtIndex:0];
 		
-		// > Add
-		[array addObject:text];
+		// > Add.
+		[logs addObject:entry];
 		
 		// Give the item to the observers.
 		// > Keyed observer.
@@ -130,7 +163,7 @@
 		if (kobserver)
 		{
 			dispatch_sync(_observerQueue, ^{
-				[kobserver logManager:self updateForKey:key withContent:text];
+				[kobserver logManager:self updateForKey:key withEntries:@[entry]];
 			});
 		}
 		
@@ -138,63 +171,101 @@
 		for (id <TCLogsObserver> observer in _allObserver)
 		{
 			dispatch_sync(_observerQueue, ^{
-				[observer logManager:self updateForKey:key withContent:text];
+				[observer logManager:self updateForKey:key withEntries:@[entry]];
 			});
 		}
 	});
 }
 
-- (void)addBuddyLogEntryFromAddress:(NSString *)address name:(NSString *)name andText:(NSString *)log, ...
+- (void)addBuddyLogWithAddress:(NSString *)address name:(NSString *)name kind:(TCLogKind)kind message:(NSString *)message, ...
 {
 	va_list		ap;
 	NSString	*msg;
 	
 	// Render string
-	va_start(ap, log);
+	va_start(ap, message);
 	
-	msg = [[NSString alloc] initWithFormat:NSLocalizedString(log, @"") arguments:ap];
+	msg = [[NSString alloc] initWithFormat:NSLocalizedString(message, @"") arguments:ap];
 	
 	va_end(ap);
 	
 	// Add the alias
-	dispatch_async(dispatch_get_main_queue(), ^{
+	dispatch_async(_localQueue, ^{
 		[_names setObject:name forKey:address];
 	});
 		
-	// Add the rendered log
-	[self addLogEntry:address withContent:msg];
+	// Add the rendered log.
+	[self addLogWithTimestamp:nil key:address kind:kind content:msg];
 }
 
-- (void)addGlobalLogEntry:(NSString *)log, ...
+- (void)addBuddyLogWithAddress:(NSString *)address name:(NSString *)name info:(TCInfo *)info
+{
+	// Add the alias
+	dispatch_async(_localQueue, ^{
+		[_names setObject:name forKey:address];
+	});
+	
+	// Convert kind.
+	TCLogKind kind;
+	
+	switch (info.kind)
+	{
+		case TCInfoError:
+			kind = TCLogError;
+			break;
+
+		case TCInfoWarning:
+			kind = TCLogWarning;
+			break;
+
+		case TCInfoInfo:
+			kind = TCLogInfo;
+			break;
+	}
+	
+	// Add the rendered log.
+	[self addLogWithTimestamp:info.timestamp key:address kind:kind content:[info renderComplete]];
+}
+
+
+- (void)addGlobalLogWithKind:(TCLogKind)kind message:(NSString *)message, ...
 {
 	va_list		ap;
 	NSString	*msg;
 	
 	// Render the full string
-	va_start(ap, log);
+	va_start(ap, message);
 	
-	msg = [[NSString alloc] initWithFormat:NSLocalizedString(log, @"") arguments:ap];
+	msg = [[NSString alloc] initWithFormat:NSLocalizedString(message, @"") arguments:ap];
 	
 	va_end(ap);
 	
 	// Add the log
-	[self addLogEntry:TCLogsGlobalKey withContent:msg];
+	[self addLogWithTimestamp:nil key:TCLogsGlobalKey kind:kind content:msg];
 }
 
-- (void)addGlobalAlertLog:(NSString *)log, ...
+- (void)addGlobalLogWithInfo:(TCInfo *)info;
 {
-	va_list		ap;
-	NSString	*msg;
+	// Convert kind.
+	TCLogKind kind;
 	
-	// Render the full string
-	va_start(ap, log);
-	
-	msg = [[NSString alloc] initWithFormat:NSLocalizedString(log, @"") arguments:ap];
-	
-	va_end(ap);
+	switch (info.kind)
+	{
+		case TCInfoError:
+			kind = TCLogError;
+			break;
+			
+		case TCInfoWarning:
+			kind = TCLogWarning;
+			break;
+			
+		case TCInfoInfo:
+			kind = TCLogInfo;
+			break;
+	}
 	
 	// Add the log
-	[self addLogEntry:TCLogsGlobalKey withContent:msg];
+	[self addLogWithTimestamp:info.timestamp key:TCLogsGlobalKey kind:kind content:[info renderComplete]];
 }
 
 - (NSArray *)allKeys
@@ -272,7 +343,7 @@
 			if (items)
 			{
 				dispatch_async(_observerQueue, ^{
-					[observer logManager:self updateForKey:key withContent:items];
+					[observer logManager:self updateForKey:key withEntries:items];
 				});
 			}
 		}
@@ -283,7 +354,7 @@
 				NSArray *items = [[_logs objectForKey:akey] copy];
 		
 				dispatch_async(_observerQueue, ^{
-					[observer logManager:self updateForKey:akey withContent:items];
+					[observer logManager:self updateForKey:akey withEntries:items];
 				});
 			}
 		}
@@ -295,7 +366,7 @@
 	if (!key)
 		return;
 	
-	dispatch_async(dispatch_get_main_queue(), ^{
+	dispatch_async(_localQueue, ^{
 		[_keyObservers removeObjectForKey:key];
 	});
 }

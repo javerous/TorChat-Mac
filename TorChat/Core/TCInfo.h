@@ -20,7 +20,6 @@
  *
  */
 
-
 #import <Foundation/Foundation.h>
 
 
@@ -31,9 +30,9 @@
 
 typedef enum
 {
-	TCInfoError,
+	TCInfoInfo,
 	TCInfoWarning,
-	TCInfoInfo
+	TCInfoError,
 } TCInfoKind;
 
 
@@ -57,11 +56,11 @@ typedef enum
 // -- Properties --
 @property (assign, nonatomic, readonly) TCInfoKind	kind;
 
-@property (assign, nonatomic, readonly) NSString	*domain;
+@property (strong, nonatomic, readonly) NSString	*domain;
 @property (assign, nonatomic, readonly)	int			code;
 @property (strong, nonatomic, readonly)	id			context;
 
-@property (strong, nonatomic, readonly) NSDate		*date;
+@property (strong, nonatomic, readonly) NSDate		*timestamp;
 
 @property (strong, nonatomic, readonly) TCInfo		*subInfo;
 

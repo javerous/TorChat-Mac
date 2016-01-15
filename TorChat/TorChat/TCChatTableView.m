@@ -20,10 +20,7 @@
  *
  */
 
-
-
 #import "TCChatTableView.h"
-
 
 
 /*

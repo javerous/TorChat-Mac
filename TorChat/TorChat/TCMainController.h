@@ -20,11 +20,17 @@
  *
  */
 
-
-
 #import <Cocoa/Cocoa.h>
 
 #import "TCConfigInterface.h"
+
+
+/*
+** Forward
+*/
+#pragma mark - Forward
+
+@class TCCoreManager;
 
 
 
@@ -39,10 +45,13 @@
 + (TCMainController *)sharedController;
 
 // -- Life --
-- (void)start;
+- (void)startWithCompletionHandler:(void (^)(id <TCConfigInterface> configuration, TCCoreManager *core))handler;
 - (void)stop;
 
+- (void)reload;
+
 // -- Properties --
-@property (strong, nonatomic, readonly) id <TCConfigInterface> configuration;
+@property (strong, readonly, nonatomic) id <TCConfigInterface>	configuration;
+@property (strong, readonly, nonatomic) TCCoreManager			*core;
 
 @end

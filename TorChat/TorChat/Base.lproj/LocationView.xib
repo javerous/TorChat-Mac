@@ -45,9 +45,9 @@
                     </pathCell>
                 </pathControl>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="FFw-Ao-FHi">
-                    <rect key="frame" x="149" y="28" width="109" height="11"/>
+                    <rect key="frame" x="149" y="28" width="110" height="11"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" sendsActionOnEndEditing="YES" title="&lt;DO-NOT-TRANSLATE&gt;" id="ecM-vt-aic">
-                        <font key="font" metaFont="systemLight" size="9"/>
+                        <font key="font" metaFont="miniSystem"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
@@ -72,7 +72,7 @@
                         <constraint firstAttribute="width" constant="11" id="Slg-7K-Pux"/>
                         <constraint firstAttribute="height" constant="11" id="eXQ-uT-Jk8"/>
                     </constraints>
-                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="NSFollowLinkFreestandingTemplate" imagePosition="only" alignment="center" imageScaling="proportionallyDown" inset="2" id="Ugx-fg-cXw">
+                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="NSFollowLinkFreestandingTemplate" imagePosition="only" alignment="center" imageScaling="axesIndependently" inset="2" id="Ugx-fg-cXw">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>

@@ -20,7 +20,6 @@
  *
  */
 
-
 #import <Foundation/Foundation.h>
 
 #import "TCConfig.h"
@@ -75,7 +74,7 @@ typedef enum
 	TCBuddyEventNotes,				// context: NSString (<notes>)
 	TCBuddyEventVersion,			// context: NSString (<version>)
 	TCBuddyEventClient,				// context: NSString (<client_name>)
-	TCBuddyEventBlocked,			// context: NSNumber (BOOL)
+	//TCBuddyEventBlocked,			// context: NSNumber (BOOL)
 	
 	TCBuddyEventFileSendStart,		// context: TCFileInfo
 	TCBuddyEventFileSendRunning,	// context: TCFileInfo
@@ -130,13 +129,13 @@ typedef enum
 
 
 /*
-** TCBuddyDelegate
+** TCBuddyObserver
 */
-#pragma mark - TCBuddyDelegate
+#pragma mark - TCBuddyObserver
 
-@protocol TCBuddyDelegate <NSObject>
+@protocol TCBuddyObserver <NSObject>
 
-- (void)buddy:(TCBuddy *)buddy event:(const TCInfo *)info;
+- (void)buddy:(TCBuddy *)buddy information:(TCInfo *)info;
 
 @end
 
@@ -149,9 +148,6 @@ typedef enum
 #pragma mark - TCBuddy
 
 @interface TCBuddy : NSObject
-
-// -- Properties --
-@property (weak, atomic) id <TCBuddyDelegate> delegate;
 
 // -- Instance --
 - (id)initWithConfiguration:(id <TCConfig>)configuration alias:(NSString *)alias address:(NSString *)address notes:(NSString *)notes;
@@ -207,6 +203,10 @@ typedef enum
 
 - (NSString *)lastProfileName;	// Last know profile name
 - (NSString *)finalName;		// Best name representation (alias / profile name / last know profile name)
+
+// -- Observers --
+- (void)addObserver:(id <TCBuddyObserver>)observer;
+- (void)removeObserver:(id <TCBuddyObserver>)observer;
 
 @end
 
