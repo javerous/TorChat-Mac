@@ -45,7 +45,6 @@
 #import "NSData+TCTools.h"
 
 
-
 /*
 ** Defines
 */
@@ -165,9 +164,6 @@ static char gLocalQueueContext;
 	// > Command
 	NSMutableArray		*_bufferedCommands;
 	
-	// Delegate
-	dispatch_queue_t	_delegateQueue;
-	
 	// > Profile
 	TCImage				*_profileAvatar;
 	NSString			*_profileName;
@@ -180,6 +176,10 @@ static char gLocalQueueContext;
 	// > File session
 	NSMutableDictionary	*_freceive;
 	NSMutableDictionary	*_fsend;
+	
+	// > Observers
+	NSHashTable			*_observers;
+	dispatch_queue_t	_externalQueue;
 }
 
 // -- Send Low Command --
@@ -257,11 +257,11 @@ static char gLocalQueueContext;
 		_address = address;
 		_notes = notes;
 		
-		TCDebugLog("Buddy (%s) - New", [_address UTF8String]);
+		TCDebugLog(@"Buddy (%@) - New", _address);
 		
 		// Build queue
 		_localQueue = dispatch_queue_create("com.torchat.core.buddy.local", DISPATCH_QUEUE_SERIAL);
-		_delegateQueue = dispatch_queue_create("com.torchat.core.buddy.delegate", DISPATCH_QUEUE_SERIAL);
+		_externalQueue = dispatch_queue_create("com.torchat.core.buddy.external", DISPATCH_QUEUE_SERIAL);
 		
 		dispatch_queue_set_specific(_localQueue, &gQueueIdentityKey, &gLocalQueueContext, NULL);
 		
@@ -270,6 +270,8 @@ static char gLocalQueueContext;
 		_freceive = [[NSMutableDictionary alloc] init];
 		
 		_bufferedCommands = [[NSMutableArray alloc] init];
+		
+		_observers = [NSHashTable weakObjectsHashTable];
 		
 		// Create parser.
 		_parser = [[TCParser alloc] initWithParsingResult:self];
@@ -304,7 +306,7 @@ static char gLocalQueueContext;
 		
 		_random = [[NSString alloc] initWithCString:rnd encoding:NSASCIIStringEncoding];
 		
-		TCDebugLog("Buddy (%s) - Random: %s", [_address UTF8String], rnd);
+		TCDebugLog(@"Buddy (%@) - Random: %s", _address, rnd);
 	}
 	
 	return self;
@@ -312,7 +314,7 @@ static char gLocalQueueContext;
 
 - (void)dealloc
 {
-	TCDebugLog("TCBuddy Destructor");
+	TCDebugLog(@"TCBuddy Destructor");
 	
 	// Clean out connections
 	[_outSocket stop];
@@ -337,7 +339,7 @@ static char gLocalQueueContext;
 		if (_blocked)
 			return;
 		
-		TCDebugLog( "Buddy (%s) - Start", [_address UTF8String]);
+		TCDebugLog(@"Buddy (%@) - Start", _address);
 		
 		// -- Make a connection to Tor proxy --
 		struct addrinfo	hints, *res, *res0;
@@ -579,11 +581,7 @@ static char gLocalQueueContext;
 - (void)setBlocked:(BOOL)blocked
 {
 	dispatch_async(_localQueue, ^{
-		
 		_blocked = blocked;
-		
-		// Notify of the change
-		[self _notify:TCBuddyEventBlocked context:@(blocked)];
 	});
 }
 
@@ -1057,6 +1055,30 @@ static char gLocalQueueContext;
 
 
 /*
+** TCBuddy - Observers
+*/
+#pragma mark - Observers
+
+- (void)addObserver:(id <TCBuddyObserver>)observer
+{
+	if (!observer)
+		return;
+	
+	dispatch_async(_localQueue, ^{
+		[_observers addObject:observer];
+	});
+}
+
+- (void)removeObserver:(id <TCBuddyObserver>)observer
+{
+	dispatch_async(_localQueue, ^{
+		[_observers removeObject:observer];
+	});
+}
+
+
+
+/*
 ** TCBuddy - TCSocketDelegate
 */
 #pragma mark - TCSocketDelegate
@@ -1314,7 +1336,7 @@ static char gLocalQueueContext;
 	NSString *sfilename_2 = [sfilename_1 stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
 	
 	// Get the download folder
-	NSString *downPath = [[_config pathForComponent:TConfigPathComponentDownloads fullPath:YES] stringByAppendingPathComponent:_address];
+	NSString *downPath = [[_config pathForComponent:TCConfigPathComponentDownloads fullPath:YES] stringByAppendingPathComponent:_address];
 	
 	[[NSFileManager defaultManager] createDirectoryAtPath:downPath withIntermediateDirectories:YES attributes:nil error:nil];
 	
@@ -2043,11 +2065,12 @@ static char gLocalQueueContext;
 	if (!info)
 		return;
 	
-	id <TCBuddyDelegate> delegate = _delegate;
-	
-	dispatch_async(_delegateQueue, ^{
-		[delegate buddy:self event:info];
-	});
+	for (id <TCBuddyObserver> observer in _observers)
+	{
+		dispatch_async(_externalQueue, ^{
+			[observer buddy:self information:info];
+		});
+	}
 }
 
 - (NSNumber *)_status

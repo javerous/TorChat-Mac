@@ -20,15 +20,12 @@
  *
  */
 
-
-
 #import "TCPanel_Welcome.h"
 
 #import "TCConfigPlist.h"
 #import "TCLogsManager.h"
 
 #import "TCDebugLog.h"
-
 
 
 /*
@@ -67,7 +64,7 @@
 
 - (void)dealloc
 {
-    TCDebugLog("TCPanel_Welcome dealloc");
+    TCDebugLog(@"TCPanel_Welcome dealloc");
 }
 
 
@@ -146,7 +143,7 @@
 
 	NSOpenPanel	*openDlg = [NSOpenPanel openPanel];
 	
-	// Ask for a file
+	// Ask for a file.
 	[openDlg setCanChooseFiles:YES];
 	[openDlg setCanChooseDirectories:NO];
 	[openDlg setCanCreateDirectories:NO];
@@ -163,7 +160,7 @@
 			// Log error
 			NSString *key = NSLocalizedString(@"ac_error_read_file", @"");
 
-			[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_error_read_file", [url path]];
+			[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_read_file", [url path]];
 			[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:key, [url path]] runModal];
 
 			return;

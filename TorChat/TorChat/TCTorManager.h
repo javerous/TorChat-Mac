@@ -20,8 +20,6 @@
  *
  */
 
-
-
 #import <Cocoa/Cocoa.h>
 
 #import "TCConfig.h"
@@ -65,18 +63,27 @@ typedef enum
 // == TCTorManagerStart ==
 typedef enum
 {
+	TCTorManagerEventStartBootstrapping,	// context: @{ @"progress" : NSNumber, @"summary" : NSString }
 	TCTorManagerEventStartHostname,
+	TCTorManagerEventStartURLSession,		// context: NSURLSession
 	TCTorManagerEventStartDone,
 } TCTorManagerEventStart;
 
 typedef enum
 {
+	TCTorManagerWarningStartCanceled,
+} TCTorManagerWarningStart;
+
+typedef enum
+{
 	TCTorManagerErrorStartAlreadyRunning,
-	
 	TCTorManagerErrorStartConfiguration,
 	TCTorManagerErrorStartUnarchive,
 	TCTorManagerErrorStartSignature,
 	TCTorManagerErrorStartLaunch,
+	TCTorManagerErrorStartControlConnect,
+	TCTorManagerErrorStartControlAuthenticate,
+	TCTorManagerErrorStartControlMonitor,
 } TCTorManagerErrorStart;
 
 
@@ -89,9 +96,7 @@ typedef enum
 typedef enum
 {
 	TCTorManagerErrorCheckUpdateTorNotRunning,
-	TCTorManagerErrorCheckUpdateNetworkRequest,	// context: NSError
-	TCTorManagerErrorCheckUpdateBadServerReply,
-	TCTorManagerErrorCheckUpdateRemoteInfo,		// info: TCInfo (<operation error>)
+	TCTorManagerErrorRetrieveRemoteInfo,		// info: TCInfo (<operation error>)
 	TCTorManagerErrorCheckUpdateLocalSignature,	// info: TCInfo (<operation error>)
 
 	TCTorManagerErrorCheckUpdateNothingNew,
@@ -125,18 +130,18 @@ typedef enum
 // == TCTorManagerOperation ==
 typedef enum
 {
-	TCTorManagerEventInfo,			// context: NSDictionary
-	TCTorManagerEventDone,
+	TCTorManagerEventOperationInfo,			// context: NSDictionary
+	TCTorManagerEventOperationDone,
 } TCTorManagerEventOperation;
 
 typedef enum
 {
-	TCTorManagerErrorConfiguration,
-	TCTorManagerErrorIO,
-	TCTorManagerErrorNetwork,		// context
-	TCTorManagerErrorExtract,		// context: NSNumber (<tar result>)
-	TCTorManagerErrorSignature,		// context: NSString (<path to the problematic file>)
-	TCTorManagerErrorTor,			// context: NSNumber (<tor result>)
+	TCTorManagerErrorOperationConfiguration,
+	TCTorManagerErrorOperationIO,
+	TCTorManagerErrorOperationNetwork,		// context
+	TCTorManagerErrorOperationExtract,		// context: NSNumber (<tar result>)
+	TCTorManagerErrorOperationSignature,	// context: NSString (<path to the problematic file>)
+	TCTorManagerErrorOperationTor,			// context: NSNumber (<tor result>)
 
 	TCTorManagerErrorInternal
 } TCTorManagerErrorOperation;
@@ -155,16 +160,11 @@ typedef enum
 
 // -- Life --
 - (void)startWithHandler:(void (^)(TCInfo *info))handler;
-- (void)stop;
-
-- (BOOL)isRunning;
+- (void)stopWithCompletionHandler:(dispatch_block_t)handler;
 
 // -- Update --
-- (void)checkForUpdateWithCompletionHandler:(void (^)(TCInfo *info))handler;
+- (dispatch_block_t)checkForUpdateWithCompletionHandler:(void (^)(TCInfo *info))handler;
 - (dispatch_block_t)updateWithEventHandler:(void (^)(TCInfo *info))handler;
-
-// -- Property --
-- (NSString *)hiddenHostname;
 
 // -- Events --
 @property (strong, atomic) void (^logHandler)(TCTorManagerLogKind kind, NSString *log);

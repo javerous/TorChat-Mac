@@ -20,8 +20,6 @@
  *
  */
 
-
-
 #import "TCPanel_Basic.h"
 
 #import "TCLogsManager.h"
@@ -31,8 +29,6 @@
 #import "TCDebugLog.h"
 
 #import "TCInfo.h"
-#import "TCInfo+Render.h"
-
 
 
 /*
@@ -74,7 +70,7 @@
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	
-	TCDebugLog("TCPanel_Basic dealloc");
+	TCDebugLog(@"TCPanel_Basic dealloc");
 }
 
 
@@ -105,15 +101,7 @@
 
 - (id)content
 {
-	NSMutableDictionary *content = [[NSMutableDictionary alloc] init];
-	
-	if (_config)
-		content[@"configuration"] = _config;
-	
-	if (_tor)
-		content[@"tor_manager"] = _tor;
-	
-	return content;
+	return _config;
 }
 
 #define TCLocalizedString(key, comment) [[NSBundle mainBundle] localizedStringForKey:[(key) copy] value:@"" table:nil]
@@ -135,7 +123,8 @@
 	
 	if (!configPath)
 	{
-		[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_error_build_path"];
+		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_build_path"];
+		
 		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_error_build_path", @"")] runModal];
 		return;
 	}
@@ -147,14 +136,14 @@
 	{
 		[_imAddressField setStringValue:NSLocalizedString(@"ac_error_config", @"")];
 		
-		[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_error_write_file", configPath];
+		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_write_file", configPath];
 		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:TCLocalizedString(@"ac_error_write_file", @""), configPath] runModal];
 
 		return;
 	}
 	
 	// Set download path.
-	NSString *path = [_config pathForComponent:TConfigPathComponentDownloads fullPath:YES];
+	NSString *path = [_config pathForComponent:TCConfigPathComponentDownloads fullPath:YES];
 	
 	if ([[NSFileManager defaultManager] fileExistsAtPath:path] == NO)
 	{
@@ -174,29 +163,12 @@
 	
 	// Create tor manager & start it.
 	__weak NSTextField *weakIMAddressField = _imAddressField;
-	
-	// > Create.
+
 	_tor = [[TCTorManager alloc] initWithConfiguration:_config];
 
-	_tor.logHandler = ^(TCTorManagerLogKind kind, NSString *log) {
-		switch (kind)
-		{
-			case TCTorManagerLogStandard:
-				[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_out_log", log];
-				break;
-				
-			case TCTorManagerLogError:
-				[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_error_log", log];
-				break;
-		}
-	};
-	
-	// > Start.
 	[_tor startWithHandler:^(TCInfo *info) {
 		
 		NSTextField *imAddressField = weakIMAddressField;
-
-		[[TCLogsManager sharedManager] addGlobalLogEntry:[info render]];
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
 
@@ -206,11 +178,26 @@
 			}
 			else if (info.kind == TCInfoInfo)
 			{
-				if ([info.domain isEqualToString:TCTorManagerInfoStartDomain])
+				if (info.code == TCTorManagerEventStartHostname)
 				{
-					if (info.code == TCTorManagerEventStartHostname)
-						[imAddressField setStringValue:info.context];
-					else if (info.code == TCTorManagerEventStartDone)
+					[imAddressField setStringValue:info.context];
+					[_tor stopWithCompletionHandler:nil];
+				}
+				else if (info.code == TCTorManagerEventStartDone)
+				{
+					[_tor stopWithCompletionHandler:^{
+						
+						dispatch_async(dispatch_get_main_queue(), ^{
+							[proxy setDisableContinue:NO];
+						});
+					}];
+				}
+			}
+			else if (info.kind == TCInfoWarning)
+			{
+				if (info.code == TCTorManagerWarningStartCanceled)
+				{
+					if (imAddressField.stringValue.length > 0)
 						[proxy setDisableContinue:NO];
 				}
 			}
@@ -227,6 +214,7 @@
 
 - (IBAction)pathChanged:(id)sender
 {
+#warning FIXME Is this ok ? Should we use standard UI with path kind ?
 	if (!_config)
 		return;
 	
@@ -234,7 +222,7 @@
 	
 	if (path)
 	{
-		[_config setPathForComponent:TConfigPathComponentDownloads pathType:TConfigPathTypeAbsolute path:path];
+		[_config setPathForComponent:TCConfigPathComponentDownloads pathType:TCConfigPathTypeAbsolute path:path];
 		
 		if ([[path lastPathComponent] isEqualToString:@"Downloads"])
 			[[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"] atomically:NO];

@@ -20,15 +20,12 @@
  *
  */
 
-
-
 #import <WebKit/WebKit.h>
 
 #import "TCChatTranscriptViewController.h"
 
 #import "NSImage+TCExtension.h"
 #import "NSString+TCXMLExtension.h"
-
 
 
 /*
@@ -456,7 +453,7 @@ NSMutableDictionary	*gAvatarCache;
 
 + (void)initialize
 {
-	gAvatarQueue = dispatch_queue_create("com.sourcemac.torchat.url-protocol-internal.local", DISPATCH_QUEUE_CONCURRENT);
+	gAvatarQueue = dispatch_queue_create("com.torchat.app.url-protocol-internal.local", DISPATCH_QUEUE_CONCURRENT);
 	gAvatarCache = [[NSMutableDictionary alloc] init];
 }
 

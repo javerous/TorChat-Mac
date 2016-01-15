@@ -20,10 +20,7 @@
  *
  */
 
-
-
 #import "TCThreePartImageView.h"
-
 
 
 /*

@@ -20,10 +20,7 @@
  *
  */
 
-
-
 #import "NSImage+TCExtension.h"
-
 
 
 /*

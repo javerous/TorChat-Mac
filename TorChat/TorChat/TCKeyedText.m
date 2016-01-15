@@ -20,10 +20,7 @@
  *
  */
 
-
-
 #import "TCKeyedText.h"
-
 
 
 /*

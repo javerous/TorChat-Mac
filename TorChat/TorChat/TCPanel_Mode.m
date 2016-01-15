@@ -20,12 +20,9 @@
  *
  */
 
-
-
 #import "TCPanel_Mode.h"
 
 #import "TCDebugLog.h"
-
 
 
 /*
@@ -60,7 +57,7 @@
 
 - (void)dealloc
 {
-    TCDebugLog("TCPanel_Mode dealloc");
+    TCDebugLog(@"TCPanel_Mode dealloc");
 }
 
 

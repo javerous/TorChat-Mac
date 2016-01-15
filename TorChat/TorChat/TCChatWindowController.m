@@ -20,8 +20,6 @@
  *
  */
 
-
-
 #import "TCChatWindowController.h"
 
 #import "TCChatViewController.h"
@@ -29,7 +27,6 @@
 #import "TCValue.h"
 
 #import "TCChatCellView.h"
-
 
 
 /*

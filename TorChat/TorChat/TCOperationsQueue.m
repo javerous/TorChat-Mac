@@ -20,9 +20,7 @@
  *
  */
 
-
 #import "TCOperationsQueue.h"
-
 
 
 /*
@@ -34,8 +32,8 @@
 
 @property (strong, nonatomic) TCOperationsQueue	*operations;
 
-@property (strong, nonatomic) TCOperationsBlock	block;
-@property (strong, nonatomic) dispatch_queue_t		queue;
+@property (strong, nonatomic) TCOperationsCancelableBlock	block;
+@property (strong, nonatomic) dispatch_queue_t				queue;
 
 @end
 
@@ -49,10 +47,16 @@
 @interface TCOperationsQueue ()
 {
 	dispatch_queue_t _localQueue;
+	dispatch_queue_t _userQueue;
 
 	NSMutableArray	*_pending;
 	BOOL			_isExecuting;
 	BOOL			_isStarted;
+	
+	NSMutableArray	*_cancelBlocks;
+	BOOL			_isCanceled;
+	
+	BOOL			_isFinished;
 }
 
 @end
@@ -80,7 +84,8 @@
 	{
         _pending = [[NSMutableArray alloc] init];
 		
-		_localQueue = dispatch_queue_create("com.sourcemac.torchat.operation_queue.local", DISPATCH_QUEUE_SERIAL);
+		_localQueue = dispatch_queue_create("com.torchat.app.operation-queue.local", DISPATCH_QUEUE_SERIAL);
+		_userQueue = dispatch_queue_create("com.torchat.app.operation-queue.user", DISPATCH_QUEUE_SERIAL);
     }
 	
     return self;
@@ -127,15 +132,29 @@
 
 - (void)scheduleBlock:(TCOperationsBlock)block
 {
+	[self scheduleCancelableBlock:^(TCOperationsControl ctrl, TCOperationsAddCancelBlock addCancelBlock) {
+		block(ctrl);
+	}];
+}
+
+- (void)scheduleOnQueue:(dispatch_queue_t)queue block:(TCOperationsBlock)block
+{
+	[self scheduleCancelableOnQueue:queue block:^(TCOperationsControl ctrl, TCOperationsAddCancelBlock addCancelBlock) {
+		block(ctrl);
+	}];
+}
+
+- (void)scheduleCancelableBlock:(TCOperationsCancelableBlock)block
+{
 	dispatch_queue_t queue = _defaultQueue;
 	
 	if (!queue)
 		queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 	
-	[self scheduleOnQueue:queue block:block];
+	[self scheduleCancelableOnQueue:queue block:block];
 }
 
-- (void)scheduleOnQueue:(dispatch_queue_t)queue block:(TCOperationsBlock)block
+- (void)scheduleCancelableOnQueue:(dispatch_queue_t)queue block:(TCOperationsCancelableBlock)block
 {
 	if (!queue || !block)
 		return;
@@ -147,6 +166,10 @@
 	item.block = block;
 	
 	dispatch_async(_localQueue, ^{
+		
+		if (_isCanceled)
+			return;
+		
 		if (_isExecuting == NO && _isStarted == YES)
 			[self _executeItem:item];
 		else
@@ -154,6 +177,35 @@
 	});
 }
 
+- (void)cancel
+{
+	dispatch_async(_localQueue, ^{
+		
+		if (_isCanceled)
+			return;
+		
+		_isCanceled = YES;
+		
+		// Nothing cancelable.
+		if (_isFinished)
+			return;
+		
+		// Call current cancel blocks.
+		for (dispatch_block_t block in _cancelBlocks)
+			dispatch_async(_userQueue, block);
+		
+		[_cancelBlocks removeAllObjects];
+		
+		// Call cancel handler.
+		void (^tHandler)(BOOL canceled) = self.finishHandler;
+		
+		if (tHandler)
+			dispatch_async(_userQueue, ^{ tHandler(YES); });
+		
+		// Remove pending.
+		[_pending removeAllObjects];
+	});
+}
 
 
 /*
@@ -184,6 +236,7 @@
 	
 	// Mark as executing.
 	_isExecuting = YES;
+	_isFinished = NO;
 	
 	// Execute block.
 	dispatch_async(item.queue, ^{
@@ -200,6 +253,7 @@
 				
 				executed = YES;
 				_isExecuting = NO;
+				_cancelBlocks = nil;
 				
 				switch (type)
 				{
@@ -218,8 +272,37 @@
 			});
 		};
 		
+		// > Cancelation.
+		TCOperationsAddCancelBlock addCancelBlock = ^(dispatch_block_t cancelBlock) {
+			
+			if (!cancelBlock)
+				return;
+			
+			dispatch_async(_localQueue, ^{
+				
+				// Can't add cancel block after the operation is fully executed.
+				if (executed)
+					return;
+				
+				// If already canceled, cancel right now.
+				if (_isCanceled)
+				{
+					dispatch_async(_userQueue, ^{
+						cancelBlock();
+					});
+					return;
+				}
+				
+				// Store cancel block.
+				if (!_cancelBlocks)
+					_cancelBlocks = [[NSMutableArray alloc] init];
+				
+				[_cancelBlocks addObject:cancelBlock];
+			});
+		};
+		
 		// > Call block.
-		item.block(ctrl);
+		item.block(ctrl, addCancelBlock);
 	});
 }
 
@@ -234,24 +317,39 @@
 {
 	// > localQueue <
 
-	dispatch_block_t tHandler = self.finishHandler;
+	if (_isCanceled)
+		return;
+	
+	void (^tHandler)(BOOL canceled) = self.finishHandler;
 
 	if ([_pending count] > 0)
+	{
 		[self _scheduleNextItem];
-	else if (tHandler)
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ tHandler(); });
+	}
+	else
+	{
+		_isFinished = YES;
+		
+		if (tHandler)
+			dispatch_async(_userQueue, ^{ tHandler(NO); });
+	}
 }
 
 - (void)_stop
 {
 	// > localQueue <
 
+	if (_isCanceled)
+		return;
+	
+	_isFinished = YES;
+	
 	[_pending removeAllObjects];
 	
-	dispatch_block_t tHandler = self.finishHandler;
+	void (^tHandler)(BOOL canceled) = self.finishHandler;
 
 	if (tHandler)
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ tHandler(); });
+		dispatch_async(_userQueue, ^{ tHandler(NO); });
 }
 
 @end

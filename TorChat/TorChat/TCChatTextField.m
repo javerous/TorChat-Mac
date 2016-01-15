@@ -20,12 +20,9 @@
  *
  */
 
-
-
 #import "TCChatTextField.h"
 
 #import "NSString+TCLayoutExtension.h"
-
 
 
 /*

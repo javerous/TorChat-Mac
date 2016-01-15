@@ -1,5 +1,5 @@
 /*
- *  TCBuddyInfoController.h
+ *  TCTimeHelper.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,31 +20,29 @@
  *
  */
 
+#import <mach/mach_time.h>
 
-
-#import <Cocoa/Cocoa.h>
-
-
-
-/*
-** Forward
-*/
-#pragma mark - Forward
-
-@class TCBuddy;
-@class TCDragImageView;
-
+#import "TCTimeHelper.h"
 
 
 /*
-** TCBuddyInfoController
+** Functions
 */
-#pragma mark - TCBuddyInfoController
+#pragma mark - Functions
 
-@interface TCBuddyInfoWindowController : NSWindowController <NSWindowDelegate>
+double TCTimeStamp(void)
+{
+	static dispatch_once_t onceToken;
+	static double timeConvert = 0.0;
+	
+	dispatch_once(&onceToken, ^{
+		mach_timebase_info_data_t timeBase;
+		
+		mach_timebase_info(&timeBase);
+		
+		timeConvert = (double)timeBase.numer / (double)timeBase.denom / 1000000000.0;
+	});
+	
+	return (double)mach_absolute_time() * timeConvert;
+}
 
-// -- Tools --
-+ (void)showInfo;
-+ (void)showInfoOnBuddy:(TCBuddy *)buddy;
-
-@end

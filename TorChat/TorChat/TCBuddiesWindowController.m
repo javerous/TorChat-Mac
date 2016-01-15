@@ -20,7 +20,6 @@
  *
  */
 
-
 #import "TCBuddiesWindowController.h"
 
 // -- Core --
@@ -34,7 +33,7 @@
 
 // -- Interface --
 // > Controllers
-#import "TCBuddyInfoWindowController.h"
+#import "TCBuddyInfoWindowsController.h"
 #import "TCChatWindowController.h"
 #import "TCFilesWindowController.h"
 
@@ -57,13 +56,12 @@
 #import "TCInfo+Render.h"
 
 
-
 /*
 ** TCBuddiesController - Private
 */
 #pragma mark - TCBuddiesController - Private
 
-@interface TCBuddiesWindowController () <TCCoreManagerDelegate, TCDropButtonDelegate, TCBuddyDelegate, TCChatWindowControllerDelegate>
+@interface TCBuddiesWindowController () <TCCoreManagerObserver, TCBuddyObserver, TCDropButtonDelegate, TCChatWindowControllerDelegate>
 {
 	id <TCConfigInterface>	_configuration;
 	TCCoreManager		*_control;
@@ -77,6 +75,8 @@
 	BOOL				_running;
 	
 	NSDictionary		*_infos;
+	
+	TCBuddyInfoWindowsController *_infoWindowsController;
 }
 
 // -- Properties --
@@ -150,8 +150,8 @@
 	if (self)
 	{
 		// Build an event dispatch queue
-		_localQueue = dispatch_queue_create("com.torchat.cocoa.buddies.local", DISPATCH_QUEUE_SERIAL);
-		_noticeQueue = dispatch_queue_create("com.torchat.cocoa.buddies.notice", DISPATCH_QUEUE_SERIAL);
+		_localQueue = dispatch_queue_create("com.torchat.app.buddies.local", DISPATCH_QUEUE_SERIAL);
+		_noticeQueue = dispatch_queue_create("com.torchat.app.buddies.notice", DISPATCH_QUEUE_SERIAL);
 
 		// Build array of cocoa buddy
 		_buddies = [[NSMutableArray alloc] init];
@@ -165,7 +165,7 @@
 
 - (void)dealloc
 {
-	TCDebugLog("TCBuddieController dealloc");
+	TCDebugLog(@"TCBuddieController dealloc");
 	
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -193,126 +193,105 @@
 */
 #pragma mark - TCBuddiesController - Running
 
-- (void)startWithConfiguration:(id <TCConfigInterface>)configuration
+- (void)startWithConfiguration:(id <TCConfigInterface>)configuration coreManager:(TCCoreManager *)coreMananager
 {
-	NSImage *avatar;
-	
-	if (!configuration)
+	if (!configuration || !coreMananager)
 	{
 		NSBeep();
 		[NSApp terminate:self];
 		return;
 	}
 	
-	if (_running)
-		return;
-	
-	_running = YES;
-	
-	// Load window.
-	[self window];
-	
-	// Hold the config
-	_configuration = configuration;
-	
-	// Build controller
-	_control = [[TCCoreManager alloc] initWithConfiguration:_configuration];
-	
-	// -- Init window content --
-	// > Show load indicator
-	[_indicator startAnimation:self];
-
-	// > Init title
-	[self updateTitleUI];
-	
-	// > Init status
-	[self updateStatusUI:[_control status]];
-	
-	// > Init avatar
-	avatar = [[_control profileAvatar] imageRepresentation];
-	
-	if ([[avatar representations] count] > 0)
-		[_imAvatar setImage:avatar];
-	else
-	{
-		NSImage *img = [NSImage imageNamed:NSImageNameUser];
+	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		[img setSize:NSMakeSize(64, 64)];
+		if (_running)
+			return;
+		
+		_running = YES;
+		
+		// Load window.
+		[self window];
+		
+		// Hold the config & core.
+		_configuration = configuration;
+		_control = coreMananager;
+		
+		// -- Init window content --
+		// > Show load indicator.
+		[_indicator startAnimation:self];
+		
+		// > Init title.
+		[self updateTitleUI];
+		
+		// > Init status
+		[self updateStatusUI:[_control status]];
+		
+		// > Init avatar.
+		NSImage *avatar = [[_control profileAvatar] imageRepresentation];
+		
+		if ([[avatar representations] count] > 0)
+			[_imAvatar setImage:avatar];
+		else
+		{
+			NSImage *img = [NSImage imageNamed:NSImageNameUser];
+			
+			[img setSize:NSMakeSize(64, 64)];
 		 
-		[_imAvatar setImage:img];
-	}
+			[_imAvatar setImage:img];
+		}
 		
-	// > Init table file drag
-	[_tableView registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
-	[_tableView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:NO];
-	
-	// > Redirect avatar drop
-	[_imAvatar setDelegate:self];
-
-	// Show the window
-	[self showWindow:nil];
-	
-	// Init delegate
-	_control.delegate = self;
-	
-	// Start the controller
-	[_control start];
+		// > Init table file drag.
+		[_tableView registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
+		[_tableView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:NO];
+		
+		// > Redirect avatar drop.
+		[_imAvatar setDelegate:self];
+		
+		// Create windows info controller.
+		_infoWindowsController = [[TCBuddyInfoWindowsController alloc] initWithCoreManager:coreMananager];
+		
+		// Show the window.
+		[self showWindow:nil];
+		
+		// Add ourself as observer.
+		[_control addObserver:self];
+		
+		// Start the controller.
+		[_control start];
+	});
 }
 
 - (void)stop
 {
-	if (!_running)
-		return;
-	
-	// Clean buddies
-	for (TCBuddy *buddy in _buddies)
-	{
-		buddy.delegate = nil;
+	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		// Inform the info controller that we un-hold this buddy.
-		dispatch_async(_noticeQueue, ^{
-			[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesWindowControllerRemovedBuddy object:self userInfo:@{ @"buddy" : buddy }];
-		});
-	}
-	
-	[_buddies removeAllObjects];
-	[_tableView reloadData];
-	
-	// Clean controller
-	if (_control)
-	{
-		_control.delegate = nil;
+		if (!_running)
+			return;
 		
-		[_control stop];
+		// Clean buddies.
+		for (TCBuddy *buddy in _buddies)
+		{
+			[buddy removeObserver:self];
+			[_infoWindowsController closeInfoForBuddy:buddy];
+		}
 		
-		_control = nil;
-	}
-	
-	// Set status to offline
-	[_imStatus selectItemWithTag:0];
-	[self updateTitleUI];
-	
-	// Update status
-	_running = NO;
-}
-
-
-
-/*
-** TCBuddiesController - Blocked Buddies
-*/
-#pragma mark - TCBuddiesController - Blocked Buddies
-
-- (BOOL)addBlockedBuddy:(NSString *)address
-{
-	// Add
-	return [_control addBlockedBuddy:address];
-}
-
-- (BOOL)removeBlockedBuddy:(NSString *)address
-{
-	// Remove
-	return [_control removeBlockedBuddy:address];
+		[_buddies removeAllObjects];
+		[_tableView reloadData];
+		
+		// Clean controller.
+		if (_control)
+		{
+			[_control removeObserver:self];
+			_control = nil;
+		}
+		
+		// Set status to offline.
+		[_imStatus selectItemWithTag:0];
+		[self updateTitleUI];
+		
+		// Update status.
+		_running = NO;
+	});
 }
 
 
@@ -425,12 +404,12 @@
 /*
 ** TCBuddiesController - TCCoreManagerDelegate
 */
-#pragma mark - TCBuddiesController - TCCoreManagerDelegate
+#pragma mark - TCBuddiesController - TCCoreManagerObserver
 
 - (void)torchatManager:(TCCoreManager *)manager information:(TCInfo *)info
 {
 	// Log the item
-	[[TCLogsManager sharedManager] addGlobalLogEntry:[info render]];
+	[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
 	
 	// Action information
 	if (info.kind == TCInfoInfo)
@@ -457,7 +436,7 @@
 				
 			case TCCoreEventStatus:
 			{
-				TCStatus	status = (TCStatus)[(NSNumber *)info.context intValue];
+				TCStatus status = (TCStatus)[(NSNumber *)info.context intValue];
 				
 				dispatch_async(dispatch_get_main_queue(), ^{
 					[self updateStatusUI:status];
@@ -482,18 +461,13 @@
 				// Set the new avatar to the chat window.
 				[[TCChatWindowController sharedController] setLocalAvatar:final forIdentifier:[_configuration selfAddress]];
 				
-				// Notify the change.
-				dispatch_async(_noticeQueue, ^{
-					[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesWindowControllerAvatarChanged object:manager userInfo:@{ @"avatar" : final }];
-				});
-				
 				break;
 			}
 				
 			case TCCoreEventProfileName:
 			{
+				// Update Title.
 				dispatch_async(dispatch_get_main_queue(), ^{
-					// Update Title
 					[self updateTitleUI];
 				});
 				
@@ -507,7 +481,7 @@
 			{
 				TCBuddy *buddy = (TCBuddy *)info.context;
 				
-				buddy.delegate = self;
+				[buddy addObserver:self];
 				
 				dispatch_async(dispatch_get_main_queue(), ^{
 					
@@ -515,16 +489,42 @@
 					
 					[[TCChatWindowController sharedController] setLocalAvatar:[_imAvatar image] forIdentifier:[buddy address]];
 					
-					[self reloadBuddy:nil];
+					[self _reloadBuddy:nil];
+				});
+				
+				break;
+			}
+				
+			case TCCoreEventBuddyRemove:
+			{
+				TCBuddy *buddy = info.context;
+				
+				[buddy removeObserver:self];
+				
+				dispatch_async(dispatch_get_main_queue(), ^{
+					[_buddies removeObjectIdenticalTo:buddy];
+					[_tableView reloadData];
+				});
+
+				break;
+			}
+				
+			case TCCoreEventBuddyBlocked:
+			case TCCoreEventBuddyUnblocked:
+			{
+				TCBuddy *buddy = info.context;
+				
+				// Reload table.
+				dispatch_async(dispatch_get_main_queue(), ^{
+					[self _reloadBuddy:buddy];
 				});
 				
 				break;
 			}
 				
 			case TCCoreEventClientStarted:
-				break;
-				
 			case TCCoreEventClientStopped:
+			
 				break;
 		}
 	}
@@ -533,15 +533,16 @@
 
 
 /*
-** TCBuddiesController - TCBuddyDelegate
+** TCBuddiesController - TCBuddyObserver
 */
-#pragma mark - TCBuddiesController - TCBuddyDelegate
+#pragma mark - TCBuddiesController - TCBuddyObserver
 
-- (void)buddy:(TCBuddy *)aBuddy event:(const TCInfo *)info
+- (void)buddy:(TCBuddy *)aBuddy information:(TCInfo *)info
 {
-	// Add the error in the error manager
-	[[TCLogsManager sharedManager] addBuddyLogEntryFromAddress:[aBuddy address] name:[aBuddy finalName] andText:[info render]];
+	// Add the info in the log manager.
+	[[TCLogsManager sharedManager] addBuddyLogWithAddress:[aBuddy address] name:[aBuddy finalName] info:info];
 	
+	// Handle info.
 	dispatch_async(_localQueue, ^{
 		
 		if (info.kind == TCInfoInfo)
@@ -562,12 +563,7 @@
 					
 					// Reload buddies table.
 					dispatch_async(dispatch_get_main_queue(), ^{
-						[self reloadBuddy:aBuddy];
-					});
-					
-					// Notify.
-					dispatch_async(_noticeQueue, ^{
-						[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedStatusNotification object:aBuddy userInfo:@{ @"status" : @(TCStatusOffline) }];
+						[self _reloadBuddy:aBuddy];
 					});
 					
 					break;
@@ -578,8 +574,8 @@
 					
 				case TCBuddyEventStatus:
 				{
-					TCStatus  status = (TCStatus)[(NSNumber *)info.context intValue];
-					NSString		*statusStr = @"";
+					TCStatus	status = (TCStatus)[(NSNumber *)info.context intValue];
+					NSString	*statusStr = @"";
 					
 					// Send status to chat window.
 					switch (status)
@@ -605,14 +601,9 @@
 					
 					// Reload buddies table.
 					dispatch_async(dispatch_get_main_queue(), ^{
-						[self reloadBuddy:aBuddy];
+						[self _reloadBuddy:aBuddy];
 					});
-					
-					// Notify.
-					dispatch_async(_noticeQueue, ^{
-						[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedStatusNotification object:aBuddy userInfo:@{ @"status" : info.context }];
-					});
-					
+
 					break;
 				}
 					
@@ -626,34 +617,17 @@
 					
 					// Reload table.
 					dispatch_async(dispatch_get_main_queue(), ^{
-						[self reloadBuddy:aBuddy];
+						[self _reloadBuddy:aBuddy];
 					});
 					
 					// Set the new avatar to the chat window.
 					[[TCChatWindowController sharedController] setRemoteAvatar:avatar forIdentifier:[aBuddy address]];
-					
-					// Notify of the new avatar.
-					dispatch_async(_noticeQueue, ^{
-						[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedAvatarNotification object:aBuddy userInfo:@{ @"avatar" : avatar }];
-					});
-					
+
 					break;
 				}
 					
 				case TCBuddyEventProfileText:
-				{
-					NSString *text = info.context;
-					
-					if (!text)
-						return;
-					
-					// Notify.
-					dispatch_async(_noticeQueue, ^{
-						[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedTextNotification object:aBuddy userInfo:@{ @"text" : text }];
-					});
-					
 					break;
-				}
 					
 				case TCBuddyEventProfileName:
 				{
@@ -664,12 +638,7 @@
 					
 					// Reload table.
 					dispatch_async(dispatch_get_main_queue(), ^{
-						[self reloadBuddy:aBuddy];
-					});
-					
-					// Notify.
-					dispatch_async(_noticeQueue, ^{
-						[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedNameNotification object:aBuddy userInfo:@{ @"name" : name }];
+						[self _reloadBuddy:aBuddy];
 					});
 					
 					break;
@@ -697,12 +666,7 @@
 					
 					// Reload table.
 					dispatch_async(dispatch_get_main_queue(), ^{
-						[self reloadBuddy:aBuddy];
-					});
-					
-					// Notify.
-					dispatch_async(_noticeQueue, ^{
-						[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedAliasNotification object:aBuddy userInfo:@{ @"alias" : alias }];
+						[self _reloadBuddy:aBuddy];
 					});
 					
 					break;
@@ -711,55 +675,11 @@
 				case TCBuddyEventNotes:
 					break;
 					
-				case TCBuddyEventBlocked:
-				{
-					NSNumber *blocked = info.context;
-					
-					if (!blocked)
-						return;
-					
-					// Reload table.
-					dispatch_async(dispatch_get_main_queue(), ^{
-						[self reloadBuddy:aBuddy];
-					});
-					
-					// Notify.
-					dispatch_async(_noticeQueue, ^{
-						[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedBlockedNotification object:aBuddy userInfo:@{ @"blocked" : blocked }];
-					});
-					
-					break;
-				}
-					
 				case TCBuddyEventVersion:
-				{
-					NSString *version = info.context;
-					
-					if (!version)
-						return;
-					
-					// Notify.
-					dispatch_async(_noticeQueue, ^{
-						[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedPeerVersionNotification object:aBuddy userInfo:@{ @"version" : version }];
-					});
-					
 					break;
-				}
 					
 				case TCBuddyEventClient:
-				{
-					NSString *client = info.context;
-					
-					if (!client)
-						return;
-					
-					// Notify.
-					dispatch_async(_noticeQueue, ^{
-						[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedPeerClientNotification object:self userInfo:@{ @"client" : client }];
-					});
-					
 					break;
-				}
 					
 				case TCBuddyEventFileSendStart:
 				{
@@ -1085,6 +1005,21 @@
 	[self updateTitleUI];
 }
 
+- (IBAction)doShowInfo:(id)sender
+{
+	// Get selected buddy.
+	TCBuddy *buddy = [self selectedBuddy];
+	
+	if (!buddy)
+	{
+		NSBeep();
+		return;
+	}
+	
+	// Show.
+	[_infoWindowsController showInfoForBuddy:buddy];
+}
+
 - (IBAction)doRemove:(id)sender
 {
 	NSInteger	row = [_tableView selectedRow];
@@ -1094,21 +1029,11 @@
 	if (row < 0 || row >= [_buddies count])
 		return;
 	
-	// Get the buddy address
+	// Get the buddy address.
 	buddy = [_buddies objectAtIndex:(NSUInteger)row];
 	address = [buddy address];
-	
-	// Inform the info controller that we are removing this buddy
-	dispatch_async(_noticeQueue, ^{
-		[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesWindowControllerRemovedBuddy object:self userInfo:@{ @"buddy" : buddy }];
-	});
-	
-	// Remove the buddy from interface side
-	buddy.delegate = nil;
-	[_buddies removeObjectAtIndex:(NSUInteger)row];
-	[_tableView reloadData];
-	
-	// Remove the buddy from the controller
+
+	// Remove the buddy from the controller.
 	[_control removeBuddy:address];
 }
 
@@ -1217,18 +1142,10 @@
 	
 	[_control setProfileName:name];
 	
-	dispatch_async(_noticeQueue, ^{
-		[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesWindowControllerNameChanged object:self userInfo:@{ @"name" : name }];
-	});
-	
 	// -- Hold text --
 	NSString *text = [[_profileText textStorage] mutableString];
 	
 	[_control setProfileText:text];
-	
-	dispatch_async(_noticeQueue, ^{
-		[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesWindowControllerTextChanged object:self userInfo:@{ @"text" : text }];
-	});
 }
 
 - (IBAction)doProfileCancel:(id)sender
@@ -1287,7 +1204,7 @@
 		[_buddies addObjectsFromArray:temp_off];
 		
 		// Reload table
-		[self reloadBuddy:nil];
+		[self _reloadBuddy:nil];
 	});
 }
 
@@ -1385,8 +1302,10 @@
 	[[_imTitle itemAtIndex:0] setTitle:content];
 }
 
-- (void)reloadBuddy:(TCBuddy *)buddy
+- (void)_reloadBuddy:(TCBuddy *)buddy
 {
+	// > main queue <
+	
 	if (buddy)
 	{
 		NSUInteger index = [_buddies indexOfObjectIdenticalTo:buddy];
@@ -1394,7 +1313,7 @@
 		if (index != NSNotFound)
 			[_tableView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 		else
-			[self reloadBuddy:nil];
+			[self _reloadBuddy:nil];
 	}
 	else
 	{
