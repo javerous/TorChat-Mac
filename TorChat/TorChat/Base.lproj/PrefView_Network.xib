@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9531"/>
+        <capability name="box content view" minToolsVersion="7.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="TCPrefView_Network">
+            <connections>
+                <outlet property="imAddressField" destination="9KL-LP-wRq" id="RbK-dG-6YH"/>
+                <outlet property="imPortField" destination="n9v-m5-SDF" id="dyL-qO-L7U"/>
+                <outlet property="torAddressField" destination="eFL-vX-f66" id="nLh-Bi-YC9"/>
+                <outlet property="torPortField" destination="wxv-gf-iWN" id="037-Ax-I8e"/>
+                <outlet property="view" destination="ta5-FT-idY" id="g1t-fp-aez"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <view translatesAutoresizingMaskIntoConstraints="NO" id="ta5-FT-idY" userLabel="Network">
+            <rect key="frame" x="0.0" y="0.0" width="410" height="220"/>
+            <subviews>
+                <box autoresizesSubviews="NO" title="TorChat" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="A4U-kf-1ju">
+                    <rect key="frame" x="17" y="108" width="376" height="92"/>
+                    <view key="contentView" id="tFd-Aj-6To">
+                        <rect key="frame" x="1" y="1" width="374" height="76"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="2jV-hW-0oB">
+                                <rect key="frame" x="11" y="47" width="131" height="17"/>
+                                <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="left" title="TorChat IM Address :" usesSingleLineMode="YES" id="lNd-8Q-NIB">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9KL-LP-wRq">
+                                <rect key="frame" x="148" y="44" width="208" height="22"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="-" drawsBackground="YES" id="hGA-Cl-gxo">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                                <connections>
+                                    <outlet property="delegate" destination="-2" id="1w9-jk-aEV"/>
+                                </connections>
+                            </textField>
+                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="m1X-8x-GIO">
+                                <rect key="frame" x="11" y="17" width="104" height="17"/>
+                                <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="left" title="TorChat In Port :" usesSingleLineMode="YES" id="IvZ-fz-eXW">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="n9v-m5-SDF">
+                                <rect key="frame" x="121" y="14" width="80" height="22"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="80" id="xsf-Sv-DQu"/>
+                                </constraints>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="11009" drawsBackground="YES" id="dN8-Yz-9b1">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                                <connections>
+                                    <outlet property="delegate" destination="-2" id="nDT-Ji-hcB"/>
+                                </connections>
+                            </textField>
+                        </subviews>
+                    </view>
+                    <constraints>
+                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="n9v-m5-SDF" secondAttribute="trailing" constant="11" id="1m3-3K-C2f"/>
+                        <constraint firstItem="9KL-LP-wRq" firstAttribute="leading" secondItem="2jV-hW-0oB" secondAttribute="trailing" constant="8" symbolic="YES" id="6SV-wO-zeG"/>
+                        <constraint firstItem="n9v-m5-SDF" firstAttribute="leading" secondItem="m1X-8x-GIO" secondAttribute="trailing" constant="8" symbolic="YES" id="EDs-rH-e5t"/>
+                        <constraint firstAttribute="trailing" secondItem="9KL-LP-wRq" secondAttribute="trailing" constant="16" id="W0O-gY-66N"/>
+                        <constraint firstItem="2jV-hW-0oB" firstAttribute="centerY" secondItem="9KL-LP-wRq" secondAttribute="centerY" constant="-0.5" id="ZLw-DD-fbb"/>
+                        <constraint firstItem="2jV-hW-0oB" firstAttribute="leading" secondItem="A4U-kf-1ju" secondAttribute="leading" constant="11" id="j4c-fo-rdy"/>
+                        <constraint firstItem="m1X-8x-GIO" firstAttribute="leading" secondItem="A4U-kf-1ju" secondAttribute="leading" constant="11" id="pSb-N2-uM0"/>
+                        <constraint firstItem="n9v-m5-SDF" firstAttribute="top" secondItem="9KL-LP-wRq" secondAttribute="bottom" constant="8" id="tSp-jM-DKt"/>
+                        <constraint firstItem="9KL-LP-wRq" firstAttribute="top" secondItem="A4U-kf-1ju" secondAttribute="top" constant="25" id="xWA-Is-hGj"/>
+                        <constraint firstItem="m1X-8x-GIO" firstAttribute="centerY" secondItem="n9v-m5-SDF" secondAttribute="centerY" constant="-0.5" id="zSG-4J-oFS"/>
+                        <constraint firstAttribute="height" constant="88" id="zXx-hO-Vsk"/>
+                    </constraints>
+                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                </box>
+                <box autoresizesSubviews="NO" title="Tor" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="GTq-S2-pwB">
+                    <rect key="frame" x="17" y="13" width="376" height="91"/>
+                    <view key="contentView" id="8ea-pM-CQj">
+                        <rect key="frame" x="1" y="1" width="374" height="75"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0nW-gC-87P">
+                                <rect key="frame" x="11" y="16" width="108" height="17"/>
+                                <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Tor Port SOCKS :" usesSingleLineMode="YES" id="Nx3-Ts-rea">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sLC-d4-YEX">
+                                <rect key="frame" x="11" y="46" width="85" height="17"/>
+                                <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Tor Address :" usesSingleLineMode="YES" id="0dS-RH-K0k">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wxv-gf-iWN">
+                                <rect key="frame" x="125" y="14" width="80" height="22"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="80" id="HPD-Kk-hAX"/>
+                                </constraints>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="9050" drawsBackground="YES" id="ING-QQ-79i">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                                <connections>
+                                    <outlet property="delegate" destination="-2" id="RMF-w0-fzE"/>
+                                </connections>
+                            </textField>
+                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="eFL-vX-f66">
+                                <rect key="frame" x="102" y="43" width="254" height="22"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="localhost" drawsBackground="YES" id="GPN-ID-gNJ">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                                <connections>
+                                    <outlet property="delegate" destination="-2" id="gFS-1s-F5k"/>
+                                </connections>
+                            </textField>
+                        </subviews>
+                    </view>
+                    <constraints>
+                        <constraint firstItem="eFL-vX-f66" firstAttribute="leading" secondItem="sLC-d4-YEX" secondAttribute="trailing" constant="8" symbolic="YES" id="0Oj-fy-cen"/>
+                        <constraint firstItem="eFL-vX-f66" firstAttribute="top" secondItem="GTq-S2-pwB" secondAttribute="top" constant="25" id="7EB-tV-VNz"/>
+                        <constraint firstItem="wxv-gf-iWN" firstAttribute="leading" secondItem="0nW-gC-87P" secondAttribute="trailing" constant="8" symbolic="YES" id="CNV-RB-Yh6"/>
+                        <constraint firstAttribute="trailing" secondItem="eFL-vX-f66" secondAttribute="trailing" constant="16" id="DmY-Ib-9ft"/>
+                        <constraint firstItem="wxv-gf-iWN" firstAttribute="centerY" secondItem="0nW-gC-87P" secondAttribute="centerY" constant="-0.5" id="RmT-EB-fUf"/>
+                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="wxv-gf-iWN" secondAttribute="trailing" constant="11" id="cWW-kj-quE"/>
+                        <constraint firstAttribute="height" constant="87" id="gNh-pE-crF"/>
+                        <constraint firstItem="wxv-gf-iWN" firstAttribute="top" secondItem="eFL-vX-f66" secondAttribute="bottom" constant="7" id="geq-Ln-aeY"/>
+                        <constraint firstItem="sLC-d4-YEX" firstAttribute="leading" secondItem="GTq-S2-pwB" secondAttribute="leading" constant="11" id="iZ0-bn-q72"/>
+                        <constraint firstItem="0nW-gC-87P" firstAttribute="leading" secondItem="GTq-S2-pwB" secondAttribute="leading" constant="11" id="nmf-Wl-EbQ"/>
+                        <constraint firstItem="sLC-d4-YEX" firstAttribute="centerY" secondItem="eFL-vX-f66" secondAttribute="centerY" constant="-0.5" id="rgp-a6-4b4"/>
+                    </constraints>
+                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                </box>
+            </subviews>
+            <constraints>
+                <constraint firstAttribute="width" constant="410" id="6oB-cA-pke"/>
+                <constraint firstAttribute="trailing" secondItem="GTq-S2-pwB" secondAttribute="trailing" constant="20" symbolic="YES" id="6xS-Yy-DQF"/>
+                <constraint firstAttribute="trailing" secondItem="A4U-kf-1ju" secondAttribute="trailing" constant="20" symbolic="YES" id="HUx-1b-p83"/>
+                <constraint firstItem="A4U-kf-1ju" firstAttribute="top" secondItem="ta5-FT-idY" secondAttribute="top" constant="20" symbolic="YES" id="Oah-1L-1ug"/>
+                <constraint firstAttribute="bottom" secondItem="GTq-S2-pwB" secondAttribute="bottom" constant="17" id="ZnF-cX-iwB"/>
+                <constraint firstItem="GTq-S2-pwB" firstAttribute="top" secondItem="A4U-kf-1ju" secondAttribute="bottom" constant="8" symbolic="YES" id="m6C-b9-LS3"/>
+                <constraint firstItem="A4U-kf-1ju" firstAttribute="leading" secondItem="ta5-FT-idY" secondAttribute="leading" constant="20" symbolic="YES" id="mwe-sm-9mZ"/>
+                <constraint firstAttribute="height" constant="220" id="qDY-hM-XNP"/>
+                <constraint firstItem="GTq-S2-pwB" firstAttribute="leading" secondItem="ta5-FT-idY" secondAttribute="leading" constant="20" symbolic="YES" id="tLi-cd-5LZ"/>
+            </constraints>
+        </view>
+    </objects>
+</document>

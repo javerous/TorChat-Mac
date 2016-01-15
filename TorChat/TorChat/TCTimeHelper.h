@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCTimeHelper.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -24,22 +24,8 @@
 
 
 /*
-** Defines
+** Functions
 */
-#pragma mark - Defines
+#pragma mark - Functions
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
-
-
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
-
-@end
+double TCTimeStamp(void);

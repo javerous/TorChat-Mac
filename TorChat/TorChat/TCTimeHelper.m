@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCTimeHelper.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,26 +20,29 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import <mach/mach_time.h>
+
+#import "TCTimeHelper.h"
 
 
 /*
-** Defines
+** Functions
 */
-#pragma mark - Defines
+#pragma mark - Functions
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+double TCTimeStamp(void)
+{
+	static dispatch_once_t onceToken;
+	static double timeConvert = 0.0;
+	
+	dispatch_once(&onceToken, ^{
+		mach_timebase_info_data_t timeBase;
+		
+		mach_timebase_info(&timeBase);
+		
+		timeConvert = (double)timeBase.numer / (double)timeBase.denom / 1000000000.0;
+	});
+	
+	return (double)mach_absolute_time() * timeConvert;
+}
 
-
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
-
-@end

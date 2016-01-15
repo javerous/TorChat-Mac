@@ -1,0 +1,12 @@
+
+/* Class = "NSTextFieldCell"; title = "Tor is launching. Please wait."; ObjectID = "6R9-3S-cV6"; */
+"6R9-3S-cV6.title" = "Tor is launching. Please wait.";
+
+/* Class = "NSWindow"; title = "Tor"; ObjectID = "QvC-M9-y7g"; */
+"QvC-M9-y7g.title" = "Tor";
+
+/* Class = "NSTextFieldCell"; title = "<SUMMARY-DONT-TRANSLATE>"; ObjectID = "j3E-dv-eMP"; */
+"j3E-dv-eMP.title" = "<SUMMARY-DONT-TRANSLATE>";
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "zSc-Du-Cy8"; */
+"zSc-Du-Cy8.title" = "Cancel";

@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCMainController.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,26 +20,38 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
+
+#import "TCConfigInterface.h"
 
 
 /*
-** Defines
+** Forward
 */
-#pragma mark - Defines
+#pragma mark - Forward
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@class TCCoreManager;
 
 
 
 /*
-** TCConfigProxy
+** TCMainController
 */
-#pragma mark - TCConfigProxy
+#pragma mark - TCMainController
 
-@protocol TCConfigProxy <NSObject>
+@interface TCMainController : NSObject
 
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+// -- Singleton --
++ (TCMainController *)sharedController;
+
+// -- Life --
+- (void)startWithCompletionHandler:(void (^)(id <TCConfigInterface> configuration, TCCoreManager *core))handler;
+- (void)stop;
+
+- (void)reload;
+
+// -- Properties --
+@property (strong, readonly, nonatomic) id <TCConfigInterface>	configuration;
+@property (strong, readonly, nonatomic) TCCoreManager			*core;
 
 @end

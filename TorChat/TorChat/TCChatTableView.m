@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCChatTableView.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,26 +20,24 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import "TCChatTableView.h"
 
 
 /*
-** Defines
+** TCChatTableView
 */
-#pragma mark - Defines
+#pragma mark - TCChatTableView
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@implementation TCChatTableView
 
+- (BOOL)acceptsFirstResponder
+{
+	return NO;
+}
 
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+- (BOOL)becomeFirstResponder
+{
+	return NO;
+}
 
 @end

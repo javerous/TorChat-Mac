@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCDragImage.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -24,22 +24,17 @@
 
 
 /*
-** Defines
+** TCDragImage - Interface
 */
-#pragma mark - Defines
+#pragma mark - TCDragImage
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@interface TCDragImage : NSObject < NSPasteboardWriting>
 
+// -- Instance --
+- (id)initWithImage:(NSImage *)image andName:(NSString *)name;
 
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+// -- Properties --
+@property (strong, nonatomic, readonly) NSImage		*image;
+@property (strong, nonatomic, readonly) NSString	*name;
 
 @end

@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCTableView.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,26 +20,34 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import "TCTableView.h"
 
 
 /*
-** Defines
+** TCTableView
 */
-#pragma mark - Defines
+#pragma mark - TCTableView
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@implementation TCTableView
 
-
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+- (void)keyDown:(NSEvent *)theEvent
+{
+	unichar key = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
+	
+	if (key == NSDeleteCharacter || key == NSDeleteFunctionKey || key == NSBackspaceCharacter)
+	{
+		if ([self.delegate respondsToSelector:@selector(doDeleteKeyInTableView:)])
+		{
+			id obj = self.delegate;
+			
+			if ([obj doDeleteKeyInTableView:self])
+				return;
+		}
+		
+		return;
+	}
+    
+	[super keyDown:theEvent];
+}
 
 @end

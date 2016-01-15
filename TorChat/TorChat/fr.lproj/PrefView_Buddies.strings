@@ -1,0 +1,18 @@
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "0KK-fi-hFR"; */
+"0KK-fi-hFR.title" = "Annuler";
+
+/* Class = "NSWindow"; title = "Add Blocked"; ObjectID = "EdI-Ur-HSK"; */
+"EdI-Ur-HSK.title" = "Ajout d'un blocage";
+
+/* Class = "NSBox"; title = "Block List"; ObjectID = "ZWE-9T-ybU"; */
+"ZWE-9T-ybU.title" = "Liste de blocage";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "ikh-H4-coU"; */
+"ikh-H4-coU.title" = "Text Cell";
+
+/* Class = "NSButtonCell"; title = "Add"; ObjectID = "isc-2a-Req"; */
+"isc-2a-Req.title" = "Ajouter";
+
+/* Class = "NSTextFieldCell"; title = "Address"; ObjectID = "rvK-dY-7yO"; */
+"rvK-dY-7yO.title" = "Adresse";

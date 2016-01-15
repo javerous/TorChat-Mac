@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCBuddyCellView.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,26 +20,25 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 
 
 /*
-** Defines
+** Forward
 */
-#pragma mark - Defines
+#pragma mark - Forward 
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@class TCBuddy;
 
 
 
 /*
-** TCConfigProxy
+** TCBuddyCellView
 */
-#pragma mark - TCConfigProxy
+#pragma mark - TCBuddyCellView
 
-@protocol TCConfigProxy <NSObject>
+@interface TCBuddyCellView : NSTableCellView
 
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+- (void)setBuddy:(TCBuddy *)buddy;
 
 @end

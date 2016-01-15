@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCAmountHelper.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,26 +20,31 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import "TCConfig.h"
 
 
 /*
-** Defines
+** Types
 */
-#pragma mark - Defines
+#pragma mark - Types
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+typedef enum
+{
+	TCConfigTitleAddress	= 0,
+	TCConfigTitleName		= 1
+} TCConfigTitle;
 
 
 
 /*
-** TCConfigProxy
+** TCConfigInterface
 */
-#pragma mark - TCConfigProxy
+#pragma mark - TCConfigInterface
 
-@protocol TCConfigProxy <NSObject>
+@protocol TCConfigInterface <TCConfig>
 
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+// -- Title --
+- (TCConfigTitle)modeTitle;
+- (void)setModeTitle:(TCConfigTitle)mode;
 
 @end

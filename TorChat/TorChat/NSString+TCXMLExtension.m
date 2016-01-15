@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  NSString+TCXMLExtension.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,26 +20,19 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import "NSString+TCXMLExtension.h"
 
 
 /*
-** Defines
+** NSString - TCXMLExtension
 */
-#pragma mark - Defines
+#pragma mark - NSString - TCXMLExtension
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@implementation NSString (TCXMLExtension)
 
-
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+- (NSString *)stringByEscapingXMLEntities
+{
+	return (__bridge_transfer NSString *)CFXMLCreateStringByEscapingEntities(kCFAllocatorDefault, (__bridge CFStringRef)self, NULL);
+}
 
 @end
