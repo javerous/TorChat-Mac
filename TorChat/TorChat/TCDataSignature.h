@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCDataSignature.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -24,22 +24,12 @@
 
 
 /*
-** Defines
+** TCDataSignature
 */
-#pragma mark - Defines
+#pragma mark - TCDataSignature
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@interface TCDataSignature : NSObject
 
-
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
++ (BOOL)validateSignature:(NSData *)signature forData:(NSData *)data withPublicKey:(NSData *)publicKey;
 
 @end

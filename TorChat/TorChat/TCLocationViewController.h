@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCLocationViewController.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,26 +20,20 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
+
+#import "TCConfig.h"
 
 
 /*
-** Defines
+** TCLocationViewController
 */
-#pragma mark - Defines
+#pragma mark - TCLocationViewController
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@interface TCLocationViewController : NSViewController
 
+- (instancetype)initWithConfiguration:(id <TCConfig>)configuration component:(TCConfigPathComponent)component;
 
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+- (void)addToView:(NSView *)view;
 
 @end

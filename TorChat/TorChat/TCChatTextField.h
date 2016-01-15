@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCChatTextField.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -24,22 +24,10 @@
 
 
 /*
-** Defines
+** TCChatTextField
 */
-#pragma mark - Defines
+#pragma mark - TCChatTextField
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
-
-
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+@interface TCChatTextField : NSTextField
 
 @end

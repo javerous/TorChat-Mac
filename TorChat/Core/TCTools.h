@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCTools.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -23,23 +23,8 @@
 #import <Foundation/Foundation.h>
 
 
-/*
-** Defines
-*/
-#pragma mark - Defines
+// == Network ==
+BOOL doAsyncSocket(int sock);
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
-
-
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
-
-@end
+// == Hash ==
+NSString *	hashMD5(NSData *data);

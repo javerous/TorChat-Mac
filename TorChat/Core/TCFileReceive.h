@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCFileReceive.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -24,22 +24,26 @@
 
 
 /*
-** Defines
+** TCFileReceive
 */
-#pragma mark - Defines
+#pragma mark - TCFileReceive
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@interface TCFileReceive : NSObject
 
+// -- Properties --
+@property (strong, nonatomic, readonly) NSString	*uuid;
+@property (assign, nonatomic, readonly) uint64_t	fileSize;
+@property (assign, nonatomic, readonly) uint64_t	blockSize;
+@property (strong, nonatomic, readonly) NSString	*fileName;
+@property (strong, nonatomic, readonly) NSString	*filePath;
 
+// -- Instance --
+- (id)initWithUUID:(NSString *)uuid folder:(NSString *)folder fileName:(NSString *)fileName fileSize:(uint64_t)fileSize blockSiz:(uint64_t)blockSize;
 
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
+// -- Tools --
+- (BOOL)writeChunk:(const void *)bytes chunkSize:(uint64_t)chunkSize hash:(NSString *)hash offset:(uint64_t *)offset;
 
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+- (BOOL)isFinished;
+- (uint64_t)receivedSize;
 
 @end

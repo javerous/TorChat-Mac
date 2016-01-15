@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCValue.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,26 +20,39 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import "TCValue.h"
 
 
 /*
-** Defines
+** TCValue
 */
-#pragma mark - Defines
+#pragma mark - TCValue
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@implementation TCValue
+{
+	__weak id _object;
+}
 
++ (TCValue *)valueWithWeakObject:(id)object
+{
+	return [[[self class] alloc] initWithWeakObject:object];
+}
 
+- (id)initWithWeakObject:(id)object
+{
+	self = [super init];
+	
+	if (self)
+	{
+		_object = object;
+	}
+	
+	return self;
+}
 
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+- (id)object
+{
+	return _object;
+}
 
 @end

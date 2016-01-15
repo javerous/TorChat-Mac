@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCAssistantWindowController.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,26 +20,26 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 
 
 /*
-** Defines
+** Types
 */
-#pragma mark - Defines
+#pragma mark - Types
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+typedef void (^TCAssistantCompletionBlock)(id context);
 
 
 
 /*
-** TCConfigProxy
+** TCAssistantWindowController
 */
-#pragma mark - TCConfigProxy
+#pragma mark - TCAssistantWindowController
 
-@protocol TCConfigProxy <NSObject>
+@interface TCAssistantWindowController : NSWindowController
 
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+// -- Constructor --
++ (TCAssistantWindowController *)startAssistantWithPanels:(NSArray *)panels completionHandler:(TCAssistantCompletionBlock)callback;
 
 @end

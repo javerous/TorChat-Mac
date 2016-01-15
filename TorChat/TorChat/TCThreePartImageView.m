@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCThreePartImageView.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,26 +20,37 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import "TCThreePartImageView.h"
 
 
 /*
-** Defines
+** TCThreePartImageView
 */
-#pragma mark - Defines
+#pragma mark - TCThreePartImageView
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
-
+@implementation TCThreePartImageView
 
 
 /*
-** TCConfigProxy
+** TCThreePartImageView - Draw
 */
-#pragma mark - TCConfigProxy
+#pragma mark - TCThreePartImageView - Draw
 
-@protocol TCConfigProxy <NSObject>
+- (void)drawRect:(NSRect)dirtyRect
+{
+	[super drawRect:dirtyRect];
+	
+	NSImage *startCap = _startCap;
+	NSImage *centerFill = _centerFill;
+	NSImage *endCap = _endCap;
 
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+	
+	if (!startCap || !centerFill || !endCap)
+		return;
+	
+	NSSize size = self.frame.size;
+	
+	NSDrawThreePartImage(NSMakeRect(0, 0, size.width, size.height), startCap, centerFill, endCap, _vertical, NSCompositeSourceOver, 1.0, self.isFlipped);
+}
 
 @end

@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCAssistantBack.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,26 +20,14 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 
 
 /*
-** Defines
+** TCAssistantBack
 */
-#pragma mark - Defines
+#pragma mark - TCAssistantBack
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
-
-
-
-/*
-** TCConfigProxy
-*/
-#pragma mark - TCConfigProxy
-
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+@interface TCAssistantBack : NSView
 
 @end

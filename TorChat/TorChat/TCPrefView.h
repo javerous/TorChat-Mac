@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCPrefView.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -22,24 +22,29 @@
 
 #import <Foundation/Foundation.h>
 
-
-/*
-** Defines
-*/
-#pragma mark - Defines
-
-#define TCProxyName @"com.sourcemac.torchat.proxy"
-
+#import "TCConfigInterface.h"
 
 
 /*
-** TCConfigProxy
+** Forward
 */
-#pragma mark - TCConfigProxy
+#pragma mark - Forward
 
-@protocol TCConfigProxy <NSObject>
+@class TCCoreManager;
 
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+
+
+/*
+** TCPrefsView
+*/
+#pragma mark - TCPrefsView
+
+@interface TCPrefView : NSViewController
+
+@property (strong, nonatomic) id <TCConfigInterface>	config;
+@property (strong, nonatomic) TCCoreManager				*core;
+
+- (void)loadConfig;
+- (BOOL)saveConfig;
 
 @end

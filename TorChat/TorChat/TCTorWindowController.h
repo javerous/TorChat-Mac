@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCTorWindowController.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,26 +20,27 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 
 
 /*
-** Defines
+** Forward
 */
-#pragma mark - Defines
+#pragma mark - Forward
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@class TCTorManager;
+@class TCInfo;
 
 
 
 /*
-** TCConfigProxy
+** TCTorWindowController
 */
-#pragma mark - TCConfigProxy
+#pragma mark - TCTorWindowController
 
-@protocol TCConfigProxy <NSObject>
+@interface TCTorWindowController : NSWindowController
 
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+// -- Instance --
++ (void)startWithTorManager:(TCTorManager *)torManager handler:(void (^)(TCInfo *info))handler;
 
 @end

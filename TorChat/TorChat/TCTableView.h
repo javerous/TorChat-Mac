@@ -1,5 +1,5 @@
 /*
- *  TCConfigProxy.h
+ *  TCTableView.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,26 +20,27 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 
 
 /*
-** Defines
+** TCTableViewDelegate - Delegate
 */
-#pragma mark - Defines
+#pragma mark - TCTableViewDelegate - Delegate
 
-#define TCProxyName @"com.sourcemac.torchat.proxy"
+@interface NSObject (TCTableViewDelegate)
+
+- (BOOL)doDeleteKeyInTableView:(NSTableView *)table;
+
+@end
 
 
 
 /*
-** TCConfigProxy
+** TCTableViewDelegate
 */
-#pragma mark - TCConfigProxy
+#pragma mark - TCTableViewDelegate
 
-@protocol TCConfigProxy <NSObject>
-
-- (NSData *)configContent;
-- (void)setConfigContent:(NSData *)content;
+@interface TCTableView : NSTableView
 
 @end
