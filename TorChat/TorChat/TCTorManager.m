@@ -322,7 +322,6 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		
 		// -- Stop current instance --
 		[queue scheduleBlock:^(TCOperationsControl ctrl) {
-			
 			[self stopWithCompletionHandler:^{
 				ctrl(TCOperationsControlContinue);
 			}];
@@ -357,7 +356,6 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 								dispatch_async(_localQueue, ^{
 									_urlSession = info.context;
 								});
-
 								break;
 							}
 								
@@ -419,27 +417,19 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 {
 	dispatch_async(_localQueue, ^{
 		
-		dispatch_group_t stopGroup = dispatch_group_create();
+		TCTorTask *torTask = _torTask;
 		
-		// Stop tor.
-		if (_torTask)
+		if (torTask)
 		{
-			dispatch_group_enter(stopGroup);
-			
-			[_torTask stopWithCompletionHandler:^{
-				dispatch_async(_localQueue, ^{
-					_torTask = nil;
-					_urlSession = nil;
-					dispatch_group_leave(stopGroup);
-				});
+			_torTask = nil;
+			_urlSession = nil;
+
+			[torTask stopWithCompletionHandler:^{
+				handler();
 			}];
 		}
-		
-		// Wait that everything is stopped.
-		dispatch_group_notify(stopGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			if (handler)
-				handler();
-		});
+		else
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), handler);
 	});
 }
 
@@ -761,21 +751,7 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 			
 			[torTask startWithBinariesPath:_torBinPath dataPath:_torDataPath identityPath:_torIdentityPath torPort:torPort torAddress:torAddress clientPort:clientPort logHandler:self.logHandler completionHandler:^(TCInfo *info) {
 				
-				if (info.kind == TCInfoError)
-				{
-					handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoUpdateDomain code:TCTorManagerErrorUpdateRelaunch info:info]);
-					ctrl(TCOperationsControlFinish);
-					return;
-				}
-				else if (info.kind == TCInfoWarning)
-				{
-					if (info.code == TCTorManagerWarningStartCanceled)
-					{
-						handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoUpdateDomain code:TCTorManagerErrorUpdateRelaunch info:info]);
-						ctrl(TCOperationsControlFinish);
-					}
-				}
-				else if (info.kind == TCInfoInfo)
+				if (info.kind == TCInfoInfo)
 				{
 					if (info.code == TCTorManagerEventStartURLSession)
 					{
@@ -792,13 +768,27 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 						ctrl(TCOperationsControlContinue);
 					}
 				}
+				else if (info.kind == TCInfoWarning)
+				{
+					if (info.code == TCTorManagerWarningStartCanceled)
+					{
+						handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoUpdateDomain code:TCTorManagerErrorUpdateRelaunch info:info]);
+						ctrl(TCOperationsControlFinish);
+					}
+				}
+				else if (info.kind == TCInfoError)
+				{
+					handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoUpdateDomain code:TCTorManagerErrorUpdateRelaunch info:info]);
+					ctrl(TCOperationsControlFinish);
+					return;
+				}
 			}];
 			
 			addCancelBlock(^{ [torTask stopWithCompletionHandler:nil]; });
 		}];
 		
 		// -- Done --
-		[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
+		[queue scheduleBlock:^(TCOperationsControl ctrl) {
 
 			// Notify step.
 			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoUpdateDomain code:TCTorManagerEventUpdateDone]);
@@ -933,20 +923,7 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 			
 			[torTask startWithBinariesPath:_torBinPath dataPath:_torDataPath identityPath:_torIdentityPath torPort:torPort torAddress:torAddress clientPort:clientPort logHandler:self.logHandler completionHandler:^(TCInfo *info) {
 				
-				if (info.kind == TCInfoError)
-				{
-					NSLog(@"Error: Can't relaunch tor.");
-					ctrl(TCOperationsControlFinish);
-					return;
-				}
-				else if (info.kind == TCInfoWarning)
-				{
-					if (info.code == TCTorManagerWarningStartCanceled)
-					{
-						ctrl(TCOperationsControlFinish);
-					}
-				}
-				else if (info.kind == TCInfoInfo)
+				if (info.kind == TCInfoInfo)
 				{
 					if (info.code == TCTorManagerEventStartURLSession)
 					{
@@ -962,6 +939,19 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 						
 						ctrl(TCOperationsControlContinue);
 					}
+				}
+				else if (info.kind == TCInfoWarning)
+				{
+					if (info.code == TCTorManagerWarningStartCanceled)
+					{
+						ctrl(TCOperationsControlFinish);
+					}
+				}
+				else if (info.kind == TCInfoError)
+				{
+					NSLog(@"Error: Can't relaunch tor.");
+					ctrl(TCOperationsControlFinish);
+					return;
 				}
 			}];
 		}];
@@ -1656,12 +1646,21 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	_currentStartOperation = nil;
 	
 	// Terminate task.
-	[_task terminate];
-	[_task waitUntilExit];
+	@try {
+		[_task terminate];
+		[_task waitUntilExit];
+	} @catch (NSException *exception) {
+		NSLog(@"Tor exception on terminate: %@", exception);
+	}
+	
 	_task = nil;
 	
 	// Remove url session.
+	[_torURLSession invalidateAndCancel];
 	_torURLSession = nil;
+	
+	// Remove download contexts.
+	[_torDownloadContexts removeAllObjects];
 }
 
 
@@ -2509,12 +2508,9 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	
 	
 	// Run tor task.
-	@try
-	{
+	@try {
 		[task launch];
-	}
-	@catch (id error)
-	{
+	} @catch (NSException *exception) {
 		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorOperationTor context:@(-1)], nil, nil);
 		return;
 	}
