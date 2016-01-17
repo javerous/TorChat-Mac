@@ -385,6 +385,24 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		E82EC3991C4C5A6C00B19508 /* Location */ = {
+			isa = PBXGroup;
+			children = (
+				E80A357D1A67F61800896518 /* TCLocationViewController.h */,
+				E80A357E1A67F61800896518 /* TCLocationViewController.m */,
+				E82EC39A1C4C5A8400B19508 /* Resources */,
+			);
+			name = Location;
+			sourceTree = "<group>";
+		};
+		E82EC39A1C4C5A8400B19508 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				E80A357A1A67F5FA00896518 /* LocationView.xib */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		E832B27419A20DD300B06194 /* Signature */ = {
 			isa = PBXGroup;
 			children = (
@@ -496,8 +514,6 @@
 			children = (
 				E82B7D72125A074600B7BA8A /* TCPreferencesWindowController.h */,
 				E82B7D79125A08A800B7BA8A /* TCPreferencesWindowController.m */,
-				E80A357D1A67F61800896518 /* TCLocationViewController.h */,
-				E80A357E1A67F61800896518 /* TCLocationViewController.m */,
 				E8643D6E1A66D97800B8C55F /* Views */,
 				E870BD8C17A84A0A00DFA076 /* Resources */,
 			);
@@ -589,6 +605,7 @@
 				E83AD97C127B54C200538925 /* Preferences */,
 				E84C327E199CA3AF00D576F7 /* Update */,
 				E844DEE51C49079B005D92C4 /* Tor */,
+				E82EC3991C4C5A6C00B19508 /* Location */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -726,7 +743,6 @@
 				E8D717F31A66EF8600304109 /* PrefView_Network.xib */,
 				E8D717EF1A66EF8600304109 /* PrefView_Buddies.xib */,
 				E8D717F11A66EF8600304109 /* PrefView_Locations.xib */,
-				E80A357A1A67F5FA00896518 /* LocationView.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
