@@ -415,6 +415,9 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 
 - (void)stopWithCompletionHandler:(dispatch_block_t)handler
 {
+	if (!handler)
+		handler = ^{ };
+	
 	dispatch_async(_localQueue, ^{
 		
 		TCTorTask *torTask = _torTask;
