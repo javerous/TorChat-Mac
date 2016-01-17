@@ -114,7 +114,7 @@
 
 - (void)dealloc
 {
-	TCDebugLog(@"TCConnection Destructor");
+	TCDebugLog(@"TCConnection dealloc");
 	
 	if (_sock)
 		[_sock stop];

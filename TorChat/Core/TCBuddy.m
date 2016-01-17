@@ -314,7 +314,7 @@ static char gLocalQueueContext;
 
 - (void)dealloc
 {
-	TCDebugLog(@"TCBuddy Destructor");
+	TCDebugLog(@"TCBuddy dealloc");
 	
 	// Clean out connections
 	[_outSocket stop];

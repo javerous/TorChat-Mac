@@ -106,7 +106,7 @@
 
 - (void)dealloc
 {
-	TCDebugLog(@"TCFileSend destructor");
+	TCDebugLog(@"TCFileSend dealloc");
 	
 	if (_file)
 		fclose(_file);
