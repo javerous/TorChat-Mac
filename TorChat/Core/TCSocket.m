@@ -294,7 +294,7 @@
 
 - (void)dealloc
 {
-	TCDebugLog(@"TCSocket Destructor");
+	TCDebugLog(@"TCSocket dealloc");
 }
 
 

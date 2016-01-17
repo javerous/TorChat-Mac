@@ -149,7 +149,7 @@
 
 - (void)dealloc
 {
-	TCDebugLog(@"TCCoreManager Destructor");
+	TCDebugLog(@"TCCoreManager dealloc");
 	
 	// Close client
 	for (TCConnection *connection in _connections)
