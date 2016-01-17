@@ -91,10 +91,14 @@
 
 - (void)windowDidLoad
 {
-	// Select the default view.
-	[self loadViewIdentifier:@"general" animated:NO];
+	// Select the view.
+	NSString *identifier = [[NSUserDefaults standardUserDefaults] valueForKey:@"preference_id"];
 	
-#warning XXX There is something to fix somewhere :  frame saving on a larger window frame make the window to move down next time the window is opened on a smaller frame. Perhaps simply retain current selected tab ?
+	if (!identifier)
+		identifier = @"general";
+	
+	[self loadViewIdentifier:identifier animated:NO];
+
 	// Place Window.
 	[self.window center];
 	[self.window setFrameAutosaveName:@"PreferencesWindow"];
@@ -124,6 +128,9 @@
 	
 	if (!viewCtrl)
 		return;
+	
+	// Save current identifier.
+	[[NSUserDefaults standardUserDefaults] setValue:identifier forKey:@"preference_id"];
 	
 	// Check if the toolbar item is well selected
 	if ([[[self.window toolbar] selectedItemIdentifier] isEqualToString:identifier] == NO)
