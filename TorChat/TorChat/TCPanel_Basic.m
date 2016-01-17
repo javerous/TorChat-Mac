@@ -26,9 +26,20 @@
 #import "TCConfigPlist.h"
 #import "TCTorManager.h"
 
+#import "TCLocationViewController.h"
+
 #import "TCDebugLog.h"
 
 #import "TCInfo.h"
+
+
+/*
+** Macro
+*/
+#pragma mark - Macro
+
+#define TCLocalizedString(key, comment) [[NSBundle mainBundle] localizedStringForKey:[(key) copy] value:@"" table:nil]
+
 
 
 /*
@@ -38,16 +49,17 @@
 
 @interface TCPanel_Basic ()
 {
-	TCConfigPlist					*_config;
-	TCTorManager					*_tor;
-	__weak id <TCAssistantProxy>	_proxy;
+	__weak id <TCAssistantProxy> _proxy;
+
+	TCConfigPlist	*_config;
+	TCTorManager	*_tor;
+	
+	TCLocationViewController *_torDownloadsLocation;
 }
 
 @property (strong, nonatomic)	IBOutlet NSTextField			*imAddressField;
-@property (strong, nonatomic)	IBOutlet NSPathControl			*imDownloadPath;
 @property (strong, nonatomic)	IBOutlet NSProgressIndicator	*loadingIndicator;
-
-- (IBAction)pathChanged:(id)sender;
+@property (strong, nonatomic)	IBOutlet NSView					*downloadLocationView;
 
 @end
 
@@ -104,8 +116,6 @@
 	return _config;
 }
 
-#define TCLocalizedString(key, comment) [[NSBundle mainBundle] localizedStringForKey:[(key) copy] value:@"" table:nil]
-
 - (void)showPanel
 {
 	id <TCAssistantProxy> proxy = _proxy;
@@ -124,7 +134,6 @@
 	if (!configPath)
 	{
 		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_build_path"];
-		
 		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_error_build_path", @"")] runModal];
 		return;
 	}
@@ -142,29 +151,24 @@
 		return;
 	}
 	
-	// Set download path.
-	NSString *path = [_config pathForComponent:TCConfigPathComponentDownloads fullPath:YES];
+	[_config setMode:TCConfigModeBasic];
 	
-	if ([[NSFileManager defaultManager] fileExistsAtPath:path] == NO)
-	{
-		[[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-		
-		if ([[path lastPathComponent] isEqualToString:@"Downloads"])
-			[[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"] atomically:NO];
-	}
+	// Add view to configure download path.
+	_torDownloadsLocation = [[TCLocationViewController alloc] initWithConfiguration:_config component:TCConfigPathComponentDownloads];
 	
-	[_imDownloadPath setURL:[NSURL fileURLWithPath:path]];
+	[_torDownloadsLocation addToView:_downloadLocationView];
 	
 	// Set default configuration.
 	[_config setTorAddress:@"localhost"];
 	[_config setTorPort:60600];
 	[_config setClientPort:60601];
-	[_config setMode:TCConfigModeBasic];
 	
 	// Create tor manager & start it.
 	__weak NSTextField *weakIMAddressField = _imAddressField;
 
 	_tor = [[TCTorManager alloc] initWithConfiguration:_config];
+	
+	[_loadingIndicator startAnimation:self];
 
 	[_tor startWithHandler:^(TCInfo *info) {
 		
@@ -174,6 +178,7 @@
 
 			if (info.kind == TCInfoError)
 			{
+				[_loadingIndicator stopAnimation:self];
 				[proxy setDisableContinue:YES];
 			}
 			else if (info.kind == TCInfoInfo)
@@ -186,8 +191,8 @@
 				else if (info.code == TCTorManagerEventStartDone)
 				{
 					[_tor stopWithCompletionHandler:^{
-						
 						dispatch_async(dispatch_get_main_queue(), ^{
+							[_loadingIndicator stopAnimation:self];
 							[proxy setDisableContinue:NO];
 						});
 					}];
@@ -197,38 +202,14 @@
 			{
 				if (info.code == TCTorManagerWarningStartCanceled)
 				{
+					[_loadingIndicator stopAnimation:self];
+
 					if (imAddressField.stringValue.length > 0)
 						[proxy setDisableContinue:NO];
 				}
 			}
 		});
 	}];
-}
-
-
-
-/*
-** TCPanel_Basic - IBAction
-*/
-#pragma mark - TCPanel_Basic - IBAction
-
-- (IBAction)pathChanged:(id)sender
-{
-#warning FIXME Is this ok ? Should we use standard UI with path kind ?
-	if (!_config)
-		return;
-	
-	NSString *path = [[_imDownloadPath URL] path];
-	
-	if (path)
-	{
-		[_config setPathForComponent:TCConfigPathComponentDownloads pathType:TCConfigPathTypeAbsolute path:path];
-		
-		if ([[path lastPathComponent] isEqualToString:@"Downloads"])
-			[[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"] atomically:NO];
-	}
-	else
-		NSBeep();
 }
 
 @end

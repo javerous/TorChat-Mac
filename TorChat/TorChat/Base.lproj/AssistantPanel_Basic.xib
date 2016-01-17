@@ -3,12 +3,13 @@
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10089"/>
+        <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCPanel_Basic">
             <connections>
+                <outlet property="downloadLocationView" destination="0mP-O6-Ame" id="Gtb-yf-LBa"/>
                 <outlet property="imAddressField" destination="GHr-U0-flY" id="GL5-Fp-Iz4"/>
-                <outlet property="imDownloadPath" destination="Kji-cb-3dl" id="2bM-jB-wBm"/>
                 <outlet property="loadingIndicator" destination="WOp-RE-bKE" id="qa6-EG-rGH"/>
                 <outlet property="view" destination="1nx-rV-LC9" id="8vC-SW-wbN"/>
             </connections>
@@ -20,7 +21,7 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="pZK-el-7aq">
-                    <rect key="frame" x="42" y="155" width="131" height="17"/>
+                    <rect key="frame" x="42" y="144" width="131" height="17"/>
                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="TorChat IM Address :" usesSingleLineMode="YES" id="XPC-c6-X6m">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -28,7 +29,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dpl-CL-F0d">
-                    <rect key="frame" x="42" y="244" width="114" height="17"/>
+                    <rect key="frame" x="42" y="253" width="114" height="17"/>
                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Download Folder :" usesSingleLineMode="YES" id="099-Q4-nzo">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -44,7 +45,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" preferredMaxLayoutWidth="356" translatesAutoresizingMaskIntoConstraints="NO" id="qSy-Z0-Oon">
-                    <rect key="frame" x="42" y="222" width="360" height="14"/>
+                    <rect key="frame" x="42" y="231" width="360" height="14"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="The file received from your buddies will be saved on this folder." id="KYR-YN-XaI">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -52,7 +53,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GHr-U0-flY">
-                    <rect key="frame" x="177" y="156" width="89" height="14"/>
+                    <rect key="frame" x="177" y="145" width="89" height="14"/>
                     <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingTail" selectable="YES" sendsActionOnEndEditing="YES" title="Waiting for tor..." usesSingleLineMode="YES" id="cIw-gC-I31">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -62,43 +63,44 @@
                 <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="WOp-RE-bKE">
                     <rect key="frame" x="20" y="20" width="16" height="16"/>
                 </progressIndicator>
-                <pathControl focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Kji-cb-3dl">
-                    <rect key="frame" x="159" y="242" width="124" height="22"/>
-                    <pathCell key="cell" controlSize="small" selectable="YES" editable="YES" focusRingType="none" alignment="left" pathStyle="popUp" id="SrL-6L-NuB">
-                        <font key="font" metaFont="smallSystem"/>
-                        <url key="url" string="file://localhost/Applications/"/>
-                    </pathCell>
-                    <connections>
-                        <action selector="pathChanged:" target="-2" id="3Ih-W3-PVT"/>
-                    </connections>
-                </pathControl>
+                <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" fixedFrame="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PIk-Iq-CsB">
+                    <rect key="frame" x="44" y="181" width="356" height="42"/>
+                    <subviews>
+                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="0mP-O6-Ame">
+                            <rect key="frame" x="0.0" y="0.0" width="356" height="42"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="42" id="qsS-i0-js7"/>
+                            </constraints>
+                        </customView>
+                    </subviews>
+                    <visibilityPriorities>
+                        <integer value="1000"/>
+                    </visibilityPriorities>
+                    <customSpacing>
+                        <real value="3.4028234663852886e+38"/>
+                    </customSpacing>
+                </stackView>
             </subviews>
             <constraints>
-                <constraint firstItem="Kji-cb-3dl" firstAttribute="leading" secondItem="dpl-CL-F0d" secondAttribute="trailing" constant="8" symbolic="YES" id="1qy-dq-D5H"/>
+                <constraint firstAttribute="trailing" secondItem="0mP-O6-Ame" secondAttribute="trailing" constant="20" id="0av-oE-vfj"/>
                 <constraint firstAttribute="bottom" secondItem="WOp-RE-bKE" secondAttribute="bottom" constant="20" id="5Ba-oE-GOa"/>
                 <constraint firstItem="GHr-U0-flY" firstAttribute="leading" secondItem="pZK-el-7aq" secondAttribute="trailing" constant="8" symbolic="YES" id="8ao-9R-cNe"/>
                 <constraint firstItem="qSy-Z0-Oon" firstAttribute="top" secondItem="dpl-CL-F0d" secondAttribute="bottom" constant="8" id="EAy-U0-Mon"/>
-                <constraint firstItem="pZK-el-7aq" firstAttribute="top" secondItem="1nx-rV-LC9" secondAttribute="top" constant="155" id="FDr-pD-H41"/>
+                <constraint firstItem="0mP-O6-Ame" firstAttribute="leading" secondItem="qSy-Z0-Oon" secondAttribute="leading" id="HKf-gx-RFv"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="GHr-U0-flY" secondAttribute="trailing" constant="20" symbolic="YES" id="MHo-MT-OQZ"/>
                 <constraint firstItem="eh9-dQ-ju9" firstAttribute="top" secondItem="1nx-rV-LC9" secondAttribute="top" constant="20" id="Mnf-J7-9zv"/>
                 <constraint firstItem="WOp-RE-bKE" firstAttribute="leading" secondItem="1nx-rV-LC9" secondAttribute="leading" constant="20" id="Rqr-4K-hhD"/>
                 <constraint firstItem="pZK-el-7aq" firstAttribute="leading" secondItem="1nx-rV-LC9" secondAttribute="leading" constant="44" id="V3J-Z6-Zgw"/>
-                <constraint firstItem="dpl-CL-F0d" firstAttribute="top" secondItem="eh9-dQ-ju9" secondAttribute="bottom" constant="29" id="ViX-vL-MhJ"/>
-                <constraint firstItem="pZK-el-7aq" firstAttribute="top" relation="greaterThanOrEqual" secondItem="qSy-Z0-Oon" secondAttribute="bottom" constant="8" symbolic="YES" id="Wng-gz-gWw"/>
+                <constraint firstItem="dpl-CL-F0d" firstAttribute="top" secondItem="eh9-dQ-ju9" secondAttribute="bottom" constant="20" id="ViX-vL-MhJ"/>
                 <constraint firstItem="eh9-dQ-ju9" firstAttribute="leading" secondItem="1nx-rV-LC9" secondAttribute="leading" constant="20" id="aW5-b8-Ed7"/>
-                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Kji-cb-3dl" secondAttribute="trailing" constant="20" symbolic="YES" id="dfR-Xx-JN1"/>
+                <constraint firstItem="0mP-O6-Ame" firstAttribute="top" secondItem="qSy-Z0-Oon" secondAttribute="bottom" constant="8" id="e7H-El-wkr"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="eh9-dQ-ju9" secondAttribute="trailing" constant="20" symbolic="YES" id="eC7-ry-EjU"/>
+                <constraint firstItem="pZK-el-7aq" firstAttribute="top" secondItem="0mP-O6-Ame" secondAttribute="bottom" constant="20" id="ehQ-0B-bkx"/>
                 <constraint firstAttribute="trailing" secondItem="qSy-Z0-Oon" secondAttribute="trailing" constant="20" symbolic="YES" id="ooL-SX-gtb"/>
                 <constraint firstItem="qSy-Z0-Oon" firstAttribute="leading" secondItem="dpl-CL-F0d" secondAttribute="leading" id="p3y-Xe-h3N"/>
-                <constraint firstItem="Kji-cb-3dl" firstAttribute="centerY" secondItem="dpl-CL-F0d" secondAttribute="centerY" constant="-2" id="pjU-oa-Pbg"/>
                 <constraint firstItem="GHr-U0-flY" firstAttribute="centerY" secondItem="pZK-el-7aq" secondAttribute="centerY" constant="0.5" id="rG9-LU-cqj"/>
                 <constraint firstItem="dpl-CL-F0d" firstAttribute="leading" secondItem="1nx-rV-LC9" secondAttribute="leading" constant="44" id="szP-0p-30A"/>
-                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="pZK-el-7aq" secondAttribute="bottom" constant="20" symbolic="YES" id="v3D-6F-iPT"/>
             </constraints>
-            <connections>
-                <outlet property="imAddressField" destination="GHr-U0-flY" id="u4M-eE-U4J"/>
-                <outlet property="loadingIndicator" destination="WOp-RE-bKE" id="Cv5-kP-1yN"/>
-            </connections>
         </customView>
     </objects>
 </document>
