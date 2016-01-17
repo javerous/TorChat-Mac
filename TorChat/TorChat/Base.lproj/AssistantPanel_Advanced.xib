@@ -7,8 +7,8 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCPanel_Advanced">
             <connections>
+                <outlet property="downloadLocationView" destination="Xup-45-IAH" id="2nI-ch-lgG"/>
                 <outlet property="imAddressField" destination="GCY-ZD-Qpx" id="oyI-Sn-feo"/>
-                <outlet property="imDownloadPath" destination="31K-Eh-ocb" id="TI5-PK-JVb"/>
                 <outlet property="imInPortField" destination="xcW-WL-RhM" id="lCC-y7-sgW"/>
                 <outlet property="torAddressField" destination="PFh-zn-GSc" id="tzp-hU-C2Q"/>
                 <outlet property="torPortField" destination="7SE-iv-QXd" id="Q2M-Ta-bZn"/>
@@ -22,7 +22,7 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="quQ-6b-i5g">
-                    <rect key="frame" x="104" y="88" width="108" height="17"/>
+                    <rect key="frame" x="76" y="128" width="108" height="17"/>
                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Tor Port SOCKS :" usesSingleLineMode="YES" id="iPT-zo-mhb">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -30,7 +30,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="swj-78-NTV">
-                    <rect key="frame" x="81" y="245" width="131" height="17"/>
+                    <rect key="frame" x="53" y="245" width="131" height="17"/>
                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="TorChat IM Address :" usesSingleLineMode="YES" id="jcZ-1Y-MeD">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -38,7 +38,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bm3-qS-N8O">
-                    <rect key="frame" x="127" y="121" width="85" height="17"/>
+                    <rect key="frame" x="99" y="161" width="85" height="17"/>
                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Tor Address :" usesSingleLineMode="YES" id="BFY-aa-rem">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -46,7 +46,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7SE-iv-QXd">
-                    <rect key="frame" x="218" y="86" width="55" height="22"/>
+                    <rect key="frame" x="190" y="126" width="55" height="22"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="55" id="wFg-ZX-hQm"/>
                     </constraints>
@@ -57,7 +57,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="PFh-zn-GSc">
-                    <rect key="frame" x="218" y="118" width="182" height="22"/>
+                    <rect key="frame" x="190" y="158" width="210" height="22"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="localhost" drawsBackground="YES" id="iY6-So-IOG">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -65,9 +65,9 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GCY-ZD-Qpx">
-                    <rect key="frame" x="218" y="242" width="182" height="22"/>
+                    <rect key="frame" x="190" y="242" width="210" height="22"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="182" id="QDc-dG-BOl"/>
+                        <constraint firstAttribute="width" constant="210" id="QDc-dG-BOl"/>
                     </constraints>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="phC-hQ-VIp">
                         <font key="font" metaFont="system"/>
@@ -76,23 +76,15 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4la-y6-j6W">
-                    <rect key="frame" x="108" y="213" width="104" height="17"/>
+                    <rect key="frame" x="80" y="213" width="104" height="17"/>
                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="TorChat In Port :" usesSingleLineMode="YES" id="Noe-hl-LIA">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="oqO-WY-yzQ">
-                    <rect key="frame" x="98" y="185" width="114" height="17"/>
-                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Download Folder :" usesSingleLineMode="YES" id="rsE-2p-peO">
-                        <font key="font" metaFont="system"/>
-                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xcW-WL-RhM">
-                    <rect key="frame" x="218" y="210" width="55" height="22"/>
+                    <rect key="frame" x="190" y="210" width="55" height="22"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="55" id="WFH-GI-N4y"/>
                     </constraints>
@@ -110,52 +102,48 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <pathControl focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="31K-Eh-ocb">
-                    <rect key="frame" x="217" y="181" width="124" height="22"/>
-                    <pathCell key="cell" controlSize="small" selectable="YES" editable="YES" focusRingType="none" alignment="left" pathStyle="popUp" id="8We-xS-z0a">
-                        <font key="font" metaFont="smallSystem"/>
-                        <url key="url" string="file://localhost/Applications/"/>
-                    </pathCell>
-                </pathControl>
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="05u-ZS-OlH">
+                    <rect key="frame" x="70" y="81" width="114" height="17"/>
+                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Download Folder :" usesSingleLineMode="YES" id="7U1-C2-uYZ">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <customView translatesAutoresizingMaskIntoConstraints="NO" id="Xup-45-IAH">
+                    <rect key="frame" x="72" y="31" width="328" height="42"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="42" id="WjG-gg-EGg"/>
+                    </constraints>
+                </customView>
             </subviews>
             <constraints>
+                <constraint firstItem="Xup-45-IAH" firstAttribute="trailing" secondItem="PFh-zn-GSc" secondAttribute="trailing" id="0Rm-3O-KvP"/>
                 <constraint firstItem="xcW-WL-RhM" firstAttribute="top" secondItem="GCY-ZD-Qpx" secondAttribute="bottom" constant="10" symbolic="YES" id="0cd-Pa-kUM"/>
-                <constraint firstItem="swj-78-NTV" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="17S-E3-UYY" secondAttribute="leading" constant="20" symbolic="YES" id="2JL-Iq-Mlc"/>
+                <constraint firstItem="PFh-zn-GSc" firstAttribute="top" secondItem="xcW-WL-RhM" secondAttribute="bottom" constant="30" id="3eB-bP-nTG"/>
+                <constraint firstItem="05u-ZS-OlH" firstAttribute="top" secondItem="quQ-6b-i5g" secondAttribute="bottom" constant="30" id="4om-m8-S1q"/>
                 <constraint firstItem="7w8-O8-ptE" firstAttribute="leading" secondItem="17S-E3-UYY" secondAttribute="leading" constant="20" id="CNP-lS-hgb"/>
                 <constraint firstItem="7w8-O8-ptE" firstAttribute="top" secondItem="17S-E3-UYY" secondAttribute="top" constant="20" id="Eam-ht-acY"/>
+                <constraint firstItem="Xup-45-IAH" firstAttribute="top" secondItem="05u-ZS-OlH" secondAttribute="bottom" constant="8" symbolic="YES" id="EiP-WX-tL4"/>
                 <constraint firstItem="7SE-iv-QXd" firstAttribute="centerY" secondItem="quQ-6b-i5g" secondAttribute="centerY" constant="-0.5" id="GnL-vj-HgC"/>
-                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="31K-Eh-ocb" secondAttribute="trailing" constant="20" symbolic="YES" id="IPA-0O-v3m"/>
                 <constraint firstItem="GCY-ZD-Qpx" firstAttribute="top" secondItem="17S-E3-UYY" secondAttribute="top" constant="63" id="Ij7-zT-Epg"/>
+                <constraint firstItem="Xup-45-IAH" firstAttribute="leading" secondItem="05u-ZS-OlH" secondAttribute="leading" id="Lz4-8Q-lS9"/>
                 <constraint firstItem="bm3-qS-N8O" firstAttribute="centerY" secondItem="PFh-zn-GSc" secondAttribute="centerY" constant="-0.5" id="Nji-5C-37D"/>
                 <constraint firstItem="7SE-iv-QXd" firstAttribute="leading" secondItem="quQ-6b-i5g" secondAttribute="trailing" constant="8" symbolic="YES" id="Nuo-xa-VLO"/>
-                <constraint firstItem="oqO-WY-yzQ" firstAttribute="centerY" secondItem="31K-Eh-ocb" secondAttribute="centerY" id="P6b-bB-O52"/>
-                <constraint firstItem="PFh-zn-GSc" firstAttribute="leading" secondItem="31K-Eh-ocb" secondAttribute="leading" constant="-2" id="QzL-6t-hGZ"/>
-                <constraint firstItem="quQ-6b-i5g" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="17S-E3-UYY" secondAttribute="leading" constant="20" symbolic="YES" id="Z0e-mY-HoH"/>
-                <constraint firstItem="oqO-WY-yzQ" firstAttribute="trailing" secondItem="4la-y6-j6W" secondAttribute="trailing" id="Zmz-5F-5GG"/>
-                <constraint firstItem="bm3-qS-N8O" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="17S-E3-UYY" secondAttribute="leading" constant="20" symbolic="YES" id="axj-XF-Pa8"/>
                 <constraint firstItem="7SE-iv-QXd" firstAttribute="leading" secondItem="PFh-zn-GSc" secondAttribute="leading" id="bvN-hf-Wmu"/>
-                <constraint firstItem="oqO-WY-yzQ" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="17S-E3-UYY" secondAttribute="leading" constant="20" symbolic="YES" id="fep-N1-Qgl"/>
-                <constraint firstItem="PFh-zn-GSc" firstAttribute="top" secondItem="31K-Eh-ocb" secondAttribute="bottom" constant="45" id="geU-mE-yow"/>
                 <constraint firstItem="4la-y6-j6W" firstAttribute="centerY" secondItem="xcW-WL-RhM" secondAttribute="centerY" constant="-0.5" id="hJg-Vp-eUn"/>
                 <constraint firstAttribute="trailing" secondItem="PFh-zn-GSc" secondAttribute="trailing" constant="20" id="hQw-H0-Q7D"/>
                 <constraint firstItem="GCY-ZD-Qpx" firstAttribute="leading" secondItem="swj-78-NTV" secondAttribute="trailing" constant="8" symbolic="YES" id="ip3-bw-zxn"/>
-                <constraint firstItem="xcW-WL-RhM" firstAttribute="leading" secondItem="31K-Eh-ocb" secondAttribute="leading" constant="-2" id="kRv-PT-iUA"/>
                 <constraint firstItem="swj-78-NTV" firstAttribute="centerY" secondItem="GCY-ZD-Qpx" secondAttribute="centerY" constant="-0.5" id="kYO-nu-8Ec"/>
                 <constraint firstItem="GCY-ZD-Qpx" firstAttribute="leading" secondItem="xcW-WL-RhM" secondAttribute="leading" id="nYr-3a-PsP"/>
+                <constraint firstItem="05u-ZS-OlH" firstAttribute="trailing" secondItem="quQ-6b-i5g" secondAttribute="trailing" id="oMH-WX-VgI"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="7w8-O8-ptE" secondAttribute="trailing" constant="20" symbolic="YES" id="oV3-aQ-hcV"/>
+                <constraint firstItem="PFh-zn-GSc" firstAttribute="leading" secondItem="xcW-WL-RhM" secondAttribute="leading" id="rzY-KQ-vxs"/>
                 <constraint firstAttribute="trailing" secondItem="GCY-ZD-Qpx" secondAttribute="trailing" constant="20" id="sQK-T8-96l"/>
                 <constraint firstItem="PFh-zn-GSc" firstAttribute="leading" secondItem="bm3-qS-N8O" secondAttribute="trailing" constant="8" symbolic="YES" id="tIN-9G-Z1s"/>
-                <constraint firstItem="4la-y6-j6W" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="17S-E3-UYY" secondAttribute="leading" constant="20" symbolic="YES" id="wnn-om-J3x"/>
-                <constraint firstItem="31K-Eh-ocb" firstAttribute="top" secondItem="xcW-WL-RhM" secondAttribute="bottom" constant="8" symbolic="YES" id="xWT-6p-1j5"/>
                 <constraint firstItem="7SE-iv-QXd" firstAttribute="top" secondItem="PFh-zn-GSc" secondAttribute="bottom" constant="10" symbolic="YES" id="xz4-DE-1vM"/>
                 <constraint firstItem="swj-78-NTV" firstAttribute="trailing" secondItem="4la-y6-j6W" secondAttribute="trailing" id="zde-H4-TY9"/>
             </constraints>
-            <connections>
-                <outlet property="imAddressField" destination="GCY-ZD-Qpx" id="ZQS-4j-j51"/>
-                <outlet property="imInPortField" destination="xcW-WL-RhM" id="BYG-Ty-YMs"/>
-                <outlet property="torAddressField" destination="PFh-zn-GSc" id="NYp-n8-X47"/>
-                <outlet property="torPortField" destination="7SE-iv-QXd" id="BtD-Rq-7hw"/>
-            </connections>
         </customView>
     </objects>
 </document>

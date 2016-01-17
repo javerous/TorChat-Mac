@@ -25,7 +25,18 @@
 #import "TCLogsManager.h"
 #import "TCConfigPlist.h"
 
+#import "TCLocationViewController.h"
+
 #import "TCDebugLog.h"
+
+
+/*
+** Macro
+*/
+#pragma mark - Macro
+
+#define TCLocalizedString(key, comment) [[NSBundle mainBundle] localizedStringForKey:[(key) copy] value:@"" table:nil]
+
 
 
 /*
@@ -36,12 +47,15 @@
 @interface TCPanel_Advanced ()
 {
 	__weak id <TCAssistantProxy> _proxy;
+	
+	TCConfigPlist *_config;
+
+	TCLocationViewController *_torDownloadsLocation;
 }
 
 @property (strong, nonatomic)	IBOutlet NSTextField	*imAddressField;
 @property (strong, nonatomic)	IBOutlet NSTextField	*imInPortField;
-@property (strong, nonatomic)	IBOutlet NSPathControl	*imDownloadPath;
-
+@property (strong, nonatomic)	IBOutlet NSView			*downloadLocationView;
 
 @property (strong, nonatomic)	IBOutlet NSTextField	*torAddressField;
 @property (strong, nonatomic)	IBOutlet NSTextField	*torPortField;
@@ -88,36 +102,15 @@
 
 - (id)content
 {
-	NSBundle		*bundle = [NSBundle mainBundle];
-	NSString		*path = nil;
-	TCConfigPlist	*aconfig = nil;
+	// Set up the config with the fields.
+	[_config setTorAddress:[_torAddressField stringValue]];
+	[_config setSelfAddress:[_imAddressField stringValue]];
 	
-	// Configuration
-	path = [[[bundle bundlePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"];
+	[_config setTorPort:(uint16_t)[_torPortField intValue]];
+	[_config setClientPort:(uint16_t)[_imInPortField intValue]];
 	
-	aconfig = [[TCConfigPlist alloc] initWithFile:path];
-	
-	if (!aconfig)
-	{
-		// Log error
-		NSString *key = NSLocalizedString(@"ac_error_write_file", @"");
-		
-		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_write_file", path];
-		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:key, path] runModal];
-		return nil;
-	}
-	
-	// Set up the config with the fields
-	[aconfig setTorAddress:[_torAddressField stringValue]];
-	[aconfig setSelfAddress:[_imAddressField stringValue]];
-	[aconfig setPathForComponent:TCConfigPathComponentDownloads pathType:TCConfigPathTypeAbsolute path:_imDownloadPath.URL.path];
-	
-	[aconfig setTorPort:(uint16_t)[_torPortField intValue]];
-	[aconfig setClientPort:(uint16_t)[_imInPortField intValue]];
-	[aconfig setMode:TCConfigModeAdvanced];
-	
-	// Return the config
-	return aconfig;
+	// Return the config.
+	return _config;
 }
 
 - (void)showPanel
@@ -127,16 +120,41 @@
 	
 	[proxy setIsLastPanel:YES];
 	
-	// Download path.
-	NSString *path = [[[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"Downloads"];
+	// If we already have a config, stop here
+	if (_config)
+		return;
 	
-	if ([[NSFileManager defaultManager] fileExistsAtPath:path] == NO)
+	// Get the default tor config path.
+	NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
+	NSString *configPath = [[bundlePath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"];
+	
+	if (!configPath)
 	{
-		[[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-		[[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"] atomically:NO];
+		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_build_path"];
+		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_error_build_path", @"")] runModal];
+		return;
 	}
 	
-	[_imDownloadPath setURL:[NSURL fileURLWithPath:path]];
+	// Try to build a new config file.
+	_config = [[TCConfigPlist alloc] initWithFile:configPath];
+	
+	if (!_config)
+	{
+		[_imAddressField setStringValue:NSLocalizedString(@"ac_error_config", @"")];
+		
+		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_write_file", configPath];
+		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:TCLocalizedString(@"ac_error_write_file", @""), configPath] runModal];
+		
+		return;
+	}
+	
+	[_config setMode:TCConfigModeAdvanced];
+
+	
+	// Add view to configure download path.
+	_torDownloadsLocation = [[TCLocationViewController alloc] initWithConfiguration:_config component:TCConfigPathComponentDownloads];
+	
+	[_torDownloadsLocation addToView:_downloadLocationView];
 }
 
 @end
