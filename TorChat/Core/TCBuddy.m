@@ -1,5 +1,5 @@
 /*
- *  TCBuddy.cpp
+ *  TCBuddy.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *

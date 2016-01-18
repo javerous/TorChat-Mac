@@ -1,5 +1,5 @@
 /*
- *  TCAmountHelper.h
+ *  TCConfigInterface.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *

@@ -1,5 +1,5 @@
 /*
- *  TCSocket.h
+ *  TCSocket.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
