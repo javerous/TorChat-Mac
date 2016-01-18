@@ -1,5 +1,5 @@
 /*
- *   TCBuddiesWindowController.h
+ *  TCBuddiesWindowController.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *

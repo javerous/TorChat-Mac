@@ -1,5 +1,5 @@
 /*
- *  TCContoller.h
+ *  TCCoreManager.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *

@@ -1,5 +1,5 @@
 /*
- *  TCChatView.h
+ *  TCChatViewController.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *

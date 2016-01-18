@@ -1,5 +1,5 @@
 /*
- *  TCImage.cpp
+ *  TCImage.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
