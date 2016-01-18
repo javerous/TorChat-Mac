@@ -2405,6 +2405,9 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	[mng createDirectoryAtPath:torDataPath withIntermediateDirectories:NO attributes:nil error:nil];
 	[mng createDirectoryAtPath:torIdentityPath withIntermediateDirectories:NO attributes:nil error:nil];
 	
+	[mng setAttributes:@{ NSFilePosixPermissions : @(0700) } ofItemAtPath:torDataPath error:nil];
+	[mng setAttributes:@{ NSFilePosixPermissions : @(0700) } ofItemAtPath:torIdentityPath error:nil];
+	
 	// Clean previous file.
 	[mng removeItemAtPath:[torDataPath stringByAppendingPathComponent:TCTorManagerTorControlHostFile] error:nil];
 	
