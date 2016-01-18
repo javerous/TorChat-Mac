@@ -1,5 +1,5 @@
 /*
- *  TCSocket.m
+ *  TCButton.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *

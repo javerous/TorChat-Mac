@@ -1,5 +1,5 @@
 /*
- *  TCFileReceive.cpp
+ *  TCFileReceive.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *

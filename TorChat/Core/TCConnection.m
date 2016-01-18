@@ -1,5 +1,5 @@
 /*
- *  TCConnection.cpp
+ *  TCConnection.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
