@@ -2622,6 +2622,8 @@ static NSString *s2k_from_data(NSData *data, uint8_t iterations)
 	
 	CC_SHA1_Final(buffer + 9, &ctx);
 	
+	free(sbytes);
+	
 	// Generate hexadecimal.
 	NSString *hexa = hexa_from_bytes(buffer, sizeof(buffer));
 	
