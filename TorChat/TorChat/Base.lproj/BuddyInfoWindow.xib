@@ -12,7 +12,6 @@
                 <outlet property="avatarView" destination="50" id="107"/>
                 <outlet property="infoView" destination="103" id="104"/>
                 <outlet property="logTable" destination="12" id="41"/>
-                <outlet property="nameField" destination="17" id="31"/>
                 <outlet property="notesField" destination="74" id="84"/>
                 <outlet property="statusView" destination="96" id="106"/>
                 <outlet property="toolBar" destination="4" id="37"/>
