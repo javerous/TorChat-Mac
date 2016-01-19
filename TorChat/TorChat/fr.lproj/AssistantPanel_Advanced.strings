@@ -1,4 +1,7 @@
 
+/* Class = "NSTextFieldCell"; title = "Download Folder :"; ObjectID = "7U1-C2-uYZ"; */
+"7U1-C2-uYZ.title" = "Dossier de téléchargement :";
+
 /* Class = "NSTextFieldCell"; title = "Tor Address :"; ObjectID = "BFY-aa-rem"; */
 "BFY-aa-rem.title" = "Adresse tor :";
 
@@ -19,15 +22,6 @@
 
 /* Class = "NSTextFieldCell"; title = "TorChat IM Address :"; ObjectID = "jcZ-1Y-MeD"; */
 "jcZ-1Y-MeD.title" = "Adresse TorChat :";
-
-/* Class = "NSButtonCell"; title = "Select"; ObjectID = "oCM-qv-cTM"; */
-"oCM-qv-cTM.title" = "Selectionner";
-
-/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "ojA-35-dzv"; */
-"ojA-35-dzv.title" = "Téléchargement";
-
-/* Class = "NSTextFieldCell"; title = "Download Folder :"; ObjectID = "rsE-2p-peO"; */
-"rsE-2p-peO.title" = "Dossier de téléchargement :";
 
 /* Class = "NSTextFieldCell"; title = "11009"; ObjectID = "wF2-UR-Igx"; */
 "wF2-UR-Igx.title" = "11009";
