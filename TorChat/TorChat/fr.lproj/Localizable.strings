@@ -225,9 +225,9 @@
 "tor_error_log" = "Tor-Erreur: %@";
 
 // TCTorManagerInfoStartDomain
-"tor_start_info_bootstrap" = "Tor est en amorçage %lu%% (%@).";
+"tor_start_info_bootstrap" = "Tor est en cours d'amorçage %lu%% (%@).";
 "tor_start_info_hostname" = "Tor a démarré avec le nom d'hôte '%@'.";
-"tor_start_info_url_session" = "Tor proxy prêt.";
+"tor_start_info_url_session" = "Le proxy tor proxy prêt.";
 "tor_start_info_done" = "Tor est prêt.";
 
 "tor_start_warning_canceled" = "Le démarrage de Tor a été annulé.";

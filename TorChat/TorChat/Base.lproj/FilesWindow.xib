@@ -10,7 +10,6 @@
                 <outlet property="clearButton" destination="13" id="30"/>
                 <outlet property="countField" destination="15" id="29"/>
                 <outlet property="filesView" destination="36" id="44"/>
-                <outlet property="mainWindow" destination="1" id="23"/>
                 <outlet property="window" destination="1" id="qMu-dC-ulN"/>
             </connections>
         </customObject>
