@@ -975,7 +975,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "COMMIT_HASH=$( cd \"${PROJECT_DIR}\";  git rev-parse --short HEAD )\n\nif [ $? -eq 0 ]; then\n    /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion ${COMMIT_HASH}\" \"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n    exit 0\nelse\n    echo \"Can't get current commit hash\"\n    exit 1\nfi";
+			shellScript = "COMMIT_HASH=$( cd \"${PROJECT_DIR}\";  git rev-parse --short HEAD )\n\nif [ $? -ne 0 ]; then\n    COMMIT_HASH=$( cat \"${PROJECT_DIR}/git_hash.txt\" )\n\n    if [ $? -ne 0 ]; then\n        echo \"Can't get current commit hash\"\n        exit 1\n    fi\nfi\n\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion ${COMMIT_HASH}\" \"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\nexit 0\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1299,7 +1299,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_TESTABILITY = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -1349,7 +1348,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_POSTPROCESSING = YES;
@@ -1384,7 +1382,6 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -1407,7 +1404,6 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PREFIX_HEADER = TorChat/TorChat_Prefix.pch;
