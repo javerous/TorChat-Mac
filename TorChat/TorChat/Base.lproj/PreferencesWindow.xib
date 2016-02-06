@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<<<<<<< HEAD
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6724" systemVersion="14B25" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6724"/>
+=======
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10089" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10089"/>
+>>>>>>> javerous/master
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCPreferencesWindowController">
             <connections>
+<<<<<<< HEAD
                 <outlet property="mainWindow" destination="1" id="3"/>
+=======
+>>>>>>> javerous/master
                 <outlet property="window" destination="1" id="lvS-OI-Gaa"/>
             </connections>
         </customObject>
@@ -15,7 +25,11 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="413" height="191"/>
+<<<<<<< HEAD
             <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+=======
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+>>>>>>> javerous/master
             <view key="contentView" id="2">
                 <rect key="frame" x="0.0" y="0.0" width="413" height="191"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -37,7 +51,11 @@
                             <action selector="doToolbarItem:" target="-2" id="198"/>
                         </connections>
                     </toolbarItem>
+<<<<<<< HEAD
                     <toolbarItem implicitItemIdentifier="503AF026-181D-4DA5-A645-F94CA7A8C303" explicitItemIdentifier="locations" label="Locations" paletteLabel="Locations" tag="-1" id="UEu-Ia-LhZ">
+=======
+                    <toolbarItem implicitItemIdentifier="503AF026-181D-4DA5-A645-F94CA7A8C303" explicitItemIdentifier="locations" label="Locations" paletteLabel="Locations" tag="-1" image="locations" selectable="YES" id="UEu-Ia-LhZ">
+>>>>>>> javerous/master
                         <connections>
                             <action selector="doToolbarItem:" target="-2" id="dHM-hm-xrG"/>
                         </connections>
@@ -61,5 +79,9 @@
         <image name="NSNetwork" width="32" height="32"/>
         <image name="NSPreferencesGeneral" width="32" height="32"/>
         <image name="NSUserGroup" width="32" height="32"/>
+<<<<<<< HEAD
+=======
+        <image name="locations" width="32" height="32"/>
+>>>>>>> javerous/master
     </resources>
 </document>

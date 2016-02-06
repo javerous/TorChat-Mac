@@ -1,7 +1,11 @@
 /*
  *  TCInfo.m
  *
+<<<<<<< HEAD
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -32,7 +36,11 @@
 
 // -- Properties (RW) --
 @property (assign, nonatomic) TCInfoKind	kind;
+<<<<<<< HEAD
 @property (assign, nonatomic) NSString		*domain;
+=======
+@property (strong, nonatomic) NSString		*domain;
+>>>>>>> javerous/master
 @property (assign, nonatomic) int			code;
 @property (strong, nonatomic) id			context;
 @property (strong, nonatomic) TCInfo		*subInfo;
@@ -108,7 +116,11 @@
 	
     if (self)
 	{
+<<<<<<< HEAD
 		_date = [NSDate date];
+=======
+		_timestamp = [NSDate date];
+>>>>>>> javerous/master
     }
 	
     return self;

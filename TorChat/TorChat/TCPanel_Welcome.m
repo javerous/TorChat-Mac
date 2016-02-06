@@ -1,7 +1,11 @@
 /*
  *  TCPanel_Welcome.m
  *
+<<<<<<< HEAD
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,8 +24,11 @@
  *
  */
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> javerous/master
 #import "TCPanel_Welcome.h"
 
 #import "TCConfigPlist.h"
@@ -30,7 +37,10 @@
 #import "TCDebugLog.h"
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> javerous/master
 /*
 ** TCPanel_Welcome - Private
 */
@@ -67,7 +77,11 @@
 
 - (void)dealloc
 {
+<<<<<<< HEAD
     TCDebugLog("TCPanel_Welcome dealloc");
+=======
+    TCDebugLog(@"TCPanel_Welcome dealloc");
+>>>>>>> javerous/master
 }
 
 
@@ -121,7 +135,11 @@
 	id <TCAssistantProxy> proxy = _proxy;
 	
 	NSMatrix	*mtr = sender;
+<<<<<<< HEAD
 	NSButton	*obj = [mtr selectedCell];
+=======
+	NSCell		*obj = [mtr selectedCell];
+>>>>>>> javerous/master
 	NSInteger	tag = [obj tag];
 	
 	if (tag == 1)
@@ -146,7 +164,11 @@
 
 	NSOpenPanel	*openDlg = [NSOpenPanel openPanel];
 	
+<<<<<<< HEAD
 	// Ask for a file
+=======
+	// Ask for a file.
+>>>>>>> javerous/master
 	[openDlg setCanChooseFiles:YES];
 	[openDlg setCanChooseDirectories:NO];
 	[openDlg setCanCreateDirectories:NO];
@@ -163,7 +185,11 @@
 			// Log error
 			NSString *key = NSLocalizedString(@"ac_error_read_file", @"");
 
+<<<<<<< HEAD
 			[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_error_read_file", [url path]];
+=======
+			[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_read_file", [url path]];
+>>>>>>> javerous/master
 			[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:key, [url path]] runModal];
 
 			return;

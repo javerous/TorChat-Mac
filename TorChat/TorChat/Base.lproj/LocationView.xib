@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10089" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10089"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="TCLocationViewController">
+            <connections>
+                <outlet property="folderButton" destination="CBx-t6-fxi" id="wOK-jQ-Uyn"/>
+                <outlet property="pathView" destination="ObJ-JQ-X4G" id="1d9-ue-bAz"/>
+                <outlet property="placePopupButton" destination="Nlk-4b-E9h" id="Tmt-rE-RLb"/>
+                <outlet property="subPathField" destination="FFw-Ao-FHi" id="4IH-aw-EMI"/>
+                <outlet property="view" destination="9lL-lH-N5e" id="m3S-ni-xfl"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="9lL-lH-N5e">
+            <rect key="frame" x="0.0" y="0.0" width="715" height="42"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Nlk-4b-E9h">
+                    <rect key="frame" x="-3" y="21" width="127" height="22"/>
+                    <popUpButtonCell key="cell" type="push" title="Relative to referal" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="3MT-mP-XzI" id="QWc-Ae-9J8">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                        <menu key="menu" id="3zY-dn-qku">
+                            <items>
+                                <menuItem title="Relative to referal" state="on" id="3MT-mP-XzI"/>
+                                <menuItem title="Standard path" id="s9g-2y-c52"/>
+                                <menuItem title="Absolute path" id="PQn-2x-SOb"/>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                    <connections>
+                        <action selector="doChangePlace:" target="-2" id="Oc6-Fs-aCf"/>
+                    </connections>
+                </popUpButton>
+                <pathControl verticalHuggingPriority="750" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ObJ-JQ-X4G">
+                    <rect key="frame" x="-1" y="1" width="177" height="18"/>
+                    <pathCell key="cell" controlSize="mini" selectable="YES" refusesFirstResponder="YES" alignment="left" id="QnG-qS-h1d">
+                        <font key="font" metaFont="miniSystem"/>
+                        <url key="url" string="file://localhost/Applications/"/>
+                    </pathCell>
+                </pathControl>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="FFw-Ao-FHi">
+                    <rect key="frame" x="149" y="28" width="110" height="11"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" sendsActionOnEndEditing="YES" title="&lt;DO-NOT-TRANSLATE&gt;" id="ecM-vt-aic">
+                        <font key="font" metaFont="miniSystem"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <button translatesAutoresizingMaskIntoConstraints="NO" id="CBx-t6-fxi">
+                    <rect key="frame" x="129" y="26" width="14" height="14"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="14" id="D9r-QZ-Itc"/>
+                        <constraint firstAttribute="height" constant="14" id="hUM-dA-oSW"/>
+                    </constraints>
+                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="folder" imagePosition="only" alignment="center" imageScaling="proportionallyDown" inset="2" id="xOb-Do-lba">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="doSelectPlace:" target="-2" id="OqX-7Z-9gG"/>
+                    </connections>
+                </button>
+                <button translatesAutoresizingMaskIntoConstraints="NO" id="JcE-ag-9aM">
+                    <rect key="frame" x="179" y="5" width="11" height="11"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="11" id="Slg-7K-Pux"/>
+                        <constraint firstAttribute="height" constant="11" id="eXQ-uT-Jk8"/>
+                    </constraints>
+                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="NSFollowLinkFreestandingTemplate" imagePosition="only" alignment="center" imageScaling="axesIndependently" inset="2" id="Ugx-fg-cXw">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="doRevealPlace:" target="-2" id="JZ7-t2-sxJ"/>
+                    </connections>
+                </button>
+            </subviews>
+            <constraints>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="FFw-Ao-FHi" secondAttribute="trailing" id="96E-8y-vml"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="JcE-ag-9aM" secondAttribute="trailing" constant="20" symbolic="YES" id="AaE-Af-RaB"/>
+                <constraint firstItem="FFw-Ao-FHi" firstAttribute="leading" secondItem="CBx-t6-fxi" secondAttribute="trailing" constant="8" symbolic="YES" id="Np5-cD-Mff"/>
+                <constraint firstItem="ObJ-JQ-X4G" firstAttribute="leading" secondItem="Nlk-4b-E9h" secondAttribute="leading" constant="-1" id="Sf1-Sx-k4p"/>
+                <constraint firstItem="Nlk-4b-E9h" firstAttribute="leading" secondItem="9lL-lH-N5e" secondAttribute="leading" id="deQ-Cd-j9f"/>
+                <constraint firstItem="JcE-ag-9aM" firstAttribute="centerY" secondItem="ObJ-JQ-X4G" secondAttribute="centerY" id="dkz-gg-Gg7"/>
+                <constraint firstItem="Nlk-4b-E9h" firstAttribute="top" secondItem="9lL-lH-N5e" secondAttribute="top" id="dtd-Gn-dhW"/>
+                <constraint firstAttribute="bottom" secondItem="ObJ-JQ-X4G" secondAttribute="bottom" constant="1" id="f3N-Td-KHc"/>
+                <constraint firstItem="CBx-t6-fxi" firstAttribute="leading" secondItem="Nlk-4b-E9h" secondAttribute="trailing" constant="8" symbolic="YES" id="ojz-cb-lFI"/>
+                <constraint firstItem="FFw-Ao-FHi" firstAttribute="centerY" secondItem="CBx-t6-fxi" secondAttribute="centerY" id="ryy-cz-HKN"/>
+                <constraint firstItem="CBx-t6-fxi" firstAttribute="centerY" secondItem="Nlk-4b-E9h" secondAttribute="centerY" id="xaF-r2-O1E"/>
+                <constraint firstItem="JcE-ag-9aM" firstAttribute="leading" secondItem="ObJ-JQ-X4G" secondAttribute="trailing" constant="3" id="yQp-Vc-pc6"/>
+            </constraints>
+            <point key="canvasLocation" x="586.5" y="555"/>
+        </customView>
+    </objects>
+    <resources>
+        <image name="NSFollowLinkFreestandingTemplate" width="14" height="14"/>
+        <image name="folder" width="14" height="14"/>
+    </resources>
+</document>

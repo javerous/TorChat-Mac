@@ -1,7 +1,11 @@
 /*
  *  TCLogsWindowController.m
  *
+<<<<<<< HEAD
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,8 +24,11 @@
  *
  */
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> javerous/master
 #import "TCLogsWindowController.h"
 
 #import "TCLogsManager.h"
@@ -29,9 +36,16 @@
 #define TCLogsAllKey		@"_all_"
 #define TCLogsSeparatorKey	@"_separator_"
 
+<<<<<<< HEAD
 #define TCLogsContentKey	@"content"
 #define TCLogsTitleKey		@"title"
 
+=======
+#define TCLogsEntryKey		@"entry"
+#define TCLogsTextKey		@"text"
+
+#define TCLogsTitleKey		@"title"
+>>>>>>> javerous/master
 
 
 /*
@@ -98,6 +112,11 @@
 	
 	NSCell					*_separatorCell;
 	NSCell					*_textCell;
+<<<<<<< HEAD
+=======
+	
+	NSDateFormatter			*_dateFormatter;
+>>>>>>> javerous/master
 }
 
 // -- Properties --
@@ -153,6 +172,15 @@
 		_separatorCell = [[TCCellSeparator alloc] initTextCell:@""];
 		_textCell = [[NSTextFieldCell alloc] initTextCell:@""];
 		
+<<<<<<< HEAD
+=======
+		// Date formatter.
+		_dateFormatter = [[NSDateFormatter alloc] init];
+		
+		[_dateFormatter setDateStyle:NSDateFormatterShortStyle];
+		[_dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
+		
+>>>>>>> javerous/master
 		// Add logs observer.
 		[[TCLogsManager sharedManager] addObserver:self forKey:nil];
     }
@@ -160,6 +188,16 @@
     return self;
 }
 
+<<<<<<< HEAD
+=======
+- (void)windowDidLoad
+{
+	// Place Window.
+	[self.window center];
+	[self.window setFrameAutosaveName:@"LogsWindow"];
+}
+
+>>>>>>> javerous/master
 
 
 /*
@@ -222,29 +260,59 @@
 	else if (aTableView == _logsView)
 	{
 		NSInteger kindex = [_entriesView selectedRow];
+<<<<<<< HEAD
 		
 		if (kindex < 0 || kindex >= [_klogs count])
 			return nil;
 		
 		NSString *key = [_klogs objectAtIndex:(NSUInteger)kindex];
 		
+=======
+		NSString *identifier = aTableColumn.identifier;
+
+		if (kindex < 0 || kindex >= [_klogs count])
+			return nil;
+		
+		NSString	*key = [_klogs objectAtIndex:(NSUInteger)kindex];
+		TCLogEntry *entry;
+		
+		// Select the content to show.
+>>>>>>> javerous/master
 		if ([key isEqualToString:TCLogsAllKey])
 		{
 			if (rowIndex < 0 || rowIndex >= [_allLogs count])
 				return nil;
 			
+<<<<<<< HEAD
 			NSDictionary	*item = [_allLogs objectAtIndex:(NSUInteger)rowIndex];
 			NSString		*str = [item objectForKey:TCLogsContentKey];
 			
 			if ([[item objectForKey:TCLogsTitleKey] boolValue])
 			{
+=======
+			NSDictionary *item = [_allLogs objectAtIndex:(NSUInteger)rowIndex];
+			
+			if ([[item objectForKey:TCLogsTitleKey] boolValue])
+			{
+				// Handle title case.
+				NSString *str = [item objectForKey:TCLogsTextKey];
+
+>>>>>>> javerous/master
 				if ([str isEqualToString:TCLogsGlobalKey])
 					return NSLocalizedString(@"logs_global_logs", @"");
 				else
 					return [NSString stringWithFormat:@"%@ (%@)", [[TCLogsManager sharedManager] nameForKey:str], str];
 			}
+<<<<<<< HEAD
 			
 			return str;
+=======
+			else
+			{
+				// Use entry.
+				entry = [item objectForKey:TCLogsEntryKey];
+			}
+>>>>>>> javerous/master
 		}
 		else if ([key isEqualToString:TCLogsGlobalKey])
 		{
@@ -252,8 +320,13 @@
 			
 			if (rowIndex < 0 || rowIndex >= [array count])
 				return nil;
+<<<<<<< HEAD
 			
 			return [array objectAtIndex:(NSUInteger)rowIndex];
+=======
+
+			entry = [array objectAtIndex:(NSUInteger)rowIndex];
+>>>>>>> javerous/master
 		}
 		else if ([key isEqualToString:TCLogsSeparatorKey])
 		{
@@ -265,7 +338,32 @@
 			if (rowIndex < 0 || rowIndex >= [array count])
 				return nil;
 			
+<<<<<<< HEAD
 			return [array objectAtIndex:(NSUInteger)rowIndex];
+=======
+			entry = [array objectAtIndex:(NSUInteger)rowIndex];
+		}
+		
+		// Show content.
+		if (entry)
+		{
+			if ([identifier isEqualToString:@"kind"])
+			{
+				switch (entry.kind)
+				{
+					case TCLogError:
+						return [NSImage imageNamed:NSImageNameStatusUnavailable];
+					case TCLogWarning:
+						return [NSImage imageNamed:NSImageNameStatusPartiallyAvailable];
+					case TCLogInfo:
+						return [NSImage imageNamed:NSImageNameStatusNone];
+				}
+			}
+			else if ([identifier isEqualToString:@"date"])
+				return [_dateFormatter stringFromDate:entry.timestamp];
+			else if ([identifier isEqualToString:@"message"])
+				return entry.message;
+>>>>>>> javerous/master
 		}
 	}
 	
@@ -317,19 +415,42 @@
 {
 	if (tableView == _entriesView)
 	{
+<<<<<<< HEAD
 		NSString *key;
 		
 		if (rowIndex < 0 || rowIndex >= [_klogs count])
 			return [tableColumn dataCell];
 		
 		key = [_klogs objectAtIndex:(NSUInteger)rowIndex];
+=======
+		// Handle row styles.
+		NSString *key = [_klogs objectAtIndex:(NSUInteger)rowIndex];
+>>>>>>> javerous/master
 		
 		if ([key isEqualToString:TCLogsSeparatorKey])
 			return _separatorCell;
 		else
 			return _textCell;
 	}
+<<<<<<< HEAD
 	
+=======
+	else if (tableView == _logsView)
+	{
+		NSInteger	kindex = [_entriesView selectedRow];
+		NSString	*key = [_klogs objectAtIndex:(NSUInteger)kindex];
+		
+		// Handle title case.
+		if ([key isEqualToString:TCLogsAllKey])
+		{
+			NSDictionary *item = [_allLogs objectAtIndex:(NSUInteger)rowIndex];
+			
+			if ([[item objectForKey:TCLogsTitleKey] boolValue])
+				return _textCell;
+		}
+	}
+
+>>>>>>> javerous/master
 	return [tableColumn dataCell];
 }
 
@@ -395,12 +516,18 @@
 */
 #pragma mark - TCLogsWindowController - TCLogsObserver
 
+<<<<<<< HEAD
 - (void)logManager:(TCLogsManager *)manager updateForKey:(NSString *)key withContent:(id)content
 {
 	if ([content isKindOfClass:[NSArray class]])
 		[self addLogEntries:content forKey:key];
 	else if ([content isKindOfClass:[NSString class]])
 		[self addLogEntries:@[ content ] forKey:key];
+=======
+- (void)logManager:(TCLogsManager *)manager updateForKey:(NSString *)key withEntries:(NSArray *)entries
+{
+	[self addLogEntries:entries forKey:key];
+>>>>>>> javerous/master
 }
 
 
@@ -410,7 +537,11 @@
 */
 #pragma mark - TCLogsWindowController - Helpers
 
+<<<<<<< HEAD
 - (void)addLogEntries:(NSArray *)entries forKey:(NSString *)key
+=======
+- (void)addLogEntries:(NSArray *)items forKey:(NSString *)key
+>>>>>>> javerous/master
 {
 	// Hold it
 	dispatch_async(dispatch_get_main_queue(), ^{
@@ -442,8 +573,13 @@
 			[array removeObjectAtIndex:0];
 		
 		// > Add
+<<<<<<< HEAD
 		for (NSString *text in entries)
 			[array addObject:text];
+=======
+		for (TCLogEntry *entry in items)
+			[array addObject:entry];
+>>>>>>> javerous/master
 		
 		// -- Add the item in the full log --
 		// > Remove the first item (and item until we reach a title) if more than 2000
@@ -467,6 +603,7 @@
 		{
 			_allLastKey = key;
 			
+<<<<<<< HEAD
 			[_allLogs addObject:@{ TCLogsContentKey : key, TCLogsTitleKey : @YES }];
 		}
 		
@@ -474,6 +611,15 @@
 		for (NSString *text in entries)
 			[_allLogs addObject:@{ TCLogsContentKey : text }];
 								
+=======
+			[_allLogs addObject:@{ TCLogsTextKey : key, TCLogsTitleKey : @YES }];
+		}
+		
+		// > Add
+		for (TCLogEntry *entry in items)
+			[_allLogs addObject:@{ TCLogsEntryKey : entry }];
+		
+>>>>>>> javerous/master
 		// Refresh
 		[_entriesView reloadData];
 		[_logsView reloadData];

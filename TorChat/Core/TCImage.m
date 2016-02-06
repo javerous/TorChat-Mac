@@ -1,7 +1,13 @@
 /*
+<<<<<<< HEAD
  *  TCImage.cpp
  *
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  TCImage.m
+ *
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,11 +26,17 @@
  *
  */
 
+<<<<<<< HEAD
 
 #import "TCImage.h"
 
 
 
+=======
+#import "TCImage.h"
+
+
+>>>>>>> javerous/master
 /*
 ** Defines
 */

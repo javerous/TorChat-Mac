@@ -1,7 +1,11 @@
 /*
  *  TCFilesWindowController.m
  *
+<<<<<<< HEAD
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,14 +24,20 @@
  *
  */
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> javerous/master
 #import "TCFilesWindowController.h"
 
 #import "TCFileCellView.h"
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> javerous/master
 /*
 ** TCFilesWindowController - Private
 */
@@ -128,7 +138,11 @@
 	NSDictionary	*file = _files[(NSUInteger)row];
 	NSString		*path = file[TCFileFilePathKey];
 		
+<<<<<<< HEAD
 	[[NSWorkspace sharedWorkspace] selectFile:path inFileViewerRootedAtPath:nil];
+=======
+	[[NSWorkspace sharedWorkspace] selectFile:path inFileViewerRootedAtPath:@""];
+>>>>>>> javerous/master
 }
 
 - (IBAction)doCancelTransfer:(id)sender

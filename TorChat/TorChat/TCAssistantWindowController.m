@@ -1,7 +1,11 @@
 /*
  *  TCAssistantWindowController.m
  *
+<<<<<<< HEAD
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,7 +24,10 @@
  *
  */
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> javerous/master
 #import "TCAssistantWindowController.h"
 
 #import "TCConfigPlist.h"
@@ -32,7 +39,10 @@
 #import "TCDebugLog.h"
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> javerous/master
 /*
 ** TCAssistantWindowController - Private
 */
@@ -124,7 +134,11 @@
 
 - (void)dealloc
 {
+<<<<<<< HEAD
     TCDebugLog("TCAssistantWindowController dealloc");
+=======
+    TCDebugLog(@"TCAssistantWindowController dealloc");
+>>>>>>> javerous/master
 }
 
 

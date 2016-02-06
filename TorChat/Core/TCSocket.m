@@ -1,7 +1,13 @@
 /*
+<<<<<<< HEAD
  *  TCSocket.h
  *
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  TCSocket.m
+ *
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,6 +26,11 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#include <netdb.h>
+
+>>>>>>> javerous/master
 #import "TCSocket.h"
 
 #import "TCDebugLog.h"
@@ -28,7 +39,10 @@
 #import "TCInfo.h"
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> javerous/master
 /*
 ** TCSocketOperationHandler
 */
@@ -100,7 +114,59 @@
 */
 #pragma mark - TCSocket - Instance
 
+<<<<<<< HEAD
 - (id)initWithSocket:(int)descriptor
+=======
+- (instancetype)initWithIP:(NSString *)ip port:(uint16_t)port
+{
+	if (!ip)
+		return nil;
+	
+	// Configure resolution.
+	struct addrinfo hints;
+	
+	memset(&hints, 0, sizeof(hints));
+	
+	hints.ai_family = PF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_protocol = IPPROTO_TCP;
+	hints.ai_flags = AI_NUMERICHOST | AI_NUMERICSERV;
+	
+	// Resolve.
+	struct addrinfo *res0;
+	int error = getaddrinfo(ip.UTF8String, [NSString stringWithFormat:@"%u", port].UTF8String, &hints, &res0);
+	
+	if (error)
+		return nil;
+	
+	// Search for the first valid resolution.
+	struct addrinfo *res;
+	int				sock;
+	
+	for (res = res0; res; res = res->ai_next)
+	{
+		sock = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+		
+		if (sock < 0)
+			continue;
+		
+		if (connect(sock, res->ai_addr, res->ai_addrlen) < 0)
+		{
+			close(sock);
+			continue;
+		}
+		
+		// Valid one.
+		freeaddrinfo(res0);
+		
+		return [self initWithSocket:sock];
+	}
+
+	return nil;
+}
+
+- (instancetype)initWithSocket:(int)descriptor
+>>>>>>> javerous/master
 {
 	self = [super init];
 	
@@ -208,7 +274,11 @@
 					// If we have space, signal it to fill if necessary
 					id <TCSocketDelegate> delegate = _delegate;
 					
+<<<<<<< HEAD
 					if ([_writeBuffer size] < 1024 && _delegateQueue && delegate)
+=======
+					if ([_writeBuffer size] < 1024 && _delegateQueue && delegate && [delegate respondsToSelector:@selector(socketRunPendingWrite:)])
+>>>>>>> javerous/master
 					{
 						dispatch_async(_delegateQueue, ^{
 							[delegate socketRunPendingWrite:self];
@@ -245,7 +315,11 @@
 
 - (void)dealloc
 {
+<<<<<<< HEAD
 	TCDebugLog("TCSocket Destructor");
+=======
+	TCDebugLog(@"TCSocket dealloc");
+>>>>>>> javerous/master
 }
 
 
@@ -439,6 +513,12 @@
 	if (!delegate)
 		return;
 	
+<<<<<<< HEAD
+=======
+	if ([delegate respondsToSelector:@selector(socket:error:)] == NO)
+		return;
+	
+>>>>>>> javerous/master
 	TCInfo *err = [TCInfo infoOfKind:TCInfoError domain:TCSocketInfoDomain code:error];
 	
 	// Dispatch on the delegate queue.

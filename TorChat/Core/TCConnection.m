@@ -1,7 +1,13 @@
 /*
+<<<<<<< HEAD
  *  TCConnection.cpp
  *
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  TCConnection.m
+ *
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -31,7 +37,10 @@
 #import "TCBuddy.h"
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> javerous/master
 /*
 ** TCConnection - Private
 */
@@ -115,7 +124,11 @@
 
 - (void)dealloc
 {
+<<<<<<< HEAD
 	TCDebugLog("TCConnection Destructor");
+=======
+	TCDebugLog(@"TCConnection dealloc");
+>>>>>>> javerous/master
 	
 	if (_sock)
 		[_sock stop];

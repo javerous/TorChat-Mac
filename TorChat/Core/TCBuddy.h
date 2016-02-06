@@ -1,7 +1,11 @@
 /*
  *  TCBuddy.h
  *
+<<<<<<< HEAD
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,7 +24,10 @@
  *
  */
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> javerous/master
 #import <Foundation/Foundation.h>
 
 #import "TCConfig.h"
@@ -75,7 +82,11 @@ typedef enum
 	TCBuddyEventNotes,				// context: NSString (<notes>)
 	TCBuddyEventVersion,			// context: NSString (<version>)
 	TCBuddyEventClient,				// context: NSString (<client_name>)
+<<<<<<< HEAD
 	TCBuddyEventBlocked,			// context: NSNumber (BOOL)
+=======
+	//TCBuddyEventBlocked,			// context: NSNumber (BOOL)
+>>>>>>> javerous/master
 	
 	TCBuddyEventFileSendStart,		// context: TCFileInfo
 	TCBuddyEventFileSendRunning,	// context: TCFileInfo
@@ -130,6 +141,7 @@ typedef enum
 
 
 /*
+<<<<<<< HEAD
 ** TCBuddyDelegate
 */
 #pragma mark - TCBuddyDelegate
@@ -137,6 +149,15 @@ typedef enum
 @protocol TCBuddyDelegate <NSObject>
 
 - (void)buddy:(TCBuddy *)buddy event:(const TCInfo *)info;
+=======
+** TCBuddyObserver
+*/
+#pragma mark - TCBuddyObserver
+
+@protocol TCBuddyObserver <NSObject>
+
+- (void)buddy:(TCBuddy *)buddy information:(TCInfo *)info;
+>>>>>>> javerous/master
 
 @end
 
@@ -150,9 +171,12 @@ typedef enum
 
 @interface TCBuddy : NSObject
 
+<<<<<<< HEAD
 // -- Properties --
 @property (weak, atomic) id <TCBuddyDelegate> delegate;
 
+=======
+>>>>>>> javerous/master
 // -- Instance --
 - (id)initWithConfiguration:(id <TCConfig>)configuration alias:(NSString *)alias address:(NSString *)address notes:(NSString *)notes;
 
@@ -208,6 +232,13 @@ typedef enum
 - (NSString *)lastProfileName;	// Last know profile name
 - (NSString *)finalName;		// Best name representation (alias / profile name / last know profile name)
 
+<<<<<<< HEAD
+=======
+// -- Observers --
+- (void)addObserver:(id <TCBuddyObserver>)observer;
+- (void)removeObserver:(id <TCBuddyObserver>)observer;
+
+>>>>>>> javerous/master
 @end
 
 

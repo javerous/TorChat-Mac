@@ -1,7 +1,11 @@
 /*
 *  Localizable.strings
 *
+<<<<<<< HEAD
 *  Copyright 2014 Avérous Julien-Pierre
+=======
+*  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
 *
 *  This file is part of TorChat.
 *
@@ -35,6 +39,7 @@
 "ac_error_write_file" = "Impossible de créer un fichier de configuration (%@). Vérifiez les droits d'écriture sur votre dossier TorChat.";
 "ac_error_read_file" = "Impossible d'ouvrir le fichier configuration (%@). Vérifiez les droits de lecture sur votre fichier.";
 "ac_error_read_proxy" = "Impossible d'obtenir les données du fichier de configuration. Vérifiez le proxy.";
+<<<<<<< HEAD
 "ac_error_launch" = "Impossible de lancer tor. Vérifiez le journal de TorChat et le journal système pour plus d'informations.";
 "ac_error_config" = "Erreur";
 
@@ -48,6 +53,11 @@
 "tor_error_log" = "Tor-Erreur: %@";
 
 
+=======
+"ac_error_config" = "Erreur";
+
+
+>>>>>>> javerous/master
 /* Menu */
 "menu_block_buddy" = "Bloquer le contact";
 "menu_unblock_buddy" = "Débloquer le contact";
@@ -89,10 +99,13 @@
 "file_progress_of" = "de";
 "file_progress_from" = "De:";
 "file_progress_to" = "À:";
+<<<<<<< HEAD
 "file_gb" = "Go";
 "file_mb" = "Mo";
 "file_kb" = "Ko";
 "file_b" = "B";
+=======
+>>>>>>> javerous/master
 
 
 /* Chat */
@@ -109,6 +122,7 @@
 
 
 /* Update */
+<<<<<<< HEAD
 "update_available_subtitle" = "Tor %@ est disponible — vous utilisez la version %@. Voulez-vous la télécharger ?";
 
 
@@ -153,10 +167,87 @@
 "core_bd_event_connected" = "Le contact est connecté au contact distant via le SOCKS tor.";
 
 "core_bd_error_socks_request" = "Impossible d'envoyer la requête SOCKS.";
+=======
+"update_subtitle_available" = "Tor %@ est disponible — vous utilisez la version %@. Voulez-vous la télécharger ?";
+"update_button_cancel" = "Annuler";
+"update_button_close" = "Fermer";
+"update_button_done" = "Terminer";
+
+"update_status_launching" = "Démarrage de la mise à jour…";
+"update_status_retrieving_info" = "Récupération des informations de l'archive…";
+"update_status_downloading_archive" = "Téléchargement…";
+"update_status_staging_archive" = "Activation de l'archive…";
+"update_status_checking_signature" = "Vérification de la signature…";
+"update_status_relaunching_tor" = "Redémarrage de tor…";
+"update_status_update_done" = "Mise à jour effectuée.";
+"update_status_error" = "Erreur de mise à jour.";
+
+"update_error_fmt" = "Erreur : %@";
+
+"update_download_progress" = "%@ sur %@";
+"update_download_progress_stalled" = "%@ of %@ (stagnant)";
+"update_download_progress_remaining" = "%@ of %@ (%@ restant)";
+
+
+/* Tor */
+"tor_button_close" = "Fermer";
+
+
+/* Amounts */
+"size_gb" = "Go";
+"size_mb" = "Mo";
+"size_kb" = "Ko";
+"size_b" = "B";
+
+"time_days" = "jours";
+"time_hours" = "heures";
+"time_minutes" = "minutes";
+"time_seconds" = "secondes";
+
+
+/* Location */
+"location_reset_title" = "Réinitialiser au dossier par défaut";
+"location_reset_message" = "Vous-vous vraiment réinitialiser cet emplacement à sa valeur par défaut ?";
+"location_cancel" = "Annuler";
+"location_reset" = "Réinitialiser";
+
+
+/* Core */
+// General
+"core_mng_myself" = "moi";
+
+// TCBuddyInfoDomain
+"core_bd_event_connected" = "Le contact est connecté au contact distant via le SOCKS tor.";
+"core_bd_event_tor_connected" = "Contact connecté au SOCKS de tor.";
+"core_bd_event_stopped" = "Le contact est arrêté.";
+"core_bd_event_identified" = "Le contact est complètement identifié. Toutes les actions sont activées.";
+"core_bd_event_status_changed" = "Le statut du contact a changé.";
+"core_bd_event_new_message" = "Réception d'un nouveau message";
+"core_bd_event_alias_changed" = "L'alias du contact a changé.";
+"core_bd_event_notes_changed" = "Les notes du contact ont changés.";
+"core_bd_event_new_version" = "Version du client reçus";
+"core_bd_event_new_client" = "Nom du client reçus";
+"core_bd_event_file_send_start" = "Nouvelle session d'envoi de fichier.";
+"core_bd_event_file_chunk_send" = "Nouveau morceau de fichier envoyé";
+"core_bd_event_file_send_finish" = "Envoi d'un fichier terminé.";
+"core_bd_event_file_send_canceled" = "L'envoi d'un fichier a été annulé.";
+"core_bd_event_file_receive_start" = "Nouvelle session de réception d'un fichier.";
+"core_bd_event_file_chunk_receive" = "Nouveau morceau de fichier reçu";
+"core_bd_event_file_receive_finish" = "Réception d'un fichier terminé.";
+"core_bd_event_file_receive_stopped" = "La réception d'un fichier a été arrêté par l'hôte distant.";
+"core_bd_event_new_profile_text" = "Texte du profil du contact reçus";
+"core_bd_event_new_profile_name" = "Nom du profil du contact reçus";
+"core_bd_event_new_profile_avatar" = "Avatar du profil du contact reçus";
+
+"core_bd_error_tor_resolve" = "L'adresse SOCKS de tor ne peut pas être résolue.";
+"core_bd_error_tor_connect" = "Impossible de créer une connexion vers le SOCKS de tor.";
+"core_bd_error_socket" = "Erreur du socket du contact.";
+>>>>>>> javerous/master
 "core_bd_error_socks_91" = "La requête SOCKS a été rejetée ou a échoué.";
 "core_bd_error_socks_92" = "La requête SOCKS a été rejetée, car il est impossible d'utiliser identd (ou non accessible depuis le serveur).";
 "core_bd_error_socks_93" = "La requête SOCKS a été rejetée, car le programme et identd utilisent des identifiants utilisateurs différents.";
 "core_bd_error_socks_unknown" = "La requête SOCKS a échoué pour une raison inconnue.";
+<<<<<<< HEAD
 "core_bd_error_socket" = "Erreur du socket du contact.";
 
 "core_bd_event_new_client" = "Nom du client reçus";
@@ -170,6 +261,41 @@
 /* Core - Manager */
 "core_mng_event_new_buddy" = "Un nouveau contact a été ajouté à votre liste de contact.";
 "core_mng_myself" = "moi";
+=======
+"core_bd_error_socks_request" = "Impossible d'envoyer la requête SOCKS.";
+"core_bd_error_message_offline" = "Impossible d'envoyer un message à un contact hors ligne.";
+"core_bd_error_message_blocked" = "Impossible d'envoyer un message à un contact bloqué.";
+"core_bd_error_filesend" = "Impossible d'ouvrir un fichier pour l'envoi.";
+"core_bd_error_filereceive" = "Impossible d'ouvrir un fichier pour la réception.";
+"core_bd_error_file_offline" = "Impossible d'envoyer un fichier à un contact hors ligne.";
+"core_bd_error_file_blocked" = "Impossible d'envoyer un fichier à un contact bloqué.";
+
+// TCSocketInfoDomain
+"core_socket_read_error" = "Erreur de lecture sur un socket.";
+"core_socket_read_closed" = "Un socket a été fermé par l'hôte distant lors d'une lecture.";
+"core_socker_read_full" = "La cache d'un socket est pleine. Impossible de recevoir plus de données.";
+"core_socket_write_error" = "Erreur d'écriture sur un socket.";
+"core_socket_write_closed" = "Un socket a été fermé par l'hôte distant lors d'une écriture.";
+
+// TCConnectionInfoDomain
+"core_cnx_event_started" = "Contrôleur de connexion démarré.";
+"core_cnx_event_stopped" = "Contrôleur de connexion arrêté.";
+
+"core_cnx_error_socket" = "Erreur de socket sur une connexion entrante.";
+"core_cnx_error_fake_ping" = "Un hôte distant a envoyé un ping avec un faux nom de domaine. Il a été tué.";
+
+// TCCoreManagerInfoDomain
+"core_mng_event_new_buddy" = "Un nouveau contact a été ajouté à votre liste de contact (%@).";
+"core_mng_event_remove_buddy" = "Un contact a été supprimé de votre liste de contact (%@).";
+"core_mng_event_blocked_buddy" = "Un contact a été bloqué (%@)";
+"core_mng_event_unblock_buddy" = "Un contact a été débloqué (%@)";
+"core_mng_event_started" = "TorChat est démarré.";
+"core_mng_event_stopped" = "TorChat est arrêté.";
+"core_mng_event_status" = "Statut changé (%@).";
+"core_mng_event_profile_avatar" = "L'avatar de profil a changé.";
+"core_mng_event_profile_name" = "Le nom de profil a changé.";
+"core_mng_event_profile_text" = "Le texte de profil a changé.";
+>>>>>>> javerous/master
 
 "core_mng_error_socket" = "Impossible de créer un socket système.";
 "core_mng_error_setsockopt" = "Impossible de changer les options d'un socket système.";
@@ -177,6 +303,7 @@
 "core_mng_error_listen" = "Impossible d'écouter sur un socket système.";
 "core_mng_error_accept" = "Impossible d'accepter de nouveaux clients à cause d'une erreur système.";
 "core_mng_error_async" = "Impossible d'utiliser les E/S asynchrones sur un socket système.";
+<<<<<<< HEAD
 "core_mng_event_started" = "TorChat est démarré.";
 "core_mng_event_stopped" = "TorChat est arrêté.";
 
@@ -207,3 +334,69 @@
 
 "core_socket_write_error" = "Erreur d'écriture sur un socket.";
 "core_socket_write_closed" = "Un socket a été fermé par l'hôte distant lors d'une écriture.";
+=======
+"core_cnx_error_already_pinged" = "Un hôte distant a essayé de faire un ping sur un contact ayant déjà reçu un ping. Il a été tué.";
+"core_cnx_error_masquerade" = "Un hôte distant essaye de faire du camouflage avec notre adresse. Il a été tué.";
+"core_cnx_error_add_buddy" = "Impossible d'ajouter un nouveau contact.";
+"core_cnx_error_pong" = "Un hôte distant essaye de faire un pong, mais le contact correspondant n'existe pas. Il a été tué.";
+
+
+/* Tor Manager */
+// General
+"tor_out_log" = "Tor: %@";
+"tor_error_log" = "Tor-Erreur: %@";
+
+// TCTorManagerInfoStartDomain
+"tor_start_info_bootstrap" = "Tor est en cours d'amorçage %lu%% (%@).";
+"tor_start_info_hostname" = "Tor a démarré avec le nom d'hôte '%@'.";
+"tor_start_info_url_session" = "Le proxy tor proxy prêt.";
+"tor_start_info_done" = "Tor est prêt.";
+
+"tor_start_warning_canceled" = "Le démarrage de Tor a été annulé.";
+
+"tor_start_err_already_running" = "Tor est déjà en cours d'exécution.";
+"tor_start_err_configuration" = "Impossible d'obtenir certaines informations de la configuration.";
+"tor_start_err_unarchive" = "Impossible de désarchiver tor.";
+"tor_start_err_signature" = "Impossible de valider la signature.";
+"tor_start_err_launch" = "Le système ne peut pas exécuter le binaire tor.";
+"tor_start_err_control_connect" = "Impossible de se connecter au port de contrôle de tor.";
+"tor_start_err_control_authenticate" = "Impossible de s'authentifier pour le contrôle de tor.";
+"tor_start_err_control_monitor" = "Impossible de surveiller tor.";
+
+// TCTorManagerInfoCheckUpdateDomain
+"tor_checkupdate_info_version_available" = "Version disponible sur le serveur: %@";
+
+"tor_checkupdate_error_not_running" = "Tor n'est pas en cours d'exécution.";
+"tor_checkupdate_error_check_remote_info" = "Impossible de télécharger les informations.";
+"tor_checkupdate_error_validate_local_signature" = "Impossible de valider la signature locale.";
+"tor_checkupdate_error_nothing_new" = "Il n'y a pas de mise à jour disponible (déjà à jour).";
+
+// TCTorManagerInfoUpdateDomain
+"tor_update_info_retrieve_info" = "Télécharge les informations de tor.";
+"tor_update_info_archive_size" = "Taille de l'archive distante: %llu";
+"tor_update_info_downloading" = "Télécharge…";
+"tor_update_info_stage" = "Mets en place l'archive.";
+"tor_update_info_signature_check" = "Vérifie la signature.";
+"tor_update_info_relaunch" = "Relance.";
+"tor_update_info_done" = "Terminé.";
+
+"tor_update_err_not_running" = "Tor n'est pas en cours d'exécution.";
+"tor_update_err_configuration" = "Impossible d'obtenir certaines informations de la configuration.";
+"tor_update_err_internal" = "Erreur interne du système.";
+"tor_update_err_archive_info" = "Impossible de télécharger les informations de l'archive tor";
+"tor_update_err_archive_download" = "Impossible de télécharger l'archive tor.";
+"tor_update_err_archive_stage" = "Impossible de mettre en place l'archive tor.";
+"tor_update_err_relaunch" = "Impossible de relancer tor.";
+
+// TCTorManagerInfoOperationDomain
+"tor_operation_info_info" = "Information extraites";
+"tor_operation_info_done" = "Opération terminée";
+
+"tor_operation_err_configuration" = "Impossible d'obtenir certaines informations de la configuration.";
+"tor_operation_err_io" = "Erreur d'E/S";
+"tor_operation_err_network" = "Erreur réseau";
+"tor_operation_err_extract" = "Erreur lors de l'extraction";
+"tor_operation_err_signature" = "Erreur de signature";
+"tor_operation_err_tor" = "Erreur de tor";
+"tor_operation_err_internal" = "Erreur interne";
+>>>>>>> javerous/master

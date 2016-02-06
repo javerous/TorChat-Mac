@@ -1,7 +1,11 @@
 /*
  *  TCCoreManager.h
  *
+<<<<<<< HEAD
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,7 +24,10 @@
  *
  */
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> javerous/master
 #import <Foundation/Foundation.h>
 
 #import "TCInfo.h"
@@ -28,7 +35,10 @@
 #import "TCBuddy.h"
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> javerous/master
 /*
 ** Globals
 */
@@ -65,7 +75,15 @@ typedef enum
 	TCCoreEventProfileText,		// context: NSString (<text>)
 	
 	TCCoreEventBuddyNew,		// context: TCBuddy
+<<<<<<< HEAD
 	
+=======
+	TCCoreEventBuddyRemove,		// context: TCBuddy
+
+	TCCoreEventBuddyBlocked,	// context: TCBuddy
+	TCCoreEventBuddyUnblocked,	// context: TCBuddy
+
+>>>>>>> javerous/master
 	TCCoreEventClientStarted,
 	TCCoreEventClientStopped,
 } TCCoreEvent;
@@ -107,8 +125,13 @@ typedef enum
 	TCCoreErrorClientCmdFileStopReceiving,	// context: NSString (<parser_error>)
 } TCCoreError;
 
+<<<<<<< HEAD
 // -- Delegate --
 @protocol TCCoreManagerDelegate <NSObject>
+=======
+// -- Observer --
+@protocol TCCoreManagerObserver <NSObject>
+>>>>>>> javerous/master
 
 - (void)torchatManager:(TCCoreManager *)manager information:(TCInfo *)info;
 
@@ -124,8 +147,11 @@ typedef enum
 
 @interface TCCoreManager : NSObject
 
+<<<<<<< HEAD
 // -- Properties --
 @property (weak, atomic) id <TCCoreManagerDelegate> delegate;
+=======
+>>>>>>> javerous/master
 
 // -- Instance --
 - (id)initWithConfiguration:(id <TCConfig>)config;
@@ -159,4 +185,11 @@ typedef enum
 - (BOOL)addBlockedBuddy:(NSString *)address;
 - (BOOL)removeBlockedBuddy:(NSString *)address;
 
+<<<<<<< HEAD
+=======
+// -- Observers --
+- (void)addObserver:(id <TCCoreManagerObserver>)observer;
+- (void)removeObserver:(id <TCCoreManagerObserver>)observer;
+
+>>>>>>> javerous/master
 @end

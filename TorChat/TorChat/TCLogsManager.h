@@ -1,7 +1,11 @@
 /*
  *  TCLogsManager.h
  *
+<<<<<<< HEAD
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,12 +24,18 @@
  *
  */
 
+<<<<<<< HEAD
 
 
 #import <Foundation/Foundation.h>
 
 
 
+=======
+#import <Foundation/Foundation.h>
+
+
+>>>>>>> javerous/master
 /*
 ** Defines
 */
@@ -41,6 +51,26 @@
 #pragma mark - Forward
 
 @class TCLogsManager;
+<<<<<<< HEAD
+=======
+@class TCLogEntry;
+
+@class TCInfo;
+
+
+
+/*
+** Types
+*/
+#pragma mark - Types
+
+typedef enum
+{
+	TCLogError,
+	TCLogWarning,
+	TCLogInfo
+} TCLogKind;
+>>>>>>> javerous/master
 
 
 
@@ -49,7 +79,11 @@
 */
 @protocol TCLogsObserver <NSObject>
 
+<<<<<<< HEAD
 - (void)logManager:(TCLogsManager *)manager updateForKey:(NSString *)key withContent:(id)content;
+=======
+- (void)logManager:(TCLogsManager *)manager updateForKey:(NSString *)key withEntries:(NSArray *)entries;
+>>>>>>> javerous/master
 
 @end
 
@@ -66,10 +100,18 @@
 + (TCLogsManager *)sharedManager;
 
 // -- Logs --
+<<<<<<< HEAD
 - (void)addBuddyLogEntryFromAddress:(NSString *)address name:(NSString *)name andText:(NSString *)log, ...;
 - (void)addGlobalLogEntry:(NSString *)log, ...;
 - (void)addGlobalAlertLog:(NSString *)log, ...;
 
+=======
+- (void)addBuddyLogWithAddress:(NSString *)address name:(NSString *)name kind:(TCLogKind)kind message:(NSString *)message, ...;
+- (void)addBuddyLogWithAddress:(NSString *)address name:(NSString *)name info:(TCInfo *)info;
+
+- (void)addGlobalLogWithKind:(TCLogKind)kind message:(NSString *)message, ...;
+- (void)addGlobalLogWithInfo:(TCInfo *)info;
+>>>>>>> javerous/master
 
 
 // -- Properties --
@@ -80,3 +122,21 @@
 - (void)removeObserverForKey:(NSString *)key;
 
 @end
+<<<<<<< HEAD
+=======
+
+
+
+/*
+** TCLogEntry
+*/
+#pragma mark - TCLogEntry
+
+@interface TCLogEntry : NSObject
+
+@property (readonly, nonatomic) TCLogKind	kind;
+@property (readonly, nonatomic) NSDate		*timestamp;
+@property (readonly, nonatomic) NSString	*message;
+
+@end
+>>>>>>> javerous/master

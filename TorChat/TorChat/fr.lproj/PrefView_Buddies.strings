@@ -1,5 +1,6 @@
 
 /* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "0KK-fi-hFR"; */
+<<<<<<< HEAD
 "0KK-fi-hFR.title" = "Cancel";
 
 /* Class = "NSWindow"; title = "Add Blocked"; ObjectID = "EdI-Ur-HSK"; */
@@ -7,12 +8,28 @@
 
 /* Class = "NSBox"; title = "Block List"; ObjectID = "ZWE-9T-ybU"; */
 "ZWE-9T-ybU.title" = "Block List";
+=======
+"0KK-fi-hFR.title" = "Annuler";
+
+/* Class = "NSWindow"; title = "Add Blocked"; ObjectID = "EdI-Ur-HSK"; */
+"EdI-Ur-HSK.title" = "Ajout d'un blocage";
+
+/* Class = "NSBox"; title = "Block List"; ObjectID = "ZWE-9T-ybU"; */
+"ZWE-9T-ybU.title" = "Liste de blocage";
+>>>>>>> javerous/master
 
 /* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "ikh-H4-coU"; */
 "ikh-H4-coU.title" = "Text Cell";
 
 /* Class = "NSButtonCell"; title = "Add"; ObjectID = "isc-2a-Req"; */
+<<<<<<< HEAD
 "isc-2a-Req.title" = "Add";
 
 /* Class = "NSTextFieldCell"; title = "Address"; ObjectID = "rvK-dY-7yO"; */
 "rvK-dY-7yO.title" = "Address";
+=======
+"isc-2a-Req.title" = "Ajouter";
+
+/* Class = "NSTextFieldCell"; title = "Address"; ObjectID = "rvK-dY-7yO"; */
+"rvK-dY-7yO.title" = "Adresse";
+>>>>>>> javerous/master

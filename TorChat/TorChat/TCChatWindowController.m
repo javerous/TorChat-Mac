@@ -1,7 +1,11 @@
 /*
  *  TCChatWindowController.m
  *
+<<<<<<< HEAD
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,8 +24,11 @@
  *
  */
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> javerous/master
 #import "TCChatWindowController.h"
 
 #import "TCChatViewController.h"
@@ -31,7 +38,10 @@
 #import "TCChatCellView.h"
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> javerous/master
 /*
 ** Defines
 */
@@ -512,7 +522,11 @@
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
+<<<<<<< HEAD
 		NSString	*identifier = chat.identifier;
+=======
+		NSString	*identifier = chat.bidentifier;
+>>>>>>> javerous/master
 		TCValue		*vdelegate = [[_identifiersContent objectForKey:identifier] objectForKey:TCChatDelegateKey];
 		id			context = [[_identifiersContent objectForKey:identifier] objectForKey:TCChatContextKey];
 		id <TCChatWindowControllerDelegate>	delegate = [vdelegate object];

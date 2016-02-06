@@ -1,7 +1,11 @@
 /*
  *  TCPanel_Welcome.h
  *
+<<<<<<< HEAD
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,14 +24,20 @@
  *
  */
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> javerous/master
 #import <Cocoa/Cocoa.h>
 
 #import "TCPanel.h"
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> javerous/master
 /*
 ** TCPanel_Welcome
 */

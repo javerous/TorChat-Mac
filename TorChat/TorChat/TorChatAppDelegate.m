@@ -1,7 +1,11 @@
 /*
  *  TorChatAppDelegate.m
  *
+<<<<<<< HEAD
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,21 +24,32 @@
  *
  */
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> javerous/master
 #import "TorChatAppDelegate.h"
 
 #import "TCMainController.h"
 #import "TCBuddiesWindowController.h"
 #import "TCFilesWindowController.h"
+<<<<<<< HEAD
 #import "TCBuddyInfoWindowController.h"
+=======
+#import "TCBuddyInfoWindowsController.h"
+>>>>>>> javerous/master
 #import "TCLogsWindowController.h"
 #import "TCPreferencesWindowController.h"
 #import "TCChatWindowController.h"
 
 #import "TCBuddy.h"
+<<<<<<< HEAD
 
 
+=======
+#import "TCCoreManager.h"
+>>>>>>> javerous/master
 
 
 /*
@@ -42,7 +57,11 @@
 */
 #pragma mark - TorChatAppDelegate - Private
 
+<<<<<<< HEAD
 @interface TorChatAppDelegate ()
+=======
+@interface TorChatAppDelegate () <TCCoreManagerObserver>
+>>>>>>> javerous/master
 
 @property (strong, nonatomic) IBOutlet NSMenuItem	*buddyShowMenu;
 @property (strong, nonatomic) IBOutlet NSMenuItem	*buddyDeleteMenu;
@@ -80,6 +99,7 @@
 
 
 /*
+<<<<<<< HEAD
 ** TorChatAppDelegate - Launch
 */
 #pragma mark - TorChatAppDelegate - Launch
@@ -111,6 +131,27 @@
 	
 	// Start TorChat
 	[[TCMainController sharedController] start];
+=======
+** TorChatAppDelegate - Life
+*/
+#pragma mark - TorChatAppDelegate - Life
+
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+{
+	// Observe buddy select change.
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddySelectChanged:) name:TCBuddiesWindowControllerSelectChanged object:nil];
+
+	// Start TorChat.
+	[[TCMainController sharedController] startWithCompletionHandler:^(id<TCConfigInterface> configuration, TCCoreManager *core) {
+		[core addObserver:self];
+	}];
+}
+
+- (void)applicationWillTerminate:(NSNotification *)notification
+{
+	// Stop TorChat
+	[[TCMainController sharedController] stop];
+>>>>>>> javerous/master
 }
 
 
@@ -153,6 +194,35 @@
 }
 
 
+<<<<<<< HEAD
+=======
+/*
+** TorChatAppDelegate - TCCoreManagerObserver
+*/
+#pragma mark - TCCoreManagerObserver
+
+- (void)torchatManager:(TCCoreManager *)manager information:(TCInfo *)info
+{
+	if (info.kind == TCInfoInfo && (info.code == TCCoreEventBuddyBlocked || info.code == TCCoreEventBuddyUnblocked))
+	{
+		dispatch_async(dispatch_get_main_queue(), ^{
+
+			TCBuddy		*buddy = info.context;
+			NSString	*selected = [[[TCBuddiesWindowController sharedController] selectedBuddy] address];
+			
+			if ([buddy.address isEqualToString:selected])
+			{
+				if (info.code == TCCoreEventBuddyBlocked)
+					[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_unblock_buddy", @"")];
+				else
+					[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_block_buddy", @"")];
+			}
+		});
+	}
+}
+
+
+>>>>>>> javerous/master
 
 /*
 ** TorChatAppDelegate - Buddies
@@ -161,7 +231,11 @@
 
 - (IBAction)doBuddyShowInfo:(id)sender
 {
+<<<<<<< HEAD
 	[TCBuddyInfoWindowController showInfo];
+=======
+	[[TCBuddiesWindowController sharedController] doShowInfo:sender];
+>>>>>>> javerous/master
 }
 
 - (IBAction)doBuddyAdd:(id)sender
@@ -241,6 +315,7 @@
 	}
 }
 
+<<<<<<< HEAD
 - (void)buddyBlockedChanged:(NSNotification *)notice
 {
 	NSDictionary	*ui = [notice userInfo];
@@ -257,4 +332,6 @@
 	}
 }
 
+=======
+>>>>>>> javerous/master
 @end

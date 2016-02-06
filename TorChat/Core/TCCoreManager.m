@@ -1,7 +1,13 @@
 /*
+<<<<<<< HEAD
  *  TCContoller.h
  *
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  TCCoreManager.m
+ *
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -39,7 +45,10 @@
 #import "TCSocket.h"
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> javerous/master
 /*
 ** TCCoreManager
 */
@@ -73,13 +82,23 @@
 	bool					_running;
 	TCStatus				_mstatus;
 	
+<<<<<<< HEAD
 	// > Delegate
 	dispatch_queue_t		_delegateQueue;
 	
+=======
+>>>>>>> javerous/master
 	// > Profile
 	TCImage					*_profileAvatar;
 	NSString				*_profileName;
 	NSString				*_profileText;
+<<<<<<< HEAD
+=======
+	
+	// > Observers
+	NSHashTable				*_observers;
+	dispatch_queue_t		_externalQueue;
+>>>>>>> javerous/master
 }
 
 // -- Blocked --
@@ -123,6 +142,7 @@
 	{
 		_config = config;
 		
+<<<<<<< HEAD
 		// Init vars
 		_mstatus = TCStatusAvailable;
 
@@ -137,10 +157,30 @@
 		_localQueue = dispatch_queue_create("com.torchat.core.controller.local", DISPATCH_QUEUE_SERIAL);
 		_socketQueue = dispatch_queue_create("com.torchat.core.controller.socket", DISPATCH_QUEUE_SERIAL);
 		_delegateQueue = dispatch_queue_create("com.torchat.core.controller.delegate", DISPATCH_QUEUE_SERIAL);
+=======
+		// Init vars.
+		_mstatus = TCStatusAvailable;
+
+		// Get profile avatar.
+		_profileAvatar = [config profileAvatar];
+
+		// Get profile name & text.
+		_profileName = [config profileName];
+		_profileText = [config profileText];
+		
+		// Queues.
+		_localQueue = dispatch_queue_create("com.torchat.core.controller.local", DISPATCH_QUEUE_SERIAL);
+		_socketQueue = dispatch_queue_create("com.torchat.core.controller.socket", DISPATCH_QUEUE_SERIAL);
+		_externalQueue = dispatch_queue_create("com.torchat.core.controller.external", DISPATCH_QUEUE_SERIAL);
+>>>>>>> javerous/master
 		
 		// Containers.
 		_connections = [[NSMutableArray alloc] init];
 		_buddies = [[NSMutableArray alloc] init];
+<<<<<<< HEAD
+=======
+		_observers = [NSHashTable weakObjectsHashTable];
+>>>>>>> javerous/master
 	}
 	
 	return self;
@@ -148,7 +188,11 @@
 
 - (void)dealloc
 {
+<<<<<<< HEAD
 	TCDebugLog("TCCoreManager Destructor");
+=======
+	TCDebugLog(@"TCCoreManager dealloc");
+>>>>>>> javerous/master
 	
 	// Close client
 	for (TCConnection *connection in _connections)
@@ -545,6 +589,7 @@
 	
     dispatch_async(_localQueue, ^{
         
+<<<<<<< HEAD
 		// Check blocked status
 		[self _checkBlocked:buddy];
 		
@@ -558,6 +603,21 @@
 		[buddy start];
 		
 		// Save to config
+=======
+		// Check blocked status.
+		[self _checkBlocked:buddy];
+		
+        // Add to the buddy list.
+		[_buddies addObject:buddy];
+		
+		// Notify.
+		[self _notify:TCCoreEventBuddyNew context:buddy];
+		
+        // Start it.
+		[buddy start];
+		
+		// Save to config.
+>>>>>>> javerous/master
 		[_config addBuddy:address alias:name notes:comment];
     });
 }
@@ -571,21 +631,38 @@
 		
 		NSUInteger	i, cnt = [_buddies count];
 		
+<<<<<<< HEAD
 		// Search the buddy
+=======
+		// Search the buddy.
+>>>>>>> javerous/master
 		for (i = 0; i < cnt; i++)
 		{
 			TCBuddy *buddy = _buddies[i];
 			
 			if ([[buddy address] isEqualToString:address])
 			{
+<<<<<<< HEAD
 				// Stop and release
+=======
+				// Stop and release.
+>>>>>>> javerous/master
 				[buddy stop];
 				
 				[_buddies removeObjectAtIndex:i];
 				
+<<<<<<< HEAD
 				// Save to config
 				[_config removeBuddy:address];
 				
+=======
+				// Save to config.
+				[_config removeBuddy:address];
+				
+				// Notify.
+				[self _notify:TCCoreEventBuddyRemove context:buddy];
+				
+>>>>>>> javerous/master
 				break;
 			}
 		}
@@ -649,18 +726,35 @@
 	
 	dispatch_sync(_localQueue, ^{
 		
+<<<<<<< HEAD
 		// Add the address to the configuration
+=======
+		// Add the address to the configuration.
+>>>>>>> javerous/master
 		if ([_config addBlockedBuddy:address] == YES)
 			result = YES;
 	});
 	
+<<<<<<< HEAD
 	// Mark the buddy as blocked
+=======
+	// Mark the buddy as blocked.
+>>>>>>> javerous/master
 	if (result)
 	{
 		TCBuddy *buddy = [self buddyWithAddress:address];
 		
 		[buddy setBlocked:YES];
+<<<<<<< HEAD
 	}
+=======
+		
+		dispatch_async(_localQueue, ^{
+			[self _notify:TCCoreEventBuddyBlocked context:buddy];
+		});
+	}
+
+>>>>>>> javerous/master
 	
 	return result;
 }
@@ -671,17 +765,32 @@
 	
 	dispatch_sync(_localQueue, ^{
 		
+<<<<<<< HEAD
 		// Remove the address from the configuration
+=======
+		// Remove the address from the configuration.
+>>>>>>> javerous/master
 		if ([_config removeBlockedBuddy:address] == YES)
 			result = YES;
 	});
 	
+<<<<<<< HEAD
 	// Mark the buddy as un-blocked
+=======
+	// Mark the buddy as unblocked.
+>>>>>>> javerous/master
 	if (result)
 	{
 		TCBuddy *buddy = [self buddyWithAddress:address];
 		
 		[buddy setBlocked:NO];
+<<<<<<< HEAD
+=======
+		
+		dispatch_async(_localQueue, ^{
+			[self _notify:TCCoreEventBuddyUnblocked context:buddy];
+		});
+>>>>>>> javerous/master
 	}
 	
 	return result;
@@ -694,7 +803,10 @@
 	if (!_config)
 		return;
 	
+<<<<<<< HEAD
 	// XXX not thread safe
+=======
+>>>>>>> javerous/master
 	NSArray	*blocked = [_config blockedBuddies];
 	size_t	i, cnt = [blocked count];
 	
@@ -717,6 +829,33 @@
 
 
 /*
+<<<<<<< HEAD
+=======
+** TCCoreManager - Observers
+*/
+#pragma mark - TCCoreManager - Observers
+
+- (void)addObserver:(id <TCCoreManagerObserver>)observer
+{
+	if (!observer)
+		return;
+	
+	dispatch_async(_localQueue, ^{
+		[_observers addObject:observer];
+	});
+}
+
+- (void)removeObserver:(id <TCCoreManagerObserver>)observer
+{
+	dispatch_async(_localQueue, ^{
+		[_observers removeObject:observer];
+	});
+}
+
+
+
+/*
+>>>>>>> javerous/master
 ** TCCoreManager - TCConnectionDelegate
 */
 #pragma mark - TCCoreManager - TCConnectionDelegate
@@ -893,12 +1032,19 @@
 	if (!info)
 		return;
 	
+<<<<<<< HEAD
 	id <TCCoreManagerDelegate> delegate = self.delegate;
 	
 	if (delegate)
 	{
 		dispatch_async(_delegateQueue, ^{
 			[delegate torchatManager:self information:info];
+=======
+	for (id <TCCoreManagerObserver> observer in _observers)
+	{
+		dispatch_async(_externalQueue, ^{
+			[observer torchatManager:self information:info];
+>>>>>>> javerous/master
 		});
 	}
 }

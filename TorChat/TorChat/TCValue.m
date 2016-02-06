@@ -1,7 +1,11 @@
 /*
  *  TCValue.m
  *
+<<<<<<< HEAD
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -24,6 +28,7 @@
 
 
 /*
+<<<<<<< HEAD
  ** TCValue
  */
 #pragma mark - TCValue
@@ -38,11 +43,19 @@
 
 
 /*
+=======
+>>>>>>> javerous/master
 ** TCValue
 */
 #pragma mark - TCValue
 
 @implementation TCValue
+<<<<<<< HEAD
+=======
+{
+	__weak id _object;
+}
+>>>>>>> javerous/master
 
 + (TCValue *)valueWithWeakObject:(id)object
 {

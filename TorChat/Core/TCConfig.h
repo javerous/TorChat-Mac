@@ -1,7 +1,11 @@
 /*
  *  TCConfig.h
  *
+<<<<<<< HEAD
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -23,7 +27,10 @@
 #import <Foundation/Foundation.h>
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> javerous/master
 /*
 ** Defines
 */
@@ -58,7 +65,11 @@ typedef enum
 	TCConfigGetDefault,	// Value used when the item was never set
 	TCConfigGetDefined,	// Value used when the item was set
 	TCConfigGetReal		// Value to use in standard case (eg. defined / default automatic choise)
+<<<<<<< HEAD
 } TCConfigGet; // FIXME: use in all get_* functions
+=======
+} TCConfigGet;
+>>>>>>> javerous/master
 
 typedef enum
 {
@@ -66,12 +77,17 @@ typedef enum
 	TCConfigModeBasic
 } TCConfigMode;
 
+<<<<<<< HEAD
 
+=======
+// -- Localization --
+>>>>>>> javerous/master
 typedef enum
 {
 	TCConfigStringItemMyselfBuddy,
 } TCConfigStringItem;
 
+<<<<<<< HEAD
 typedef enum
 {
 	TConfigPathDomainReferal,	// Referal path.
@@ -87,6 +103,24 @@ typedef enum
 	TConfigPathPlaceStandard,	// Path is relative to standard OS X directories in ~.
 	TConfigPathPlaceAbsolute,	// Path is absolute.
 } TConfigPathPlace;
+=======
+// -- Paths --
+typedef enum
+{
+	TCConfigPathComponentReferal,		// Path used as referal.
+	TCConfigPathComponentTorBinary,		// Path to the tor binary (and its dependancies) directory.
+	TCConfigPathComponentTorData,		// Path to the tor data directory.
+	TCConfigPathComponentTorIdentity,	// Path to tor hidden service (buddy address)
+	TCConfigPathComponentDownloads,		// Path to the downloads directory.
+} TCConfigPathComponent;
+
+typedef enum
+{
+	TCConfigPathTypeReferal,		// Path is relative to referal.
+	TCConfigPathTypeStandard,	// Path is relative to standard OS X directories in ~.
+	TCConfigPathTypeAbsolute,	// Path is absolute.
+} TCConfigPathType;
+>>>>>>> javerous/master
 
 
 
@@ -155,10 +189,25 @@ typedef enum
 - (void)setClientName:(NSString *)name;
 
 // -- Paths --
+<<<<<<< HEAD
 - (NSString *)pathForDomain:(TConfigPathDomain)domain;
 - (BOOL)setDomain:(TConfigPathDomain)domain place:(TConfigPathPlace)place subpath:(NSString *)subpath;
+=======
+- (BOOL)setPathForComponent:(TCConfigPathComponent)component pathType:(TCConfigPathType)pathType path:(NSString *)path;
+- (NSString *)pathForComponent:(TCConfigPathComponent)component fullPath:(BOOL)fullPath;
+- (TCConfigPathType)pathTypeForComponent:(TCConfigPathComponent)component;
+
+- (id)addPathObserverForComponent:(TCConfigPathComponent)component queue:(dispatch_queue_t)queue usingBlock:(dispatch_block_t)block;
+- (void)removePathObserver:(id)observer;
+>>>>>>> javerous/master
 
 // -- Strings --
 - (NSString *)localizedString:(TCConfigStringItem)stringItem;
 
+<<<<<<< HEAD
+=======
+// -- Synchronize --
+- (void)synchronize;
+
+>>>>>>> javerous/master
 @end

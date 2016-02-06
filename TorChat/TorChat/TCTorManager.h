@@ -1,7 +1,11 @@
 /*
  *  TCTorManager.h
  *
+<<<<<<< HEAD
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,8 +24,11 @@
  *
  */
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> javerous/master
 #import <Cocoa/Cocoa.h>
 
 #import "TCConfig.h"
@@ -65,18 +72,39 @@ typedef enum
 // == TCTorManagerStart ==
 typedef enum
 {
+<<<<<<< HEAD
 	TCTorManagerEventStartHostname,
+=======
+	TCTorManagerEventStartBootstrapping,	// context: @{ @"progress" : NSNumber, @"summary" : NSString }
+	TCTorManagerEventStartHostname,
+	TCTorManagerEventStartURLSession,		// context: NSURLSession
+>>>>>>> javerous/master
 	TCTorManagerEventStartDone,
 } TCTorManagerEventStart;
 
 typedef enum
 {
+<<<<<<< HEAD
 	TCTorManagerErrorStartAlreadyRunning,
 	
+=======
+	TCTorManagerWarningStartCanceled,
+} TCTorManagerWarningStart;
+
+typedef enum
+{
+	TCTorManagerErrorStartAlreadyRunning,
+>>>>>>> javerous/master
 	TCTorManagerErrorStartConfiguration,
 	TCTorManagerErrorStartUnarchive,
 	TCTorManagerErrorStartSignature,
 	TCTorManagerErrorStartLaunch,
+<<<<<<< HEAD
+=======
+	TCTorManagerErrorStartControlConnect,
+	TCTorManagerErrorStartControlAuthenticate,
+	TCTorManagerErrorStartControlMonitor,
+>>>>>>> javerous/master
 } TCTorManagerErrorStart;
 
 
@@ -89,9 +117,13 @@ typedef enum
 typedef enum
 {
 	TCTorManagerErrorCheckUpdateTorNotRunning,
+<<<<<<< HEAD
 	TCTorManagerErrorCheckUpdateNetworkRequest,	// context: NSError
 	TCTorManagerErrorCheckUpdateBadServerReply,
 	TCTorManagerErrorCheckUpdateRemoteInfo,		// info: TCInfo (<operation error>)
+=======
+	TCTorManagerErrorRetrieveRemoteInfo,		// info: TCInfo (<operation error>)
+>>>>>>> javerous/master
 	TCTorManagerErrorCheckUpdateLocalSignature,	// info: TCInfo (<operation error>)
 
 	TCTorManagerErrorCheckUpdateNothingNew,
@@ -125,18 +157,32 @@ typedef enum
 // == TCTorManagerOperation ==
 typedef enum
 {
+<<<<<<< HEAD
 	TCTorManagerEventInfo,			// context: NSDictionary
 	TCTorManagerEventDone,
+=======
+	TCTorManagerEventOperationInfo,			// context: NSDictionary
+	TCTorManagerEventOperationDone,
+>>>>>>> javerous/master
 } TCTorManagerEventOperation;
 
 typedef enum
 {
+<<<<<<< HEAD
 	TCTorManagerErrorConfiguration,
 	TCTorManagerErrorIO,
 	TCTorManagerErrorNetwork,		// context
 	TCTorManagerErrorExtract,		// context: NSNumber (<tar result>)
 	TCTorManagerErrorSignature,		// context: NSString (<path to the problematic file>)
 	TCTorManagerErrorTor,			// context: NSNumber (<tor result>)
+=======
+	TCTorManagerErrorOperationConfiguration,
+	TCTorManagerErrorOperationIO,
+	TCTorManagerErrorOperationNetwork,		// context
+	TCTorManagerErrorOperationExtract,		// context: NSNumber (<tar result>)
+	TCTorManagerErrorOperationSignature,	// context: NSString (<path to the problematic file>)
+	TCTorManagerErrorOperationTor,			// context: NSNumber (<tor result>)
+>>>>>>> javerous/master
 
 	TCTorManagerErrorInternal
 } TCTorManagerErrorOperation;
@@ -155,6 +201,7 @@ typedef enum
 
 // -- Life --
 - (void)startWithHandler:(void (^)(TCInfo *info))handler;
+<<<<<<< HEAD
 - (void)stop;
 
 - (BOOL)isRunning;
@@ -166,6 +213,14 @@ typedef enum
 // -- Property --
 - (NSString *)hiddenHostname;
 
+=======
+- (void)stopWithCompletionHandler:(dispatch_block_t)handler;
+
+// -- Update --
+- (dispatch_block_t)checkForUpdateWithCompletionHandler:(void (^)(TCInfo *info))handler;
+- (dispatch_block_t)updateWithEventHandler:(void (^)(TCInfo *info))handler;
+
+>>>>>>> javerous/master
 // -- Events --
 @property (strong, atomic) void (^logHandler)(TCTorManagerLogKind kind, NSString *log);
 

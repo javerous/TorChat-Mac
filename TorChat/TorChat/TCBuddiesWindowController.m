@@ -1,7 +1,13 @@
 /*
+<<<<<<< HEAD
  *  TCBuddiesController.m
  *
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  TCBuddiesWindowController.m
+ *
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,7 +26,10 @@
  *
  */
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> javerous/master
 #import "TCBuddiesWindowController.h"
 
 // -- Core --
@@ -34,7 +43,11 @@
 
 // -- Interface --
 // > Controllers
+<<<<<<< HEAD
 #import "TCBuddyInfoWindowController.h"
+=======
+#import "TCBuddyInfoWindowsController.h"
+>>>>>>> javerous/master
 #import "TCChatWindowController.h"
 #import "TCFilesWindowController.h"
 
@@ -57,13 +70,20 @@
 #import "TCInfo+Render.h"
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> javerous/master
 /*
 ** TCBuddiesController - Private
 */
 #pragma mark - TCBuddiesController - Private
 
+<<<<<<< HEAD
 @interface TCBuddiesWindowController () <TCCoreManagerDelegate, TCDropButtonDelegate, TCBuddyDelegate, TCChatWindowControllerDelegate>
+=======
+@interface TCBuddiesWindowController () <TCCoreManagerObserver, TCBuddyObserver, TCDropButtonDelegate, TCChatWindowControllerDelegate>
+>>>>>>> javerous/master
 {
 	id <TCConfigInterface>	_configuration;
 	TCCoreManager		*_control;
@@ -77,6 +97,11 @@
 	BOOL				_running;
 	
 	NSDictionary		*_infos;
+<<<<<<< HEAD
+=======
+	
+	TCBuddyInfoWindowsController *_infoWindowsController;
+>>>>>>> javerous/master
 }
 
 // -- Properties --
@@ -150,8 +175,13 @@
 	if (self)
 	{
 		// Build an event dispatch queue
+<<<<<<< HEAD
 		_localQueue = dispatch_queue_create("com.torchat.cocoa.buddies.local", DISPATCH_QUEUE_SERIAL);
 		_noticeQueue = dispatch_queue_create("com.torchat.cocoa.buddies.notice", DISPATCH_QUEUE_SERIAL);
+=======
+		_localQueue = dispatch_queue_create("com.torchat.app.buddies.local", DISPATCH_QUEUE_SERIAL);
+		_noticeQueue = dispatch_queue_create("com.torchat.app.buddies.notice", DISPATCH_QUEUE_SERIAL);
+>>>>>>> javerous/master
 
 		// Build array of cocoa buddy
 		_buddies = [[NSMutableArray alloc] init];
@@ -165,7 +195,11 @@
 
 - (void)dealloc
 {
+<<<<<<< HEAD
 	TCDebugLog("TCBuddieController dealloc");
+=======
+	TCDebugLog(@"TCBuddieController dealloc");
+>>>>>>> javerous/master
 	
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -193,17 +227,24 @@
 */
 #pragma mark - TCBuddiesController - Running
 
+<<<<<<< HEAD
 - (void)startWithConfiguration:(id <TCConfigInterface>)configuration
 {
 	NSImage *avatar;
 	
 	if (!configuration)
+=======
+- (void)startWithConfiguration:(id <TCConfigInterface>)configuration coreManager:(TCCoreManager *)coreMananager
+{
+	if (!configuration || !coreMananager)
+>>>>>>> javerous/master
 	{
 		NSBeep();
 		[NSApp terminate:self];
 		return;
 	}
 	
+<<<<<<< HEAD
 	if (_running)
 		return;
 	
@@ -257,10 +298,70 @@
 	
 	// Start the controller
 	[_control start];
+=======
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		if (_running)
+			return;
+		
+		_running = YES;
+		
+		// Load window.
+		[self window];
+		
+		// Hold the config & core.
+		_configuration = configuration;
+		_control = coreMananager;
+		
+		// -- Init window content --
+		// > Show load indicator.
+		[_indicator startAnimation:self];
+		
+		// > Init title.
+		[self updateTitleUI];
+		
+		// > Init status
+		[self updateStatusUI:[_control status]];
+		
+		// > Init avatar.
+		NSImage *avatar = [[_control profileAvatar] imageRepresentation];
+		
+		if ([[avatar representations] count] > 0)
+			[_imAvatar setImage:avatar];
+		else
+		{
+			NSImage *img = [NSImage imageNamed:NSImageNameUser];
+			
+			[img setSize:NSMakeSize(64, 64)];
+		 
+			[_imAvatar setImage:img];
+		}
+		
+		// > Init table file drag.
+		[_tableView registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
+		[_tableView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:NO];
+		
+		// > Redirect avatar drop.
+		[_imAvatar setDelegate:self];
+		
+		// Create windows info controller.
+		_infoWindowsController = [[TCBuddyInfoWindowsController alloc] initWithCoreManager:coreMananager];
+		
+		// Show the window.
+		[self showWindow:nil];
+		
+		// Add ourself as observer.
+		[_control addObserver:self];
+		
+		// Start the controller.
+		[_control start];
+	});
+>>>>>>> javerous/master
 }
 
 - (void)stop
 {
+<<<<<<< HEAD
 	if (!_running)
 		return;
 	
@@ -313,6 +414,37 @@
 {
 	// Remove
 	return [_control removeBlockedBuddy:address];
+=======
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		if (!_running)
+			return;
+		
+		// Clean buddies.
+		for (TCBuddy *buddy in _buddies)
+		{
+			[buddy removeObserver:self];
+			[_infoWindowsController closeInfoForBuddy:buddy];
+		}
+		
+		[_buddies removeAllObjects];
+		[_tableView reloadData];
+		
+		// Clean controller.
+		if (_control)
+		{
+			[_control removeObserver:self];
+			_control = nil;
+		}
+		
+		// Set status to offline.
+		[_imStatus selectItemWithTag:0];
+		[self updateTitleUI];
+		
+		// Update status.
+		_running = NO;
+	});
+>>>>>>> javerous/master
 }
 
 
@@ -425,12 +557,20 @@
 /*
 ** TCBuddiesController - TCCoreManagerDelegate
 */
+<<<<<<< HEAD
 #pragma mark - TCBuddiesController - TCCoreManagerDelegate
+=======
+#pragma mark - TCBuddiesController - TCCoreManagerObserver
+>>>>>>> javerous/master
 
 - (void)torchatManager:(TCCoreManager *)manager information:(TCInfo *)info
 {
 	// Log the item
+<<<<<<< HEAD
 	[[TCLogsManager sharedManager] addGlobalLogEntry:[info render]];
+=======
+	[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
+>>>>>>> javerous/master
 	
 	// Action information
 	if (info.kind == TCInfoInfo)
@@ -457,7 +597,11 @@
 				
 			case TCCoreEventStatus:
 			{
+<<<<<<< HEAD
 				TCStatus	status = (TCStatus)[(NSNumber *)info.context intValue];
+=======
+				TCStatus status = (TCStatus)[(NSNumber *)info.context intValue];
+>>>>>>> javerous/master
 				
 				dispatch_async(dispatch_get_main_queue(), ^{
 					[self updateStatusUI:status];
@@ -482,18 +626,26 @@
 				// Set the new avatar to the chat window.
 				[[TCChatWindowController sharedController] setLocalAvatar:final forIdentifier:[_configuration selfAddress]];
 				
+<<<<<<< HEAD
 				// Notify the change.
 				dispatch_async(_noticeQueue, ^{
 					[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesWindowControllerAvatarChanged object:manager userInfo:@{ @"avatar" : final }];
 				});
 				
+=======
+>>>>>>> javerous/master
 				break;
 			}
 				
 			case TCCoreEventProfileName:
 			{
+<<<<<<< HEAD
 				dispatch_async(dispatch_get_main_queue(), ^{
 					// Update Title
+=======
+				// Update Title.
+				dispatch_async(dispatch_get_main_queue(), ^{
+>>>>>>> javerous/master
 					[self updateTitleUI];
 				});
 				
@@ -507,7 +659,11 @@
 			{
 				TCBuddy *buddy = (TCBuddy *)info.context;
 				
+<<<<<<< HEAD
 				buddy.delegate = self;
+=======
+				[buddy addObserver:self];
+>>>>>>> javerous/master
 				
 				dispatch_async(dispatch_get_main_queue(), ^{
 					
@@ -515,16 +671,53 @@
 					
 					[[TCChatWindowController sharedController] setLocalAvatar:[_imAvatar image] forIdentifier:[buddy address]];
 					
+<<<<<<< HEAD
 					[self reloadBuddy:nil];
+=======
+					[self _reloadBuddy:nil];
+>>>>>>> javerous/master
+				});
+				
+				break;
+			}
+				
+<<<<<<< HEAD
+			case TCCoreEventClientStarted:
+				break;
+				
+			case TCCoreEventClientStopped:
+=======
+			case TCCoreEventBuddyRemove:
+			{
+				TCBuddy *buddy = info.context;
+				
+				[buddy removeObserver:self];
+				
+				dispatch_async(dispatch_get_main_queue(), ^{
+					[_buddies removeObjectIdenticalTo:buddy];
+					[_tableView reloadData];
+				});
+
+				break;
+			}
+				
+			case TCCoreEventBuddyBlocked:
+			case TCCoreEventBuddyUnblocked:
+			{
+				TCBuddy *buddy = info.context;
+				
+				// Reload table.
+				dispatch_async(dispatch_get_main_queue(), ^{
+					[self _reloadBuddy:buddy];
 				});
 				
 				break;
 			}
 				
 			case TCCoreEventClientStarted:
-				break;
-				
 			case TCCoreEventClientStopped:
+			
+>>>>>>> javerous/master
 				break;
 		}
 	}
@@ -533,6 +726,7 @@
 
 
 /*
+<<<<<<< HEAD
 ** TCBuddiesController - TCBuddyDelegate
 */
 #pragma mark - TCBuddiesController - TCBuddyDelegate
@@ -542,6 +736,18 @@
 	// Add the error in the error manager
 	[[TCLogsManager sharedManager] addBuddyLogEntryFromAddress:[aBuddy address] name:[aBuddy finalName] andText:[info render]];
 	
+=======
+** TCBuddiesController - TCBuddyObserver
+*/
+#pragma mark - TCBuddiesController - TCBuddyObserver
+
+- (void)buddy:(TCBuddy *)aBuddy information:(TCInfo *)info
+{
+	// Add the info in the log manager.
+	[[TCLogsManager sharedManager] addBuddyLogWithAddress:[aBuddy address] name:[aBuddy finalName] info:info];
+	
+	// Handle info.
+>>>>>>> javerous/master
 	dispatch_async(_localQueue, ^{
 		
 		if (info.kind == TCInfoInfo)
@@ -562,12 +768,16 @@
 					
 					// Reload buddies table.
 					dispatch_async(dispatch_get_main_queue(), ^{
+<<<<<<< HEAD
 						[self reloadBuddy:aBuddy];
 					});
 					
 					// Notify.
 					dispatch_async(_noticeQueue, ^{
 						[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedStatusNotification object:aBuddy userInfo:@{ @"status" : @(TCStatusOffline) }];
+=======
+						[self _reloadBuddy:aBuddy];
+>>>>>>> javerous/master
 					});
 					
 					break;
@@ -578,8 +788,13 @@
 					
 				case TCBuddyEventStatus:
 				{
+<<<<<<< HEAD
 					TCStatus  status = (TCStatus)[(NSNumber *)info.context intValue];
 					NSString		*statusStr = @"";
+=======
+					TCStatus	status = (TCStatus)[(NSNumber *)info.context intValue];
+					NSString	*statusStr = @"";
+>>>>>>> javerous/master
 					
 					// Send status to chat window.
 					switch (status)
@@ -605,6 +820,7 @@
 					
 					// Reload buddies table.
 					dispatch_async(dispatch_get_main_queue(), ^{
+<<<<<<< HEAD
 						[self reloadBuddy:aBuddy];
 					});
 					
@@ -613,6 +829,11 @@
 						[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedStatusNotification object:aBuddy userInfo:@{ @"status" : info.context }];
 					});
 					
+=======
+						[self _reloadBuddy:aBuddy];
+					});
+
+>>>>>>> javerous/master
 					break;
 				}
 					
@@ -626,21 +847,30 @@
 					
 					// Reload table.
 					dispatch_async(dispatch_get_main_queue(), ^{
+<<<<<<< HEAD
 						[self reloadBuddy:aBuddy];
+=======
+						[self _reloadBuddy:aBuddy];
+>>>>>>> javerous/master
 					});
 					
 					// Set the new avatar to the chat window.
 					[[TCChatWindowController sharedController] setRemoteAvatar:avatar forIdentifier:[aBuddy address]];
+<<<<<<< HEAD
 					
 					// Notify of the new avatar.
 					dispatch_async(_noticeQueue, ^{
 						[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedAvatarNotification object:aBuddy userInfo:@{ @"avatar" : avatar }];
 					});
 					
+=======
+
+>>>>>>> javerous/master
 					break;
 				}
 					
 				case TCBuddyEventProfileText:
+<<<<<<< HEAD
 				{
 					NSString *text = info.context;
 					
@@ -654,6 +884,9 @@
 					
 					break;
 				}
+=======
+					break;
+>>>>>>> javerous/master
 					
 				case TCBuddyEventProfileName:
 				{
@@ -664,12 +897,16 @@
 					
 					// Reload table.
 					dispatch_async(dispatch_get_main_queue(), ^{
+<<<<<<< HEAD
 						[self reloadBuddy:aBuddy];
 					});
 					
 					// Notify.
 					dispatch_async(_noticeQueue, ^{
 						[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedNameNotification object:aBuddy userInfo:@{ @"name" : name }];
+=======
+						[self _reloadBuddy:aBuddy];
+>>>>>>> javerous/master
 					});
 					
 					break;
@@ -697,12 +934,16 @@
 					
 					// Reload table.
 					dispatch_async(dispatch_get_main_queue(), ^{
+<<<<<<< HEAD
 						[self reloadBuddy:aBuddy];
 					});
 					
 					// Notify.
 					dispatch_async(_noticeQueue, ^{
 						[[NSNotificationCenter defaultCenter] postNotificationName:TCCocoaBuddyChangedAliasNotification object:aBuddy userInfo:@{ @"alias" : alias }];
+=======
+						[self _reloadBuddy:aBuddy];
+>>>>>>> javerous/master
 					});
 					
 					break;
@@ -711,6 +952,7 @@
 				case TCBuddyEventNotes:
 					break;
 					
+<<<<<<< HEAD
 				case TCBuddyEventBlocked:
 				{
 					NSNumber *blocked = info.context;
@@ -760,6 +1002,13 @@
 					
 					break;
 				}
+=======
+				case TCBuddyEventVersion:
+					break;
+					
+				case TCBuddyEventClient:
+					break;
+>>>>>>> javerous/master
 					
 				case TCBuddyEventFileSendStart:
 				{
@@ -1085,6 +1334,24 @@
 	[self updateTitleUI];
 }
 
+<<<<<<< HEAD
+=======
+- (IBAction)doShowInfo:(id)sender
+{
+	// Get selected buddy.
+	TCBuddy *buddy = [self selectedBuddy];
+	
+	if (!buddy)
+	{
+		NSBeep();
+		return;
+	}
+	
+	// Show.
+	[_infoWindowsController showInfoForBuddy:buddy];
+}
+
+>>>>>>> javerous/master
 - (IBAction)doRemove:(id)sender
 {
 	NSInteger	row = [_tableView selectedRow];
@@ -1094,6 +1361,7 @@
 	if (row < 0 || row >= [_buddies count])
 		return;
 	
+<<<<<<< HEAD
 	// Get the buddy address
 	buddy = [_buddies objectAtIndex:(NSUInteger)row];
 	address = [buddy address];
@@ -1109,6 +1377,13 @@
 	[_tableView reloadData];
 	
 	// Remove the buddy from the controller
+=======
+	// Get the buddy address.
+	buddy = [_buddies objectAtIndex:(NSUInteger)row];
+	address = [buddy address];
+
+	// Remove the buddy from the controller.
+>>>>>>> javerous/master
 	[_control removeBuddy:address];
 }
 
@@ -1217,18 +1492,24 @@
 	
 	[_control setProfileName:name];
 	
+<<<<<<< HEAD
 	dispatch_async(_noticeQueue, ^{
 		[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesWindowControllerNameChanged object:self userInfo:@{ @"name" : name }];
 	});
 	
+=======
+>>>>>>> javerous/master
 	// -- Hold text --
 	NSString *text = [[_profileText textStorage] mutableString];
 	
 	[_control setProfileText:text];
+<<<<<<< HEAD
 	
 	dispatch_async(_noticeQueue, ^{
 		[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesWindowControllerTextChanged object:self userInfo:@{ @"text" : text }];
 	});
+=======
+>>>>>>> javerous/master
 }
 
 - (IBAction)doProfileCancel:(id)sender
@@ -1287,7 +1568,11 @@
 		[_buddies addObjectsFromArray:temp_off];
 		
 		// Reload table
+<<<<<<< HEAD
 		[self reloadBuddy:nil];
+=======
+		[self _reloadBuddy:nil];
+>>>>>>> javerous/master
 	});
 }
 
@@ -1297,9 +1582,13 @@
 		return;
 	
 	TCChatWindowController	*chatCtrl = [TCChatWindowController sharedController];
+<<<<<<< HEAD
 	NSString				*identifier;
 	
 	identifier = [buddy address];
+=======
+	NSString				*address = [buddy address];
+>>>>>>> javerous/master
 	
 	// Start chat.
 	TCImage *tcImage = [buddy profileAvatar];
@@ -1308,11 +1597,19 @@
 	if (!image)
 		image = [NSImage imageNamed:NSImageNameUser];
 	
+<<<<<<< HEAD
 	[chatCtrl startChatWithIdentifier:identifier name:[buddy finalName] localAvatar:[_imAvatar image] remoteAvatar:image context:buddy delegate:self];
 		
 	// Select it.
 	if (select)
 		[chatCtrl selectChatWithIdentifier:identifier];
+=======
+	[chatCtrl startChatWithIdentifier:address name:[buddy finalName] localAvatar:[_imAvatar image] remoteAvatar:image context:buddy delegate:self];
+		
+	// Select it.
+	if (select)
+		[chatCtrl selectChatWithIdentifier:address];
+>>>>>>> javerous/master
 }
 
 - (TCBuddy *)selectedBuddy
@@ -1387,8 +1684,15 @@
 	[[_imTitle itemAtIndex:0] setTitle:content];
 }
 
+<<<<<<< HEAD
 - (void)reloadBuddy:(TCBuddy *)buddy
 {
+=======
+- (void)_reloadBuddy:(TCBuddy *)buddy
+{
+	// > main queue <
+	
+>>>>>>> javerous/master
 	if (buddy)
 	{
 		NSUInteger index = [_buddies indexOfObjectIdenticalTo:buddy];
@@ -1396,7 +1700,11 @@
 		if (index != NSNotFound)
 			[_tableView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 		else
+<<<<<<< HEAD
 			[self reloadBuddy:nil];
+=======
+			[self _reloadBuddy:nil];
+>>>>>>> javerous/master
 	}
 	else
 	{

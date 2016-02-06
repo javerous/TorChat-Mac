@@ -1,7 +1,13 @@
 /*
+<<<<<<< HEAD
  *  TCBuddy.cpp
  *
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  TCBuddy.m
+ *
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -45,7 +51,10 @@
 #import "NSData+TCTools.h"
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> javerous/master
 /*
 ** Defines
 */
@@ -165,9 +174,12 @@ static char gLocalQueueContext;
 	// > Command
 	NSMutableArray		*_bufferedCommands;
 	
+<<<<<<< HEAD
 	// Delegate
 	dispatch_queue_t	_delegateQueue;
 	
+=======
+>>>>>>> javerous/master
 	// > Profile
 	TCImage				*_profileAvatar;
 	NSString			*_profileName;
@@ -180,6 +192,13 @@ static char gLocalQueueContext;
 	// > File session
 	NSMutableDictionary	*_freceive;
 	NSMutableDictionary	*_fsend;
+<<<<<<< HEAD
+=======
+	
+	// > Observers
+	NSHashTable			*_observers;
+	dispatch_queue_t	_externalQueue;
+>>>>>>> javerous/master
 }
 
 // -- Send Low Command --
@@ -257,11 +276,19 @@ static char gLocalQueueContext;
 		_address = address;
 		_notes = notes;
 		
+<<<<<<< HEAD
 		TCDebugLog("Buddy (%s) - New", [_address UTF8String]);
 		
 		// Build queue
 		_localQueue = dispatch_queue_create("com.torchat.core.buddy.local", DISPATCH_QUEUE_SERIAL);
 		_delegateQueue = dispatch_queue_create("com.torchat.core.buddy.delegate", DISPATCH_QUEUE_SERIAL);
+=======
+		TCDebugLog(@"Buddy (%@) - New", _address);
+		
+		// Build queue
+		_localQueue = dispatch_queue_create("com.torchat.core.buddy.local", DISPATCH_QUEUE_SERIAL);
+		_externalQueue = dispatch_queue_create("com.torchat.core.buddy.external", DISPATCH_QUEUE_SERIAL);
+>>>>>>> javerous/master
 		
 		dispatch_queue_set_specific(_localQueue, &gQueueIdentityKey, &gLocalQueueContext, NULL);
 		
@@ -271,6 +298,11 @@ static char gLocalQueueContext;
 		
 		_bufferedCommands = [[NSMutableArray alloc] init];
 		
+<<<<<<< HEAD
+=======
+		_observers = [NSHashTable weakObjectsHashTable];
+		
+>>>>>>> javerous/master
 		// Create parser.
 		_parser = [[TCParser alloc] initWithParsingResult:self];
 		[_parser setDelegate:self];
@@ -304,7 +336,11 @@ static char gLocalQueueContext;
 		
 		_random = [[NSString alloc] initWithCString:rnd encoding:NSASCIIStringEncoding];
 		
+<<<<<<< HEAD
 		TCDebugLog("Buddy (%s) - Random: %s", [_address UTF8String], rnd);
+=======
+		TCDebugLog(@"Buddy (%@) - Random: %s", _address, rnd);
+>>>>>>> javerous/master
 	}
 	
 	return self;
@@ -312,7 +348,11 @@ static char gLocalQueueContext;
 
 - (void)dealloc
 {
+<<<<<<< HEAD
 	TCDebugLog("TCBuddy Destructor");
+=======
+	TCDebugLog(@"TCBuddy dealloc");
+>>>>>>> javerous/master
 	
 	// Clean out connections
 	[_outSocket stop];
@@ -337,7 +377,11 @@ static char gLocalQueueContext;
 		if (_blocked)
 			return;
 		
+<<<<<<< HEAD
 		TCDebugLog( "Buddy (%s) - Start", [_address UTF8String]);
+=======
+		TCDebugLog(@"Buddy (%@) - Start", _address);
+>>>>>>> javerous/master
 		
 		// -- Make a connection to Tor proxy --
 		struct addrinfo	hints, *res, *res0;
@@ -579,11 +623,15 @@ static char gLocalQueueContext;
 - (void)setBlocked:(BOOL)blocked
 {
 	dispatch_async(_localQueue, ^{
+<<<<<<< HEAD
 		
 		_blocked = blocked;
 		
 		// Notify of the change
 		[self _notify:TCBuddyEventBlocked context:@(blocked)];
+=======
+		_blocked = blocked;
+>>>>>>> javerous/master
 	});
 }
 
@@ -1057,6 +1105,33 @@ static char gLocalQueueContext;
 
 
 /*
+<<<<<<< HEAD
+=======
+** TCBuddy - Observers
+*/
+#pragma mark - Observers
+
+- (void)addObserver:(id <TCBuddyObserver>)observer
+{
+	if (!observer)
+		return;
+	
+	dispatch_async(_localQueue, ^{
+		[_observers addObject:observer];
+	});
+}
+
+- (void)removeObserver:(id <TCBuddyObserver>)observer
+{
+	dispatch_async(_localQueue, ^{
+		[_observers removeObject:observer];
+	});
+}
+
+
+
+/*
+>>>>>>> javerous/master
 ** TCBuddy - TCSocketDelegate
 */
 #pragma mark - TCSocketDelegate
@@ -1314,7 +1389,11 @@ static char gLocalQueueContext;
 	NSString *sfilename_2 = [sfilename_1 stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
 	
 	// Get the download folder
+<<<<<<< HEAD
 	NSString *downPath = [[_config pathForDomain:TConfigPathDomainDownloads] stringByAppendingPathComponent:_address];
+=======
+	NSString *downPath = [[_config pathForComponent:TCConfigPathComponentDownloads fullPath:YES] stringByAppendingPathComponent:_address];
+>>>>>>> javerous/master
 	
 	[[NSFileManager defaultManager] createDirectoryAtPath:downPath withIntermediateDirectories:YES attributes:nil error:nil];
 	
@@ -2043,11 +2122,20 @@ static char gLocalQueueContext;
 	if (!info)
 		return;
 	
+<<<<<<< HEAD
 	id <TCBuddyDelegate> delegate = _delegate;
 	
 	dispatch_async(_delegateQueue, ^{
 		[delegate buddy:self event:info];
 	});
+=======
+	for (id <TCBuddyObserver> observer in _observers)
+	{
+		dispatch_async(_externalQueue, ^{
+			[observer buddy:self information:info];
+		});
+	}
+>>>>>>> javerous/master
 }
 
 - (NSNumber *)_status

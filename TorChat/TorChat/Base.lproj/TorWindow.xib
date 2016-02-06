@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10089" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10089"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="TCTorWindowController">
+            <connections>
+                <outlet property="cancelButton" destination="crw-8g-Fu9" id="LEt-eO-t58"/>
+                <outlet property="progressIndicator" destination="eqn-9Y-Ymx" id="AbE-Tc-IL7"/>
+                <outlet property="summaryField" destination="ld0-OB-a08" id="rPb-Rg-lWP"/>
+                <outlet property="window" destination="QvC-M9-y7g" id="gn1-Uw-Phn"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <window title="Tor" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
+            <windowStyleMask key="styleMask" titled="YES"/>
+            <rect key="contentRect" x="196" y="240" width="495" height="140"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+            <view key="contentView" id="EiT-Mj-1SZ">
+                <rect key="frame" x="0.0" y="0.0" width="495" height="140"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <progressIndicator wantsLayer="YES" maxValue="100" indeterminate="YES" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="eqn-9Y-Ymx">
+                        <rect key="frame" x="102" y="60" width="373" height="20"/>
+                    </progressIndicator>
+                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="yh8-hP-98C">
+                        <rect key="frame" x="20" y="56" width="64" height="64"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="64" id="5U8-mc-GEs"/>
+                            <constraint firstAttribute="width" constant="64" id="t2n-4i-OiQ"/>
+                        </constraints>
+                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="tor-logo" id="o4q-Jc-2er"/>
+                    </imageView>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ZZa-t8-anr">
+                        <rect key="frame" x="100" y="93" width="185" height="17"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Tor is launching. Please wait." id="6R9-3S-cV6">
+                            <font key="font" size="13" name="Helvetica-Bold"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="crw-8g-Fu9">
+                        <rect key="frame" x="399" y="13" width="82" height="32"/>
+                        <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="zSc-Du-Cy8">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="doCancel:" target="-2" id="z5m-gX-nh9"/>
+                        </connections>
+                    </button>
+                    <textField hidden="YES" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ld0-OB-a08">
+                        <rect key="frame" x="100" y="49" width="179" height="14"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;SUMMARY-DONT-TRANSLATE&gt;" id="j3E-dv-eMP">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="yh8-hP-98C" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" constant="20" id="1fr-J9-Ddn"/>
+                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="ZZa-t8-anr" secondAttribute="trailing" constant="20" symbolic="YES" id="4W2-Nj-rCp"/>
+                    <constraint firstItem="ZZa-t8-anr" firstAttribute="leading" secondItem="yh8-hP-98C" secondAttribute="trailing" constant="18" id="6cL-BT-Ofa"/>
+                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="ld0-OB-a08" secondAttribute="trailing" constant="20" symbolic="YES" id="EsK-1f-gmJ"/>
+                    <constraint firstItem="ZZa-t8-anr" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" constant="30" id="IKu-KT-fwq"/>
+                    <constraint firstAttribute="trailing" secondItem="eqn-9Y-Ymx" secondAttribute="trailing" constant="20" symbolic="YES" id="IpN-KZ-R6w"/>
+                    <constraint firstItem="crw-8g-Fu9" firstAttribute="trailing" secondItem="eqn-9Y-Ymx" secondAttribute="trailing" id="LGh-rP-xeq"/>
+                    <constraint firstItem="ld0-OB-a08" firstAttribute="top" secondItem="eqn-9Y-Ymx" secondAttribute="bottom" constant="-2" id="TUy-EZ-Xrs"/>
+                    <constraint firstItem="ld0-OB-a08" firstAttribute="leading" secondItem="eqn-9Y-Ymx" secondAttribute="leading" id="eXL-Ep-qf1"/>
+                    <constraint firstItem="eqn-9Y-Ymx" firstAttribute="top" secondItem="ZZa-t8-anr" secondAttribute="bottom" constant="14" id="kco-56-5FW"/>
+                    <constraint firstItem="yh8-hP-98C" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="20" id="kn6-x8-a39"/>
+                    <constraint firstAttribute="bottom" secondItem="crw-8g-Fu9" secondAttribute="bottom" constant="20" symbolic="YES" id="oG8-i8-sMS"/>
+                    <constraint firstItem="eqn-9Y-Ymx" firstAttribute="leading" secondItem="ZZa-t8-anr" secondAttribute="leading" id="piL-9x-70r"/>
+                </constraints>
+            </view>
+            <point key="canvasLocation" x="680.5" y="346"/>
+        </window>
+    </objects>
+    <resources>
+        <image name="tor-logo" width="64" height="64"/>
+    </resources>
+</document>

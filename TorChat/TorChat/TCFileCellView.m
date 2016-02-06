@@ -1,7 +1,11 @@
 /*
  *  TCFileCellView.m
  *
+<<<<<<< HEAD
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,12 +24,16 @@
  *
  */
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> javerous/master
 #import "TCFileCellView.h"
 
 #import "TCButton.h"
 #import "TCFilesCommon.h"
+<<<<<<< HEAD
 
 
 
@@ -36,6 +44,9 @@
 
 static NSString *NSStringFromFileSize(uint64_t size);
 
+=======
+#import "TCAmountHelper.h"
+>>>>>>> javerous/master
 
 
 /*
@@ -124,7 +135,11 @@ static NSString *NSStringFromFileSize(uint64_t size);
 	else if (way == tcfile_download)
 		directionText = NSLocalizedString(@"file_progress_from", @"");
 	
+<<<<<<< HEAD
 	statusText = [NSString stringWithFormat:@"%@ %@ (%@) - %@ %@ %@", directionText, buddyName, buddyAddress, NSStringFromFileSize(fileCompletedSize), NSLocalizedString(@"file_progress_of", @""), NSStringFromFileSize(fileSize)];
+=======
+	statusText = [NSString stringWithFormat:@"%@ %@ (%@) - %@ %@ %@", directionText, buddyName, buddyAddress, TCStringFromBytesAmount(fileCompletedSize), NSLocalizedString(@"file_progress_of", @""), TCStringFromBytesAmount(fileSize)];
+>>>>>>> javerous/master
 
 	[_transferStatusField setTextColor:txtColor];
 	[_transferStatusField setStringValue:statusText];
@@ -159,6 +174,7 @@ static NSString *NSStringFromFileSize(uint64_t size);
 }
 
 @end
+<<<<<<< HEAD
 
 
 
@@ -225,3 +241,5 @@ static NSString *NSStringFromFileSize(uint64_t size)
 	return [NSString stringWithFormat:@"0 %@", NSLocalizedString(@"file_b", @"")];
 }
 
+=======
+>>>>>>> javerous/master

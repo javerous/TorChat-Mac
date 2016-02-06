@@ -1,7 +1,11 @@
 /*
  *  TCDebugLog.h
  *
+<<<<<<< HEAD
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -24,7 +28,15 @@
 # define TCDEBUGLOG_H_
 
 # ifdef DEBUG
+<<<<<<< HEAD
 #	define TCDebugLog(Str, Arg...) fprintf(stderr, Str"\n", ## Arg)
+=======
+#   if __OBJC__
+#	  define TCDebugLog(Str, Arg...) NSLog(Str, ## Arg)
+#   else
+#	  define TCDebugLog(Str, Arg...) fprintf(stderr, Str"\n", ## Arg)
+#   endif
+>>>>>>> javerous/master
 #else
 #	define TCDebugLog(Str, ...) ((void)0)
 # endif

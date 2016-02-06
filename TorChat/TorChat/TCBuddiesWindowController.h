@@ -1,7 +1,13 @@
 /*
+<<<<<<< HEAD
  *   TCBuddiesWindowController.h
  *
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  TCBuddiesWindowController.h
+ *
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,8 +26,11 @@
  *
  */
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> javerous/master
 #import <Cocoa/Cocoa.h>
 
 #import "TCConfigInterface.h"
@@ -46,6 +55,7 @@
 #define  TCBuddiesWindowControllerSelectChanged		@"TCBuddiesWindowControllerSelectChanged"
 #define  TCBuddiesWindowControllerBuddyKey			@"buddy"
 
+<<<<<<< HEAD
 #define  TCBuddiesWindowControllerAvatarChanged		@"TCBuddiesWindowControllerAvatarChanged"
 #define  TCBuddiesWindowControllerNameChanged		@"TCBuddiesWindowControllerNameChanged"
 #define  TCBuddiesWindowControllerTextChanged		@"TCBuddiesWindowControllerTextChanged"
@@ -65,6 +75,8 @@
 #define	TCCocoaBuddyChangedBlockedNotification		@"TCCocoaBuddyChangedBlocked"
 
 
+=======
+>>>>>>> javerous/master
 
 
 /*
@@ -78,6 +90,10 @@
 + (TCBuddiesWindowController *)sharedController;
 
 // -- IBAction --
+<<<<<<< HEAD
+=======
+- (IBAction)doShowInfo:(id)sender;
+>>>>>>> javerous/master
 - (IBAction)doRemove:(id)sender;
 - (IBAction)doAdd:(id)sender;
 - (IBAction)doChat:(id)sender;
@@ -92,6 +108,7 @@
 - (TCBuddy *)selectedBuddy;
 
 // -- Running --
+<<<<<<< HEAD
 - (void)stop;
 - (void)startWithConfiguration:(id <TCConfigInterface>)configuration;
 
@@ -99,4 +116,8 @@
 - (BOOL)addBlockedBuddy:(NSString *)address;
 - (BOOL)removeBlockedBuddy:(NSString *)address;
 
+=======
+- (void)startWithConfiguration:(id <TCConfigInterface>)configuration coreManager:(TCCoreManager *)coreMananager;
+- (void)stop;
+>>>>>>> javerous/master
 @end

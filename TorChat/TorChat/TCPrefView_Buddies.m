@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 //
 //  TCPrefsView_Buddies.m
 //  TorChat
@@ -10,6 +11,33 @@
 
 #import "TCBuddiesWindowController.h"
 
+=======
+/*
+ *  TCPrefView_Buddies.m
+ *
+ *  Copyright 2016 Avérous Julien-Pierre
+ *
+ *  This file is part of TorChat.
+ *
+ *  TorChat is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  TorChat is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with TorChat.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+#import "TCPrefView_Buddies.h"
+
+#import "TCCoreManager.h"
+>>>>>>> javerous/master
 
 
 /*
@@ -17,7 +45,11 @@
 */
 #pragma mark - TCPrefView_Buddies - Private
 
+<<<<<<< HEAD
 @interface TCPrefView_Buddies ()
+=======
+@interface TCPrefView_Buddies () <TCCoreManagerObserver>
+>>>>>>> javerous/master
 
 @property (strong, nonatomic) IBOutlet NSTableView	*tableView;
 @property (strong, nonatomic) IBOutlet NSButton		*removeButton;
@@ -72,6 +104,7 @@
 	// Load view.
 	[self view];
 	
+<<<<<<< HEAD
 	// Register notifications.
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddyBlockedChanged:) name:TCCocoaBuddyChangedBlockedNotification object:nil];
 }
@@ -79,6 +112,17 @@
 - (void)saveConfig
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
+=======
+	// Observe core info.
+	[self.core addObserver:self];
+}
+
+- (BOOL)saveConfig
+{
+	[self.core removeObserver:self];
+	
+	return NO;
+>>>>>>> javerous/master
 }
 
 
@@ -96,15 +140,23 @@
 	// Show add window
 	[_addBlockedField setStringValue:@""];
 	
+<<<<<<< HEAD
 	[[NSApplication sharedApplication] beginSheet:_addBlockedWindow modalForWindow:self.view.window modalDelegate:nil didEndSelector:NULL contextInfo:NULL];
+=======
+	[self.view.window beginSheet:_addBlockedWindow completionHandler:nil];
+>>>>>>> javerous/master
 }
 
 
 - (IBAction)doAddBlockedCancel:(id)sender
 {
+<<<<<<< HEAD
 	// Close
 	[[NSApplication sharedApplication] endSheet:_addBlockedWindow];
 	[_addBlockedWindow orderOut:self];
+=======
+	[self.view.window endSheet:_addBlockedWindow];
+>>>>>>> javerous/master
 }
 
 - (IBAction)doAddBlockedOK:(id)sender
@@ -116,6 +168,7 @@
 	
 	address = [_addBlockedField stringValue];
 	
+<<<<<<< HEAD
 	// Add on controller
 	// XXX Here, we break the fact that config is local to this view,
 	//	and it will not necessarily the one used by the controller in the future.
@@ -133,6 +186,20 @@
 		[[NSApplication sharedApplication] endSheet:_addBlockedWindow];
 		[_addBlockedWindow orderOut:self];
 	}
+=======
+	// Add on blocked list.
+	if ([self.core addBlockedBuddy:address] == NO)
+	{
+		NSBeep();
+		return;
+	}
+	
+	// Reload list.
+	[_tableView reloadData];
+		
+	// Close.
+	[self.view.window endSheet:_addBlockedWindow];
+>>>>>>> javerous/master
 }
 
 - (IBAction)doRemoveBlockedUser:(id)sender
@@ -145,14 +212,22 @@
 	NSMutableArray	*removes = [NSMutableArray arrayWithCapacity:[set count]];
 	NSUInteger		index = [set firstIndex];
 	
+<<<<<<< HEAD
 	// Resolve indexes
 	while (index != NSNotFound)
 	{
 		// Add to address to remove
+=======
+	// Resolve indexes.
+	while (index != NSNotFound)
+	{
+		// Add to address to remove.
+>>>>>>> javerous/master
 		NSString *address = blocked[index];
 		
 		[removes addObject:address];
 		
+<<<<<<< HEAD
 		// Next index
 		index = [set indexGreaterThanIndex:index];
 	}
@@ -175,14 +250,48 @@
 {
 	// Reload list
 	[_tableView reloadData];
+=======
+		// Next index.
+		index = [set indexGreaterThanIndex:index];
+	}
+	
+	// Remove from blocked list.
+	for (NSString *remove in removes)
+		[self.core removeBlockedBuddy:remove];
+	
+	// Reload list.
+	[_tableView reloadData];
+}
+
+
+/*
+** TCPrefView_Buddies - TCCoreManagerObserver
+*/
+#pragma mark - TCPrefView_Buddies - TCCoreManagerObserver
+
+- (void)torchatManager:(TCCoreManager *)manager information:(TCInfo *)info
+{
+	if (info.kind == TCInfoInfo && (info.code == TCCoreEventBuddyBlocked || info.code == TCCoreEventBuddyUnblocked))
+	{
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[_tableView reloadData];
+		});
+	}
+>>>>>>> javerous/master
 }
 
 
 
 /*
+<<<<<<< HEAD
 ** TCPrefView_Buddies - TableView Delegate
 */
 #pragma mark - TCPrefView_Buddies - TableView Delegate
+=======
+** TCPrefView_Buddies - NSTableViewDelegate
+*/
+#pragma mark - TCPrefView_Buddies - NSTableViewDelegate
+>>>>>>> javerous/master
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {

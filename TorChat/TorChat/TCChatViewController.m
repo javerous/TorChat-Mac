@@ -1,7 +1,11 @@
 /*
  *  TCChatViewController.m
  *
+<<<<<<< HEAD
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,8 +24,11 @@
  *
  */
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> javerous/master
 #import "TCChatViewController.h"
 
 #import "TCChatTranscriptViewController.h"
@@ -29,7 +36,10 @@
 #import "TCThreePartImageView.h"
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> javerous/master
 /*
 ** TCChatViewController - Private
 */
@@ -46,7 +56,11 @@
 @property (strong, nonatomic) IBOutlet NSBox				*lineView;
 @property (strong, nonatomic) IBOutlet TCThreePartImageView	*backView;
 
+<<<<<<< HEAD
 @property (strong, nonatomic) NSString *identifier;
+=======
+@property (strong, nonatomic) NSString *bidentifier;
+>>>>>>> javerous/master
 
 // -- IBAction --
 - (IBAction)textAction:(id)sender;
@@ -79,7 +93,11 @@
 	TCChatViewController *result = [[TCChatViewController alloc] init];
 	
 	result.name = name;
+<<<<<<< HEAD
 	result.identifier = identifier;
+=======
+	result.bidentifier = identifier;
+>>>>>>> javerous/master
 	result.delegate = delegate;
 
 	return result;

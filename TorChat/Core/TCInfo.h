@@ -1,7 +1,11 @@
 /*
  *  TCInfo.h
  *
+<<<<<<< HEAD
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,7 +24,10 @@
  *
  */
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> javerous/master
 #import <Foundation/Foundation.h>
 
 
@@ -31,9 +38,15 @@
 
 typedef enum
 {
+<<<<<<< HEAD
 	TCInfoError,
 	TCInfoWarning,
 	TCInfoInfo
+=======
+	TCInfoInfo,
+	TCInfoWarning,
+	TCInfoError,
+>>>>>>> javerous/master
 } TCInfoKind;
 
 
@@ -57,11 +70,19 @@ typedef enum
 // -- Properties --
 @property (assign, nonatomic, readonly) TCInfoKind	kind;
 
+<<<<<<< HEAD
 @property (assign, nonatomic, readonly) NSString	*domain;
 @property (assign, nonatomic, readonly)	int			code;
 @property (strong, nonatomic, readonly)	id			context;
 
 @property (strong, nonatomic, readonly) NSDate		*date;
+=======
+@property (strong, nonatomic, readonly) NSString	*domain;
+@property (assign, nonatomic, readonly)	int			code;
+@property (strong, nonatomic, readonly)	id			context;
+
+@property (strong, nonatomic, readonly) NSDate		*timestamp;
+>>>>>>> javerous/master
 
 @property (strong, nonatomic, readonly) TCInfo		*subInfo;
 

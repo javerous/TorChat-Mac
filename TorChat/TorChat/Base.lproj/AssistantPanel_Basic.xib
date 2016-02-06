@@ -1,27 +1,47 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<<<<<<< HEAD
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4514" systemVersion="13A603" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment defaultVersion="1080" identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4514"/>
+=======
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10089" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10089"/>
+>>>>>>> javerous/master
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCPanel_Basic">
             <connections>
+<<<<<<< HEAD
                 <outlet property="imAddressField" destination="GHr-U0-flY" id="GL5-Fp-Iz4"/>
                 <outlet property="imDownloadPath" destination="Kji-cb-3dl" id="2bM-jB-wBm"/>
+=======
+                <outlet property="downloadLocationView" destination="0mP-O6-Ame" id="Gtb-yf-LBa"/>
+                <outlet property="imAddressField" destination="GHr-U0-flY" id="GL5-Fp-Iz4"/>
+>>>>>>> javerous/master
                 <outlet property="loadingIndicator" destination="WOp-RE-bKE" id="qa6-EG-rGH"/>
                 <outlet property="view" destination="1nx-rV-LC9" id="8vC-SW-wbN"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+<<<<<<< HEAD
         <customObject id="-3" userLabel="Application"/>
+=======
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+>>>>>>> javerous/master
         <customView id="1nx-rV-LC9" userLabel="BasicConfigView">
             <rect key="frame" x="0.0" y="0.0" width="420" height="327"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="pZK-el-7aq">
+<<<<<<< HEAD
                     <rect key="frame" x="42" y="155" width="136" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+=======
+                    <rect key="frame" x="42" y="147" width="131" height="17"/>
+>>>>>>> javerous/master
                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="TorChat IM Address :" usesSingleLineMode="YES" id="XPC-c6-X6m">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -29,8 +49,12 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dpl-CL-F0d">
+<<<<<<< HEAD
                     <rect key="frame" x="42" y="244" width="119" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+=======
+                    <rect key="frame" x="42" y="253" width="114" height="17"/>
+>>>>>>> javerous/master
                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Download Folder :" usesSingleLineMode="YES" id="099-Q4-nzo">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -38,17 +62,26 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="eh9-dQ-ju9">
+<<<<<<< HEAD
                     <rect key="frame" x="18" y="290" width="219" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+=======
+                    <rect key="frame" x="18" y="290" width="213" height="17"/>
+>>>>>>> javerous/master
                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Please specify your setting bellow." usesSingleLineMode="YES" id="qpy-aS-rWl">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
+<<<<<<< HEAD
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qSy-Z0-Oon">
                     <rect key="frame" x="42" y="222" width="360" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+=======
+                <textField verticalHuggingPriority="750" preferredMaxLayoutWidth="356" translatesAutoresizingMaskIntoConstraints="NO" id="qSy-Z0-Oon">
+                    <rect key="frame" x="42" y="231" width="360" height="14"/>
+>>>>>>> javerous/master
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="The file received from your buddies will be saved on this folder." id="KYR-YN-XaI">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -56,8 +89,12 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GHr-U0-flY">
+<<<<<<< HEAD
                     <rect key="frame" x="182" y="156" width="92" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+=======
+                    <rect key="frame" x="177" y="148" width="89" height="14"/>
+>>>>>>> javerous/master
                     <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingTail" selectable="YES" sendsActionOnEndEditing="YES" title="Waiting for tor..." usesSingleLineMode="YES" id="cIw-gC-I31">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -66,6 +103,7 @@
                 </textField>
                 <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="WOp-RE-bKE">
                     <rect key="frame" x="20" y="20" width="16" height="16"/>
+<<<<<<< HEAD
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                 </progressIndicator>
                 <pathControl focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Kji-cb-3dl">
@@ -86,10 +124,26 @@
                 <constraint firstItem="GHr-U0-flY" firstAttribute="leading" secondItem="pZK-el-7aq" secondAttribute="trailing" constant="8" symbolic="YES" id="8ao-9R-cNe"/>
                 <constraint firstItem="qSy-Z0-Oon" firstAttribute="top" secondItem="dpl-CL-F0d" secondAttribute="bottom" constant="8" id="EAy-U0-Mon"/>
                 <constraint firstItem="pZK-el-7aq" firstAttribute="top" secondItem="1nx-rV-LC9" secondAttribute="top" constant="155" id="FDr-pD-H41"/>
+=======
+                </progressIndicator>
+                <customView translatesAutoresizingMaskIntoConstraints="NO" id="0mP-O6-Ame">
+                    <rect key="frame" x="44" y="184" width="344" height="42"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="42" id="qsS-i0-js7"/>
+                    </constraints>
+                </customView>
+            </subviews>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="0mP-O6-Ame" secondAttribute="trailing" constant="32" id="2nR-Bc-VME"/>
+                <constraint firstAttribute="bottom" secondItem="WOp-RE-bKE" secondAttribute="bottom" constant="20" id="5Ba-oE-GOa"/>
+                <constraint firstItem="GHr-U0-flY" firstAttribute="leading" secondItem="pZK-el-7aq" secondAttribute="trailing" constant="8" symbolic="YES" id="8ao-9R-cNe"/>
+                <constraint firstItem="qSy-Z0-Oon" firstAttribute="top" secondItem="dpl-CL-F0d" secondAttribute="bottom" constant="8" id="EAy-U0-Mon"/>
+>>>>>>> javerous/master
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="GHr-U0-flY" secondAttribute="trailing" constant="20" symbolic="YES" id="MHo-MT-OQZ"/>
                 <constraint firstItem="eh9-dQ-ju9" firstAttribute="top" secondItem="1nx-rV-LC9" secondAttribute="top" constant="20" id="Mnf-J7-9zv"/>
                 <constraint firstItem="WOp-RE-bKE" firstAttribute="leading" secondItem="1nx-rV-LC9" secondAttribute="leading" constant="20" id="Rqr-4K-hhD"/>
                 <constraint firstItem="pZK-el-7aq" firstAttribute="leading" secondItem="1nx-rV-LC9" secondAttribute="leading" constant="44" id="V3J-Z6-Zgw"/>
+<<<<<<< HEAD
                 <constraint firstItem="dpl-CL-F0d" firstAttribute="top" secondItem="eh9-dQ-ju9" secondAttribute="bottom" constant="29" id="ViX-vL-MhJ"/>
                 <constraint firstItem="pZK-el-7aq" firstAttribute="top" relation="greaterThanOrEqual" secondItem="qSy-Z0-Oon" secondAttribute="bottom" constant="8" symbolic="YES" id="Wng-gz-gWw"/>
                 <constraint firstItem="eh9-dQ-ju9" firstAttribute="leading" secondItem="1nx-rV-LC9" secondAttribute="leading" constant="20" id="aW5-b8-Ed7"/>
@@ -109,3 +163,19 @@
         </customView>
     </objects>
 </document>
+=======
+                <constraint firstItem="dpl-CL-F0d" firstAttribute="top" secondItem="eh9-dQ-ju9" secondAttribute="bottom" constant="20" id="ViX-vL-MhJ"/>
+                <constraint firstItem="eh9-dQ-ju9" firstAttribute="leading" secondItem="1nx-rV-LC9" secondAttribute="leading" constant="20" id="aW5-b8-Ed7"/>
+                <constraint firstItem="0mP-O6-Ame" firstAttribute="top" secondItem="qSy-Z0-Oon" secondAttribute="bottom" constant="5" id="cMQ-rn-u07"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="eh9-dQ-ju9" secondAttribute="trailing" constant="20" symbolic="YES" id="eC7-ry-EjU"/>
+                <constraint firstItem="pZK-el-7aq" firstAttribute="top" secondItem="0mP-O6-Ame" secondAttribute="bottom" constant="20" id="kwN-wQ-9pf"/>
+                <constraint firstItem="0mP-O6-Ame" firstAttribute="leading" secondItem="dpl-CL-F0d" secondAttribute="leading" id="nr9-n4-7gR"/>
+                <constraint firstAttribute="trailing" secondItem="qSy-Z0-Oon" secondAttribute="trailing" constant="20" symbolic="YES" id="ooL-SX-gtb"/>
+                <constraint firstItem="qSy-Z0-Oon" firstAttribute="leading" secondItem="dpl-CL-F0d" secondAttribute="leading" id="p3y-Xe-h3N"/>
+                <constraint firstItem="GHr-U0-flY" firstAttribute="centerY" secondItem="pZK-el-7aq" secondAttribute="centerY" constant="0.5" id="rG9-LU-cqj"/>
+                <constraint firstItem="dpl-CL-F0d" firstAttribute="leading" secondItem="1nx-rV-LC9" secondAttribute="leading" constant="44" id="szP-0p-30A"/>
+            </constraints>
+        </customView>
+    </objects>
+</document>
+>>>>>>> javerous/master

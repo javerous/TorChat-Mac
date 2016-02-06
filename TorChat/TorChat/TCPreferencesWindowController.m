@@ -1,7 +1,11 @@
 /*
  *  TCPreferencesWindowController.m
  *
+<<<<<<< HEAD
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,11 +24,18 @@
  *
  */
 
+<<<<<<< HEAD
 
 
 #import "TCPreferencesWindowController.h"
 
 #import "TCMainController.h"
+=======
+#import "TCPreferencesWindowController.h"
+
+#import "TCMainController.h"
+#import "TCBuddiesWindowController.h"
+>>>>>>> javerous/master
 
 #import "TCPrefView.h"
 #import "TCPrefView_General.h"
@@ -33,7 +44,10 @@
 #import "TCPrefView_Locations.h"
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> javerous/master
 /*
 ** TCPreferencesWindowController - Private
 */
@@ -92,6 +106,7 @@
 }
 
 - (void)windowDidLoad
+<<<<<<< HEAD
 {	
 	// Place Window
 	[self.window center];
@@ -99,6 +114,20 @@
 	
 	// Select the default view
 	[self loadViewIdentifier:@"general" animated:NO];
+=======
+{
+	// Select the view.
+	NSString *identifier = [[NSUserDefaults standardUserDefaults] valueForKey:@"preference_id"];
+	
+	if (!identifier)
+		identifier = @"general";
+	
+	[self loadViewIdentifier:identifier animated:NO];
+
+	// Place Window.
+	[self.window center];
+	[self.window setFrameAutosaveName:@"PreferencesWindow"];
+>>>>>>> javerous/master
 }
 
 
@@ -112,6 +141,10 @@
 {
 	TCPrefView				*viewCtrl = nil;
 	id <TCConfigInterface>	config = [[TCMainController sharedController] configuration];
+<<<<<<< HEAD
+=======
+	TCCoreManager			*core = [[TCMainController sharedController] core];
+>>>>>>> javerous/master
 
 	if ([identifier isEqualToString:@"general"])
 		viewCtrl = [[TCPrefView_General alloc] init];
@@ -125,10 +158,17 @@
 	if (!viewCtrl)
 		return;
 	
+<<<<<<< HEAD
+=======
+	// Save current identifier.
+	[[NSUserDefaults standardUserDefaults] setValue:identifier forKey:@"preference_id"];
+	
+>>>>>>> javerous/master
 	// Check if the toolbar item is well selected
 	if ([[[self.window toolbar] selectedItemIdentifier] isEqualToString:identifier] == NO)
 		[[self.window toolbar] setSelectedItemIdentifier:identifier];
 	
+<<<<<<< HEAD
 	// Save current view config
 	_currentCtrl.config = config;
 	[_currentCtrl saveConfig];
@@ -152,6 +192,37 @@
 				
 		rect.origin.y += (previous - rect.size.height);
 		
+=======
+	// Save current view config.
+	_currentCtrl.config = config;
+	_currentCtrl.core = core;
+	
+	if ([_currentCtrl saveConfig])
+		[[TCMainController sharedController] reload];
+	
+	// Load new view config.
+	viewCtrl.config = config;
+	viewCtrl.core = core;
+	
+	[viewCtrl loadConfig];
+		
+	NSView *view = viewCtrl.view;
+	
+	// Compute target rect.
+	NSRect	rect = [self.window frame];
+	NSSize	csize = [[self.window contentView] frame].size;
+	NSSize	size = [view frame].size;
+	CGFloat	previous = rect.size.height;
+	
+	rect.size.width = (rect.size.width - csize.width) + size.width;
+	rect.size.height = (rect.size.height - csize.height) + size.height;
+	
+	rect.origin.y += (previous - rect.size.height);
+	
+	// Load view/
+	if (animated)
+	{
+>>>>>>> javerous/master
 		[NSAnimationContext beginGrouping];
 		{
 			[[NSAnimationContext currentContext] setDuration:0.125];
@@ -165,6 +236,10 @@
 	{
 		[_currentCtrl.view removeFromSuperview];
 		[[self.window contentView] addSubview:view];
+<<<<<<< HEAD
+=======
+		[self.window setFrame:rect display:YES];
+>>>>>>> javerous/master
 	}
 	
 	// Hold the current controller.
@@ -195,11 +270,22 @@
 
 - (void)windowWillClose:(NSNotification *)notification
 {
+<<<<<<< HEAD
 	id <TCConfigInterface> config = [[TCMainController sharedController] configuration];
 
 	_currentCtrl.config = config;
 	
 	[_currentCtrl saveConfig];
+=======
+	id <TCConfigInterface>	config = [[TCMainController sharedController] configuration];
+	TCCoreManager			*core = [[TCMainController sharedController] core];
+	
+	_currentCtrl.config = config;
+	_currentCtrl.core = core;
+	
+	if ([_currentCtrl saveConfig])
+		[[TCMainController sharedController] reload];
+>>>>>>> javerous/master
 }
 
 @end

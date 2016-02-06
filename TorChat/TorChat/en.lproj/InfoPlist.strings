@@ -1,3 +1,7 @@
 /* Localized versions of Info.plist keys */
 
+<<<<<<< HEAD
 NSHumanReadableCopyright = "© SourceMac, 2014";
+=======
+NSHumanReadableCopyright = "© SourceMac, 2016";
+>>>>>>> javerous/master

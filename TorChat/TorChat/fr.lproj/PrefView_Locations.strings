@@ -1,0 +1,21 @@
+
+/* Class = "NSTextFieldCell"; title = "Downloads:"; ObjectID = "Ceu-Ra-GWB"; */
+"Ceu-Ra-GWB.title" = "Téléchargement :";
+
+/* Class = "NSTextFieldCell"; title = "Referal:"; ObjectID = "NXJ-GL-ZmH"; */
+"NXJ-GL-ZmH.title" = "Référence :";
+
+/* Class = "NSTextFieldCell"; title = "Tor Binary:"; ObjectID = "RXk-TU-Y9E"; */
+"RXk-TU-Y9E.title" = "Binaire Tor :";
+
+/* Class = "NSTextFieldCell"; title = "Tor Identity:"; ObjectID = "Ync-43-xOl"; */
+"Ync-43-xOl.title" = "Identité Tor :";
+
+/* Class = "NSTextFieldCell"; title = "Configuration:"; ObjectID = "b69-S6-NNB"; */
+"b69-S6-NNB.title" = "Configuration :";
+
+/* Class = "NSTextFieldCell"; title = "<DO-NOT-TRANSLATE>"; ObjectID = "pG2-mf-PSd"; */
+"pG2-mf-PSd.title" = "<DO-NOT-TRANSLATE>";
+
+/* Class = "NSTextFieldCell"; title = "Tor Data:"; ObjectID = "zbD-2n-3GT"; */
+"zbD-2n-3GT.title" = "Données Tor :";

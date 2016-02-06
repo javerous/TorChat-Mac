@@ -1,11 +1,16 @@
 {
   "images" : [
     {
+<<<<<<< HEAD
       "idiom" : "universal",
+=======
+      "idiom" : "mac",
+>>>>>>> javerous/master
       "scale" : "1x",
       "filename" : "file_reveal.png"
     },
     {
+<<<<<<< HEAD
       "idiom" : "universal",
       "scale" : "2x",
       "filename" : "file_reveal_2x.png"
@@ -13,6 +18,11 @@
     {
       "idiom" : "universal",
       "scale" : "3x"
+=======
+      "idiom" : "mac",
+      "scale" : "2x",
+      "filename" : "file_reveal_2x.png"
+>>>>>>> javerous/master
     }
   ],
   "info" : {

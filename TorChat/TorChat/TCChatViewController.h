@@ -1,7 +1,13 @@
 /*
+<<<<<<< HEAD
  *  TCChatView.h
  *
  *  Copyright 2014 Avérous Julien-Pierre
+=======
+ *  TCChatViewController.h
+ *
+ *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,12 +26,18 @@
  *
  */
 
+<<<<<<< HEAD
 
 
 #import <Foundation/Foundation.h>
 
 
 
+=======
+#import <Foundation/Foundation.h>
+
+
+>>>>>>> javerous/master
 /*
 ** Forward
 */
@@ -56,7 +68,11 @@
 @interface TCChatViewController : NSViewController
 
 // -- Property --
+<<<<<<< HEAD
 @property (strong, nonatomic, readonly) NSString *identifier;
+=======
+@property (strong, nonatomic, readonly) NSString *bidentifier;
+>>>>>>> javerous/master
 @property (strong, nonatomic)			NSString *name;
 
 @property (weak, atomic)				id <TCChatViewDelegate> delegate;
