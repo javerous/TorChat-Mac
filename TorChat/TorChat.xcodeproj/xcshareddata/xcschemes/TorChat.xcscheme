@@ -1,16 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
+<<<<<<< HEAD
+   LastUpgradeVersion = "0620"
+=======
    LastUpgradeVersion = "0720"
+>>>>>>> javerous/master
    version = "1.8">
    <BuildAction
       parallelizeBuildables = "NO"
       buildImplicitDependencies = "YES">
    </BuildAction>
    <TestAction
+<<<<<<< HEAD
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      buildConfiguration = "Debug">
+=======
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
+>>>>>>> javerous/master
       <Testables>
       </Testables>
       <MacroExpansion>
@@ -29,20 +40,31 @@
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
+<<<<<<< HEAD
+   </TestAction>
+   <LaunchAction
+=======
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
+>>>>>>> javerous/master
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       displayScaleIsEnabled = "NO"
       displayScale = "1.00"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
+<<<<<<< HEAD
+      buildConfiguration = "Debug"
+      ignoresPersistentStateOnLaunch = "NO"
+      debugDocumentVersioning = "YES"
+=======
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
+>>>>>>> javerous/master
       allowLocationSimulation = "YES">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
@@ -60,10 +82,17 @@
    <ProfileAction
       displayScaleIsEnabled = "NO"
       displayScale = "1.00"
+<<<<<<< HEAD
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      savedToolIdentifier = ""
+      useCustomWorkingDirectory = "NO"
+      buildConfiguration = "Debug"
+=======
       buildConfiguration = "Debug"
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
+>>>>>>> javerous/master
       debugDocumentVersioning = "YES">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">

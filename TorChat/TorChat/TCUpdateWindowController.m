@@ -1,7 +1,11 @@
 /*
  *  TCUpdateWindowController.m
  *
+<<<<<<< HEAD
+ *  Copyright 2014 Avérous Julien-Pierre
+=======
  *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,6 +24,13 @@
  *
  */
 
+<<<<<<< HEAD
+
+#import "TCUpdateWindowController.h"
+
+#import "TCTorManager.h"
+#import "TCInfo.h"
+=======
 #import "TCUpdateWindowController.h"
 
 #import "TCLogsManager.h"
@@ -31,6 +42,7 @@
 #import "TCSpeedHelper.h"
 #import "TCAmountHelper.h"
 #import "TCTimeHelper.h"
+>>>>>>> javerous/master
 
 
 /*
@@ -135,7 +147,11 @@
 		[self.window.contentView addSubview:_availableView];
 		
 		// Configure available view.
+<<<<<<< HEAD
+		NSString *subtitle = [NSString stringWithFormat:NSLocalizedString(@"update_available_subtitle", @""), newVersion, oldVersion];
+=======
 		NSString *subtitle = [NSString stringWithFormat:NSLocalizedString(@"update_subtitle_available", @""), newVersion, oldVersion];
+>>>>>>> javerous/master
 		
 		_subtitleField.stringValue = subtitle;
 		
@@ -149,22 +165,36 @@
 	// > main queue <
 	
 	// Init view state.
+<<<<<<< HEAD
+	_workingStatusField.stringValue = @"Launching update…"; // FIXME: localize
+=======
 	_workingStatusField.stringValue = NSLocalizedString(@"update_status_launching", @"");
+>>>>>>> javerous/master
 	
 	_workingDownloadInfo.stringValue = @"";
 	_workingDownloadInfo.hidden = YES;
 	
 	_workingProgress.doubleValue = 0.0;
 	_workingProgress.indeterminate = YES;
+<<<<<<< HEAD
+	[_workingProgress startAnimation:nil];
+	
+	_workingButton.title = @"Cancel"; // FIXME: localize
+=======
 	_workingProgress.hidden = NO;
 	[_workingProgress startAnimation:nil];
 	
 	_workingButton.title = NSLocalizedString(@"update_button_cancel", @"");
+>>>>>>> javerous/master
 	_workingButton.keyEquivalent = @"\e";
 	
 	_updateDone = NO;
 	
 	// Launch update.
+<<<<<<< HEAD
+	__block NSUInteger archiveTotal = 0;
+	
+=======
 	__block NSUInteger		archiveTotal = 0;
 	__block NSUInteger		archiveCurrent  = 0;
 	__block TCSpeedHelper	*speedHelper = nil;
@@ -189,6 +219,7 @@
 	};
 	
 	// Launch update.
+>>>>>>> javerous/master
 	_currentCancelBlock = [_torManager updateWithEventHandler:^(TCInfo *info){
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
@@ -199,27 +230,38 @@
 				{
 					case TCTorManagerEventUpdateArchiveInfoRetrieving:
 					{
+<<<<<<< HEAD
+						_workingStatusField.stringValue = @"Retrieving archive info…"; // FIXME: localize
+=======
 						// Log.
 						[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
 
 						// Update UI.
 						_workingStatusField.stringValue = NSLocalizedString(@"update_status_retrieving_info", @"");
 						
+>>>>>>> javerous/master
 						break;
 					}
 						
 					case TCTorManagerEventUpdateArchiveSize:
 					{
+<<<<<<< HEAD
+						_workingStatusField.stringValue = @"Downloading…"; // FIXME: localize
+=======
 						// Log.
 						[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
 
 						// Update UI.
 						_workingStatusField.stringValue = NSLocalizedString(@"update_status_downloading_archive", @"");
+>>>>>>> javerous/master
 
 						_workingProgress.indeterminate = NO;
 						_workingDownloadInfo.hidden = NO;
 
 						archiveTotal = [info.context unsignedIntegerValue];
+<<<<<<< HEAD
+
+=======
 						
 						// Create speed helper.
 						speedHelper = [[TCSpeedHelper alloc] initWithCompleteAmount:archiveTotal];
@@ -229,11 +271,19 @@
 								updateDownloadProgressMessage(remainingTime);
 							});
 						};
+>>>>>>> javerous/master
 						break;
 					}
 					
 					case TCTorManagerEventUpdateArchiveDownloading:
 					{
+<<<<<<< HEAD
+						NSUInteger archiveCurrent = [info.context unsignedIntegerValue];
+						
+						_workingProgress.doubleValue = (double)archiveCurrent / (double)archiveTotal;
+						_workingDownloadInfo.stringValue = [NSString stringWithFormat:@"%lu of %lu", (unsigned long)archiveCurrent, (unsigned long)archiveTotal];
+						
+=======
 						// Log.
 						if (loggedDownload == NO)
 						{
@@ -257,11 +307,15 @@
 						_workingProgress.doubleValue = (double)archiveCurrent / (double)archiveTotal;
 						
 						// Handle download termination.
+>>>>>>> javerous/master
 						if (archiveCurrent == archiveTotal)
 						{
 							_workingProgress.indeterminate = YES;
 							_workingDownloadInfo.hidden = YES;
+<<<<<<< HEAD
+=======
 							speedHelper = nil;
+>>>>>>> javerous/master
 						}
 						
 						break;
@@ -269,39 +323,60 @@
 						
 					case TCTorManagerEventUpdateArchiveStage:
 					{
+<<<<<<< HEAD
+						_workingStatusField.stringValue = @"Archive staging…"; // FIXME: localize
+=======
 						// Log.
 						[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
 
 						// Update UI.
 						_workingStatusField.stringValue = NSLocalizedString(@"update_status_staging_archive", @"");
 						
+>>>>>>> javerous/master
 						break;
 					}
 					
 					case TCTorManagerEventUpdateSignatureCheck:
 					{
+<<<<<<< HEAD
+						_workingStatusField.stringValue = @"Checking signature…"; // FIXME: localize
+=======
 						// Log.
 						[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
 						
 						// Update UI.
 						_workingStatusField.stringValue = NSLocalizedString(@"update_status_checking_signature", @"");
 						
+>>>>>>> javerous/master
 						break;
 					}
 						
 					case TCTorManagerEventUpdateRelaunch:
 					{
+<<<<<<< HEAD
+						_workingStatusField.stringValue = @"Relaunching tor…"; // FIXME: localize
+=======
 						// Log.
 						[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
 
 						// Update UI.
 						_workingStatusField.stringValue = NSLocalizedString(@"update_status_relaunching_tor", @"");
 						
+>>>>>>> javerous/master
 						break;
 					}
 						
 					case TCTorManagerEventUpdateDone:
 					{
+<<<<<<< HEAD
+						_workingStatusField.stringValue = @"Update done."; // FIXME: localize
+						
+						_workingButton.title = @"Done"; // FIXME: localize
+						_workingButton.keyEquivalent = @"\r";
+						
+						_updateDone = YES;
+						
+=======
 						// Log.
 						[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
 						
@@ -313,12 +388,17 @@
 						
 						_updateDone = YES;
 
+>>>>>>> javerous/master
 						break;
 					}
 				}
 			}
 			else if (info.kind == TCInfoError)
 			{
+<<<<<<< HEAD
+#warning FIXME
+			//	NSLog(@"Error: %@", [info render]);
+=======
 				speedHelper = nil;
 
 				// Log.
@@ -332,13 +412,17 @@
 
 				_workingStatusField.stringValue = NSLocalizedString(@"update_status_error", @"");
 				_workingButton.title = NSLocalizedString(@"update_button_close", @"");
+>>>>>>> javerous/master
 			}
 		});
 	}];
 }
 
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> javerous/master
 /*
 ** TCUpdateWindowController - IBAction
 */

@@ -1,3 +1,15 @@
+<<<<<<< HEAD
+//
+//  TCPrefView_Locations.h
+//  TorChat
+//
+//  Created by Julien-Pierre Avérous on 14/01/2015.
+//  Copyright (c) 2015 SourceMac. All rights reserved.
+//
+
+#import "TCPrefView.h"
+
+=======
 /*
  *  TCPrefView_Locations.h
  *
@@ -28,6 +40,7 @@
 */
 #pragma mark - TCPrefView_Locations
 
+>>>>>>> javerous/master
 @interface TCPrefView_Locations : TCPrefView
 
 @end

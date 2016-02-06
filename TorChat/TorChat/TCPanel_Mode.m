@@ -1,7 +1,11 @@
 /*
  *  TCPanel_Mode.m
  *
+<<<<<<< HEAD
+ *  Copyright 2014 Avérous Julien-Pierre
+=======
  *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,11 +24,20 @@
  *
  */
 
+<<<<<<< HEAD
+
+
+=======
+>>>>>>> javerous/master
 #import "TCPanel_Mode.h"
 
 #import "TCDebugLog.h"
 
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> javerous/master
 /*
 ** TCPanel_Mode - Private
 */
@@ -57,7 +70,11 @@
 
 - (void)dealloc
 {
+<<<<<<< HEAD
+    TCDebugLog("TCPanel_Mode dealloc");
+=======
     TCDebugLog(@"TCPanel_Mode dealloc");
+>>>>>>> javerous/master
 }
 
 
@@ -110,7 +127,11 @@
 	id <TCAssistantProxy> proxy = _proxy;
 
 	NSMatrix	*mtr = sender;
+<<<<<<< HEAD
+	NSButton	*obj = [mtr selectedCell];
+=======
 	NSCell		*obj = [mtr selectedCell];
+>>>>>>> javerous/master
 	NSInteger	tag = [obj tag];
 	
 	if (tag == 1)

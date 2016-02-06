@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<<<<<<< HEAD
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4514" systemVersion="13A603" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment defaultVersion="1080" identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4514"/>
+=======
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10089" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10089"/>
+>>>>>>> javerous/master
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCAssistantWindowController">
@@ -15,18 +22,31 @@
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+<<<<<<< HEAD
+        <customObject id="-3" userLabel="Application"/>
+        <window title="Configuration Assistant" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" wantsToBeColor="NO" visibleAtLaunch="NO" animationBehavior="default" id="1">
+            <windowStyleMask key="styleMask" titled="YES" miniaturizable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="196" y="240" width="615" height="415"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
+=======
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <window title="Configuration Assistant" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="1">
             <windowStyleMask key="styleMask" titled="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="615" height="415"/>
             <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+>>>>>>> javerous/master
             <view key="contentView" id="2">
                 <rect key="frame" x="0.0" y="0.0" width="615" height="415"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <imageView translatesAutoresizingMaskIntoConstraints="NO" id="19">
                         <rect key="frame" x="44" y="73" width="280" height="280"/>
+<<<<<<< HEAD
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+=======
+>>>>>>> javerous/master
                         <constraints>
                             <constraint firstAttribute="height" constant="280" id="ZBd-PR-r3Q"/>
                             <constraint firstAttribute="width" constant="280" id="rGG-2n-JUX"/>
@@ -35,13 +55,22 @@
                     </imageView>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="13" customClass="TCAssistantBack">
                         <rect key="frame" x="175" y="50" width="420" height="327"/>
+<<<<<<< HEAD
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+=======
+>>>>>>> javerous/master
                         <constraints>
                             <constraint firstAttribute="height" constant="327" id="2qw-vU-Www"/>
                             <constraint firstAttribute="width" constant="420" id="lPr-P8-qGL"/>
                         </constraints>
                     </customView>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="14">
+<<<<<<< HEAD
+                        <rect key="frame" x="503" y="12" width="98" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+=======
                         <rect key="frame" x="506" y="12" width="95" height="32"/>
+>>>>>>> javerous/master
                         <buttonCell key="cell" type="push" title="Continue" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="15">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -55,6 +84,10 @@ DQ
                     </button>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="16">
                         <rect key="frame" x="169" y="12" width="82" height="32"/>
+<<<<<<< HEAD
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+=======
+>>>>>>> javerous/master
                         <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="17">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -67,9 +100,16 @@ Gw
                         </connections>
                     </button>
                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="21">
+<<<<<<< HEAD
+                        <rect key="frame" x="173" y="383" width="91" height="18"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;&lt; Title >>" id="22">
+                            <font key="font" size="14" name="LucidaGrande-Bold"/>
+=======
                         <rect key="frame" x="173" y="383" width="80" height="18"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;&lt; Title &gt;&gt;" id="22">
                             <font key="font" metaFont="systemBold" size="14"/>
+>>>>>>> javerous/master
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
@@ -96,4 +136,8 @@ Gw
     <resources>
         <image name="engrenage" width="280" height="280"/>
     </resources>
+<<<<<<< HEAD
 </document>
+=======
+</document>
+>>>>>>> javerous/master

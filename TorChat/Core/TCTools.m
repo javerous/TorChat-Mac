@@ -1,7 +1,13 @@
 /*
+<<<<<<< HEAD
+ *  TCTools.cpp
+ *
+ *  Copyright 2014 Avérous Julien-Pierre
+=======
  *  TCTools.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,6 +26,10 @@
  *
  */
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> javerous/master
 #import <CommonCrypto/CommonCrypto.h>
 
 #include <stdlib.h>
@@ -28,6 +38,10 @@
 #import "TCTools.h"
 
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> javerous/master
 /*
 ** Network
 */

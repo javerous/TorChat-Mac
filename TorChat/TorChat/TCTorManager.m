@@ -1,7 +1,11 @@
 /*
  *  TCTorManager.m
  *
+<<<<<<< HEAD
+ *  Copyright 2014 Avérous Julien-Pierre
+=======
  *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,6 +24,11 @@
  *
  */
 
+<<<<<<< HEAD
+
+
+=======
+>>>>>>> javerous/master
 #include <signal.h>
 #import <CommonCrypto/CommonCrypto.h>
 
@@ -29,6 +38,11 @@
 
 #import "TCTorManager.h"
 
+<<<<<<< HEAD
+#import "TCLogsManager.h"
+
+=======
+>>>>>>> javerous/master
 #import "TCConfigPlist.h"
 #import "TCBuffer.h"
 #import "TCOperationsQueue.h"
@@ -38,9 +52,13 @@
 #import "TCDataSignature.h"
 
 #import "TCInfo.h"
+<<<<<<< HEAD
+
+=======
 #import "TCDebugLog.h"
 
 #import "TCSocket.h"
+>>>>>>> javerous/master
 
 
 /*
@@ -48,6 +66,16 @@
 */
 #pragma mark - Defines
 
+<<<<<<< HEAD
+#define TCTorManagerFileSignature	@"Signature"
+#define TCTorManagerFileBinaries	@"Binaries"
+#define TCTorManagerFileInfo		@"Info.plist"
+#define TCTorManagerFileTor			@"tor"
+
+#define TCTorManagerKeyFiles		@"files"
+#define TCTorManagerKeyTorVersion	@"tor_version"
+#define TCTorManagerKeyHash			@"hash"
+=======
 // Binary
 #define TCTorManagerFileBinSignature	@"Signature"
 #define TCTorManagerFileBinBinaries		@"Binaries"
@@ -74,6 +102,7 @@
 #define TCTorManagerBaseUpdateURL			@"http://www.sourcemac.com/tor/%@"
 #define TCTorManagerInfoUpdateURL			@"http://www.sourcemac.com/tor/info.plist"
 #define TCTorManagerInfoSignatureUpdateURL	@"http://www.sourcemac.com/tor/info.plist.sig"
+>>>>>>> javerous/master
 
 
 
@@ -82,6 +111,10 @@
 */
 #pragma mark - Prototypes
 
+<<<<<<< HEAD
+NSData	*file_sha1(NSURL *fileURL);
+BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
+=======
 // Digest.
 static NSData *file_sha1(NSURL *fileURL);
 
@@ -93,10 +126,23 @@ static NSString *hexa_from_data(NSData *data);
 
 // Version.
 static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
+>>>>>>> javerous/master
 
 
 
 /*
+<<<<<<< HEAD
+** TCTorDownloadContext - Interface
+*/
+#pragma mark - TCTorDownloadContext - Interface
+
+@interface TCTorDownloadContext : NSObject
+{
+	FILE		*_file;
+	NSUInteger	_bytesDownloaded;
+	CC_SHA1_CTX	_sha1;
+}
+=======
 ** Interfaces
 */
 #pragma mark - Interface
@@ -104,6 +150,7 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 #pragma mark TCTorDownloadContext
 
 @interface TCTorDownloadContext : NSObject
+>>>>>>> javerous/master
 
 // -- Instance --
 - (id)initWithPath:(NSString *)path;
@@ -122,6 +169,53 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 @end
 
 
+<<<<<<< HEAD
+
+/*
+** TCTorManager - Private
+*/
+#pragma mark - TCTorManager - Private
+
+@interface TCTorManager () <NSURLSessionDelegate>
+{
+	dispatch_queue_t	_localQueue;
+	dispatch_queue_t	_eventQueue;
+	
+	TCOperationsQueue	*_opQueue;
+
+	dispatch_source_t	_testTimer;
+	
+	dispatch_source_t	_termSource;
+	
+	id <TCConfig>		_configuration;
+	
+	NSURLSession		*_torURLSession;
+	
+	NSMutableDictionary	*_torDownloadContexts;
+	
+	BOOL				_isStarted;
+    BOOL				_isRunning;
+	
+	NSTask				*_task;
+	
+	NSFileHandle		*_errHandle;
+	NSFileHandle		*_outHandle;
+	
+	NSString			*_hidden;
+}
+
+@end
+
+
+
+/*
+** TCTorManager
+*/
+#pragma mark - TCTorManager
+
+@implementation TCTorManager
+
+=======
 #pragma mark TCTorTask
 
 @interface TCTorTask : NSObject <NSURLSessionDelegate>
@@ -216,6 +310,7 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	dispatch_source_t	_torChangesTimer;
 }
 
+>>>>>>> javerous/master
 
 /*
 ** TCTorManager - Instance
@@ -232,15 +327,30 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 			return nil;
 		
 		// Create queues.
+<<<<<<< HEAD
+        _localQueue = dispatch_queue_create("com.torchat.cocoa.tormanager.local", DISPATCH_QUEUE_SERIAL);
+		_eventQueue = dispatch_queue_create("com.torchat.cocoa.tormanager.event", DISPATCH_QUEUE_SERIAL);
+		
+		// Operations queue.
+		_opQueue = [[TCOperationsQueue alloc] initStarted];
+
+		// Containers.
+		_torDownloadContexts = [[NSMutableDictionary alloc] init];
+=======
         _localQueue = dispatch_queue_create("com.torchat.app.tormanager.local", DISPATCH_QUEUE_SERIAL);
 		_eventQueue = dispatch_queue_create("com.torchat.app.tormanager.event", DISPATCH_QUEUE_SERIAL);
 		
 		// Operations queue.
 		_opQueue = [[TCOperationsQueue alloc] initStarted];
+>>>>>>> javerous/master
 		
 		// Handle configuration.
 		_configuration = configuration;
 		
+<<<<<<< HEAD
+		// Handle application standard termination.
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillTerminate:) name:NSApplicationWillTerminateNotification object:nil];
+=======
 		// Handle path change.
 		__weak TCTorManager *weakSelf = self;
 		
@@ -274,6 +384,7 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 			
 			dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC));
 		}];
+>>>>>>> javerous/master
 		
 		// SIGTERM handle.
 		signal(SIGTERM, SIG_IGN);
@@ -281,6 +392,39 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		_termSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_SIGNAL, SIGTERM, 0, _localQueue);
 		
 		dispatch_source_set_event_handler(_termSource, ^{
+<<<<<<< HEAD
+			[self _terminateTor];
+			exit(0);
+		});
+		
+		dispatch_resume(_termSource);
+		
+		/*
+		[self operationStageArchiveFile:[NSURL URLWithString:@"/Users/jp/Dropbox/Sources/TorChat-Mac/tor-update/TorChat/Resources/tor.tgz"] completionHandler:^(BOOL error) {
+			
+			if (error)
+			{
+				NSLog(@"Error: Can't stage archive");
+				return;
+			}
+			
+			[self operationCheckSignatureWithCompletionHandler:^(BOOL serror) {
+				
+				if (serror)
+				{
+					NSLog(@"Error: Signature invalid.");
+					return;
+				}
+				
+				NSLog(@"Info: Signature valid.");
+				
+				[self operationLaunchTor:^(BOOL terror) {
+					
+				}];
+			}];
+		}];
+		 */
+=======
 			
 			[self stopWithCompletionHandler:^{
 				exit(0);
@@ -288,6 +432,7 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		});
 		
 		dispatch_resume(_termSource);
+>>>>>>> javerous/master
 	}
     
     return self;
@@ -296,11 +441,39 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 - (void)dealloc
 {
 	// Stop notification.
+<<<<<<< HEAD
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+		
+	// Kill the task
+	[_task waitUntilExit];
+	
+	_task = nil;
+	
+	_outHandle.readabilityHandler = nil;
+	_errHandle.readabilityHandler = nil;
+
+	// Kill the timer
+	if (_testTimer)
+		dispatch_source_cancel(_testTimer);
+}
+
+
+
+/*
+** TCTorManager - Notification
+*/
+#pragma mark - TCTorManager - Notification
+
+- (void)applicationWillTerminate:(NSNotification *)notice
+{
+	[self _terminateTor];
+=======
 	[[NSNotificationCenter defaultCenter] removeObserver:_terminationObserver];
 	
 	[_configuration removePathObserver:_torIdentityPathObserver];
 	[_configuration removePathObserver:_torBinPathObserver];
 	[_configuration removePathObserver:_torDataPathObserver];
+>>>>>>> javerous/master
 }
 
 
@@ -312,6 +485,54 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 
 - (void)startWithHandler:(void (^)(TCInfo *info))handler
 {
+<<<<<<< HEAD
+#if defined(DEBUG) && DEBUG
+	
+	// To speed up debugging, if we are building in debug mode, do not launch a new tor instance if there is already one running.
+	
+	int count = proc_listpids(PROC_ALL_PIDS, 0, NULL, 0);
+	
+	if (count > 0)
+	{
+		pid_t *pids = malloc((unsigned)count * sizeof(pid_t));
+		
+		count = proc_listpids(PROC_ALL_PIDS, 0, pids, count * (int)sizeof(pid_t));
+
+		for (int i = 0; i < count; ++i)
+		{
+			char name[1024];
+						
+			if (proc_name(pids[i], name, sizeof(name)) > 0)
+			{
+				if (strcmp(name, "tor") == 0)
+				{
+					_isRunning = YES;
+					free(pids);
+					return;
+				}
+			}
+
+		}
+
+		free(pids);
+	}
+#endif
+	
+	if (!handler)
+		handler = ^(TCInfo *error) { };
+	
+	[_opQueue scheduleBlock:^(TCOperationsControl opCtrl) {
+		
+		TCOperationsQueue *queue = [[TCOperationsQueue alloc] init];
+
+		// -- Initial check --
+		[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
+			
+			// Check status.
+			if (_isStarted || _isRunning)
+			{
+				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoStartDomain code:TCTorManagerErrorStartAlreadyRunning]);
+=======
 	if (!handler)
 		handler = ^(TCInfo *error) { };
 	
@@ -458,10 +679,75 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 			if (!_torTask || !_urlSession)
 			{
 				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoCheckUpdateDomain code:TCTorManagerErrorCheckUpdateTorNotRunning]);
+>>>>>>> javerous/master
 				ctrl(TCOperationsControlFinish);
 				return;
 			}
 			
+<<<<<<< HEAD
+			// Mark as started.
+			_isStarted = YES;
+			
+			// Stop if running.
+			[self _stop];
+			
+			// Continue.
+			ctrl(TCOperationsControlContinue);
+		}];
+
+		// -- Stage archive --
+		[queue scheduleBlock:^(TCOperationsControl ctrl) {
+			
+			// Check that the binary is already there.
+			NSFileManager	*manager = [NSFileManager defaultManager];
+			NSString		*path = [_configuration pathForDomain:TConfigPathDomainTorBinary];
+			
+			path = [[path stringByAppendingPathComponent:TCTorManagerFileBinaries] stringByAppendingPathComponent:TCTorManagerFileTor];
+			
+			if ([manager fileExistsAtPath:path] == YES)
+			{
+				ctrl(TCOperationsControlContinue);
+				return;
+			}
+			
+			// Stage the archive.
+			NSURL *archiveUrl = [[NSBundle mainBundle] URLForResource:@"tor" withExtension:@"tgz"];
+			
+			NSLog(@"Staging...");
+			
+			[self operationStageArchiveFile:archiveUrl completionHandler:^(TCInfo *info) {
+				
+				if (info.kind == TCInfoError)
+				{
+					handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoStartDomain code:TCTorManagerErrorStartUnarchive info:info]);
+					ctrl(TCOperationsControlFinish);
+				}
+				else if (info.kind == TCInfoInfo)
+				{
+					if (info.code == TCTorManagerEventDone)
+						ctrl(TCOperationsControlContinue);
+				}
+			}];
+		}];
+		
+		// -- Check signature --
+		[queue scheduleBlock:^(TCOperationsControl ctrl) {
+			
+			NSLog(@"Signature...");
+			
+			[self operationCheckSignatureWithCompletionHandler:^(TCInfo *info) {
+				
+				if (info.kind == TCInfoError)
+				{
+					handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoStartDomain code:TCTorManagerErrorStartSignature info:info]);
+					ctrl(TCOperationsControlFinish);
+					return;
+				}
+				else if (info.kind == TCInfoInfo)
+				{
+					if (info.code == TCTorManagerEventDone)
+						ctrl(TCOperationsControlContinue);
+=======
 			ctrl(TCOperationsControlContinue);
 		}];
 		
@@ -517,6 +803,226 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 					{
 						ctrl(TCOperationsControlContinue);
 					}
+>>>>>>> javerous/master
+				}
+			}];
+		}];
+		
+<<<<<<< HEAD
+		// -- Launch binary --
+		[queue scheduleBlock:^(TCOperationsControl ctrl) {
+			
+			NSLog(@"Launching...");
+			
+			[self operationLaunchTor:^(TCInfo *info) {
+				
+				if (info.kind == TCInfoError)
+				{
+					handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoStartDomain code:TCTorManagerErrorStartLaunch info:info]);
+					ctrl(TCOperationsControlFinish);
+					return;
+				}
+				else if (info.kind == TCInfoInfo)
+				{
+					if (info.code == TCTorManagerEventDone)
+						ctrl(TCOperationsControlContinue);
+				}
+			}];
+		}];
+		
+		// -- Wait hostname --
+		[queue scheduleBlock:^(TCOperationsControl ctrl) {
+			
+			NSLog(@"Wait hostname...");
+			
+			// Get the hostname file path.
+			NSString *htnamePath = [[_configuration pathForDomain:TConfigPathDomainTorIdentity] stringByAppendingPathComponent:@"hostname"];
+			
+			if (!htnamePath)
+			{
+				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoStartDomain code:TCTorManagerErrorStartConfiguration]);
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+			
+			// Wait for file appearance.
+			_testTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _localQueue);
+			
+			dispatch_source_set_timer(_testTimer, DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC, 0);
+			
+			dispatch_source_set_event_handler(_testTimer, ^{
+				
+				// > Try to read file.
+				NSString *hostname = [NSString stringWithContentsOfFile:htnamePath encoding:NSASCIIStringEncoding error:nil];
+				
+				if (!hostname)
+					return;
+				
+				// > Extract first part.
+				NSRange rg = [hostname rangeOfString:@".onion"];
+				
+				if (rg.location == NSNotFound)
+					return;
+				
+				_hidden = [hostname substringToIndex:rg.location];
+				
+				// > Set the address in the config
+				[_configuration setSelfAddress:_hidden];
+				
+				// > Stop ourself.
+				dispatch_source_cancel(_testTimer);
+				_testTimer = nil;
+				
+				// Inform of the change.
+				_isRunning = YES;
+				
+				handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoStartDomain code:TCTorManagerEventStartHostname context:_hidden]);
+				handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoStartDomain code:TCTorManagerEventStartDone]);
+			});
+			
+			// Start timer
+			dispatch_resume(_testTimer);
+			
+			// Don't wait for the end of this.
+			ctrl(TCOperationsControlContinue);
+		}];
+
+		// -- Finish --
+		queue.finishHandler = ^{
+			opCtrl(TCOperationsControlContinue);
+		};
+		
+		// Start.
+		[queue start];
+	}];
+}
+
+- (void)stop
+{
+	dispatch_async(_localQueue, ^{
+		[self _stop];
+	});
+}
+
+- (void)_stop
+{
+	// > localQueue <
+
+	if (!_isRunning)
+		return;
+	
+	_isRunning = NO;
+	_isStarted = NO;
+	
+	// Terminate tor.
+	[self _terminateTor];
+	
+	// Stop handle.
+	_errHandle.readabilityHandler = nil;
+	_outHandle.readabilityHandler = nil;
+	
+	_errHandle = nil;
+	_outHandle = nil;
+	
+	// Clean hidden hostname.
+	_hidden = nil;
+	
+	// Kill timer.
+	if (_testTimer)
+	{
+		dispatch_source_cancel(_testTimer);
+		_testTimer = nil;
+	}
+}
+
+- (BOOL)isRunning
+{
+	__block BOOL result = NO;
+	
+	dispatch_sync(_localQueue, ^{
+		result = _isRunning;
+	});
+	
+	return result;
+}
+
+
+
+/*
+** TCTorManager - Update
+*/
+#pragma mark - TCTorManager - Update
+
+- (void)checkForUpdateWithCompletionHandler:(void (^)(TCInfo *error))handler
+{
+	if (!handler)
+		return;
+	
+	[_opQueue scheduleBlock:^(TCOperationsControl opCtrl) {
+		
+		TCOperationsQueue *queue = [[TCOperationsQueue alloc] init];
+		
+		// -- Check that we are running --
+		[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
+			
+			if (!_isRunning)
+			{
+				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoCheckUpdateDomain code:TCTorManagerErrorCheckUpdateTorNotRunning]);
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+			
+			ctrl(TCOperationsControlContinue);
+		}];
+		
+		// -- Retrieve remote info --
+		__block NSString *remoteVersion = nil;
+		
+		[queue scheduleBlock:^(TCOperationsControl ctrl) {
+			
+			[self operationRetrieveRemoteInfoWithCompletionHandler:^(TCInfo *info) {
+				
+				if (info.kind == TCInfoError)
+				{
+					handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoCheckUpdateDomain code:TCTorManagerErrorCheckUpdateRemoteInfo info:info]);
+					ctrl(TCOperationsControlFinish);
+				}
+				if (info.code == TCTorManagerEventInfo)
+				{
+					if (info.code == TCTorManagerEventInfo)
+					{
+						NSDictionary *remoteInfo = info.context;
+						
+						remoteVersion = remoteInfo[@"version"];
+						
+						ctrl(TCOperationsControlContinue);
+					}
+				}
+			}];
+		}];
+		
+		// -- Check local signature --
+		__block NSString *localVersion = nil;
+		
+		[queue scheduleBlock:^(TCOperationsControl ctrl) {
+			
+			[self operationCheckSignatureWithCompletionHandler:^(TCInfo *info) {
+				
+				if (info.kind == TCInfoError)
+				{
+					handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoCheckUpdateDomain code:TCTorManagerErrorCheckUpdateLocalSignature info:info]);
+					ctrl(TCOperationsControlFinish);
+				}
+				else if (info.kind == TCInfoInfo)
+				{
+					if (info.code == TCTorManagerEventInfo)
+					{
+						localVersion = ((NSDictionary *)info.context)[TCTorManagerKeyTorVersion];
+					}
+					else if (info.code == TCTorManagerEventDone)
+					{
+						ctrl(TCOperationsControlContinue);
+					}
 				}
 			}];
 		}];
@@ -527,6 +1033,14 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 			if (version_greater(localVersion, remoteVersion))
 			{
 				NSDictionary *context = @{ @"old_version" : localVersion, @"new_version" : remoteVersion };
+=======
+		// -- Compare versions --
+		[queue scheduleBlock:^(TCOperationsControl ctrl) {
+			
+			if (version_greater(localVersion, remoteVersion))
+			{
+				NSDictionary *context = @{ @"old_version" : localVersion, @"new_version" : remoteVersion };
+>>>>>>> javerous/master
 				
 				handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoCheckUpdateDomain code:TCTorManagerEventCheckUpdateAvailable context:context]);
 			}
@@ -536,24 +1050,68 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 			ctrl(TCOperationsControlFinish);
 		}];
 		
+<<<<<<< HEAD
+		queue.finishHandler = ^{
+=======
 		// -- Finish --
 		queue.finishHandler = ^(BOOL canceled) {
+>>>>>>> javerous/master
 			opCtrl(TCOperationsControlContinue);
 		};
 		
 		// Start.
 		[queue start];
 	}];
+<<<<<<< HEAD
+=======
 	
 	// Return cancel block.
 	return ^{
 		TCDebugLog(@"<cancel checkForUpdateWithCompletionHandler (global)>");
 		[queue cancel];
 	};
+>>>>>>> javerous/master
 }
 
 - (dispatch_block_t)updateWithEventHandler:(void (^)(TCInfo *info))handler
 {
+<<<<<<< HEAD
+	if (!handler)
+		handler = ^(TCInfo *info){ };
+	
+	__block dispatch_block_t	currentBlock = NULL;
+	__block BOOL				cancelled = NO;
+	
+	dispatch_block_t cancelBlock = ^{
+		NSLog(@"Cancel <updateWithEventHandler>");
+		
+		dispatch_async(_localQueue, ^{
+			
+			if (cancelled)
+				return;
+			
+			cancelled = YES;
+			
+			if (currentBlock)
+				currentBlock();
+		});
+	};
+	
+	[_opQueue scheduleBlock:^(TCOperationsControl opCtrl) {
+	
+		TCOperationsQueue *queue = [[TCOperationsQueue alloc] init];
+		
+		// -- Check that we are running --
+		[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
+			
+			if (cancelled)
+			{
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+			
+			if (!_isRunning)
+=======
 	TCOperationsQueue *queue = [[TCOperationsQueue alloc] init];
 	
 	[_opQueue scheduleBlock:^(TCOperationsControl opCtrl) {
@@ -562,6 +1120,7 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
 			
 			if (!_torTask || !_urlSession)
+>>>>>>> javerous/master
 			{
 				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoUpdateDomain code:TCTorManagerErrorUpdateTorNotRunning]);
 				ctrl(TCOperationsControlFinish);
@@ -576,21 +1135,52 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		__block NSData		*remoteHash = nil;
 		__block NSNumber	*remoteSize = nil;
 		
+<<<<<<< HEAD
+		[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
+			
+			dispatch_block_t opCancel;
+			
+			// Check cancel state.
+			if (cancelled)
+			{
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+
+=======
 		[queue scheduleCancelableOnQueue:_localQueue block:^(TCOperationsControl ctrl, TCOperationsAddCancelBlock addCancelBlock) {
 			
+>>>>>>> javerous/master
 			// Notify step.
 			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoUpdateDomain code:TCTorManagerEventUpdateArchiveInfoRetrieving]);
 	
 			// Retrieve remote informations.
+<<<<<<< HEAD
+			opCancel = [self operationRetrieveRemoteInfoWithCompletionHandler:^(TCInfo *info) {
+=======
 			dispatch_block_t opCancel;
 
 			opCancel = [TCTorOperations operationRetrieveRemoteInfoWithURLSession:_urlSession completionHandler:^(TCInfo *info) {
+>>>>>>> javerous/master
 				
 				if (info.kind == TCInfoError)
 				{
 					handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoUpdateDomain code:TCTorManagerErrorUpdateArchiveInfo info:info]);
 					ctrl(TCOperationsControlFinish);
 				}
+<<<<<<< HEAD
+				if (info.code == TCTorManagerEventInfo)
+				{
+					if (info.code == TCTorManagerEventInfo)
+					{
+						NSDictionary *remoteInfo = info.context;
+						
+						NSLog(@"info: %@", remoteInfo);
+						
+						remoteName = remoteInfo[@"name"];
+						remoteHash = remoteInfo[@"hash"];
+						remoteSize = remoteInfo[@"size"];
+=======
 				if (info.kind == TCInfoInfo)
 				{
 					if (info.code == TCTorManagerEventOperationInfo)
@@ -600,12 +1190,39 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 						remoteName = remoteInfo[TCTorManagerKeyArchiveName];
 						remoteHash = remoteInfo[TCTorManagerKeyArchiveHash];
 						remoteSize = remoteInfo[TCTorManagerKeyArchiveSize];
+>>>>>>> javerous/master
 						
 						ctrl(TCOperationsControlContinue);
 					}
 				}
 			}];
 			
+<<<<<<< HEAD
+			// Update current cancellation block.
+			currentBlock = ^{
+				NSLog(@"Cancel 1");
+				opCancel();
+				ctrl(TCOperationsControlFinish);
+			};
+		}];
+		
+		// -- Retrieve remote archive --
+		NSString *downloadPath = [[_configuration pathForDomain:TConfigPathDomainDownloads] stringByAppendingPathComponent:@"_update"];
+		NSString *downloadArchivePath = [downloadPath stringByAppendingPathComponent:@"tor.tgz"];
+		
+		[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
+			
+			// Check cancel state.
+			if (cancelled)
+			{
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+			
+			// Create task.
+			NSString				*urlString = [NSString stringWithFormat:@"http://www.sourcemac.com/tor/%@", remoteName];
+			NSURLSessionDataTask	*task = [[self _torURLSession] dataTaskWithURL:[NSURL URLWithString:urlString]];
+=======
 			// Add cancelation block.
 			addCancelBlock(opCancel);
 		}];
@@ -619,6 +1236,7 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 			// Create task.
 			NSString				*urlString = [NSString stringWithFormat:TCTorManagerBaseUpdateURL, remoteName];
 			NSURLSessionDataTask	*task = [_urlSession dataTaskWithURL:[NSURL URLWithString:urlString]];
+>>>>>>> javerous/master
 			
 			// Get download path.
 			if (!downloadPath)
@@ -659,7 +1277,13 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 					}
 					
 					// > Remove context.
+<<<<<<< HEAD
+					dispatch_async(_localQueue, ^{
+						[_torDownloadContexts removeObjectForKey:@(task.taskIdentifier)];
+					});
+=======
 					[_torTask removeDownloadContextForKey:@(task.taskIdentifier)];
+>>>>>>> javerous/master
 					
 					// > Check hash.
 					if ([[aContext sha1] isEqualToData:remoteHash] == NO)
@@ -677,34 +1301,78 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 			};
 			
 			// Handle context.
+<<<<<<< HEAD
+			[_torDownloadContexts setObject:context forKey:@(task.taskIdentifier)];
+=======
 			[_torTask addDownloadContext:context forKey:@(task.taskIdentifier)];
+>>>>>>> javerous/master
 			
 			// Resume task.
 			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoUpdateDomain code:TCTorManagerEventUpdateArchiveSize context:remoteSize]);
 			
 			[task resume];
 			
+<<<<<<< HEAD
+			// Update current cancellation block.
+			currentBlock = ^{
+				NSLog(@"Cancel 2");
+				[task cancel];
+				ctrl(TCOperationsControlFinish);
+			};
+=======
 			addCancelBlock(^{
 				TCDebugLog(@"Cancel <retrieve remote archive>");
 				[task cancel];
 			});
+>>>>>>> javerous/master
 		}];
 		
 		// -- Stop tor --
 		[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
+<<<<<<< HEAD
+			
+			// Check cancel state.
+			if (cancelled)
+			{
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+			
+			// Stop tor.
+			[self _stop];
+			
+			// Continue steps.
+			ctrl(TCOperationsControlContinue);
+=======
 			[self stopWithCompletionHandler:^{
 				ctrl(TCOperationsControlContinue);
 			}];
+>>>>>>> javerous/master
 		}];
 		
 		// -- Stage archive --
 		[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
+<<<<<<< HEAD
+			
+			// Check cancel state.
+			if (cancelled)
+			{
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+			
+=======
 
+>>>>>>> javerous/master
 			// Notify step.
 			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoUpdateDomain code:TCTorManagerEventUpdateArchiveStage]);
 			
 			// Stage file.
+<<<<<<< HEAD
+			[self operationStageArchiveFile:[NSURL fileURLWithPath:downloadArchivePath] completionHandler:^(TCInfo *info) {
+=======
 			[TCTorOperations operationStageArchiveFile:[NSURL fileURLWithPath:downloadArchivePath] toTorBinariesPath:_torBinPath completionHandler:^(TCInfo *info) {
+>>>>>>> javerous/master
 				
 				if (info.kind == TCInfoError)
 				{
@@ -714,7 +1382,11 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 				}
 				else if (info.kind == TCInfoInfo)
 				{
+<<<<<<< HEAD
+					if (info.code == TCTorManagerEventDone)
+=======
 					if (info.code == TCTorManagerEventOperationDone)
+>>>>>>> javerous/master
 						ctrl(TCOperationsControlContinue);
 				}
 			}];
@@ -723,27 +1395,67 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		// -- Check signature --
 		[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
 			
+<<<<<<< HEAD
+			// Check cancel state.
+			if (cancelled)
+			{
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+			
+=======
+>>>>>>> javerous/master
 			// Notify step.
 			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoUpdateDomain code:TCTorManagerEventUpdateSignatureCheck]);
 			
 			// Check signature.
+<<<<<<< HEAD
+			[self operationCheckSignatureWithCompletionHandler:^(TCInfo *info) {
+				
+				if (info.kind == TCInfoError)
+				{
+					handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoUpdateDomain code:TCTorManagerErrorSignature info:info]);
+=======
 			[TCTorOperations operationCheckSignatureWithTorBinariesPath:_torBinPath completionHandler:^(TCInfo *info) {
 				
 				if (info.kind == TCInfoError)
 				{
 					handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoUpdateDomain code:TCTorManagerErrorCheckUpdateLocalSignature info:info]);
+>>>>>>> javerous/master
 					ctrl(TCOperationsControlFinish);
 					return;
 				}
 				else if (info.kind == TCInfoInfo)
 				{
+<<<<<<< HEAD
+					if (info.code == TCTorManagerEventDone)
+=======
 					if (info.code == TCTorManagerEventOperationDone)
+>>>>>>> javerous/master
 						ctrl(TCOperationsControlContinue);
 				}
 			}];
 		}];
 		
 		// -- Launch binary --
+<<<<<<< HEAD
+		[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
+			
+			// Check cancel state.
+			if (cancelled)
+			{
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+			
+			// Notify step.
+			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoUpdateDomain code:TCTorManagerEventUpdateRelaunch]);
+			
+			// Launch tor.
+			[self operationLaunchTor:^(TCInfo *info) {
+				
+				if (info.kind == TCInfoError)
+=======
 		[queue scheduleCancelableOnQueue:_localQueue block:^(TCOperationsControl ctrl, TCOperationsAddCancelBlock addCancelBlock) {
 			
 			uint16_t torPort = [_configuration torPort];
@@ -780,11 +1492,52 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 					}
 				}
 				else if (info.kind == TCInfoError)
+>>>>>>> javerous/master
 				{
 					handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoUpdateDomain code:TCTorManagerErrorUpdateRelaunch info:info]);
 					ctrl(TCOperationsControlFinish);
 					return;
 				}
+<<<<<<< HEAD
+				else if (info.kind == TCInfoInfo)
+				{
+					if (info.code == TCTorManagerEventDone)
+						ctrl(TCOperationsControlContinue);
+				}
+			}];
+		}];
+		
+		// -- Done --
+		[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
+			
+			// Check cancel state.
+			if (cancelled)
+			{
+				ctrl(TCOperationsControlFinish);
+				return;
+			}
+			
+			// Notify step.
+			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoUpdateDomain code:TCTorManagerEventUpdateDone]);
+			
+			// Continue.
+			ctrl(TCOperationsControlContinue);
+		}];
+		
+		// -- Finish --
+		queue.finishHandler = ^{
+			if (downloadPath)
+				[[NSFileManager defaultManager] removeItemAtPath:downloadPath error:nil];
+			
+			opCtrl(TCOperationsControlContinue);
+		};
+		
+		// Start.
+		[queue start];
+	}];
+	
+	return cancelBlock;
+=======
 			}];
 			
 			addCancelBlock(^{ [torTask stopWithCompletionHandler:nil]; });
@@ -1876,11 +2629,65 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		
 		[_socket sendBytes:command.bytes ofSize:command.length copy:YES];
 	});
+>>>>>>> javerous/master
 }
 
 
 
 /*
+<<<<<<< HEAD
+** TCTorManager - Operations
+*/
+#pragma mark - TCTorManager - Operations
+
+- (dispatch_block_t)operationRetrieveRemoteInfoWithCompletionHandler:(void (^)(TCInfo *info))handler
+{
+	if (!handler)
+		return NULL;
+	
+	__block dispatch_block_t	currentBlock = NULL;
+	__block BOOL				cancelled = NO;
+	
+	dispatch_block_t cancelBlock = ^{
+		NSLog(@"Cancel <operationRetrieveRemoteInfoWithCompletionHandler>");
+		
+		dispatch_async(_localQueue, ^{
+			
+			if (cancelled)
+				return;
+			
+			cancelled = YES;
+			
+			if (currentBlock)
+				currentBlock();
+		});
+	};
+	
+	TCOperationsQueue *queue = [[TCOperationsQueue alloc] init];
+	
+	// -- Get remote info --
+	__block NSData	*remoteInfoData = nil;
+	
+	[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
+		
+		// Check cancellation.
+		if (cancelled)
+		{
+			ctrl(TCOperationsControlFinish);
+			return;
+		}
+		
+		// Create task.
+		NSURL					*url = [NSURL URLWithString:@"http://www.sourcemac.com/tor/info.plist"];
+		NSURLSessionDataTask	*task;
+		
+		task = [[self _torURLSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+
+			// Check error.
+			if (error)
+			{
+				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorNetwork context:error]);
+=======
 ** TCTorControl - Helpers
 */
 #pragma mark - TCTorControl - Helpers
@@ -2136,6 +2943,7 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 			if (error)
 			{
 				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorOperationNetwork context:error]);
+>>>>>>> javerous/master
 				ctrl(TCOperationsControlFinish);
 				return;
 			}
@@ -2151,15 +2959,38 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		[task resume];
 		
 		// Cancellation block.
+<<<<<<< HEAD
+		currentBlock = ^{
+			[task cancel];
+			ctrl(TCOperationsControlFinish);
+		};
+=======
 		addCancelBlock(^{
 			TCDebugLog(@"<cancel operationRetrieveRemoteInfoWithURLSession (Get remote info)>");
 			[task cancel];
 		});
+>>>>>>> javerous/master
 	}];
 	
 	// -- Get signature, check it & parse plist --
 	__block NSDictionary *remoteInfo = nil;
 	
+<<<<<<< HEAD
+	[queue scheduleOnQueue:_localQueue block:^(TCOperationsControl ctrl) {
+		
+		// Check cancellation.
+		if (cancelled)
+		{
+			ctrl(TCOperationsControlFinish);
+			return;
+		}
+		
+		// Create task.
+		NSURL					*url = [NSURL URLWithString:@"http://www.sourcemac.com/tor/info.plist.sig"];
+		NSURLSessionDataTask	*task;
+		
+		task = [[self _torURLSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+=======
 	[queue scheduleCancelableBlock:^(TCOperationsControl ctrl, TCOperationsAddCancelBlock addCancelBlock) {
 		
 		// Create task.
@@ -2167,11 +2998,16 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		NSURLSessionDataTask	*task;
 		
 		task = [urlSession dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+>>>>>>> javerous/master
 			
 			// Check error.
 			if (error)
 			{
+<<<<<<< HEAD
+				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorNetwork context:error]);
+=======
 				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorOperationNetwork context:error]);
+>>>>>>> javerous/master
 				ctrl(TCOperationsControlFinish);
 				return;
 			}
@@ -2181,7 +3017,11 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 			
 			if ([TCDataSignature validateSignature:data forData:remoteInfoData withPublicKey:publicKey] == NO)
 			{
+<<<<<<< HEAD
+				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorSignature context:error]);
+=======
 				handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorOperationSignature context:error]);
+>>>>>>> javerous/master
 				ctrl(TCOperationsControlFinish);
 				return;
 			}
@@ -2199,23 +3039,43 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 			}
 			
 			// Give result.
+<<<<<<< HEAD
+			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventInfo context:remoteInfo]);
+			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventDone context:remoteInfo]);
+=======
 			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventOperationInfo context:remoteInfo]);
 			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventOperationDone context:remoteInfo]);
+>>>>>>> javerous/master
 		}];
 		
 		// Resume task.
 		[task resume];
 		
 		// Cancellation block.
+<<<<<<< HEAD
+		currentBlock = ^{
+			[task cancel];
+			ctrl(TCOperationsControlFinish);
+		};
+=======
 		addCancelBlock(^{
 			TCDebugLog(@"<cancel operationRetrieveRemoteInfoWithURLSession (Get signature, check it & parse plist)>");
 			[task cancel];
 		});
+>>>>>>> javerous/master
 	}];
 	
 	// Queue start.
 	[queue start];
 	
+<<<<<<< HEAD
+	return cancelBlock;
+}
+
+
+
+- (void)operationStageArchiveFile:(NSURL *)fileURL completionHandler:(void (^)(TCInfo *info))handler
+=======
 	// Cancel block.
 	return ^{
 		TCDebugLog(@"<cancel operationRetrieveRemoteInfoWithURLSession (global)>");
@@ -2224,6 +3084,7 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 }
 
 + (void)operationStageArchiveFile:(NSURL *)fileURL toTorBinariesPath:(NSString *)torBinPath completionHandler:(void (^)(TCInfo *info))handler
+>>>>>>> javerous/master
 {
 	// Check parameters.
 	if (!handler)
@@ -2238,19 +3099,32 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	
 	// Get target directory.
+<<<<<<< HEAD
+	NSString *torBinPath = [_configuration pathForDomain:TConfigPathDomainTorBinary];
+	
+=======
+>>>>>>> javerous/master
 	if ([torBinPath hasSuffix:@"/"])
 		torBinPath = [torBinPath substringToIndex:([torBinPath length] - 1)];
 	
 	if (!torBinPath)
 	{
+<<<<<<< HEAD
+		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorIO]);
+=======
 		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorOperationIO]);
+>>>>>>> javerous/master
 		return;
 	}
 	
 	// Create target directory.
 	if ([fileManager createDirectoryAtPath:torBinPath withIntermediateDirectories:YES attributes:nil error:nil] == NO)
 	{
+<<<<<<< HEAD
+		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorConfiguration]);
+=======
 		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorOperationConfiguration]);
+>>>>>>> javerous/master
 		return;
 	}
 	
@@ -2261,7 +3135,11 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	
 	if ([fileManager copyItemAtPath:[fileURL path] toPath:newFilePath error:nil] == NO)
 	{
+<<<<<<< HEAD
+		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorIO]);
+=======
 		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorOperationIO]);
+>>>>>>> javerous/master
 		return;
 	}
 	
@@ -2277,8 +3155,13 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	[profile appendFormat:@"(allow file* (subpath \"%@\"))", [torBinPath stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""]];	// Allow to write result.
 	
 #if DEBUG
+<<<<<<< HEAD
+	[profile appendFormat:@"(allow file-read* (subpath \"/System/Library\"))"];	// Allow to read tar.
+	[profile appendFormat:@"(allow file-read* (subpath \"/Applications\"))"];	// Allow to read tar.
+=======
 	[profile appendFormat:@"(allow file-read* (subpath \"/System/Library\"))"];	// Allow to read system things.
 	[profile appendFormat:@"(allow file-read* (subpath \"/Applications\"))"];	// Allow to read Applications.
+>>>>>>> javerous/master
 #endif
 	
 	// Create & launch task.
@@ -2295,9 +3178,15 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	task.terminationHandler = ^(NSTask *aTask) {
 		
 		if ([aTask terminationStatus] != 0)
+<<<<<<< HEAD
+			handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorExtract context:@([aTask terminationStatus])]);
+		else
+			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventDone]);
+=======
 			handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorOperationExtract context:@([aTask terminationStatus])]);
 		else
 			handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventOperationDone]);
+>>>>>>> javerous/master
 		
 		[fileManager removeItemAtPath:newFilePath error:nil];
 	};
@@ -2306,35 +3195,61 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		[task launch];
 	}
 	@catch (NSException *exception) {
+<<<<<<< HEAD
+		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorExtract context:@(-1)]);
+=======
 		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorOperationExtract context:@(-1)]);
+>>>>>>> javerous/master
 		[fileManager removeItemAtPath:newFilePath error:nil];
 	}
 }
 
+<<<<<<< HEAD
+- (void)operationCheckSignatureWithCompletionHandler:(void (^)(TCInfo *info))handler
+=======
 + (void)operationCheckSignatureWithTorBinariesPath:(NSString *)torBinPath completionHandler:(void (^)(TCInfo *info))handler
+>>>>>>> javerous/master
 {
 	// Check parameters.
 	if (!handler)
 		handler = ^(TCInfo *info) { };
 	
 	// Get tor path.
+<<<<<<< HEAD
+	NSString *torBinPath = [_configuration pathForDomain:TConfigPathDomainTorBinary];
+	
+	if (!torBinPath)
+	{
+		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorConfiguration]);
+=======
 	if (!torBinPath)
 	{
 		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorOperationConfiguration]);
+>>>>>>> javerous/master
 		return;
 	}
 	
 	// Build paths.
+<<<<<<< HEAD
+	NSString *signaturePath = [torBinPath stringByAppendingPathComponent:TCTorManagerFileSignature];
+	NSString *binariesPath = [torBinPath stringByAppendingPathComponent:TCTorManagerFileBinaries];
+	NSString *infoPath = [torBinPath stringByAppendingPathComponent:TCTorManagerFileInfo];
+=======
 	NSString *signaturePath = [torBinPath stringByAppendingPathComponent:TCTorManagerFileBinSignature];
 	NSString *binariesPath = [torBinPath stringByAppendingPathComponent:TCTorManagerFileBinBinaries];
 	NSString *infoPath = [torBinPath stringByAppendingPathComponent:TCTorManagerFileBinInfo];
+>>>>>>> javerous/master
 	
 	// Read signature.
 	NSData *data = [NSData dataWithContentsOfFile:signaturePath];
 	
 	if (!data)
 	{
+<<<<<<< HEAD
+		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorIO]);
+=======
 		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorOperationIO]);
+>>>>>>> javerous/master
 		return;
 	}
 	
@@ -2343,7 +3258,11 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	
 	if ([TCFileSignature validateSignature:data forContentsOfURL:[NSURL fileURLWithPath:infoPath] withPublicKey:publicKey] == NO)
 	{
+<<<<<<< HEAD
+		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorSignature context:infoPath]);
+=======
 		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorOperationSignature context:infoPath]);
+>>>>>>> javerous/master
 		return;
 	}
 	
@@ -2353,31 +3272,144 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	
 	if (!info)
 	{
+<<<<<<< HEAD
+		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorIO]);
+=======
 		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorOperationIO]);
+>>>>>>> javerous/master
 		return;
 	}
 	
 	// Give info.
+<<<<<<< HEAD
+	handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventInfo context:info]);
+	
+	// Check files hash.
+	NSDictionary *files = info[TCTorManagerKeyFiles];
+=======
 	handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventOperationInfo context:info]);
 	
 	// Check files hash.
 	NSDictionary *files = info[TCTorManagerKeyInfoFiles];
+>>>>>>> javerous/master
 	
 	for (NSString *file in files)
 	{
 		NSString		*filePath = [binariesPath stringByAppendingPathComponent:file];
 		NSDictionary	*fileInfo = files[file];
+<<<<<<< HEAD
+		NSData			*infoHash = fileInfo[TCTorManagerKeyHash];
+=======
 		NSData			*infoHash = fileInfo[TCTorManagerKeyInfoHash];
+>>>>>>> javerous/master
 		NSData			*diskHash = file_sha1([NSURL fileURLWithPath:filePath]);
 		
 		if (!diskHash || [infoHash isEqualToData:diskHash] == NO)
 		{
+<<<<<<< HEAD
+			handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorSignature context:filePath]);
+=======
 			handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorOperationSignature context:filePath]);
+>>>>>>> javerous/master
 			return;
 		}
 	}
 	
 	// Finish.
+<<<<<<< HEAD
+	handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventDone]);
+}
+
+- (void)operationLaunchTor:(void (^)(TCInfo *info))handler
+{
+	if (!handler)
+		handler = ^(TCInfo *info) { };
+	
+	NSString	*torPath = [_configuration pathForDomain:TConfigPathDomainTorBinary];
+	NSString	*dataPath = [_configuration pathForDomain:TConfigPathDomainTorData];
+	NSString	*identityPath = [_configuration pathForDomain:TConfigPathDomainTorIdentity];
+	
+	// Check conversion.
+	if (!torPath || !dataPath || !identityPath)
+	{
+		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorConfiguration]);
+		return;
+	}
+	
+	// Create directories.
+	NSFileManager *mng = [NSFileManager defaultManager];
+	
+	[mng createDirectoryAtPath:dataPath withIntermediateDirectories:NO attributes:nil error:nil];
+	[mng createDirectoryAtPath:identityPath withIntermediateDirectories:NO attributes:nil error:nil];
+	
+	// Create arguments.
+	NSMutableArray	*args = [NSMutableArray array];
+	
+	[args addObject:@"--ClientOnly"];
+	[args addObject:@"1"];
+	
+	[args addObject:@"--SocksPort"];
+	[args addObject:[@([_configuration torPort]) stringValue]];
+	
+	[args addObject:@"--SocksListenAddress"];
+	[args addObject:([_configuration torAddress] ?: @"localhost")];
+	
+	[args addObject:@"--DataDirectory"];
+	[args addObject:dataPath];
+	
+	[args addObject:@"--HiddenServiceDir"];
+	[args addObject:identityPath];
+	
+	[args addObject:@"--HiddenServicePort"];
+	[args addObject:[NSString stringWithFormat:@"11009 127.0.0.1:%u", [_configuration clientPort]]];
+	
+	// Build & handle pipe for 'tor' task.
+	NSPipe			*errPipe = [[NSPipe alloc] init];
+	NSPipe			*outPipe = [[NSPipe alloc] init];
+	TCBuffer		*errBuffer = [[TCBuffer alloc] init];
+	TCBuffer		*outBuffer =  [[TCBuffer alloc] init];
+	dispatch_queue_t	localQueue = _localQueue;
+	__weak TCTorManager *weakSelf = self;
+	
+	_errHandle = [errPipe fileHandleForReading];
+	_outHandle = [outPipe fileHandleForReading];
+	
+	_errHandle.readabilityHandler = ^(NSFileHandle *handle) {
+		
+		NSData			*data;
+		TCTorManager	*wSelf = weakSelf;
+		
+		@try {
+			data = [handle availableData];
+		}
+		@catch (NSException *exception) {
+			handle.readabilityHandler = nil;
+			return;
+		}
+		
+		// Parse data.
+		dispatch_async(localQueue, ^{
+			
+			NSData *line;
+			
+			[errBuffer appendBytes:[data bytes] ofSize:[data length] copy:YES];
+			
+			[errBuffer dataUpToCStr:"\n" includeSearch:NO];
+			
+			while ((line = [errBuffer dataUpToCStr:"\n" includeSearch:NO]))
+			{
+				NSString *string = [[NSString alloc] initWithData:line encoding:NSUTF8StringEncoding];
+				
+				[wSelf sendLog:string kind:TCTorManagerLogError];
+			}
+		});
+	};
+	
+	_outHandle.readabilityHandler = ^(NSFileHandle *handle) {
+		
+		NSData			*data;
+		TCTorManager	*wSelf = weakSelf;
+=======
 	handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventOperationDone]);
 }
 
@@ -2426,6 +3458,7 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	
 	void (^handleLog)(NSFileHandle *, TCBuffer *buffer, TCTorManagerLogKind) = ^(NSFileHandle *handle, TCBuffer *buffer, TCTorManagerLogKind kind) {
 		NSData *data;
+>>>>>>> javerous/master
 		
 		@try {
 			data = [handle availableData];
@@ -2436,6 +3469,21 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 		}
 		
 		// Parse data.
+<<<<<<< HEAD
+		dispatch_async(localQueue, ^{
+			
+			NSData *line;
+			
+			[outBuffer appendBytes:[data bytes] ofSize:[data length] copy:YES];
+			
+			[outBuffer dataUpToCStr:"\n" includeSearch:NO];
+			
+			while ((line = [outBuffer dataUpToCStr:"\n" includeSearch:NO]))
+			{
+				NSString *string = [[NSString alloc] initWithData:line encoding:NSUTF8StringEncoding];
+				
+				[wSelf sendLog:string kind:TCTorManagerLogStandard];
+=======
 		dispatch_async(logQueue, ^{
 			
 			NSData *line;
@@ -2449,11 +3497,252 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 				NSString *string = [[NSString alloc] initWithData:line encoding:NSUTF8StringEncoding];
 				
 				logHandler(kind, string);
+>>>>>>> javerous/master
 			}
 		});
 	};
 	
 	// Build tor task.
+<<<<<<< HEAD
+	NSString *torExecPath = [[torPath stringByAppendingPathComponent:TCTorManagerFileBinaries] stringByAppendingPathComponent:TCTorManagerFileTor];
+	
+	_task = [[NSTask alloc] init];
+	
+	[_task setLaunchPath:torExecPath];
+	[_task setArguments:args];
+	
+	[_task setStandardError:errPipe];
+	[_task setStandardOutput:outPipe];
+	
+	// Run tor task
+	@try
+	{
+		[_task launch];
+	}
+	@catch (id error)
+	{
+#warning FIXME: log in handler
+		//_logHandler();
+		//[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_error_launch"];
+		handler([TCInfo infoOfKind:TCInfoError domain:TCTorManagerInfoOperationDomain code:TCTorManagerErrorTor context:@(-1)]);
+		return;
+	}
+	
+	// Notify the launch.
+	handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventDone]);
+}
+
+
+
+/*
+** TCTorManager - Property
+*/
+#pragma mark - TCTorManager - Property
+
+- (NSString *)hiddenHostname
+{
+	__block NSString *result = nil;
+	
+	dispatch_sync(_localQueue, ^{
+		
+		if (_hidden)
+			result = [[NSString alloc] initWithString:_hidden];
+	});
+	
+	return result;
+}
+
+
+
+/*
+** TCTorManager - Helpers
+*/
+#pragma mark - TCTorManager - Helpers
+
+- (void)sendLog:(NSString *)log kind:(TCTorManagerLogKind)kind
+{
+	if ([log length] == 0)
+		return;
+	
+	dispatch_async(_eventQueue, ^{
+		
+		void (^logHandler)(TCTorManagerLogKind kind, NSString *log) = _logHandler;
+		
+		if (!logHandler)
+			return;
+		
+		logHandler(kind, log);
+	});
+}
+
+- (void)_terminateTor
+{
+	// > localQueue <
+	
+	if (_task)
+	{
+		[_task terminate];
+		
+		[_task waitUntilExit];
+		
+		_task = nil;
+	}
+}
+
+- (NSURLSession *)torURLSession
+{
+	__block NSURLSession *result = nil;
+	
+	dispatch_sync(_localQueue, ^{
+		result = [self _torURLSession];
+	});
+	
+	return result;
+}
+
+- (NSURLSession *)_torURLSession
+{
+	// > localQueue <
+	
+	if (_torURLSession)
+		return _torURLSession;
+	
+	// Create session configuration, and setup it to use tor.
+	NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+	
+	sessionConfiguration.connectionProxyDictionary =  @{ (NSString *)kCFStreamPropertySOCKSProxyHost : ([_configuration torAddress] ?: @"localhost"),
+														 (NSString *)kCFStreamPropertySOCKSProxyPort : @([_configuration torPort]) };
+	
+	_torURLSession = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:nil];
+	
+	return _torURLSession;
+}
+
+
+
+/*
+** TCTorManager - NSURLSession
+*/
+#pragma mark - TCTorManager - NSURLSession
+
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data
+{
+	dispatch_async(_localQueue, ^{
+		
+		// Get context.
+		TCTorDownloadContext *context = _torDownloadContexts[@(dataTask.taskIdentifier)];
+		
+		if (!context)
+			return;
+	
+		// Handle data.
+		[context handleData:data];
+	});
+}
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
+{
+	dispatch_async(_localQueue, ^{
+		
+		// Get context.
+		TCTorDownloadContext *context = _torDownloadContexts[@(task.taskIdentifier)];
+		
+		if (!context)
+			return;
+		
+		// Handle complete.
+		[context handleComplete:error];
+	});
+}
+
+@end
+
+
+
+/*
+** TCTorDownloadContext
+*/
+#pragma mark - TCTorDownloadContext
+
+@implementation TCTorDownloadContext
+
+- (id)initWithPath:(NSString *)path
+{
+	self = [super init];
+	
+	if (self)
+	{
+		if (!path)
+			return nil;
+		
+		// Create directory.
+		[[NSFileManager defaultManager] createDirectoryAtPath:[path stringByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:nil];
+		
+		// Create file.
+		_file = fopen([path fileSystemRepresentation], "w");
+		
+		if (!_file)
+			return nil;
+		
+		// Init sha1.
+		CC_SHA1_Init(&_sha1);
+	}
+	
+	return self;
+}
+
+- (void)dealloc
+{
+	[self close];
+}
+
+- (void)handleData:(NSData *)data
+{
+	if ([data length] == 0)
+		return;
+	
+	// Write data.
+	if (_file)
+	{
+		if (fwrite([data bytes], [data length], 1, _file) == 1)
+		{
+			CC_SHA1_Update(&_sha1, [data bytes], (CC_LONG)[data length]);
+		}
+	}
+	
+	// Update count.
+	_bytesDownloaded += [data length];
+	
+	// Call handler.
+	if (_updateHandler)
+		_updateHandler(self, _bytesDownloaded, NO, nil);
+}
+
+- (void)handleComplete:(NSError *)error
+{
+	[self close];
+	
+	if (_updateHandler)
+		_updateHandler(self, _bytesDownloaded, YES, error);
+}
+
+- (NSData *)sha1
+{
+	NSMutableData *result = [[NSMutableData alloc] initWithLength:CC_SHA1_DIGEST_LENGTH];
+	
+	CC_SHA1_Final([result mutableBytes], &_sha1);
+	
+	return result;
+}
+
+- (void)close
+{
+	if (!_file)
+		return;
+	
+	fclose(_file);
+	_file = NULL;
+=======
 	NSTask *task = [[NSTask alloc] init];
 	
 	// > handle output.
@@ -2523,6 +3812,7 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 	
 	// Notify the launch.
 	handler([TCInfo infoOfKind:TCInfoInfo domain:TCTorManagerInfoOperationDomain code:TCTorManagerEventOperationDone], task, hexaPassword);
+>>>>>>> javerous/master
 }
 
 @end
@@ -2534,9 +3824,13 @@ static BOOL	version_greater(NSString *baseVersion, NSString *newVersion);
 */
 #pragma mark - C Tools
 
+<<<<<<< HEAD
+NSData *file_sha1(NSURL *fileURL)
+=======
 #pragma mark Digest
 
 static NSData *file_sha1(NSURL *fileURL)
+>>>>>>> javerous/master
 {
 	if (!fileURL)
 		return nil;
@@ -2581,6 +3875,9 @@ end:
 	return result;
 }
 
+<<<<<<< HEAD
+BOOL version_greater(NSString *baseVersion, NSString *newVersion)
+=======
 static NSString *s2k_from_data(NSData *data, uint8_t iterations)
 {
 	size_t		dataLen = data.length;
@@ -2660,6 +3957,7 @@ NSString *hexa_from_data(NSData *data)
 #pragma mark Version
 
 static BOOL version_greater(NSString *baseVersion, NSString *newVersion)
+>>>>>>> javerous/master
 {
 	if (!newVersion)
 		return NO;

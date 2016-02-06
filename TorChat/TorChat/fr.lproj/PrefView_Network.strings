@@ -1,6 +1,10 @@
 
 /* Class = "NSTextFieldCell"; title = "Tor Address :"; ObjectID = "0dS-RH-K0k"; */
+<<<<<<< HEAD
+"0dS-RH-K0k.title" = "Tor Address :";
+=======
 "0dS-RH-K0k.title" = "Adresse tor :";
+>>>>>>> javerous/master
 
 /* Class = "NSBox"; title = "TorChat"; ObjectID = "A4U-kf-1ju"; */
 "A4U-kf-1ju.title" = "TorChat";
@@ -15,10 +19,17 @@
 "ING-QQ-79i.title" = "9050";
 
 /* Class = "NSTextFieldCell"; title = "TorChat In Port :"; ObjectID = "IvZ-fz-eXW"; */
+<<<<<<< HEAD
+"IvZ-fz-eXW.title" = "TorChat In Port :";
+
+/* Class = "NSTextFieldCell"; title = "Tor Port SOCKS :"; ObjectID = "Nx3-Ts-rea"; */
+"Nx3-Ts-rea.title" = "Tor Port SOCKS :";
+=======
 "IvZ-fz-eXW.title" = "Port d'entrée TorChat :";
 
 /* Class = "NSTextFieldCell"; title = "Tor Port SOCKS :"; ObjectID = "Nx3-Ts-rea"; */
 "Nx3-Ts-rea.title" = "Port SOCKS tor :";
+>>>>>>> javerous/master
 
 /* Class = "NSTextFieldCell"; title = "11009"; ObjectID = "dN8-Yz-9b1"; */
 "dN8-Yz-9b1.title" = "11009";
@@ -27,4 +38,8 @@
 "hGA-Cl-gxo.title" = "-";
 
 /* Class = "NSTextFieldCell"; title = "TorChat IM Address :"; ObjectID = "lNd-8Q-NIB"; */
+<<<<<<< HEAD
+"lNd-8Q-NIB.title" = "TorChat IM Address :";
+=======
 "lNd-8Q-NIB.title" = "Adresse TorChat :";
+>>>>>>> javerous/master

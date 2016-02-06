@@ -1,7 +1,11 @@
 /*
  *  TCChatTranscriptViewController.m
  *
+<<<<<<< HEAD
+ *  Copyright 2014 Avérous Julien-Pierre
+=======
  *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,6 +24,11 @@
  *
  */
 
+<<<<<<< HEAD
+
+
+=======
+>>>>>>> javerous/master
 #import <WebKit/WebKit.h>
 
 #import "TCChatTranscriptViewController.h"
@@ -28,6 +37,10 @@
 #import "NSString+TCXMLExtension.h"
 
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> javerous/master
 /*
 ** Defines
 */
@@ -72,7 +85,11 @@ NSMutableDictionary	*gAvatarCache;
 */
 #pragma mark - TCChatTranscriptViewController - Private
 
+<<<<<<< HEAD
+@interface TCChatTranscriptViewController ()
+=======
 @interface TCChatTranscriptViewController () <WebUIDelegate, WebFrameLoadDelegate>
+>>>>>>> javerous/master
 {
 	WebView			*_webView;
 	NSDictionary	*_template;
@@ -453,7 +470,11 @@ NSMutableDictionary	*gAvatarCache;
 
 + (void)initialize
 {
+<<<<<<< HEAD
+	gAvatarQueue = dispatch_queue_create("com.sourcemac.torchat.url-protocol-internal.local", DISPATCH_QUEUE_CONCURRENT);
+=======
 	gAvatarQueue = dispatch_queue_create("com.torchat.app.url-protocol-internal.local", DISPATCH_QUEUE_CONCURRENT);
+>>>>>>> javerous/master
 	gAvatarCache = [[NSMutableDictionary alloc] init];
 }
 

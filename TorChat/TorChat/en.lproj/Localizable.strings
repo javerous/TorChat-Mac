@@ -1,7 +1,11 @@
 /*
 *  Localizable.strings
 *
+<<<<<<< HEAD
+*  Copyright 2014 Avérous Julien-Pierre
+=======
 *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
 *
 *  This file is part of TorChat.
 *
@@ -35,9 +39,25 @@
 "ac_error_write_file" = "Can't build a configuration file (%@). Please check write access on your TorChat folder.";
 "ac_error_read_file" = "Can't open the configuration file (%@). Please check read access on your file.";
 "ac_error_read_proxy" = "Can't get the configuration data. Please check the proxy.";
+<<<<<<< HEAD
+"ac_error_launch" = "Can't launch tor. Please check the TorChat logs and system logs for more informations.";
 "ac_error_config" = "Error";
 
 
+/* Tor Manager */
+"tor_error_build_path" = "Can't generate standard tor path. Please check your configuration file.";
+"tor_error_launch" = "Can't launch tor. Please check your system logs, and check the integrity of TorChat.";
+"tor_is_running" = "Tor is running.";
+"tor_is_not_running" = "Tor is not running.";
+"tor_out_log" = "Tor: %@";
+"tor_error_log" = "Tor-Error: %@";
+
+
+=======
+"ac_error_config" = "Error";
+
+
+>>>>>>> javerous/master
 /* Menu */
 "menu_block_buddy" = "Block Buddy";
 "menu_unblock_buddy" = "Unblock Buddy";
@@ -79,6 +99,13 @@
 "file_progress_of" = "of";
 "file_progress_from" = "From:";
 "file_progress_to" = "To:";
+<<<<<<< HEAD
+"file_gb" = "GB";
+"file_mb" = "MB";
+"file_kb" = "KB";
+"file_b" = "B";
+=======
+>>>>>>> javerous/master
 
 
 /* Chat */
@@ -95,6 +122,52 @@
 
 
 /* Update */
+<<<<<<< HEAD
+"update_available_subtitle" = "Tor %@ is now available—you have %@. Would you like to download it now?";
+
+
+/* Core - Buddy */
+"core_bd_error_tor_resolve" = "The tor SOCKS address can't be resolved.";
+"core_bd_error_tor_connect" = "Unable to make a connection to the tor SOCKS.";
+"core_bd_event_tor_connected" = "Buddy connected on tor SOCKS.";
+
+"core_bd_event_status_changed" = "Buddy status has changed.";
+"core_bd_event_stopped" = "Buddy is stopped.";
+
+"core_bd_event_alias_changed" = "The alias of the buddy changed.";
+"core_bd_event_notes_changed" = "The notes of the buddy changed.";
+"core_bd_event_blocked_changed" = "The block status of the buddy changed.";
+
+"core_bd_error_filesend" = "Can't open file for sending.";
+"core_bd_error_filereceive" = "Can't open file to receive incoming file.";
+
+"core_bd_event_file_send_canceled" = "File sending was canceled.";
+"core_bd_event_file_receive_canceled" = "File receiving was canceled.";
+
+"core_bd_event_file_send_start" = "New file sending session.";
+"core_bd_event_file_send_finish" = "File send finished.";
+
+"core_bd_event_file_receive_start" = "New file receiving session.";
+"core_bd_event_file_receive_finish" = "File receive finished.";
+
+"core_bd_event_file_chunk_send" = "New file chunk sent";
+"core_bd_event_file_chunk_receive" = "New file chunk received";
+
+"core_bd_event_file_send_stopped" = "File send was stopped by the remote peer.";
+"core_bd_event_file_receive_stopped" = "File receive was stopped by the remote peer.";
+"core_bd_event_new_message" = "Received a new message";
+"core_bd_error_file_offline" = "Can't send a file to an offline buddy.";
+"core_bd_error_file_blocked" = "Can't send a file to an blocked buddy.";
+"core_bd_error_message_offline" = "Can't send a message to an offline buddy.";
+"core_bd_error_message_blocked" = "Can't send a message to an blocked buddy";
+
+"core_bd_error_parse" = "Parse Error";
+
+"core_bd_event_identified" = "Buddy is fully identified. All action are activated.";
+"core_bd_event_connected" = "Buddy is connected on the remote buddy through tor SOCKS.";
+
+"core_bd_error_socks_request" = "Can't send the SOCKS request.";
+=======
 "update_subtitle_available" = "Tor %@ is now available—you have %@. Would you like to download it now?";
 "update_button_cancel" = "Cancel";
 "update_button_close" = "Close";
@@ -169,10 +242,26 @@
 "core_bd_error_tor_resolve" = "The tor SOCKS address can't be resolved.";
 "core_bd_error_tor_connect" = "Unable to make a connection to the tor SOCKS.";
 "core_bd_error_socket" = "Buddy socket error.";
+>>>>>>> javerous/master
 "core_bd_error_socks_91" = "SOCKS request rejected or failed.";
 "core_bd_error_socks_92" = "SOCKS request rejected because SOCKS server cannot connect to identd on the client.";
 "core_bd_error_socks_93" = "SOCKS request rejected because the client program and identd report different user-ids.";
 "core_bd_error_socks_unknown" = "SOCKS request failed for an unknown reason.";
+<<<<<<< HEAD
+"core_bd_error_socket" = "Buddy socket error.";
+
+"core_bd_event_new_client" = "Peer name received";
+"core_bd_event_new_version" = "Peer version received";
+
+"core_bd_event_new_profile_text" = "Buddy profile text received";
+"core_bd_event_new_profile_name" = "Buddy profile name received";
+"core_bd_event_new_profile_avatar" = "Buddy profile avatar received";
+
+
+/* Core - Manager */
+"core_mng_event_new_buddy" = "A new buddy was added on your buddy list.";
+"core_mng_myself" = "myself";
+=======
 "core_bd_error_socks_request" = "Can't send the SOCKS request.";
 "core_bd_error_message_offline" = "Can't send a message to an offline buddy.";
 "core_bd_error_message_blocked" = "Can't send a message to an blocked buddy";
@@ -206,6 +295,7 @@
 "core_mng_event_profile_avatar" = "Profile avatar changed.";
 "core_mng_event_profile_name" = "Profile name changed.";
 "core_mng_event_profile_text" = "Profile text changed.";
+>>>>>>> javerous/master
 
 "core_mng_error_socket" = "Can't build a system socket object.";
 "core_mng_error_setsockopt" = "Can't change system socket option.";
@@ -213,6 +303,38 @@
 "core_mng_error_listen" = "Can't listen on the system socket.";
 "core_mng_error_accept" = "Can't accept new client because of a system error.";
 "core_mng_error_async" = "Can't use async I/O on system socket.";
+<<<<<<< HEAD
+"core_mng_event_started" = "TorChat controller is started.";
+"core_mng_event_stopped" = "TorChat controller is stopped.";
+
+"core_mng_event_profile_avatar" = "Profile avatar changed.";
+"core_mng_event_profile_text" = "Profile text changed.";
+"core_mng_event_profile_name" = "Profile name changed.";
+
+
+/* Core - Connection */
+"core_cnx_event_started" = "Connection controller was started.";
+
+"core_cnx_error_fake_ping" = "A remote peer sent a faked ping hostname. It was killed.";
+"core_cnx_error_already_pinged" = "A remote peer try to ping a buddy already pinged. It was killed.";
+"core_cnx_error_masquerade" = "A remote peer try a masquerade with our address. It was killed.";
+"core_cnx_error_pong" = "A remote peer try to do a pong, but the buddy can't be found. It was killed.";
+
+"core_cnx_error_socket" = "Client controller socket error.";
+
+"core_cnx_error_add_buddy" = "Can't add a new buddy on TorChat controller.";
+
+"core_cnx_new_buddy" = "unknown";
+
+
+/* Core - Socket */
+"core_socket_read_error" = "Socket read error.";
+"core_socket_read_closed" = "Socket was closed by remote peer on read.";
+"core_socker_read_full" = "Socket buffer is full. Unable to buffer more data.";
+
+"core_socket_write_error" = "Socket write error.";
+"core_socket_write_closed" = "Socket was closed by remote peer on write.";
+=======
 "core_cnx_error_already_pinged" = "A remote peer try to ping a buddy already pinged. It was killed.";
 "core_cnx_error_masquerade" = "A remote peer try a masquerade with our address. It was killed.";
 "core_cnx_error_add_buddy" = "Can't add a new buddy on TorChat controller.";
@@ -277,3 +399,4 @@
 "tor_operation_err_signature" = "Signature error";
 "tor_operation_err_tor" = "Tor error";
 "tor_operation_err_internal" = "Internal error";
+>>>>>>> javerous/master

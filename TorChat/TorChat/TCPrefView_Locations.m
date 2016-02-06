@@ -1,3 +1,15 @@
+<<<<<<< HEAD
+//
+//  TCPrefView_Locations.m
+//  TorChat
+//
+//  Created by Julien-Pierre Avérous on 14/01/2015.
+//  Copyright (c) 2015 SourceMac. All rights reserved.
+//
+
+#import "TCPrefView_Locations.h"
+
+=======
 /*
  *  TCPrefView_Locations.m
  *
@@ -24,6 +36,7 @@
 
 #import "TCLocationViewController.h"
 
+>>>>>>> javerous/master
 
 /*
 ** TCPrefView_Locations
@@ -31,6 +44,8 @@
 #pragma mark - TCPrefView_Locations
 
 @implementation TCPrefView_Locations
+<<<<<<< HEAD
+=======
 {
 	IBOutlet NSTextField	*referalTextField;
 	IBOutlet NSPathControl	*configPath;
@@ -48,6 +63,7 @@
 	id _pathObserver;
 }
 
+>>>>>>> javerous/master
 
 
 /*
@@ -67,6 +83,8 @@
 	return self;
 }
 
+<<<<<<< HEAD
+=======
 - (void)viewDidLoad
 {
 	[super viewDidLoad];
@@ -92,6 +110,7 @@
 	[_torDownloadsLocation addToView:downloadsView];
 }
 
+>>>>>>> javerous/master
 
 
 /*
@@ -104,6 +123,53 @@
 	// Load view.
 	[self view];
 
+<<<<<<< HEAD
+}
+
+- (void)saveConfig
+{
+}
+
+@end
+
+
+/*
+ 
+ // Download path.
+	NSString *path = [self.config pathForDomain:TConfigPathDomainDownloads];
+	
+	if ([[NSFileManager defaultManager] fileExistsAtPath:path] == NO)
+	{
+ [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+ 
+ if ([[path lastPathComponent] isEqualToString:@"Downloads"])
+ [[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"] atomically:NO];
+	}
+	
+	[_downloadPath setURL:[NSURL fileURLWithPath:path]];
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ - (IBAction)pathChanged:(id)sender
+ {
+	NSString *path = [[_downloadPath URL] path];
+	
+	if (path)
+	{
+ [self.config setDomain:TConfigPathDomainDownloads place:TConfigPathPlaceAbsolute subpath:path];
+ 
+ if ([[path lastPathComponent] isEqualToString:@"Downloads"])
+ [[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"] atomically:NO];
+	}
+	else
+ NSBeep();
+ }
+ */
+=======
 	// Load configuration.
 	[self reloadConfiguration];
 	
@@ -223,3 +289,4 @@
 }
 
 @end
+>>>>>>> javerous/master

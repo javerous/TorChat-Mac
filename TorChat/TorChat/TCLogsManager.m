@@ -1,7 +1,11 @@
 /*
  *  TCLogsManager.m
  *
+<<<<<<< HEAD
+ *  Copyright 2014 Avérous Julien-Pierre
+=======
  *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,6 +24,29 @@
  *
  */
 
+<<<<<<< HEAD
+
+
+#import "TCLogsManager.h"
+
+
+
+/*
+** TCLogsManager - Private
+*/
+#pragma mark - TCLogsManager - Private
+
+@interface TCLogsManager ()
+{
+	dispatch_queue_t		_localQueue;
+	dispatch_queue_t		_observerQueue;
+
+	NSMapTable				*_keyObservers;
+	NSHashTable				*_allObserver;
+
+	NSMutableDictionary		*_logs;
+	NSMutableDictionary		*_names;
+=======
 #import "TCLogsManager.h"
 
 #import "TCInfo.h"
@@ -60,19 +87,25 @@
 	entry->_message = message;
 	
 	return entry;
+>>>>>>> javerous/master
 }
 
 @end
 
 
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> javerous/master
 /*
 ** TCLogsManager
 */
 #pragma mark - TCLogsManager
 
 @implementation TCLogsManager
+<<<<<<< HEAD
+=======
 {
 	dispatch_queue_t		_localQueue;
 	dispatch_queue_t		_observerQueue;
@@ -83,6 +116,7 @@
 	NSMutableDictionary		*_logs;
 	NSMutableDictionary		*_names;
 }
+>>>>>>> javerous/master
 
 
 /*
@@ -109,8 +143,13 @@
     if (self)
 	{
 		// Create queue.
+<<<<<<< HEAD
+        _localQueue = dispatch_queue_create("com.torchat.cocoa.logmanager.local", DISPATCH_QUEUE_SERIAL);
+		_observerQueue = dispatch_queue_create("com.torchat.cocoa.logmanager.observer", DISPATCH_QUEUE_SERIAL);
+=======
         _localQueue = dispatch_queue_create("com.torchat.app.logmanager.local", DISPATCH_QUEUE_SERIAL);
 		_observerQueue = dispatch_queue_create("com.torchat.app.logmanager.observer", DISPATCH_QUEUE_SERIAL);
+>>>>>>> javerous/master
 		
 		// Build observers container.
 		_keyObservers = [NSMapTable strongToWeakObjectsMapTable];
@@ -131,6 +170,29 @@
 */
 #pragma mark - TCLogsWindowController - Logs
 
+<<<<<<< HEAD
+- (void)addLogEntry:(NSString *)key withContent:(NSString *)text
+{
+	dispatch_sync(_localQueue, ^{
+		
+		NSMutableArray *array = [_logs objectForKey:key];
+		
+		// Build logs array for this key
+		if (!array)
+		{
+			array = [[NSMutableArray alloc] init];
+			
+			[_logs setObject:array forKey:key];
+		}
+		
+		// Add the log in the array.
+		// > Remove first item if more than 500
+		if ([array count] > 500)
+			[array removeObjectAtIndex:0];
+		
+		// > Add
+		[array addObject:text];
+=======
 - (void)addLogWithTimestamp:(NSDate *)timestamp key:(NSString *)key kind:(TCLogKind)kind content:(NSString *)content
 {
 	dispatch_sync(_localQueue, ^{
@@ -155,6 +217,7 @@
 		
 		// > Add.
 		[logs addObject:entry];
+>>>>>>> javerous/master
 		
 		// Give the item to the observers.
 		// > Keyed observer.
@@ -163,7 +226,11 @@
 		if (kobserver)
 		{
 			dispatch_sync(_observerQueue, ^{
+<<<<<<< HEAD
+				[kobserver logManager:self updateForKey:key withContent:text];
+=======
 				[kobserver logManager:self updateForKey:key withEntries:@[entry]];
+>>>>>>> javerous/master
 			});
 		}
 		
@@ -171,25 +238,66 @@
 		for (id <TCLogsObserver> observer in _allObserver)
 		{
 			dispatch_sync(_observerQueue, ^{
+<<<<<<< HEAD
+				[observer logManager:self updateForKey:key withContent:text];
+=======
 				[observer logManager:self updateForKey:key withEntries:@[entry]];
+>>>>>>> javerous/master
 			});
 		}
 	});
 }
 
+<<<<<<< HEAD
+- (void)addBuddyLogEntryFromAddress:(NSString *)address name:(NSString *)name andText:(NSString *)log, ...
+=======
 - (void)addBuddyLogWithAddress:(NSString *)address name:(NSString *)name kind:(TCLogKind)kind message:(NSString *)message, ...
+>>>>>>> javerous/master
 {
 	va_list		ap;
 	NSString	*msg;
 	
 	// Render string
+<<<<<<< HEAD
+	va_start(ap, log);
+	
+	msg = [[NSString alloc] initWithFormat:NSLocalizedString(log, @"") arguments:ap];
+=======
 	va_start(ap, message);
 	
 	msg = [[NSString alloc] initWithFormat:NSLocalizedString(message, @"") arguments:ap];
+>>>>>>> javerous/master
 	
 	va_end(ap);
 	
 	// Add the alias
+<<<<<<< HEAD
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[_names setObject:name forKey:address];
+	});
+		
+	// Add the rendered log
+	[self addLogEntry:address withContent:msg];
+}
+
+- (void)addGlobalLogEntry:(NSString *)log, ...
+{
+	va_list		ap;
+	NSString	*msg;
+	
+	// Render the full string
+	va_start(ap, log);
+	
+	msg = [[NSString alloc] initWithFormat:NSLocalizedString(log, @"") arguments:ap];
+	
+	va_end(ap);
+	
+	// Add the log
+	[self addLogEntry:TCLogsGlobalKey withContent:msg];
+}
+
+- (void)addGlobalAlertLog:(NSString *)log, ...
+=======
 	dispatch_async(_localQueue, ^{
 		[_names setObject:name forKey:address];
 	});
@@ -229,18 +337,28 @@
 
 
 - (void)addGlobalLogWithKind:(TCLogKind)kind message:(NSString *)message, ...
+>>>>>>> javerous/master
 {
 	va_list		ap;
 	NSString	*msg;
 	
 	// Render the full string
+<<<<<<< HEAD
+	va_start(ap, log);
+	
+	msg = [[NSString alloc] initWithFormat:NSLocalizedString(log, @"") arguments:ap];
+=======
 	va_start(ap, message);
 	
 	msg = [[NSString alloc] initWithFormat:NSLocalizedString(message, @"") arguments:ap];
+>>>>>>> javerous/master
 	
 	va_end(ap);
 	
 	// Add the log
+<<<<<<< HEAD
+	[self addLogEntry:TCLogsGlobalKey withContent:msg];
+=======
 	[self addLogWithTimestamp:nil key:TCLogsGlobalKey kind:kind content:msg];
 }
 
@@ -266,6 +384,7 @@
 	
 	// Add the log
 	[self addLogWithTimestamp:info.timestamp key:TCLogsGlobalKey kind:kind content:[info renderComplete]];
+>>>>>>> javerous/master
 }
 
 - (NSArray *)allKeys
@@ -343,7 +462,11 @@
 			if (items)
 			{
 				dispatch_async(_observerQueue, ^{
+<<<<<<< HEAD
+					[observer logManager:self updateForKey:key withContent:items];
+=======
 					[observer logManager:self updateForKey:key withEntries:items];
+>>>>>>> javerous/master
 				});
 			}
 		}
@@ -354,7 +477,11 @@
 				NSArray *items = [[_logs objectForKey:akey] copy];
 		
 				dispatch_async(_observerQueue, ^{
+<<<<<<< HEAD
+					[observer logManager:self updateForKey:akey withContent:items];
+=======
 					[observer logManager:self updateForKey:akey withEntries:items];
+>>>>>>> javerous/master
 				});
 			}
 		}
@@ -366,7 +493,11 @@
 	if (!key)
 		return;
 	
+<<<<<<< HEAD
+	dispatch_async(dispatch_get_main_queue(), ^{
+=======
 	dispatch_async(_localQueue, ^{
+>>>>>>> javerous/master
 		[_keyObservers removeObjectForKey:key];
 	});
 }

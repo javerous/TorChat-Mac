@@ -20,8 +20,76 @@
 /* Class = "NSToolbarItem"; paletteLabel = "Buddies"; ObjectID = "84"; */
 "84.paletteLabel" = "Buddies";
 
+<<<<<<< HEAD
+/* Class = "NSTextFieldCell"; title = "TorChat IM Address :"; ObjectID = "99"; */
+"99.title" = "TorChat IM Address :";
+
+/* Class = "NSTextFieldCell"; title = "-"; ObjectID = "103"; */
+"103.title" = "-";
+
+/* Class = "NSTextFieldCell"; title = "TorChat In Port :"; ObjectID = "104"; */
+"104.title" = "TorChat In Port :";
+
+/* Class = "NSTextFieldCell"; title = "Download Folder :"; ObjectID = "105"; */
+"105.title" = "Download Folder :";
+
+/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "106"; */
+"106.title" = "Downloads";
+
+/* Class = "NSTextFieldCell"; title = "11009"; ObjectID = "107"; */
+"107.title" = "11009";
+
+/* Class = "NSTextFieldCell"; title = "localhost"; ObjectID = "132"; */
+"132.title" = "localhost";
+
+/* Class = "NSTextFieldCell"; title = "9050"; ObjectID = "133"; */
+"133.title" = "9050";
+
+/* Class = "NSTextFieldCell"; title = "Tor Address :"; ObjectID = "134"; */
+"134.title" = "Tor Address :";
+
+/* Class = "NSTextFieldCell"; title = "Tor Port SOCKS :"; ObjectID = "136"; */
+"136.title" = "Tor Port SOCKS :";
+
+/* Class = "NSBox"; title = "TorChat"; ObjectID = "137"; */
+"137.title" = "TorChat";
+
+/* Class = "NSBox"; title = "Files"; ObjectID = "138"; */
+"138.title" = "Files";
+
+/* Class = "NSBox"; title = "Masquerade"; ObjectID = "139"; */
+"139.title" = "Masquerade";
+
+/* Class = "NSTextFieldCell"; title = "TorChat Client Name :"; ObjectID = "141"; */
+"141.title" = "TorChat Client Name :";
+
+/* Class = "NSTextFieldCell"; title = "TorChat Client Version :"; ObjectID = "147"; */
+"147.title" = "TorChat Client Version :";
+
+/* Class = "NSBox"; title = "Tor"; ObjectID = "148"; */
+"148.title" = "Tor";
+
+/* Class = "NSBox"; title = "Block List"; ObjectID = "151"; */
+"151.title" = "Block List";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "176"; */
+"176.title" = "Text Cell";
+
+/* Class = "NSWindow"; title = "Add Blocked"; ObjectID = "205"; */
+"205.title" = "Add Blocked";
+
+/* Class = "NSTextFieldCell"; title = "Address"; ObjectID = "208"; */
+"208.title" = "Address";
+
+/* Class = "NSButtonCell"; title = "Add"; ObjectID = "212"; */
+"212.title" = "Add";
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "214"; */
+"214.title" = "Cancel";
+=======
 /* Class = "NSToolbarItem"; label = "Locations"; ObjectID = "UEu-Ia-LhZ"; */
 "UEu-Ia-LhZ.label" = "Locations";
 
 /* Class = "NSToolbarItem"; paletteLabel = "Locations"; ObjectID = "UEu-Ia-LhZ"; */
 "UEu-Ia-LhZ.paletteLabel" = "Locations";
+>>>>>>> javerous/master

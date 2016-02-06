@@ -1,7 +1,11 @@
 /*
  *  TCSocket.h
  *
+<<<<<<< HEAD
+ *  Copyright 2014 Avérous Julien-Pierre
+=======
  *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,6 +24,10 @@
  *
  */
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> javerous/master
 #import <Foundation/Foundation.h>
 
 
@@ -97,8 +105,12 @@ typedef enum
 @property (weak, atomic) id <TCSocketDelegate> delegate;
 
 // -- Instance --
+<<<<<<< HEAD
+- (id)initWithSocket:(int)descriptor;
+=======
 - (instancetype)initWithIP:(NSString *)ip port:(uint16_t)port;
 - (instancetype)initWithSocket:(int)descriptor;
+>>>>>>> javerous/master
 
 // -- Sending --
 - (BOOL)sendBytes:(const void *)bytes ofSize:(NSUInteger)size copy:(BOOL)copy;

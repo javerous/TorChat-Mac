@@ -1,3 +1,12 @@
+<<<<<<< HEAD
+//
+//  TCPrefView_General.m
+//  TorChat
+//
+//  Created by Julien-Pierre Avérous on 14/01/2015.
+//  Copyright (c) 2015 SourceMac. All rights reserved.
+//
+=======
 /*
  *  TCPrefView_General.m
  *
@@ -19,6 +28,7 @@
  *  along with TorChat.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+>>>>>>> javerous/master
 
 #import "TCPrefView_General.h"
 
@@ -86,12 +96,19 @@
 	[_clientVersionField setStringValue:[self.config clientVersion:TCConfigGetDefined]];
 }
 
+<<<<<<< HEAD
+- (void)saveConfig
+{
+	[self.config setClientName:[_clientNameField stringValue]];
+	[self.config setClientVersion:[_clientVersionField stringValue]];
+=======
 - (BOOL)saveConfig
 {
 	[self.config setClientName:[_clientNameField stringValue]];
 	[self.config setClientVersion:[_clientVersionField stringValue]];
 	
 	return NO;
+>>>>>>> javerous/master
 }
 
 @end

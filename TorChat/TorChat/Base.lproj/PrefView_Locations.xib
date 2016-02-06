@@ -1,23 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<<<<<<< HEAD
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6724" systemVersion="14B25" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6724"/>
+=======
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10089" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10089"/>
+>>>>>>> javerous/master
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCPrefView_Locations">
             <connections>
+<<<<<<< HEAD
+=======
                 <outlet property="configPath" destination="hDg-Dn-kex" id="aKO-Nw-9dD"/>
                 <outlet property="downloadsView" destination="Lhd-yb-4Fh" id="bcT-Ij-ofk"/>
                 <outlet property="referalTextField" destination="q25-zh-lag" id="uzM-lR-g8a"/>
                 <outlet property="torBinaryView" destination="hPt-9H-7CA" id="vmx-JK-S7V"/>
                 <outlet property="torDataView" destination="9zb-Km-Bsf" id="ltW-Ds-sh8"/>
                 <outlet property="torIdentityView" destination="LNA-0o-6WB" id="QSB-ND-lz4"/>
+>>>>>>> javerous/master
                 <outlet property="view" destination="c22-O7-iKe" id="b71-zv-g6j"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+<<<<<<< HEAD
+        <customView id="c22-O7-iKe" userLabel="Locations">
+            <rect key="frame" x="0.0" y="0.0" width="480" height="272"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+        </customView>
+    </objects>
+=======
         <customView translatesAutoresizingMaskIntoConstraints="NO" id="c22-O7-iKe" userLabel="Locations">
             <rect key="frame" x="0.0" y="0.0" width="658" height="351"/>
             <subviews>
@@ -183,4 +200,5 @@
         <image name="NSFollowLinkFreestandingTemplate" width="14" height="14"/>
         <image name="folder" width="14" height="14"/>
     </resources>
+>>>>>>> javerous/master
 </document>

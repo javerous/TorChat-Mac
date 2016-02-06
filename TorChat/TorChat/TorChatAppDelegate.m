@@ -1,7 +1,11 @@
 /*
  *  TorChatAppDelegate.m
  *
+<<<<<<< HEAD
+ *  Copyright 2014 Avérous Julien-Pierre
+=======
  *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,18 +24,32 @@
  *
  */
 
+<<<<<<< HEAD
+
+
+=======
+>>>>>>> javerous/master
 #import "TorChatAppDelegate.h"
 
 #import "TCMainController.h"
 #import "TCBuddiesWindowController.h"
 #import "TCFilesWindowController.h"
+<<<<<<< HEAD
+#import "TCBuddyInfoWindowController.h"
+=======
 #import "TCBuddyInfoWindowsController.h"
+>>>>>>> javerous/master
 #import "TCLogsWindowController.h"
 #import "TCPreferencesWindowController.h"
 #import "TCChatWindowController.h"
 
 #import "TCBuddy.h"
+<<<<<<< HEAD
+
+
+=======
 #import "TCCoreManager.h"
+>>>>>>> javerous/master
 
 
 /*
@@ -39,7 +57,11 @@
 */
 #pragma mark - TorChatAppDelegate - Private
 
+<<<<<<< HEAD
+@interface TorChatAppDelegate ()
+=======
 @interface TorChatAppDelegate () <TCCoreManagerObserver>
+>>>>>>> javerous/master
 
 @property (strong, nonatomic) IBOutlet NSMenuItem	*buddyShowMenu;
 @property (strong, nonatomic) IBOutlet NSMenuItem	*buddyDeleteMenu;
@@ -77,6 +99,39 @@
 
 
 /*
+<<<<<<< HEAD
+** TorChatAppDelegate - Launch
+*/
+#pragma mark - TorChatAppDelegate - Launch
+
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+{
+	/*
+	[[TCFilesWindowController sharedController] startFileTransfert:@"8888888" withFilePath:@"/" buddyAddress:@"xxxxx" buddyName:@"Truc" transfertWay:tcfile_download fileSize:1024];
+	[[TCFilesWindowController sharedController] startFileTransfert:@"8888888" withFilePath:@"/" buddyAddress:@"xxxxx" buddyName:@"Truc" transfertWay:tcfile_upload fileSize:1024];
+
+	return;
+	*/
+	
+	/*
+	[[TCChatWindowController sharedController] startChatWithIdentifier:@"xx" name:@"Tutu" localAvatar:nil remoteAvatar:nil context:nil delegate:nil];
+	[[TCChatWindowController sharedController] startChatWithIdentifier:@"yy" name:@"Toto" localAvatar:nil remoteAvatar:nil context:nil delegate:nil];
+
+	[[TCChatWindowController sharedController] receiveMessage:@"Ceci est un test" forIdentifier:@"yy"];
+	[[TCChatWindowController sharedController] receiveMessage:@"Ceci est un test" forIdentifier:@"yy"];
+
+	return;
+	*/
+	
+	// Observe buddy select change
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddySelectChanged:) name:TCBuddiesWindowControllerSelectChanged object:nil];
+
+	// Observe buddy blocked change
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddyBlockedChanged:) name:TCCocoaBuddyChangedBlockedNotification object:nil];
+	
+	// Start TorChat
+	[[TCMainController sharedController] start];
+=======
 ** TorChatAppDelegate - Life
 */
 #pragma mark - TorChatAppDelegate - Life
@@ -96,6 +151,7 @@
 {
 	// Stop TorChat
 	[[TCMainController sharedController] stop];
+>>>>>>> javerous/master
 }
 
 
@@ -138,6 +194,8 @@
 }
 
 
+<<<<<<< HEAD
+=======
 /*
 ** TorChatAppDelegate - TCCoreManagerObserver
 */
@@ -164,6 +222,7 @@
 }
 
 
+>>>>>>> javerous/master
 
 /*
 ** TorChatAppDelegate - Buddies
@@ -172,7 +231,11 @@
 
 - (IBAction)doBuddyShowInfo:(id)sender
 {
+<<<<<<< HEAD
+	[TCBuddyInfoWindowController showInfo];
+=======
 	[[TCBuddiesWindowController sharedController] doShowInfo:sender];
+>>>>>>> javerous/master
 }
 
 - (IBAction)doBuddyAdd:(id)sender
@@ -252,4 +315,23 @@
 	}
 }
 
+<<<<<<< HEAD
+- (void)buddyBlockedChanged:(NSNotification *)notice
+{
+	NSDictionary	*ui = [notice userInfo];
+	NSNumber		*blocked = [ui objectForKey:@"blocked"];
+	NSString		*buddy = [(TCBuddy *)[notice object] address];
+	NSString		*selected = [[[TCBuddiesWindowController sharedController] selectedBuddy] address];
+	
+	if ([buddy isEqualToString:selected])
+	{
+		if ([blocked boolValue])
+			[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_unblock_buddy", @"")];
+		else
+			[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_block_buddy", @"")];
+	}
+}
+
+=======
+>>>>>>> javerous/master
 @end

@@ -1,7 +1,11 @@
 /*
  *  TCPanel_Basic.m
  *
+<<<<<<< HEAD
+ *  Copyright 2014 Avérous Julien-Pierre
+=======
  *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,12 +24,23 @@
  *
  */
 
+<<<<<<< HEAD
+
+
+=======
+>>>>>>> javerous/master
 #import "TCPanel_Basic.h"
 
 #import "TCLogsManager.h"
 #import "TCConfigPlist.h"
 #import "TCTorManager.h"
 
+<<<<<<< HEAD
+#import "TCDebugLog.h"
+
+#import "TCInfo.h"
+#import "TCInfo+Render.h"
+=======
 #import "TCLocationViewController.h"
 
 #import "TCDebugLog.h"
@@ -39,6 +54,7 @@
 #pragma mark - Macro
 
 #define TCLocalizedString(key, comment) [[NSBundle mainBundle] localizedStringForKey:[(key) copy] value:@"" table:nil]
+>>>>>>> javerous/master
 
 
 
@@ -49,6 +65,18 @@
 
 @interface TCPanel_Basic ()
 {
+<<<<<<< HEAD
+	TCConfigPlist					*_config;
+	TCTorManager					*_tor;
+	__weak id <TCAssistantProxy>	_proxy;
+}
+
+@property (strong, nonatomic)	IBOutlet NSTextField			*imAddressField;
+@property (strong, nonatomic)	IBOutlet NSPathControl			*imDownloadPath;
+@property (strong, nonatomic)	IBOutlet NSProgressIndicator	*loadingIndicator;
+
+- (IBAction)pathChanged:(id)sender;
+=======
 	__weak id <TCAssistantProxy> _proxy;
 
 	TCConfigPlist	*_config;
@@ -60,6 +88,7 @@
 @property (strong, nonatomic)	IBOutlet NSTextField			*imAddressField;
 @property (strong, nonatomic)	IBOutlet NSProgressIndicator	*loadingIndicator;
 @property (strong, nonatomic)	IBOutlet NSView					*downloadLocationView;
+>>>>>>> javerous/master
 
 @end
 
@@ -82,7 +111,11 @@
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	
+<<<<<<< HEAD
+	TCDebugLog("TCPanel_Basic dealloc");
+=======
 	TCDebugLog(@"TCPanel_Basic dealloc");
+>>>>>>> javerous/master
 }
 
 
@@ -113,9 +146,25 @@
 
 - (id)content
 {
+<<<<<<< HEAD
+	NSMutableDictionary *content = [[NSMutableDictionary alloc] init];
+	
+	if (_config)
+		content[@"configuration"] = _config;
+	
+	if (_tor)
+		content[@"tor_manager"] = _tor;
+	
+	return content;
+}
+
+#define TCLocalizedString(key, comment) [[NSBundle mainBundle] localizedStringForKey:[(key) copy] value:@"" table:nil]
+
+=======
 	return _config;
 }
 
+>>>>>>> javerous/master
 - (void)showPanel
 {
 	id <TCAssistantProxy> proxy = _proxy;
@@ -133,7 +182,11 @@
 	
 	if (!configPath)
 	{
+<<<<<<< HEAD
+		[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_error_build_path"];
+=======
 		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_build_path"];
+>>>>>>> javerous/master
 		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_error_build_path", @"")] runModal];
 		return;
 	}
@@ -145,23 +198,71 @@
 	{
 		[_imAddressField setStringValue:NSLocalizedString(@"ac_error_config", @"")];
 		
+<<<<<<< HEAD
+		[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_error_write_file", configPath];
+=======
 		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_write_file", configPath];
+>>>>>>> javerous/master
 		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:TCLocalizedString(@"ac_error_write_file", @""), configPath] runModal];
 
 		return;
 	}
 	
+<<<<<<< HEAD
+	// Set download path.
+	NSString *path = [_config pathForDomain:TConfigPathDomainDownloads];
+	
+	if ([[NSFileManager defaultManager] fileExistsAtPath:path] == NO)
+	{
+		[[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+		
+		if ([[path lastPathComponent] isEqualToString:@"Downloads"])
+			[[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"] atomically:NO];
+	}
+	
+	[_imDownloadPath setURL:[NSURL fileURLWithPath:path]];
+=======
 	[_config setMode:TCConfigModeBasic];
 	
 	// Add view to configure download path.
 	_torDownloadsLocation = [[TCLocationViewController alloc] initWithConfiguration:_config component:TCConfigPathComponentDownloads];
 	
 	[_torDownloadsLocation addToView:_downloadLocationView];
+>>>>>>> javerous/master
 	
 	// Set default configuration.
 	[_config setTorAddress:@"localhost"];
 	[_config setTorPort:60600];
 	[_config setClientPort:60601];
+<<<<<<< HEAD
+	[_config setMode:TCConfigModeBasic];
+	
+	// Create tor manager & start it.
+	__weak NSTextField *weakIMAddressField = _imAddressField;
+	
+	// > Create.
+	_tor = [[TCTorManager alloc] initWithConfiguration:_config];
+
+	_tor.logHandler = ^(TCTorManagerLogKind kind, NSString *log) {
+		switch (kind)
+		{
+			case TCTorManagerLogStandard:
+				[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_out_log", log];
+				break;
+				
+			case TCTorManagerLogError:
+				[[TCLogsManager sharedManager] addGlobalLogEntry:@"tor_error_log", log];
+				break;
+		}
+	};
+	
+	// > Start.
+	[_tor startWithHandler:^(TCInfo *info) {
+		
+		NSTextField *imAddressField = weakIMAddressField;
+
+		[[TCLogsManager sharedManager] addGlobalLogEntry:[info render]];
+=======
 	
 	// Create tor manager & start it.
 	__weak NSTextField *weakIMAddressField = _imAddressField;
@@ -173,16 +274,27 @@
 	[_tor startWithHandler:^(TCInfo *info) {
 		
 		NSTextField *imAddressField = weakIMAddressField;
+>>>>>>> javerous/master
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
 
 			if (info.kind == TCInfoError)
 			{
+<<<<<<< HEAD
+=======
 				[_loadingIndicator stopAnimation:self];
+>>>>>>> javerous/master
 				[proxy setDisableContinue:YES];
 			}
 			else if (info.kind == TCInfoInfo)
 			{
+<<<<<<< HEAD
+				if ([info.domain isEqualToString:TCTorManagerInfoStartDomain])
+				{
+					if (info.code == TCTorManagerEventStartHostname)
+						[imAddressField setStringValue:info.context];
+					else if (info.code == TCTorManagerEventStartDone)
+=======
 				if (info.code == TCTorManagerEventStartHostname)
 				{
 					[imAddressField setStringValue:info.context];
@@ -205,6 +317,7 @@
 					[_loadingIndicator stopAnimation:self];
 
 					if (imAddressField.stringValue.length > 0)
+>>>>>>> javerous/master
 						[proxy setDisableContinue:NO];
 				}
 			}
@@ -212,4 +325,32 @@
 	}];
 }
 
+<<<<<<< HEAD
+
+
+/*
+** TCPanel_Basic - IBAction
+*/
+#pragma mark - TCPanel_Basic - IBAction
+
+- (IBAction)pathChanged:(id)sender
+{
+	if (!_config)
+		return;
+	
+	NSString *path = [[_imDownloadPath URL] path];
+	
+	if (path)
+	{
+		[_config setDomain:TConfigPathDomainDownloads place:TConfigPathPlaceAbsolute subpath:path];
+		
+		if ([[path lastPathComponent] isEqualToString:@"Downloads"])
+			[[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"] atomically:NO];
+	}
+	else
+		NSBeep();
+}
+
+=======
+>>>>>>> javerous/master
 @end

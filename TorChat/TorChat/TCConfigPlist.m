@@ -1,7 +1,11 @@
 /*
  *  TCConfigPlist.m
  *
+<<<<<<< HEAD
+ *  Copyright 2014 Avérous Julien-Pierre
+=======
  *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,6 +24,10 @@
  *
  */
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> javerous/master
 #import "TCConfigPlist.h"
 
 #import "NSString+TCPathExtension.h"
@@ -74,10 +82,17 @@
 #define TCCONF_KEY_PATH_TOR_IDENTITY		@"tor_identity"
 #define TCCONF_KEY_PATH_DOWNLOADS			@"downloads"
 
+<<<<<<< HEAD
+#define TCCONF_KEY_PATH_PLACE				@"place"
+#define TCCONF_VALUE_PATH_PLACE_REFERAL		@"<referal>"
+#define TCCONF_VALUE_PATH_PLACE_STANDARD	@"<standard>"
+#define TCCONF_VALUE_PATH_PLACE_ABSOLUTE	@"<absolute>"
+=======
 #define TCCONF_KEY_PATH_TYPE				@"type"
 #define TCCONF_VALUE_PATH_TYPE_REFERAL		@"<referal>"
 #define TCCONF_VALUE_PATH_TYPE_STANDARD		@"<standard>"
 #define TCCONF_VALUE_PATH_TYPE_ABSOLUTE		@"<absolute>"
+>>>>>>> javerous/master
 
 #define TCCONF_KEY_PATH_SUBPATH				@"subpath"
 
@@ -90,6 +105,12 @@
 
 @interface TCConfigPlist ()
 {
+<<<<<<< HEAD
+	// Vars
+	NSString			*_fpath;
+	NSMutableDictionary	*_fcontent;
+	
+=======
 	dispatch_queue_t	_localQueue;
 	
 	NSString			*_fpath;
@@ -100,11 +121,17 @@
 	BOOL				_isDirty;
 	dispatch_source_t	_timer;
 
+>>>>>>> javerous/master
 #if defined(PROXY_ENABLED) && PROXY_ENABLED
 	id <TCConfigProxy>	_proxy;
 #endif
 }
 
+<<<<<<< HEAD
+- (NSMutableDictionary *)loadConfig:(NSData *)data;
+- (void)saveConfig;
+=======
+>>>>>>> javerous/master
 
 @end
 
@@ -136,7 +163,11 @@
 		NSString		*npath;
 		NSData			*data = nil;
 		
+<<<<<<< HEAD
+		// Resolve path
+=======
 		// Resolve path.
+>>>>>>> javerous/master
 		npath = [filepath stringByCanonizingPath];
 		
 		if (npath)
@@ -145,10 +176,17 @@
 		if (!filepath)
 			return nil;
 		
+<<<<<<< HEAD
+		// Hold path
+		_fpath = filepath;
+		
+		// Load file
+=======
 		// Hold path.
 		_fpath = filepath;
 		
 		// Load file.
+>>>>>>> javerous/master
 		if ([mng fileExistsAtPath:_fpath])
 		{
 			// Load config data
@@ -158,11 +196,17 @@
 				return nil;
 		}
 		
+<<<<<<< HEAD
+		// Load config
+=======
 		// Load config.
+>>>>>>> javerous/master
 		_fcontent = [self loadConfig:data];
 		
 		if (!_fcontent)
 			return nil;
+<<<<<<< HEAD
+=======
 		
 		// Create queue.
 		_localQueue = dispatch_queue_create("com.torchat.app.config-plist", DISPATCH_QUEUE_CONCURRENT);
@@ -185,6 +229,7 @@
 		});
 		
 		dispatch_resume(_timer);
+>>>>>>> javerous/master
 	}
 	
 	return self;
@@ -200,6 +245,15 @@
 	{
 		NSData *data = nil;
 		
+<<<<<<< HEAD
+		// Hold proxy
+		_proxy = proxy;
+		
+		// Load data
+		data = [proxy configContent];
+		
+		// Load config
+=======
 		// Hold proxy.
 		_proxy = proxy;
 		
@@ -207,13 +261,17 @@
 		data = [proxy configContent];
 		
 		// Load config.
+>>>>>>> javerous/master
 		_fcontent = [self loadConfig:data];
 		
 		if (!_fcontent)
 			return nil;
+<<<<<<< HEAD
+=======
 		
 		// Create queue.
 		_localQueue = dispatch_queue_create("com.torchat.app.config-plist", DISPATCH_QUEUE_CONCURRENT);
+>>>>>>> javerous/master
 	}
 	
 	return self;
@@ -230,11 +288,15 @@
 
 - (NSString *)torAddress
 {
+<<<<<<< HEAD
+	NSString *value = [_fcontent objectForKey:TCCONF_KEY_TOR_ADDRESS];
+=======
 	__block NSString *value;
  
 	dispatch_sync(_localQueue, ^{
 		value = [_fcontent objectForKey:TCCONF_KEY_TOR_ADDRESS];
 	});
+>>>>>>> javerous/master
 	
 	if (value)
 		return value;
@@ -247,19 +309,30 @@
 	if (!address)
 		return;
 	
+<<<<<<< HEAD
+	[_fcontent setObject:address forKey:TCCONF_KEY_TOR_ADDRESS];
+		
+	// Save
+	[self saveConfig];
+=======
 	dispatch_barrier_async(_localQueue, ^{
 		[_fcontent setObject:address forKey:TCCONF_KEY_TOR_ADDRESS];
 		[self _markDirty];
 	});
+>>>>>>> javerous/master
 }
 
 - (uint16_t)torPort
 {
+<<<<<<< HEAD
+	NSNumber *value = [_fcontent objectForKey:TCCONF_KEY_TOR_PORT];
+=======
 	__block NSNumber *value;
  
 	dispatch_sync(_localQueue, ^{
 		value = [_fcontent objectForKey:TCCONF_KEY_TOR_PORT];
 	});
+>>>>>>> javerous/master
 	
 	if (value)
 		return [value unsignedShortValue];
@@ -269,10 +342,17 @@
 
 - (void)setTorPort:(uint16_t)port
 {
+<<<<<<< HEAD
+	[_fcontent setObject:@(port) forKey:TCCONF_KEY_TOR_PORT];
+	
+	// Save
+	[self saveConfig];
+=======
 	dispatch_barrier_async(_localQueue, ^{
 		[_fcontent setObject:@(port) forKey:TCCONF_KEY_TOR_PORT];
 		[self _markDirty];
 	});
+>>>>>>> javerous/master
 }
 
 
@@ -284,11 +364,15 @@
 
 - (NSString *)selfAddress
 {
+<<<<<<< HEAD
+	NSString *value = [_fcontent objectForKey:TCCONF_KEY_IM_ADDRESS];
+=======
 	__block NSString *value;
  
 	dispatch_sync(_localQueue, ^{
 		value = [_fcontent objectForKey:TCCONF_KEY_IM_ADDRESS];
 	});
+>>>>>>> javerous/master
 	
 	if (value)
 		return value;
@@ -301,19 +385,30 @@
 	if (!address)
 		return;
 	
+<<<<<<< HEAD
+	[_fcontent setObject:address forKey:TCCONF_KEY_IM_ADDRESS];
+	
+	// Save
+	[self saveConfig];
+=======
 	dispatch_barrier_async(_localQueue, ^{
 		[_fcontent setObject:address forKey:TCCONF_KEY_IM_ADDRESS];
 		[self _markDirty];
 	});
+>>>>>>> javerous/master
 }
 
 - (uint16_t)clientPort
 {
+<<<<<<< HEAD
+	NSNumber *value = [_fcontent objectForKey:TCCONF_KEY_IM_PORT];
+=======
 	__block NSNumber *value;
  
 	dispatch_sync(_localQueue, ^{
 		value = [_fcontent objectForKey:TCCONF_KEY_IM_PORT];
 	});
+>>>>>>> javerous/master
 	
 	if (value)
 		return [value unsignedShortValue];
@@ -323,10 +418,17 @@
 
 - (void)setClientPort:(uint16_t)port
 {
+<<<<<<< HEAD
+	[_fcontent setObject:@(port) forKey:TCCONF_KEY_IM_PORT];
+	
+	// Save
+	[self saveConfig];
+=======
 	dispatch_barrier_async(_localQueue, ^{
 		[_fcontent setObject:@(port) forKey:TCCONF_KEY_IM_PORT];
 		[self _markDirty];
 	});
+>>>>>>> javerous/master
 }
 
 
@@ -338,11 +440,15 @@
 
 - (TCConfigMode)mode
 {
+<<<<<<< HEAD
+	NSNumber *value = [_fcontent objectForKey:TCCONF_KEY_MODE];
+=======
 	__block NSNumber *value;
  
 	dispatch_sync(_localQueue, ^{
 		value = [_fcontent objectForKey:TCCONF_KEY_MODE];
 	});
+>>>>>>> javerous/master
 	
 	if (value)
 	{
@@ -361,10 +467,17 @@
 
 - (void)setMode:(TCConfigMode)mode
 {
+<<<<<<< HEAD
+	[_fcontent setObject:@(mode) forKey:TCCONF_KEY_MODE];
+	
+	// Save
+	[self saveConfig];
+=======
 	dispatch_barrier_async(_localQueue, ^{
 		[_fcontent setObject:@(mode) forKey:TCCONF_KEY_MODE];
 		[self _markDirty];
 	});
+>>>>>>> javerous/master
 }
 
 
@@ -376,11 +489,15 @@
 
 - (NSString *)profileName
 {
+<<<<<<< HEAD
+	NSString *value = [_fcontent objectForKey:TCCONF_KEY_PROFILE_NAME];
+=======
 	__block NSString *value;
  
 	dispatch_sync(_localQueue, ^{
 		value = [_fcontent objectForKey:TCCONF_KEY_PROFILE_NAME];
 	});
+>>>>>>> javerous/master
 	
 	if (value)
 		return value;
@@ -393,19 +510,30 @@
 	if (!name)
 		return;
 	
+<<<<<<< HEAD
+	[_fcontent setObject:name forKey:TCCONF_KEY_PROFILE_NAME];
+		
+	// Save
+	[self saveConfig];
+=======
 	dispatch_barrier_async(_localQueue, ^{
 		[_fcontent setObject:name forKey:TCCONF_KEY_PROFILE_NAME];
 		[self _markDirty];
 	});
+>>>>>>> javerous/master
 }
 
 - (NSString *)profileText
 {
+<<<<<<< HEAD
+	NSString *value = [_fcontent objectForKey:TCCONF_KEY_PROFILE_TEXT];
+=======
 	__block NSString *value;
  
 	dispatch_sync(_localQueue, ^{
 		value = [_fcontent objectForKey:TCCONF_KEY_PROFILE_TEXT];
 	});
+>>>>>>> javerous/master
 	
 	if (value)
 		return value;
@@ -418,19 +546,31 @@
 	if (!text)
 		return;
 	
+<<<<<<< HEAD
+	[_fcontent setObject:text forKey:TCCONF_KEY_PROFILE_TEXT];
+		
+	// Save
+	[self saveConfig];
+
+=======
 	dispatch_barrier_async(_localQueue, ^{
 		[_fcontent setObject:text forKey:TCCONF_KEY_PROFILE_TEXT];
 		[self _markDirty];
 	});
+>>>>>>> javerous/master
 }
 
 - (TCImage *)profileAvatar
 {
+<<<<<<< HEAD
+	id avatar = [_fcontent objectForKey:TCCONF_KEY_PROFILE_AVATAR];
+=======
 	__block id avatar;
  
 	dispatch_sync(_localQueue, ^{
 		avatar = [_fcontent objectForKey:TCCONF_KEY_PROFILE_AVATAR];
 	});
+>>>>>>> javerous/master
 	
 	if ([avatar isKindOfClass:[NSDictionary class]])
 	{
@@ -471,11 +611,19 @@
 	// Remove avatar.
 	if (!picture)
 	{
+<<<<<<< HEAD
+		[_fcontent removeObjectForKey:TCCONF_KEY_PROFILE_AVATAR];
+		
+		// Save
+		[self saveConfig];
+		
+=======
 		dispatch_barrier_async(_localQueue, ^{
 			[_fcontent removeObjectForKey:TCCONF_KEY_PROFILE_AVATAR];
 			[self _markDirty];
 		});
 
+>>>>>>> javerous/master
 		return;
 	}
 	
@@ -492,15 +640,26 @@
 	if (!tiffData)
 		return;
 	
+<<<<<<< HEAD
+	pngData = [[[NSBitmapImageRep alloc] initWithData:tiffData] representationUsingType:NSPNGFileType properties:nil];
+=======
 	pngData = [[[NSBitmapImageRep alloc] initWithData:tiffData] representationUsingType:NSPNGFileType properties:@{ }];
+>>>>>>> javerous/master
 	
 	if (!pngData)
 		return;
 
+<<<<<<< HEAD
+	[_fcontent setObject:pngData forKey:TCCONF_KEY_PROFILE_AVATAR];
+	
+	// Save
+	[self saveConfig];
+=======
 	dispatch_barrier_async(_localQueue, ^{
 		[_fcontent setObject:pngData forKey:TCCONF_KEY_PROFILE_AVATAR];
 		[self _markDirty];
 	});
+>>>>>>> javerous/master
 }
 
 
@@ -512,6 +671,9 @@
 
 - (NSArray *)buddies
 {
+<<<<<<< HEAD
+	return [[_fcontent objectForKey:TCCONF_KEY_BUDDIES] copy];
+=======
 	__block NSArray *buddies;
 	
 	dispatch_sync(_localQueue, ^{
@@ -519,6 +681,7 @@
 	});
 	
 	return buddies;
+>>>>>>> javerous/master
 }
 
 - (void)addBuddy:(NSString *)address alias:(NSString *)alias notes:(NSString *)notes
@@ -532,6 +695,29 @@
 	if (!notes)
 		notes = @"";
 	
+<<<<<<< HEAD
+	// Get buddies list.
+	NSMutableArray *buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	
+	if (!buddies)
+	{
+		buddies = [[NSMutableArray alloc] init];
+		[_fcontent setObject:buddies forKey:TCCONF_KEY_BUDDIES];
+	}
+	
+	// Create buddy entry.
+	NSMutableDictionary *buddy = [[NSMutableDictionary alloc] init];
+	
+	[buddy setObject:address forKey:TCConfigBuddyAddress];
+	[buddy setObject:alias forKey:TCConfigBuddyAlias];
+	[buddy setObject:notes forKey:TCConfigBuddyNotes];
+	[buddy setObject:@"" forKey:TCConfigBuddyLastName];
+	
+	[buddies addObject:buddy];
+		
+	// Save & Release
+	[self saveConfig];
+=======
 	dispatch_barrier_async(_localQueue, ^{
 		
 		// Get buddies list.
@@ -556,15 +742,40 @@
 		// Mark dirty.
 		[self _markDirty];
 	});
+>>>>>>> javerous/master
 }
 
 - (BOOL)removeBuddy:(NSString *)address
 {
+<<<<<<< HEAD
+	BOOL found = NO;
+=======
 	__block BOOL found = NO;
+>>>>>>> javerous/master
 	
 	if (!address)
 		return NO;
 	
+<<<<<<< HEAD
+	// Remove from Cocoa version
+	NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	NSUInteger		i, cnt = [array count];
+	
+	for (i = 0; i < cnt; i++)
+	{
+		NSDictionary *buddy = [array objectAtIndex:i];
+		
+		if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
+		{
+			[array removeObjectAtIndex:i];
+			found = YES;
+			break;
+		}
+	}
+	
+	// Save
+	[self saveConfig];
+=======
 	dispatch_barrier_sync(_localQueue, ^{
 		
 		// Remove from Cocoa version.
@@ -586,6 +797,7 @@
 		// Mark dirty.
 		[self _markDirty];
 	});
+>>>>>>> javerous/master
 	
 	return found;
 }
@@ -598,6 +810,25 @@
 	if (!alias)
 		alias = @"";
 	
+<<<<<<< HEAD
+	// Change from Cocoa version
+	NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	NSUInteger		i, cnt = [array count];
+	
+	for (i = 0; i < cnt; i++)
+	{
+		NSMutableDictionary *buddy = [array objectAtIndex:i];
+		
+		if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
+		{
+			[buddy setObject:alias forKey:TCConfigBuddyAlias];
+			break;
+		}
+	}
+	
+	// Save
+	[self saveConfig];
+=======
 	dispatch_barrier_async(_localQueue, ^{
 		
 		// Change from Cocoa version.
@@ -618,6 +849,7 @@
 		// Mark dirty.
 		[self _markDirty];
 	});
+>>>>>>> javerous/master
 }
 
 - (void)setBuddy:(NSString *)address notes:(NSString *)notes
@@ -628,6 +860,25 @@
 	if (!notes)
 		notes = @"";
 	
+<<<<<<< HEAD
+	// Change from Cocoa version
+	NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	NSUInteger		i, cnt = [array count];
+	
+	for (i = 0; i < cnt; i++)
+	{
+		NSMutableDictionary *buddy = [array objectAtIndex:i];
+		
+		if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
+		{
+			[buddy setObject:notes forKey:TCConfigBuddyNotes];
+			break;
+		}
+	}
+	
+	// Save
+	[self saveConfig];
+=======
 	dispatch_barrier_async(_localQueue, ^{
 	
 		// Change from Cocoa version.
@@ -648,6 +899,7 @@
 		// Mark dirty.
 		[self _markDirty];
 	});
+>>>>>>> javerous/master
 }
 
 - (void)setBuddy:(NSString *)address lastProfileName:(NSString *)lastName
@@ -658,6 +910,25 @@
 	if (!lastName)
 		lastName = @"";
 	
+<<<<<<< HEAD
+	// Change from Cocoa version
+	NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	NSUInteger		i, cnt = [array count];
+	
+	for (i = 0; i < cnt; i++)
+	{
+		NSMutableDictionary *buddy = [array objectAtIndex:i];
+		
+		if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
+		{
+			[buddy setObject:lastName forKey:TCConfigBuddyLastName];
+			break;
+		}
+	}
+	
+	// Save
+	[self saveConfig];
+=======
 	dispatch_barrier_async(_localQueue, ^{
 		
 		// Change from Cocoa version
@@ -678,6 +949,7 @@
 		// Mark dirty.
 		[self _markDirty];
 	});
+>>>>>>> javerous/master
 }
 
 - (void)setBuddy:(NSString *)address lastProfileText:(NSString *)lastText
@@ -688,6 +960,25 @@
 	if (!lastText)
 		lastText = @"";
 	
+<<<<<<< HEAD
+	// Change from Cocoa version
+	NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	NSUInteger		i, cnt = [array count];
+	
+	for (i = 0; i < cnt; i++)
+	{
+		NSMutableDictionary *buddy = [array objectAtIndex:i];
+		
+		if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
+		{
+			[buddy setObject:lastText forKey:TCConfigBuddyLastText];
+			break;
+		}
+	}
+	
+	// Save
+	[self saveConfig];
+=======
 	dispatch_barrier_async(_localQueue, ^{
 		
 		// Change from Cocoa version
@@ -708,6 +999,7 @@
 		// Mark dirty.
 		[self _markDirty];
 	});
+>>>>>>> javerous/master
 }
 
 - (void)setBuddy:(NSString *)address lastProfileAvatar:(TCImage *)lastAvatar
@@ -723,12 +1015,34 @@
 	if (!tiffData)
 		return;
 	
+<<<<<<< HEAD
+	pngData = [[[NSBitmapImageRep alloc] initWithData:tiffData] representationUsingType:NSPNGFileType properties:nil];
+=======
 	pngData = [[[NSBitmapImageRep alloc] initWithData:tiffData] representationUsingType:NSPNGFileType properties:@{ }];
+>>>>>>> javerous/master
 	
 	if (!pngData)
 		return;
 	
 	// Change item.
+<<<<<<< HEAD
+	NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	NSUInteger		i, cnt = [array count];
+	
+	for (i = 0; i < cnt; i++)
+	{
+		NSMutableDictionary *buddy = [array objectAtIndex:i];
+		
+		if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
+		{
+			[buddy setObject:pngData forKey:TCConfigBuddyLastAvatar];
+			break;
+		}
+	}
+	
+	// Save
+	[self saveConfig];
+=======
 	dispatch_barrier_async(_localQueue, ^{
 		
 		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
@@ -748,6 +1062,7 @@
 		// Mark dirty.
 		[self _markDirty];
 	});
+>>>>>>> javerous/master
 }
 
 - (NSString *)getBuddyAlias:(NSString *)address
@@ -755,6 +1070,17 @@
 	if (!address)
 		return @"";
 	
+<<<<<<< HEAD
+	NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+
+	for (NSDictionary *buddy in buddies)
+	{
+		if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
+			return buddy[TCConfigBuddyAlias];
+	}
+	
+	return @"";
+=======
 	__block NSString *result = @"";
 	
 	dispatch_sync(_localQueue, ^{
@@ -772,6 +1098,7 @@
 	});
 	
 	return result;
+>>>>>>> javerous/master
 }
 
 - (NSString *)getBuddyNotes:(NSString *)address
@@ -779,6 +1106,17 @@
 	if (!address)
 		return @"";
 	
+<<<<<<< HEAD
+	NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	
+	for (NSDictionary *buddy in buddies)
+	{
+		if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
+			return buddy[TCConfigBuddyNotes];
+	}
+	
+	return @"";
+=======
 	__block NSString *result = @"";
 	
 	dispatch_sync(_localQueue, ^{
@@ -796,6 +1134,7 @@
 	});
 	
 	return result;
+>>>>>>> javerous/master
 }
 
 - (NSString *)getBuddyLastProfileName:(NSString *)address
@@ -803,6 +1142,17 @@
 	if (!address)
 		return @"";
 	
+<<<<<<< HEAD
+	NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	
+	for (NSDictionary *buddy in buddies)
+	{
+		if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
+			return buddy[TCConfigBuddyLastName];
+	}
+	
+	return @"";
+=======
 	__block NSString *result = @"";
 
 	dispatch_sync(_localQueue, ^{
@@ -820,6 +1170,7 @@
 	});
 	
 	return result;
+>>>>>>> javerous/master
 }
 
 - (NSString *)getBuddyLastProfileText:(NSString *)address
@@ -827,6 +1178,17 @@
 	if (!address)
 		return @"";
 	
+<<<<<<< HEAD
+	NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	
+	for (NSDictionary *buddy in buddies)
+	{
+		if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
+			return buddy[TCConfigBuddyLastText];
+	}
+	
+	return @"";
+=======
 	__block NSString *result = @"";
 	
 	dispatch_sync(_localQueue, ^{
@@ -844,6 +1206,7 @@
 	});
 	
 	return result;
+>>>>>>> javerous/master
 }
 
 - (TCImage *)getBuddyLastProfileAvatar:(NSString *)address
@@ -851,6 +1214,28 @@
 	if (!address)
 		return nil;
 	
+<<<<<<< HEAD
+	NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+	
+	for (NSDictionary *buddy in buddies)
+	{
+		if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
+		{
+			NSData *data = buddy[TCConfigBuddyLastAvatar];
+			
+			if (data)
+			{
+				NSImage *image = [[NSImage alloc] initWithData:data];
+				
+				return [[TCImage alloc] initWithImage:image];
+			}
+			else
+				return nil;
+		}
+	}
+	
+	return nil;
+=======
 	__block NSData *result = nil;
 	
 	dispatch_sync(_localQueue, ^{
@@ -875,6 +1260,7 @@
 	}
 	else
 		return nil;
+>>>>>>> javerous/master
 }
 
 
@@ -886,6 +1272,9 @@
 
 - (NSArray *)blockedBuddies
 {
+<<<<<<< HEAD
+	return [[_fcontent objectForKey:TCCONF_KEY_BLOCKED] copy];
+=======
 	__block NSArray *result;
 	
 	dispatch_sync(_localQueue, ^{
@@ -893,10 +1282,31 @@
 	});
 	
 	return result;
+>>>>>>> javerous/master
 }
 
 - (BOOL)addBlockedBuddy:(NSString *)address
 {
+<<<<<<< HEAD
+	// Add to cocoa version
+	NSMutableArray *list = [_fcontent objectForKey:TCCONF_KEY_BLOCKED];
+	
+	if (list && [list indexOfObject:address] != NSNotFound)
+		return NO;
+	
+	if (!list)
+	{
+		list = [[NSMutableArray alloc] init];
+		[_fcontent setObject:list forKey:TCCONF_KEY_BLOCKED];
+	}
+	
+	[list addObject:address];
+	
+	// Save & Release
+	[self saveConfig];
+	
+	return YES;
+=======
 	__block BOOL result = NO;
 	
 	dispatch_barrier_sync(_localQueue, ^{
@@ -922,15 +1332,40 @@
 	});
 	
 	return result;
+>>>>>>> javerous/master
 }
 
 - (BOOL)removeBlockedBuddy:(NSString *)address
 {
+<<<<<<< HEAD
+	BOOL found = NO;
+=======
 	__block BOOL found = NO;
+>>>>>>> javerous/master
 	
 	if (!address)
 		return NO;
 	
+<<<<<<< HEAD
+	// Remove from Cocoa version
+	NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BLOCKED];
+	NSUInteger		i, cnt = [array count];
+	
+	for (i = 0; i < cnt; i++)
+	{
+		NSString *buddy = [array objectAtIndex:i];
+		
+		if ([buddy isEqualToString:address])
+		{
+			[array removeObjectAtIndex:i];
+			found = YES;
+			break;
+		}
+	}
+
+	// Save
+	[self saveConfig];
+=======
 	dispatch_barrier_sync(_localQueue, ^{
 		
 		// Remove from Cocoa version.
@@ -953,6 +1388,7 @@
 		[self _markDirty];
 	});
 
+>>>>>>> javerous/master
 	
 	return found;
 }
@@ -966,11 +1402,15 @@
 
 - (TCConfigTitle)modeTitle
 {
+<<<<<<< HEAD
+	NSNumber *value = [_fcontent objectForKey:TCCONF_KEY_UI_TITLE];
+=======
 	__block NSNumber *value;
  
 	dispatch_barrier_sync(_localQueue, ^{
 		value = [_fcontent objectForKey:TCCONF_KEY_UI_TITLE];
 	});
+>>>>>>> javerous/master
 	
 	if (!value)
 		return TCConfigTitleAddress;
@@ -980,10 +1420,17 @@
 
 - (void)setModeTitle:(TCConfigTitle)mode
 {
+<<<<<<< HEAD
+	[_fcontent setObject:@(mode) forKey:TCCONF_KEY_UI_TITLE];
+	
+	// Save
+	[self saveConfig];
+=======
 	dispatch_barrier_async(_localQueue, ^{
 		[_fcontent setObject:@(mode) forKey:TCCONF_KEY_UI_TITLE];
 		[self _markDirty];
 	});
+>>>>>>> javerous/master
 }
 
 
@@ -1009,11 +1456,15 @@
 			
 		case TCConfigGetDefined:
 		{
+<<<<<<< HEAD
+			NSString *value = [_fcontent objectForKey:TCCONF_KEY_CLIENT_VERSION];
+=======
 			__block NSString *value;
 			
 			dispatch_sync(_localQueue, ^{
 				value = [_fcontent objectForKey:TCCONF_KEY_CLIENT_VERSION];
 			});
+>>>>>>> javerous/master
 			
 			if (value)
 				return value;
@@ -1040,10 +1491,17 @@
 	if (!version)
 		return;
 
+<<<<<<< HEAD
+	[_fcontent setObject:version forKey:TCCONF_KEY_CLIENT_VERSION];
+		
+	// Save
+	[self saveConfig];
+=======
 	dispatch_barrier_async(_localQueue, ^{
 		[_fcontent setObject:version forKey:TCCONF_KEY_CLIENT_VERSION];
 		[self _markDirty];
 	});
+>>>>>>> javerous/master
 }
 
 - (NSString *)clientName:(TCConfigGet)get
@@ -1057,11 +1515,15 @@
 			
 		case TCConfigGetDefined:
 		{
+<<<<<<< HEAD
+			NSString *value = [_fcontent objectForKey:TCCONF_KEY_CLIENT_NAME];
+=======
 			__block NSString *value;
 			
 			dispatch_sync(_localQueue, ^{
 				value = [_fcontent objectForKey:TCCONF_KEY_CLIENT_NAME];
 			});
+>>>>>>> javerous/master
 			
 			if (value)
 				return value;
@@ -1088,10 +1550,17 @@
 	if (!name)
 		return;
 	
+<<<<<<< HEAD
+	[_fcontent setObject:name forKey:TCCONF_KEY_CLIENT_NAME];
+		
+	// Save
+	[self saveConfig];
+=======
 	dispatch_barrier_async(_localQueue, ^{
 		[_fcontent setObject:name forKey:TCCONF_KEY_CLIENT_NAME];
 		[self _markDirty];
 	});
+>>>>>>> javerous/master
 }
 
 
@@ -1101,6 +1570,155 @@
 */
 #pragma mark - TCConfigPlist - Paths
 
+<<<<<<< HEAD
+- (NSString *)pathForDomain:(TConfigPathDomain)domain
+{
+	NSString *pathKey = nil;
+	
+	NSSearchPathDirectory	standardPathDirectory;
+	NSString				*standardSubPath = nil;
+	NSString				*referalSubPath = nil;
+
+	// Handle domain.
+	switch (domain)
+	{
+		case TConfigPathDomainReferal:
+		{
+			// Referal = configuration path file directory.
+			return [_fpath stringByDeletingLastPathComponent];
+		}
+		
+		case TConfigPathDomainTorBinary:
+		{
+			pathKey = TCCONF_KEY_PATH_TOR_BIN;
+			standardPathDirectory = NSApplicationSupportDirectory;
+			standardSubPath = @"TorChat/Tor/";
+			referalSubPath = @"tor/bin/";
+			break;
+		}
+		
+		case TConfigPathDomainTorData:
+		{
+			pathKey = TCCONF_KEY_PATH_TOR_DATA;
+			standardPathDirectory = NSApplicationSupportDirectory;
+			standardSubPath = @"TorChat/TorData/";
+			referalSubPath = @"tor/data/";
+			break;
+		}
+		
+		case TConfigPathDomainTorIdentity:
+		{
+			pathKey = TCCONF_KEY_PATH_TOR_IDENTITY;
+			standardPathDirectory = NSApplicationSupportDirectory;
+			standardSubPath = @"TorChat/TorIdentity/";
+			referalSubPath = @"tor/identity/";
+			break;
+		}
+		
+		case TConfigPathDomainDownloads:
+		{
+			pathKey = TCCONF_KEY_PATH_DOWNLOADS;
+			standardPathDirectory = NSDownloadsDirectory;
+			standardSubPath = @"TorChat/";
+			referalSubPath = @"Downloads/";
+			break;
+		}
+	}
+	
+	if (!pathKey)
+		return nil;
+	
+	// Handle places.
+	NSMutableDictionary *domainConfig = _fcontent[TCCONF_KEY_PATHS][pathKey];
+	NSString			*domainPlace = domainConfig[TCCONF_KEY_PATH_PLACE];
+	NSString			*domainSubpath = domainConfig[TCCONF_KEY_PATH_SUBPATH];
+
+	if (!domainPlace)
+		domainPlace = TCCONF_VALUE_PATH_PLACE_REFERAL;
+	
+	if ([domainPlace isEqualToString:TCCONF_VALUE_PATH_PLACE_REFERAL])
+	{
+		NSString *path = [self pathForDomain:TConfigPathDomainReferal];
+		
+		if (domainSubpath)
+			return [path stringByAppendingPathComponent:domainSubpath];
+		else
+			return [path stringByAppendingPathComponent:referalSubPath];
+	}
+	else if ([domainPlace isEqualToString:TCCONF_VALUE_PATH_PLACE_STANDARD])
+	{
+		NSURL *url = [[NSFileManager defaultManager] URLForDirectory:standardPathDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:YES error:nil];
+		
+		if (!url)
+			return nil;
+		
+		url = [url URLByAppendingPathComponent:standardSubPath isDirectory:YES];
+		
+		if (!url)
+			return nil;
+		
+		return [url path];
+	}
+	else if ([domainPlace isEqualToString:TCCONF_VALUE_PATH_PLACE_ABSOLUTE])
+	{
+		return domainSubpath;
+	}
+	
+	return nil;
+}
+
+
+- (BOOL)setDomain:(TConfigPathDomain)domain place:(TConfigPathPlace)place subpath:(NSString *)subpath
+{
+	// Handle domain.
+	NSString *pathKey = nil;
+
+	switch (domain)
+	{
+		case TConfigPathDomainReferal:
+		{
+			// Check parameter.
+			BOOL isDirectory = NO;
+			
+			if ([[NSFileManager defaultManager] fileExistsAtPath:subpath isDirectory:&isDirectory] && isDirectory == NO)
+				return NO;
+			
+			// Prepare move.
+			NSString *configFileName = [_fpath lastPathComponent];
+			NSString *newPath = [subpath stringByAppendingPathComponent:configFileName];
+			
+			// Move.
+			if ([[NSFileManager defaultManager] moveItemAtPath:_fpath toPath:newPath error:nil] == NO)
+				return NO;
+			
+			// Hold new path.
+			_fpath = newPath;
+			
+			return YES;
+		}
+			
+		case TConfigPathDomainTorBinary:
+		{
+			pathKey = TCCONF_KEY_PATH_TOR_BIN;
+			break;
+		}
+			
+		case TConfigPathDomainTorData:
+		{
+			pathKey = TCCONF_KEY_PATH_TOR_DATA;
+			break;
+		}
+			
+		case TConfigPathDomainTorIdentity:
+		{
+			pathKey = TCCONF_KEY_PATH_TOR_IDENTITY;
+			break;
+		}
+			
+		case TConfigPathDomainDownloads:
+		{
+			pathKey = TCCONF_KEY_PATH_DOWNLOADS;
+=======
 #pragma mark > Set
 
 - (BOOL)setPathForComponent:(TCConfigPathComponent)component pathType:(TCConfigPathType)pathType path:(NSString *)path
@@ -1246,10 +1864,57 @@
 		{
 			standardSubPath = @"/TorChat/";
 			referalSubPath = @"/Downloads/";
+>>>>>>> javerous/master
 			break;
 		}
 	}
 	
+<<<<<<< HEAD
+	// Handle paths.
+	NSMutableDictionary *paths = _fcontent[TCCONF_KEY_PATHS];
+	
+	if (!paths)
+	{
+		paths = [[NSMutableDictionary alloc] init];
+		
+		_fcontent[TCCONF_KEY_PATHS] = paths;
+	}
+	
+	// Handle places.
+	NSMutableDictionary *domainConfig = paths[pathKey];
+	
+	if (!domainConfig)
+	{
+		domainConfig = [[NSMutableDictionary alloc] init];
+		
+		paths[pathKey] = domainConfig;
+	}
+	
+	if (!subpath)
+		[paths removeObjectForKey:pathKey];
+	else
+		domainConfig[TCCONF_KEY_PATH_SUBPATH] = subpath;
+	
+	switch (place)
+	{
+		case TConfigPathPlaceReferal:
+			domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_REFERAL;
+			break;
+			
+		case TConfigPathPlaceStandard:
+			domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_STANDARD;
+			break;
+			
+		case TConfigPathPlaceAbsolute:
+			domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_ABSOLUTE;
+			break;
+	}
+	
+	// Save
+	[self saveConfig];
+	
+	return YES;
+=======
 	// Get component key.
 	NSString *componentKey = [self componentKeyForComponent:component];
 	
@@ -1493,6 +2158,7 @@
 			block();
 		});
 	}
+>>>>>>> javerous/master
 }
 
 
@@ -1516,6 +2182,8 @@
 
 
 /*
+<<<<<<< HEAD
+=======
 ** TCConfigPlist - synchronize
 */
 #pragma mark - TCConfigPlist - synchronize
@@ -1535,10 +2203,13 @@
 
 
 /*
+>>>>>>> javerous/master
 ** TCConfigPlist - Helpers
 */
 #pragma mark - TCConfigPlist - Helpers
 
+<<<<<<< HEAD
+=======
 - (void)_markDirty
 {
 	// > /localQueue <
@@ -1547,6 +2218,7 @@
 	dispatch_source_set_timer(_timer, dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), 0, 1 * NSEC_PER_SEC);
 }
 
+>>>>>>> javerous/master
 - (NSMutableDictionary *)loadConfig:(NSData *)data
 {
 	NSMutableDictionary	*content = nil;
@@ -1581,23 +2253,41 @@
 				
 				if (oldTorData)
 				{
+<<<<<<< HEAD
+					NSMutableDictionary *domainConfig = [[NSMutableDictionary alloc] init];
+					
+					domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_ABSOLUTE;
+					domainConfig[TCCONF_KEY_PATH_SUBPATH] = [oldTorData stringByExpandingTildeInPath];
+
+					paths[TCCONF_KEY_PATH_TOR_DATA] = domainConfig;
+=======
 					NSMutableDictionary *componentConfig = [[NSMutableDictionary alloc] init];
 					
 					componentConfig[TCCONF_KEY_PATH_TYPE] = TCCONF_VALUE_PATH_TYPE_ABSOLUTE;
 					componentConfig[TCCONF_KEY_PATH_SUBPATH] = [oldTorData stringByExpandingTildeInPath];
 
 					paths[TCCONF_KEY_PATH_TOR_DATA] = componentConfig;
+>>>>>>> javerous/master
 					
 					[content removeObjectForKey:@"tor_data_path"];
 				}
 				else
 				{
+<<<<<<< HEAD
+					NSMutableDictionary *domainConfig = [[NSMutableDictionary alloc] init];
+
+					domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_REFERAL;
+					domainConfig[TCCONF_KEY_PATH_SUBPATH] = @"tordata/";
+					
+					paths[TCCONF_KEY_PATH_TOR_DATA] = domainConfig;
+=======
 					NSMutableDictionary *componentConfig = [[NSMutableDictionary alloc] init];
 
 					componentConfig[TCCONF_KEY_PATH_TYPE] = TCCONF_VALUE_PATH_TYPE_REFERAL;
 					componentConfig[TCCONF_KEY_PATH_SUBPATH] = @"tordata/";
 					
 					paths[TCCONF_KEY_PATH_TOR_DATA] = componentConfig;
+>>>>>>> javerous/master
 				}
 				
 				// > Tor hidden path.
@@ -1605,6 +2295,23 @@
 				
 				if (oldTorHidden)
 				{
+<<<<<<< HEAD
+					NSMutableDictionary *domainConfig = [[NSMutableDictionary alloc] init];
+					
+					domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_ABSOLUTE;
+					domainConfig[TCCONF_KEY_PATH_SUBPATH] = [oldTorHidden stringByExpandingTildeInPath];
+					
+					paths[TCCONF_KEY_PATH_TOR_IDENTITY] = domainConfig;
+				}
+				else
+				{
+					NSMutableDictionary *domainConfig = [[NSMutableDictionary alloc] init];
+					
+					domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_REFERAL;
+					domainConfig[TCCONF_KEY_PATH_SUBPATH] = @"tordata/hidden/";
+					
+					paths[TCCONF_KEY_PATH_TOR_IDENTITY] = domainConfig;
+=======
 					NSMutableDictionary *componentConfig = [[NSMutableDictionary alloc] init];
 					
 					componentConfig[TCCONF_KEY_PATH_TYPE] = TCCONF_VALUE_PATH_TYPE_ABSOLUTE;
@@ -1620,6 +2327,7 @@
 					componentConfig[TCCONF_KEY_PATH_SUBPATH] = @"tordata/hidden/";
 					
 					paths[TCCONF_KEY_PATH_TOR_IDENTITY] = componentConfig;
+>>>>>>> javerous/master
 				}
 				
 				// > Download path.
@@ -1627,23 +2335,41 @@
 
 				if (oldDownload)
 				{
+<<<<<<< HEAD
+					NSMutableDictionary *domainConfig = [[NSMutableDictionary alloc] init];
+					
+					domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_ABSOLUTE;
+					domainConfig[TCCONF_KEY_PATH_SUBPATH] = [oldDownload stringByExpandingTildeInPath];
+					
+					paths[TCCONF_KEY_PATH_DOWNLOADS] = domainConfig;
+=======
 					NSMutableDictionary *componentConfig = [[NSMutableDictionary alloc] init];
 					
 					componentConfig[TCCONF_KEY_PATH_TYPE] = TCCONF_VALUE_PATH_TYPE_ABSOLUTE;
 					componentConfig[TCCONF_KEY_PATH_SUBPATH] = [oldDownload stringByExpandingTildeInPath];
 					
 					paths[TCCONF_KEY_PATH_DOWNLOADS] = componentConfig;
+>>>>>>> javerous/master
 					
 					[content removeObjectForKey:@"download_path"];
 				}
 				else
 				{
+<<<<<<< HEAD
+					NSMutableDictionary *domainConfig = [[NSMutableDictionary alloc] init];
+					
+					domainConfig[TCCONF_KEY_PATH_PLACE] = TCCONF_VALUE_PATH_PLACE_REFERAL;
+					domainConfig[TCCONF_KEY_PATH_SUBPATH] = @"Downloads/";
+					
+					paths[TCCONF_KEY_PATH_DOWNLOADS] = domainConfig;
+=======
 					NSMutableDictionary *componentConfig = [[NSMutableDictionary alloc] init];
 					
 					componentConfig[TCCONF_KEY_PATH_TYPE] = TCCONF_VALUE_PATH_TYPE_REFERAL;
 					componentConfig[TCCONF_KEY_PATH_SUBPATH] = @"Downloads/";
 					
 					paths[TCCONF_KEY_PATH_DOWNLOADS] = componentConfig;
+>>>>>>> javerous/master
 				}
 
 				content[TCCONF_KEY_PATHS] = paths;
@@ -1672,6 +2398,18 @@
 	return content;
 }
 
+<<<<<<< HEAD
+- (void)saveConfig
+{
+	NSData *data = [NSPropertyListSerialization dataWithPropertyList:_fcontent format:NSPropertyListXMLFormat_v1_0 options:0 error:nil];
+	
+	if (!data)
+		return;
+	
+#if defined(PROXY_ENABLED) && PROXY_ENABLED
+	
+	// Save by using proxy
+=======
 - (BOOL)saveConfig:(NSDictionary *)config toFile:(NSString *)path
 {
 	if (!config)
@@ -1686,30 +2424,43 @@
 #if defined(PROXY_ENABLED) && PROXY_ENABLED
 	
 	// Save by using proxy.
+>>>>>>> javerous/master
 	if (_proxy)
 	{
 		@try
 		{
 			[_proxy setConfigContent:data];
+<<<<<<< HEAD
+=======
 			return YES;
+>>>>>>> javerous/master
 		}
 		@catch (NSException *exception)
 		{
 			_proxy = nil;
 			
 			NSLog(@"Configuration proxy unavailable");
+<<<<<<< HEAD
+=======
 			
 			return NO;
+>>>>>>> javerous/master
 		}
 	}
 	
 #endif
 	
+<<<<<<< HEAD
+	// Save by using file
+	if (_fpath)
+		[data writeToFile:_fpath atomically:YES];
+=======
 	// Save by using file.
 	if (path)
 		return [data writeToFile:path atomically:YES];
 	
 	return NO;
+>>>>>>> javerous/master
 }
 
 @end

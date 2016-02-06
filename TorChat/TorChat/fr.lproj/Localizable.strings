@@ -1,7 +1,11 @@
 /*
 *  Localizable.strings
 *
+<<<<<<< HEAD
+*  Copyright 2014 Avérous Julien-Pierre
+=======
 *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
 *
 *  This file is part of TorChat.
 *
@@ -35,9 +39,25 @@
 "ac_error_write_file" = "Impossible de créer un fichier de configuration (%@). Vérifiez les droits d'écriture sur votre dossier TorChat.";
 "ac_error_read_file" = "Impossible d'ouvrir le fichier configuration (%@). Vérifiez les droits de lecture sur votre fichier.";
 "ac_error_read_proxy" = "Impossible d'obtenir les données du fichier de configuration. Vérifiez le proxy.";
+<<<<<<< HEAD
+"ac_error_launch" = "Impossible de lancer tor. Vérifiez le journal de TorChat et le journal système pour plus d'informations.";
 "ac_error_config" = "Erreur";
 
 
+/* Tor Manager */
+"tor_error_build_path" = "Impossible de créer le chemin d'accès standard de tor. Vérifiez votre fichier de configuration.";
+"tor_error_launch" = "Impossible de lancer tor. Vérifiez votre journal système, et vérifiez l'intégrité de TorChat.";
+"tor_is_running" = "Tor est actif.";
+"tor_is_not_running" = "Tor n'est pas actif.";
+"tor_out_log" = "Tor: %@";
+"tor_error_log" = "Tor-Erreur: %@";
+
+
+=======
+"ac_error_config" = "Erreur";
+
+
+>>>>>>> javerous/master
 /* Menu */
 "menu_block_buddy" = "Bloquer le contact";
 "menu_unblock_buddy" = "Débloquer le contact";
@@ -79,6 +99,13 @@
 "file_progress_of" = "de";
 "file_progress_from" = "De:";
 "file_progress_to" = "À:";
+<<<<<<< HEAD
+"file_gb" = "Go";
+"file_mb" = "Mo";
+"file_kb" = "Ko";
+"file_b" = "B";
+=======
+>>>>>>> javerous/master
 
 
 /* Chat */
@@ -95,6 +122,52 @@
 
 
 /* Update */
+<<<<<<< HEAD
+"update_available_subtitle" = "Tor %@ est disponible — vous utilisez la version %@. Voulez-vous la télécharger ?";
+
+
+/* Core - Buddy */
+"core_bd_error_tor_resolve" = "L'adresse SOCKS de tor ne peut pas être résolue.";
+"core_bd_error_tor_connect" = "Impossible de créer une connexion vers le SOCKS de tor.";
+"core_bd_event_tor_connected" = "Contact connecté au SOCKS de tor.";
+
+"core_bd_event_status_changed" = "Le statut du contact a changé.";
+"core_bd_event_stopped" = "Le contact est arrêté.";
+
+"core_bd_event_alias_changed" = "L'alias du contact a changé.";
+"core_bd_event_notes_changed" = "Les notes du contact ont changés.";
+"core_bd_event_blocked_changed" = "Le blocage du contact a changé.";
+
+"core_bd_error_filesend" = "Impossible d'ouvrir un fichier pour l'envoi.";
+"core_bd_error_filereceive" = "Impossible d'ouvrir un fichier pour la réception.";
+
+"core_bd_event_file_send_canceled" = "L'envoi d'un fichier a été annulé.";
+"core_bd_event_file_receive_canceled" = "La réception d'un fichier a été annulé.";
+
+"core_bd_event_file_send_start" = "Nouvelle session d'envoi de fichier.";
+"core_bd_event_file_send_finish" = "Envoi d'un fichier terminé.";
+
+"core_bd_event_file_receive_start" = "Nouvelle session de réception d'un fichier.";
+"core_bd_event_file_receive_finish" = "Réception d'un fichier terminé.";
+
+"core_bd_event_file_chunk_send" = "Nouveau morceau de fichier envoyé";
+"core_bd_event_file_chunk_receive" = "Nouveau morceau de fichier reçu";
+
+"core_bd_event_file_send_stopped" = "L'envoi d'un fichier a été arrêté par l'hôte distant.";
+"core_bd_event_file_receive_stopped" = "La réception d'un fichier a été arrêté par l'hôte distant.";
+"core_bd_event_new_message" = "Réception d'un nouveau message";
+"core_bd_error_file_offline" = "Impossible d'envoyer un fichier à un contact hors ligne.";
+"core_bd_error_file_blocked" = "Impossible d'envoyer un fichier à un contact bloqué.";
+"core_bd_error_message_offline" = "Impossible d'envoyer un message à un contact hors ligne.";
+"core_bd_error_message_blocked" = "Impossible d'envoyer un message à un contact bloqué.";
+
+"core_bd_error_parse" = "Erreur d'analyze";
+
+"core_bd_event_identified" = "Le contact est complètement identifié. Toutes les actions sont activées.";
+"core_bd_event_connected" = "Le contact est connecté au contact distant via le SOCKS tor.";
+
+"core_bd_error_socks_request" = "Impossible d'envoyer la requête SOCKS.";
+=======
 "update_subtitle_available" = "Tor %@ est disponible — vous utilisez la version %@. Voulez-vous la télécharger ?";
 "update_button_cancel" = "Annuler";
 "update_button_close" = "Fermer";
@@ -169,10 +242,26 @@
 "core_bd_error_tor_resolve" = "L'adresse SOCKS de tor ne peut pas être résolue.";
 "core_bd_error_tor_connect" = "Impossible de créer une connexion vers le SOCKS de tor.";
 "core_bd_error_socket" = "Erreur du socket du contact.";
+>>>>>>> javerous/master
 "core_bd_error_socks_91" = "La requête SOCKS a été rejetée ou a échoué.";
 "core_bd_error_socks_92" = "La requête SOCKS a été rejetée, car il est impossible d'utiliser identd (ou non accessible depuis le serveur).";
 "core_bd_error_socks_93" = "La requête SOCKS a été rejetée, car le programme et identd utilisent des identifiants utilisateurs différents.";
 "core_bd_error_socks_unknown" = "La requête SOCKS a échoué pour une raison inconnue.";
+<<<<<<< HEAD
+"core_bd_error_socket" = "Erreur du socket du contact.";
+
+"core_bd_event_new_client" = "Nom du client reçus";
+"core_bd_event_new_version" = "Version du client reçus";
+
+"core_bd_event_new_profile_text" = "Texte du profil du contact reçus";
+"core_bd_event_new_profile_name" = "Nom du profil du contact reçus";
+"core_bd_event_new_profile_avatar" = "Avatar du profil du contact reçus";
+
+
+/* Core - Manager */
+"core_mng_event_new_buddy" = "Un nouveau contact a été ajouté à votre liste de contact.";
+"core_mng_myself" = "moi";
+=======
 "core_bd_error_socks_request" = "Impossible d'envoyer la requête SOCKS.";
 "core_bd_error_message_offline" = "Impossible d'envoyer un message à un contact hors ligne.";
 "core_bd_error_message_blocked" = "Impossible d'envoyer un message à un contact bloqué.";
@@ -206,6 +295,7 @@
 "core_mng_event_profile_avatar" = "L'avatar de profil a changé.";
 "core_mng_event_profile_name" = "Le nom de profil a changé.";
 "core_mng_event_profile_text" = "Le texte de profil a changé.";
+>>>>>>> javerous/master
 
 "core_mng_error_socket" = "Impossible de créer un socket système.";
 "core_mng_error_setsockopt" = "Impossible de changer les options d'un socket système.";
@@ -213,6 +303,38 @@
 "core_mng_error_listen" = "Impossible d'écouter sur un socket système.";
 "core_mng_error_accept" = "Impossible d'accepter de nouveaux clients à cause d'une erreur système.";
 "core_mng_error_async" = "Impossible d'utiliser les E/S asynchrones sur un socket système.";
+<<<<<<< HEAD
+"core_mng_event_started" = "TorChat est démarré.";
+"core_mng_event_stopped" = "TorChat est arrêté.";
+
+"core_mng_event_profile_avatar" = "L'avatar de profil a changé.";
+"core_mng_event_profile_text" = "Le texte de profil a changé.";
+"core_mng_event_profile_name" = "Le nom de profil a changé.";
+
+
+/* Core - Connection */
+"core_cnx_event_started" = "Une connexion entrante est en cours de traitement.";
+
+"core_cnx_error_fake_ping" = "Un hôte distant a envoyé un ping avec un faux nom de domaine. Il a été tué.";
+"core_cnx_error_already_pinged" = "Un hôte distant a essayé de faire un ping sur un contact ayant déjà reçu un ping. Il a été tué.";
+"core_cnx_error_masquerade" = "Un hôte distant essaye de faire du camouflage avec notre adresse. Il a été tué.";
+"core_cnx_error_pong" = "Un hôte distant essaye de faire un pong, mais le contact correspondant n'existe pas. Il a été tué.";
+
+"core_cnx_error_socket" = "Erreur de socket sur une connexion entrante.";
+
+"core_cnx_error_add_buddy" = "Impossible d'ajouter un nouveau contact.";
+
+"core_cnx_new_buddy" = "inconnu";
+
+
+/* Core - Socket */
+"core_socket_read_error" = "Erreur de lecture sur un socket.";
+"core_socket_read_closed" = "Un socket a été fermé par l'hôte distant lors d'une lecture.";
+"core_socker_read_full" = "La cache d'un socket est pleine. Impossible de recevoir plus de données.";
+
+"core_socket_write_error" = "Erreur d'écriture sur un socket.";
+"core_socket_write_closed" = "Un socket a été fermé par l'hôte distant lors d'une écriture.";
+=======
 "core_cnx_error_already_pinged" = "Un hôte distant a essayé de faire un ping sur un contact ayant déjà reçu un ping. Il a été tué.";
 "core_cnx_error_masquerade" = "Un hôte distant essaye de faire du camouflage avec notre adresse. Il a été tué.";
 "core_cnx_error_add_buddy" = "Impossible d'ajouter un nouveau contact.";
@@ -277,3 +399,4 @@
 "tor_operation_err_signature" = "Erreur de signature";
 "tor_operation_err_tor" = "Erreur de tor";
 "tor_operation_err_internal" = "Erreur interne";
+>>>>>>> javerous/master

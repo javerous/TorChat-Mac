@@ -1,7 +1,13 @@
 /*
+<<<<<<< HEAD
+ *  TCBuffer.cpp
+ *
+ *  Copyright 2014 Avérous Julien-Pierre
+=======
  *  TCBuffer.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -25,6 +31,10 @@
 #import "TCDebugLog.h"
 
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> javerous/master
 /*
 ** Types
 */
@@ -106,7 +116,11 @@ size_t memsearch(const uint8_t *token, size_t token_sz, const uint8_t *data, siz
 
 - (void)dealloc
 {
+<<<<<<< HEAD
+	TCDebugLog("TCBuffer Destructor");
+=======
 	TCDebugLog(@"TCBuffer dealloc");
+>>>>>>> javerous/master
 	
 	[self clean];
 	

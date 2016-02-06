@@ -1,3 +1,12 @@
+<<<<<<< HEAD
+//
+//  TCPrefView_General.h
+//  TorChat
+//
+//  Created by Julien-Pierre Avérous on 14/01/2015.
+//  Copyright (c) 2015 SourceMac. All rights reserved.
+//
+=======
 /*
  *  TCPrefView_General.h
  *
@@ -19,6 +28,7 @@
  *  along with TorChat.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+>>>>>>> javerous/master
 
 #import "TCPrefView.h"
 

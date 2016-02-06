@@ -1,7 +1,11 @@
 /*
  *  TCOperationsQueue.m
  *
+<<<<<<< HEAD
+ *  Copyright 2014 Avérous Julien-Pierre
+=======
  *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,9 +24,17 @@
  *
  */
 
+<<<<<<< HEAD
+
 #import "TCOperationsQueue.h"
 
 
+
+=======
+#import "TCOperationsQueue.h"
+
+
+>>>>>>> javerous/master
 /*
 ** BSTOperationsItem - Interface
 */
@@ -32,8 +44,13 @@
 
 @property (strong, nonatomic) TCOperationsQueue	*operations;
 
+<<<<<<< HEAD
+@property (strong, nonatomic) TCOperationsBlock	block;
+@property (strong, nonatomic) dispatch_queue_t		queue;
+=======
 @property (strong, nonatomic) TCOperationsCancelableBlock	block;
 @property (strong, nonatomic) dispatch_queue_t				queue;
+>>>>>>> javerous/master
 
 @end
 
@@ -47,16 +64,22 @@
 @interface TCOperationsQueue ()
 {
 	dispatch_queue_t _localQueue;
+<<<<<<< HEAD
+=======
 	dispatch_queue_t _userQueue;
+>>>>>>> javerous/master
 
 	NSMutableArray	*_pending;
 	BOOL			_isExecuting;
 	BOOL			_isStarted;
+<<<<<<< HEAD
+=======
 	
 	NSMutableArray	*_cancelBlocks;
 	BOOL			_isCanceled;
 	
 	BOOL			_isFinished;
+>>>>>>> javerous/master
 }
 
 @end
@@ -84,8 +107,12 @@
 	{
         _pending = [[NSMutableArray alloc] init];
 		
+<<<<<<< HEAD
+		_localQueue = dispatch_queue_create("com.sourcemac.torchat.operation_queue.local", DISPATCH_QUEUE_SERIAL);
+=======
 		_localQueue = dispatch_queue_create("com.torchat.app.operation-queue.local", DISPATCH_QUEUE_SERIAL);
 		_userQueue = dispatch_queue_create("com.torchat.app.operation-queue.user", DISPATCH_QUEUE_SERIAL);
+>>>>>>> javerous/master
     }
 	
     return self;
@@ -132,6 +159,8 @@
 
 - (void)scheduleBlock:(TCOperationsBlock)block
 {
+<<<<<<< HEAD
+=======
 	[self scheduleCancelableBlock:^(TCOperationsControl ctrl, TCOperationsAddCancelBlock addCancelBlock) {
 		block(ctrl);
 	}];
@@ -146,15 +175,23 @@
 
 - (void)scheduleCancelableBlock:(TCOperationsCancelableBlock)block
 {
+>>>>>>> javerous/master
 	dispatch_queue_t queue = _defaultQueue;
 	
 	if (!queue)
 		queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 	
+<<<<<<< HEAD
+	[self scheduleOnQueue:queue block:block];
+}
+
+- (void)scheduleOnQueue:(dispatch_queue_t)queue block:(TCOperationsBlock)block
+=======
 	[self scheduleCancelableOnQueue:queue block:block];
 }
 
 - (void)scheduleCancelableOnQueue:(dispatch_queue_t)queue block:(TCOperationsCancelableBlock)block
+>>>>>>> javerous/master
 {
 	if (!queue || !block)
 		return;
@@ -166,10 +203,13 @@
 	item.block = block;
 	
 	dispatch_async(_localQueue, ^{
+<<<<<<< HEAD
+=======
 		
 		if (_isCanceled)
 			return;
 		
+>>>>>>> javerous/master
 		if (_isExecuting == NO && _isStarted == YES)
 			[self _executeItem:item];
 		else
@@ -177,6 +217,8 @@
 	});
 }
 
+<<<<<<< HEAD
+=======
 - (void)cancel
 {
 	dispatch_async(_localQueue, ^{
@@ -206,6 +248,7 @@
 		[_pending removeAllObjects];
 	});
 }
+>>>>>>> javerous/master
 
 
 /*
@@ -236,7 +279,10 @@
 	
 	// Mark as executing.
 	_isExecuting = YES;
+<<<<<<< HEAD
+=======
 	_isFinished = NO;
+>>>>>>> javerous/master
 	
 	// Execute block.
 	dispatch_async(item.queue, ^{
@@ -253,7 +299,10 @@
 				
 				executed = YES;
 				_isExecuting = NO;
+<<<<<<< HEAD
+=======
 				_cancelBlocks = nil;
+>>>>>>> javerous/master
 				
 				switch (type)
 				{
@@ -272,6 +321,10 @@
 			});
 		};
 		
+<<<<<<< HEAD
+		// > Call block.
+		item.block(ctrl);
+=======
 		// > Cancelation.
 		TCOperationsAddCancelBlock addCancelBlock = ^(dispatch_block_t cancelBlock) {
 			
@@ -303,6 +356,7 @@
 		
 		// > Call block.
 		item.block(ctrl, addCancelBlock);
+>>>>>>> javerous/master
 	});
 }
 
@@ -317,6 +371,14 @@
 {
 	// > localQueue <
 
+<<<<<<< HEAD
+	dispatch_block_t tHandler = self.finishHandler;
+
+	if ([_pending count] > 0)
+		[self _scheduleNextItem];
+	else if (tHandler)
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ tHandler(); });
+=======
 	if (_isCanceled)
 		return;
 	
@@ -333,12 +395,21 @@
 		if (tHandler)
 			dispatch_async(_userQueue, ^{ tHandler(NO); });
 	}
+>>>>>>> javerous/master
 }
 
 - (void)_stop
 {
 	// > localQueue <
 
+<<<<<<< HEAD
+	[_pending removeAllObjects];
+	
+	dispatch_block_t tHandler = self.finishHandler;
+
+	if (tHandler)
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ tHandler(); });
+=======
 	if (_isCanceled)
 		return;
 	
@@ -350,6 +421,7 @@
 
 	if (tHandler)
 		dispatch_async(_userQueue, ^{ tHandler(NO); });
+>>>>>>> javerous/master
 }
 
 @end

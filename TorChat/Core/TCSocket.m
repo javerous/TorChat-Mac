@@ -1,7 +1,13 @@
 /*
+<<<<<<< HEAD
+ *  TCSocket.h
+ *
+ *  Copyright 2014 Avérous Julien-Pierre
+=======
  *  TCSocket.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,8 +26,11 @@
  *
  */
 
+<<<<<<< HEAD
+=======
 #include <netdb.h>
 
+>>>>>>> javerous/master
 #import "TCSocket.h"
 
 #import "TCDebugLog.h"
@@ -30,6 +39,10 @@
 #import "TCInfo.h"
 
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> javerous/master
 /*
 ** TCSocketOperationHandler
 */
@@ -101,6 +114,9 @@
 */
 #pragma mark - TCSocket - Instance
 
+<<<<<<< HEAD
+- (id)initWithSocket:(int)descriptor
+=======
 - (instancetype)initWithIP:(NSString *)ip port:(uint16_t)port
 {
 	if (!ip)
@@ -150,6 +166,7 @@
 }
 
 - (instancetype)initWithSocket:(int)descriptor
+>>>>>>> javerous/master
 {
 	self = [super init];
 	
@@ -257,7 +274,11 @@
 					// If we have space, signal it to fill if necessary
 					id <TCSocketDelegate> delegate = _delegate;
 					
+<<<<<<< HEAD
+					if ([_writeBuffer size] < 1024 && _delegateQueue && delegate)
+=======
 					if ([_writeBuffer size] < 1024 && _delegateQueue && delegate && [delegate respondsToSelector:@selector(socketRunPendingWrite:)])
+>>>>>>> javerous/master
 					{
 						dispatch_async(_delegateQueue, ^{
 							[delegate socketRunPendingWrite:self];
@@ -294,7 +315,11 @@
 
 - (void)dealloc
 {
+<<<<<<< HEAD
+	TCDebugLog("TCSocket Destructor");
+=======
 	TCDebugLog(@"TCSocket dealloc");
+>>>>>>> javerous/master
 }
 
 
@@ -488,9 +513,12 @@
 	if (!delegate)
 		return;
 	
+<<<<<<< HEAD
+=======
 	if ([delegate respondsToSelector:@selector(socket:error:)] == NO)
 		return;
 	
+>>>>>>> javerous/master
 	TCInfo *err = [TCInfo infoOfKind:TCInfoError domain:TCSocketInfoDomain code:error];
 	
 	// Dispatch on the delegate queue.

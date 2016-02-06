@@ -1,7 +1,11 @@
 /*
  *  main.m
  *
+<<<<<<< HEAD
+ *  Copyright 2014 Avrous Julien-Pierre
+=======
  *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *

@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<<<<<<< HEAD
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
+=======
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10089" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10089"/>
+>>>>>>> javerous/master
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCBuddyInfoWindowController">
@@ -12,6 +19,10 @@
                 <outlet property="avatarView" destination="50" id="107"/>
                 <outlet property="infoView" destination="103" id="104"/>
                 <outlet property="logTable" destination="12" id="41"/>
+<<<<<<< HEAD
+                <outlet property="nameField" destination="17" id="31"/>
+=======
+>>>>>>> javerous/master
                 <outlet property="notesField" destination="74" id="84"/>
                 <outlet property="statusView" destination="96" id="106"/>
                 <outlet property="toolBar" destination="4" id="37"/>
@@ -52,7 +63,11 @@
                                             </textFieldCell>
                                         </textField>
                                         <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="20">
+<<<<<<< HEAD
+                                            <rect key="frame" x="112" y="309" width="23" height="14"/>
+=======
                                             <rect key="frame" x="112" y="309" width="22" height="14"/>
+>>>>>>> javerous/master
                                             <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingTail" selectable="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" title="xxx" usesSingleLineMode="YES" id="23">
                                                 <font key="font" metaFont="smallSystem"/>
                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -191,6 +206,15 @@
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" id="12">
+<<<<<<< HEAD
+                                                        <rect key="frame" x="0.0" y="0.0" width="266" height="19"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <size key="intercellSpacing" width="3" height="2"/>
+                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                        <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
+                                                        <tableColumns>
+                                                            <tableColumn width="263" minWidth="40" maxWidth="1000" id="13">
+=======
                                                         <rect key="frame" x="0.0" y="0.0" width="315" height="19"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
@@ -198,11 +222,15 @@
                                                         <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                         <tableColumns>
                                                             <tableColumn identifier="kind" width="16" minWidth="16" maxWidth="1000" id="13">
+>>>>>>> javerous/master
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                                 </tableHeaderCell>
+<<<<<<< HEAD
+                                                                <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="14">
+=======
                                                                 <imageCell key="dataCell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="Sbo-vP-Cyf"/>
                                                             </tableColumn>
                                                             <tableColumn identifier="date" width="140" minWidth="140" maxWidth="140" id="ySY-Zu-FPS">
@@ -224,11 +252,16 @@
                                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                                 </tableHeaderCell>
                                                                 <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="4Jn-Cx-6PJ">
+>>>>>>> javerous/master
                                                                     <font key="font" metaFont="system"/>
                                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                 </textFieldCell>
+<<<<<<< HEAD
+                                                                <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+=======
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
+>>>>>>> javerous/master
                                                             </tableColumn>
                                                         </tableColumns>
                                                         <connections>
@@ -239,8 +272,13 @@
                                                 </subviews>
                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </clipView>
+<<<<<<< HEAD
+                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="11">
+                                                <rect key="frame" x="1" y="119" width="223" height="15"/>
+=======
                                             <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="11">
                                                 <rect key="frame" x="1" y="322" width="266" height="16"/>
+>>>>>>> javerous/master
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="10">

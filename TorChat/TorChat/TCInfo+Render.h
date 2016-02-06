@@ -1,3 +1,12 @@
+<<<<<<< HEAD
+//
+//  TCInfo+Render.h
+//  TorChat
+//
+//  Created by Julien-Pierre Avérous on 08/08/2014.
+//  Copyright (c) 2014 SourceMac. All rights reserved.
+//
+=======
 /*
  *  TCInfo+Render.h
  *
@@ -19,6 +28,7 @@
  *  along with TorChat.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+>>>>>>> javerous/master
 
 #import <Foundation/Foundation.h>
 
@@ -32,8 +42,12 @@
 
 @interface TCInfo (TCInfoRender)
 
+<<<<<<< HEAD
+- (NSString *)render;
+=======
 - (NSString *)renderComplete;
 
 - (NSString *)renderMessage;
+>>>>>>> javerous/master
 
 @end

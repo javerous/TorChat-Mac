@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<<<<<<< HEAD
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4514" systemVersion="13A603" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment defaultVersion="1080" identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4514"/>
+=======
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10089" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10089"/>
+>>>>>>> javerous/master
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCPanel_Mode">
@@ -12,21 +19,37 @@
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+<<<<<<< HEAD
+        <customObject id="-3" userLabel="Application"/>
+=======
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+>>>>>>> javerous/master
         <customView id="nfa-Yn-Y4a" userLabel="ModeView">
             <rect key="frame" x="0.0" y="0.0" width="420" height="327"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
+<<<<<<< HEAD
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wrj-Cp-BS7">
+                    <rect key="frame" x="18" y="290" width="197" height="17"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+=======
                 <textField verticalHuggingPriority="750" preferredMaxLayoutWidth="193" translatesAutoresizingMaskIntoConstraints="NO" id="wrj-Cp-BS7">
                     <rect key="frame" x="18" y="290" width="194" height="17"/>
+>>>>>>> javerous/master
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Please specify the mode to use" id="orc-zu-V4h">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
+<<<<<<< HEAD
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="nQc-qs-6PX">
+                    <rect key="frame" x="18" y="240" width="384" height="42"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+=======
                 <textField verticalHuggingPriority="750" preferredMaxLayoutWidth="380" translatesAutoresizingMaskIntoConstraints="NO" id="nQc-qs-6PX">
                     <rect key="frame" x="18" y="240" width="384" height="42"/>
+>>>>>>> javerous/master
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" id="MdA-og-otk">
                         <font key="font" metaFont="smallSystem"/>
                         <string key="title">Use basic mode to use TorChat with a pre-configured tor, or use advanced mode to use an existing running tor with a TorChat service configured.</string>
@@ -36,6 +59,10 @@
                 </textField>
                 <matrix verticalHuggingPriority="750" allowsEmptySelection="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xdg-SH-cGA">
                     <rect key="frame" x="54" y="169" width="122" height="38"/>
+<<<<<<< HEAD
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+=======
+>>>>>>> javerous/master
                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     <size key="cellSize" width="122" height="18"/>
                     <size key="intercellSpacing" width="4" height="2"/>
@@ -73,4 +100,8 @@
             </constraints>
         </customView>
     </objects>
+<<<<<<< HEAD
 </document>
+=======
+</document>
+>>>>>>> javerous/master

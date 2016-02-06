@@ -1,14 +1,28 @@
 {
   "images" : [
     {
+<<<<<<< HEAD
+      "idiom" : "universal",
+=======
       "idiom" : "mac",
+>>>>>>> javerous/master
       "scale" : "1x",
       "filename" : "tlogo1.png"
     },
     {
+<<<<<<< HEAD
+      "idiom" : "universal",
+      "scale" : "2x",
+      "filename" : "tlogo2.png"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+=======
       "idiom" : "mac",
       "scale" : "2x",
       "filename" : "tlogo2.png"
+>>>>>>> javerous/master
     }
   ],
   "info" : {

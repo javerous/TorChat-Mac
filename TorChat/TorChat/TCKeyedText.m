@@ -1,7 +1,11 @@
 /*
  *  TCKeyedText.m
  *
+<<<<<<< HEAD
+ *  Copyright 2014 Avérous Julien-Pierre
+=======
  *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,9 +24,18 @@
  *
  */
 
+<<<<<<< HEAD
+
+
 #import "TCKeyedText.h"
 
 
+
+=======
+#import "TCKeyedText.h"
+
+
+>>>>>>> javerous/master
 /*
 ** TCKeyedText - Private
 */

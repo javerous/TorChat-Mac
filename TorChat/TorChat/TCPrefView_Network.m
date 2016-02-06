@@ -1,3 +1,17 @@
+<<<<<<< HEAD
+//
+//  TCPrefView_Network.m
+//  TorChat
+//
+//  Created by Julien-Pierre Avérous on 14/01/2015.
+//  Copyright (c) 2015 SourceMac. All rights reserved.
+//
+
+#import "TCPrefView_Network.h"
+
+#import "TCBuddiesWindowController.h"
+
+=======
 /*
  *  TCPrefView_Network.m
  *
@@ -22,6 +36,7 @@
 
 #import "TCPrefView_Network.h"
 
+>>>>>>> javerous/master
 
 /*
 ** TCPrefView_Network - Private
@@ -61,6 +76,10 @@
 	
 	if (self)
 	{
+<<<<<<< HEAD
+		
+=======
+>>>>>>> javerous/master
 	}
 	
 	return self;
@@ -120,6 +139,16 @@
 	[_torPortField setStringValue:[@([self.config torPort]) description]];
 }
 
+<<<<<<< HEAD
+- (void)saveConfig
+{
+	if (!self.config)
+		return;
+	
+	if ([self.config mode] == TCConfigModeAdvanced)
+	{
+		// Set config value
+=======
 - (BOOL)saveConfig
 {
 	if (!self.config)
@@ -128,11 +157,23 @@
 	if ([self.config mode] == TCConfigModeAdvanced)
 	{
 		// Set config value.
+>>>>>>> javerous/master
 		[self.config setSelfAddress:[_imAddressField stringValue]];
 		[self.config setClientPort:(uint16_t)[[_imPortField stringValue] intValue]];
 		[self.config setTorAddress:[_torAddressField stringValue]];
 		[self.config setTorPort:(uint16_t)[[_torPortField stringValue] intValue]];
 		
+<<<<<<< HEAD
+		// Reload config
+		if (changes)
+		{
+			[[TCBuddiesWindowController sharedController] stop];
+			[[TCBuddiesWindowController sharedController] startWithConfiguration:self.config];
+			
+			changes = NO;
+		}
+	}
+=======
 		// Reload config.
 		if (changes)
 		{
@@ -142,6 +183,7 @@
 	}
 	
 	return NO;
+>>>>>>> javerous/master
 }
 
 @end

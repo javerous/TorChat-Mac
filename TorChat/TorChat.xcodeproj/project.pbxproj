@@ -15,10 +15,13 @@
 		E809B14E1859C6F9001664E1 /* ChatTemplate.plist in Resources */ = {isa = PBXBuildFile; fileRef = E809B14D1859C6F9001664E1 /* ChatTemplate.plist */; };
 		E809B1A51859CC4B001664E1 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E809B1A41859CC4B001664E1 /* WebKit.framework */; };
 		E809B1E71859F186001664E1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E809B1E61859F186001664E1 /* Images.xcassets */; };
+<<<<<<< HEAD
+=======
 		E80A357C1A67F5FA00896518 /* LocationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E80A357A1A67F5FA00896518 /* LocationView.xib */; };
 		E80A357F1A67F61800896518 /* TCLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E80A357E1A67F61800896518 /* TCLocationViewController.m */; };
 		E80D527E1C280B6500BE3D10 /* TCSpeedHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = E80D527D1C280B6500BE3D10 /* TCSpeedHelper.m */; };
 		E80D52811C281D4200BE3D10 /* TCAmountHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = E80D52801C281D4200BE3D10 /* TCAmountHelper.m */; };
+>>>>>>> javerous/master
 		E8127AA91854CB1100FEDA7F /* TCChatTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = E8127AA81854CB1100FEDA7F /* TCChatTextField.m */; };
 		E81FD9F811E7259B000614D5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81FD9F711E7259B000614D5 /* Cocoa.framework */; };
 		E81FD9FD11E7259B000614D5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E81FD9FB11E7259B000614D5 /* InfoPlist.strings */; };
@@ -37,8 +40,11 @@
 		E837DAE011E7739D004BC524 /* TCBuddy.m in Sources */ = {isa = PBXBuildFile; fileRef = E837DAD511E7739D004BC524 /* TCBuddy.m */; };
 		E837DAE111E7739D004BC524 /* TCBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = E837DAD711E7739D004BC524 /* TCBuffer.m */; };
 		E837DAE311E7739D004BC524 /* TCCoreManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E837DADB11E7739D004BC524 /* TCCoreManager.m */; };
+<<<<<<< HEAD
+=======
 		E844DEE91C490A9E005D92C4 /* TorWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E844DEEB1C490A9E005D92C4 /* TorWindow.xib */; };
 		E844DEF21C490B56005D92C4 /* TCTorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E844DEF11C490B56005D92C4 /* TCTorWindowController.m */; };
+>>>>>>> javerous/master
 		E8455D3D17A425F00046307B /* TCValue.m in Sources */ = {isa = PBXBuildFile; fileRef = E8455D3C17A425F00046307B /* TCValue.m */; };
 		E8455D4617A4386C0046307B /* NSData+TCTools.m in Sources */ = {isa = PBXBuildFile; fileRef = E8455D4517A438660046307B /* NSData+TCTools.m */; };
 		E849BDB11A66EEA60040E294 /* PrefView_General.xib in Resources */ = {isa = PBXBuildFile; fileRef = E849BDAF1A66EEA60040E294 /* PrefView_General.xib */; };
@@ -55,7 +61,10 @@
 		E874146B12FAE0C200BD4862 /* TCDropButton.m in Sources */ = {isa = PBXBuildFile; fileRef = E874146A12FAE0C200BD4862 /* TCDropButton.m */; };
 		E8742543199B682F002A34DD /* NSString+TCPathExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = E8742542199B682F002A34DD /* NSString+TCPathExtension.m */; };
 		E8742546199B6A61002A34DD /* NSString+TCXMLExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = E8742545199B6A61002A34DD /* NSString+TCXMLExtension.m */; };
+<<<<<<< HEAD
+=======
 		E8758BFA1C28507B00EE708A /* TCTimeHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = E8758BF91C28507B00EE708A /* TCTimeHelper.m */; };
+>>>>>>> javerous/master
 		E87833E819926D5100D0C67F /* TCFileSignature.m in Sources */ = {isa = PBXBuildFile; fileRef = E87833E719926D5100D0C67F /* TCFileSignature.m */; };
 		E878981617AFCC0900DB7709 /* TCBuddyCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E878981517AFCC0900DB7709 /* TCBuddyCellView.m */; };
 		E878983A17B05BC800DB7709 /* AssistantPanel_Welcome.xib in Resources */ = {isa = PBXBuildFile; fileRef = E878983817B05BC800DB7709 /* AssistantPanel_Welcome.xib */; };
@@ -71,7 +80,11 @@
 		E889F0A012531D1E000C36B2 /* TCTorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F09F12531D1E000C36B2 /* TCTorManager.m */; };
 		E889F0A312531D33000C36B2 /* TCConfigPlist.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0A212531D33000C36B2 /* TCConfigPlist.m */; };
 		E889F0A612531D3F000C36B2 /* TCBuddiesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0A512531D3F000C36B2 /* TCBuddiesWindowController.m */; };
+<<<<<<< HEAD
+		E889F0A912531D48000C36B2 /* TCBuddyInfoWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0A812531D48000C36B2 /* TCBuddyInfoWindowController.m */; };
+=======
 		E889F0A912531D48000C36B2 /* TCBuddyInfoWindowsController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0A812531D48000C36B2 /* TCBuddyInfoWindowsController.m */; };
+>>>>>>> javerous/master
 		E889F0AF12531D62000C36B2 /* TCChatWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0AE12531D62000C36B2 /* TCChatWindowController.m */; };
 		E889F0BB12531D92000C36B2 /* TCAssistantWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0BA12531D92000C36B2 /* TCAssistantWindowController.m */; };
 		E889F0BE12531D9C000C36B2 /* TCAssistantBack.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0BD12531D9C000C36B2 /* TCAssistantBack.m */; };
@@ -115,6 +128,8 @@
 		E809B14D1859C6F9001664E1 /* ChatTemplate.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = ChatTemplate.plist; path = TorChat/ChatTemplate.plist; sourceTree = SOURCE_ROOT; };
 		E809B1A41859CC4B001664E1 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		E809B1E61859F186001664E1 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = TorChat/Images.xcassets; sourceTree = "<group>"; };
+<<<<<<< HEAD
+=======
 		E80A357B1A67F5FA00896518 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LocationView.xib; sourceTree = "<group>"; };
 		E80A357D1A67F61800896518 /* TCLocationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCLocationViewController.h; sourceTree = "<group>"; };
 		E80A357E1A67F61800896518 /* TCLocationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCLocationViewController.m; sourceTree = "<group>"; };
@@ -122,6 +137,7 @@
 		E80D527D1C280B6500BE3D10 /* TCSpeedHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCSpeedHelper.m; sourceTree = "<group>"; };
 		E80D527F1C281D4200BE3D10 /* TCAmountHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCAmountHelper.h; sourceTree = "<group>"; };
 		E80D52801C281D4200BE3D10 /* TCAmountHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCAmountHelper.m; sourceTree = "<group>"; };
+>>>>>>> javerous/master
 		E8127AA71854CB1100FEDA7F /* TCChatTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCChatTextField.h; sourceTree = "<group>"; };
 		E8127AA81854CB1100FEDA7F /* TCChatTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatTextField.m; sourceTree = "<group>"; };
 		E81FD9F411E7259B000614D5 /* TorChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TorChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -147,11 +163,14 @@
 		E837DADA11E7739D004BC524 /* TCConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCConfig.h; sourceTree = "<group>"; };
 		E837DADB11E7739D004BC524 /* TCCoreManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCCoreManager.m; sourceTree = "<group>"; };
 		E837DADC11E7739D004BC524 /* TCCoreManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCCoreManager.h; sourceTree = "<group>"; };
+<<<<<<< HEAD
+=======
 		E844DEEA1C490A9E005D92C4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/TorWindow.xib; sourceTree = "<group>"; };
 		E844DEED1C490AB1005D92C4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/TorWindow.strings; sourceTree = "<group>"; };
 		E844DEEF1C490AB7005D92C4 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/TorWindow.strings; sourceTree = "<group>"; };
 		E844DEF01C490B56005D92C4 /* TCTorWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCTorWindowController.h; sourceTree = "<group>"; };
 		E844DEF11C490B56005D92C4 /* TCTorWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCTorWindowController.m; sourceTree = "<group>"; };
+>>>>>>> javerous/master
 		E8455D3B17A425F00046307B /* TCValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCValue.h; sourceTree = "<group>"; };
 		E8455D3C17A425F00046307B /* TCValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCValue.m; sourceTree = "<group>"; };
 		E8455D4417A438660046307B /* NSData+TCTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+TCTools.h"; sourceTree = "<group>"; };
@@ -188,8 +207,11 @@
 		E8742542199B682F002A34DD /* NSString+TCPathExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+TCPathExtension.m"; sourceTree = "<group>"; };
 		E8742544199B6A61002A34DD /* NSString+TCXMLExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+TCXMLExtension.h"; sourceTree = "<group>"; };
 		E8742545199B6A61002A34DD /* NSString+TCXMLExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+TCXMLExtension.m"; sourceTree = "<group>"; };
+<<<<<<< HEAD
+=======
 		E8758BF81C28507B00EE708A /* TCTimeHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCTimeHelper.h; sourceTree = "<group>"; };
 		E8758BF91C28507B00EE708A /* TCTimeHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCTimeHelper.m; sourceTree = "<group>"; };
+>>>>>>> javerous/master
 		E87833E619926D5100D0C67F /* TCFileSignature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCFileSignature.h; sourceTree = "<group>"; };
 		E87833E719926D5100D0C67F /* TCFileSignature.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCFileSignature.m; sourceTree = "<group>"; };
 		E87833E919926FF600D0C67F /* TCPublicKey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TCPublicKey.h; sourceTree = "<group>"; };
@@ -230,7 +252,11 @@
 		E87E206617B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/MainMenu.strings; sourceTree = "<group>"; };
 		E87E206717B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		E87E206817B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
+<<<<<<< HEAD
+		E882D1AC1429DD0B009CCD01 /* TCConfigProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TCConfigProxy.h; path = Shared/TCConfigProxy.h; sourceTree = SOURCE_ROOT; };
+=======
 		E882D1AC1429DD0B009CCD01 /* TCConfigProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCConfigProxy.h; sourceTree = "<group>"; };
+>>>>>>> javerous/master
 		E88879FD1303EA9600C7D60E /* TCDragImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCDragImageView.h; sourceTree = "<group>"; };
 		E88879FE1303EA9900C7D60E /* TCDragImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCDragImageView.m; sourceTree = "<group>"; };
 		E889F09512531CFB000C36B2 /* NSString+TCLayoutExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+TCLayoutExtension.h"; sourceTree = "<group>"; };
@@ -245,8 +271,13 @@
 		E889F0A212531D33000C36B2 /* TCConfigPlist.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCConfigPlist.m; sourceTree = "<group>"; };
 		E889F0A412531D3F000C36B2 /* TCBuddiesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCBuddiesWindowController.h; sourceTree = "<group>"; };
 		E889F0A512531D3F000C36B2 /* TCBuddiesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = TCBuddiesWindowController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+<<<<<<< HEAD
+		E889F0A712531D48000C36B2 /* TCBuddyInfoWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCBuddyInfoWindowController.h; sourceTree = "<group>"; };
+		E889F0A812531D48000C36B2 /* TCBuddyInfoWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCBuddyInfoWindowController.m; sourceTree = "<group>"; };
+=======
 		E889F0A712531D48000C36B2 /* TCBuddyInfoWindowsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCBuddyInfoWindowsController.h; sourceTree = "<group>"; };
 		E889F0A812531D48000C36B2 /* TCBuddyInfoWindowsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCBuddyInfoWindowsController.m; sourceTree = "<group>"; };
+>>>>>>> javerous/master
 		E889F0AD12531D62000C36B2 /* TCChatWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCChatWindowController.h; sourceTree = "<group>"; };
 		E889F0AE12531D62000C36B2 /* TCChatWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatWindowController.m; sourceTree = "<group>"; };
 		E889F0B912531D92000C36B2 /* TCAssistantWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCAssistantWindowController.h; sourceTree = "<group>"; };
@@ -277,12 +308,19 @@
 		E8A7F6DD185D22F8002A4495 /* TCChatTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatTableView.m; sourceTree = "<group>"; };
 		E8AB4D981995095300FF986D /* TCInfo+Render.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TCInfo+Render.h"; sourceTree = "<group>"; };
 		E8AB4D991995095300FF986D /* TCInfo+Render.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TCInfo+Render.m"; sourceTree = "<group>"; };
+<<<<<<< HEAD
+		E8AB4D9C199522CF00FF986D /* TCTextConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TCTextConstants.h; sourceTree = "<group>"; };
+=======
+>>>>>>> javerous/master
 		E8C1EFF112F7169400E24C42 /* TCImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCImage.m; sourceTree = "<group>"; };
 		E8C1EFF212F7169400E24C42 /* TCImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCImage.h; sourceTree = "<group>"; };
 		E8C398291205D51000B9307B /* TCSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCSocket.m; sourceTree = "<group>"; };
 		E8C3982A1205D51000B9307B /* TCSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCSocket.h; sourceTree = "<group>"; };
+<<<<<<< HEAD
+=======
 		E8C3DD061C23092C00129415 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LocationView.strings; sourceTree = "<group>"; };
 		E8C3DD081C23093600129415 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LocationView.strings; sourceTree = "<group>"; };
+>>>>>>> javerous/master
 		E8C4CEE917B05EC600014783 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/AssistantPanel_Welcome.strings; sourceTree = "<group>"; };
 		E8C4CEEC17B0605800014783 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/AssistantPanel_Advanced.strings; sourceTree = "<group>"; };
 		E8C4CEEE17B0605800014783 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/AssistantPanel_Basic.strings; sourceTree = "<group>"; };
@@ -304,12 +342,20 @@
 		E8D717FB1A66EF9500304109 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/PrefView_Buddies.strings; sourceTree = "<group>"; };
 		E8D717FD1A66EFA200304109 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/PrefView_Network.strings; sourceTree = "<group>"; };
 		E8D717FF1A66EFA700304109 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/PrefView_Network.strings; sourceTree = "<group>"; };
+<<<<<<< HEAD
+		E8D718011A66EFBF00304109 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/PrefView_Locations.strings; sourceTree = "<group>"; };
+		E8D718031A66EFC600304109 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/PrefView_Locations.strings; sourceTree = "<group>"; };
+=======
+>>>>>>> javerous/master
 		E8D718301A66F25500304109 /* TCInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TCInfo.h; sourceTree = "<group>"; };
 		E8D718321A66F7F500304109 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UpdateWindow.xib; sourceTree = "<group>"; };
 		E8EDBCD217AA4C6500172B9C /* TCLogsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCLogsManager.h; sourceTree = "<group>"; };
 		E8EDBCD317AA4C6500172B9C /* TCLogsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCLogsManager.m; sourceTree = "<group>"; };
+<<<<<<< HEAD
+=======
 		E8EE82AA1C245FF900E1D453 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/PrefView_Locations.strings; sourceTree = "<group>"; };
 		E8EE82AC1C24600500E1D453 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/PrefView_Locations.strings; sourceTree = "<group>"; };
+>>>>>>> javerous/master
 		E8F15A78130425A4000593E1 /* TCKeyedText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCKeyedText.h; sourceTree = "<group>"; };
 		E8F15A79130425A4000593E1 /* TCKeyedText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCKeyedText.m; sourceTree = "<group>"; };
 		E8F16D3211FF7E9700DFA05F /* TCParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCParser.m; sourceTree = "<group>"; };
@@ -335,7 +381,10 @@
 		E81FD9E511E7259B000614D5 = {
 			isa = PBXGroup;
 			children = (
+<<<<<<< HEAD
+=======
 				E864BFFB1A67FE140013D5A5 /* Shared */,
+>>>>>>> javerous/master
 				E837DAD411E7739D004BC524 /* Core */,
 				E837DAD311E7739D004BC524 /* TorChat */,
 				E81FD9ED11E7259B000614D5 /* Supporting Files */,
@@ -385,6 +434,8 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+<<<<<<< HEAD
+=======
 		E82EC3991C4C5A6C00B19508 /* Location */ = {
 			isa = PBXGroup;
 			children = (
@@ -403,6 +454,7 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
+>>>>>>> javerous/master
 		E832B27419A20DD300B06194 /* Signature */ = {
 			isa = PBXGroup;
 			children = (
@@ -467,8 +519,13 @@
 			children = (
 				E889F0A412531D3F000C36B2 /* TCBuddiesWindowController.h */,
 				E889F0A512531D3F000C36B2 /* TCBuddiesWindowController.m */,
+<<<<<<< HEAD
+				E889F0A712531D48000C36B2 /* TCBuddyInfoWindowController.h */,
+				E889F0A812531D48000C36B2 /* TCBuddyInfoWindowController.m */,
+=======
 				E889F0A712531D48000C36B2 /* TCBuddyInfoWindowsController.h */,
 				E889F0A812531D48000C36B2 /* TCBuddyInfoWindowsController.m */,
+>>>>>>> javerous/master
 				E870BD8317A8490500DFA076 /* Views */,
 				E870BD8717A8498400DFA076 /* Resources */,
 			);
@@ -520,6 +577,8 @@
 			name = Preferences;
 			sourceTree = "<group>";
 		};
+<<<<<<< HEAD
+=======
 		E844DEE51C49079B005D92C4 /* Tor */ = {
 			isa = PBXGroup;
 			children = (
@@ -538,6 +597,7 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
+>>>>>>> javerous/master
 		E8455D4017A4382C0046307B /* Categories */ = {
 			isa = PBXGroup;
 			children = (
@@ -584,6 +644,8 @@
 			name = Views;
 			sourceTree = "<group>";
 		};
+<<<<<<< HEAD
+=======
 		E864BFFB1A67FE140013D5A5 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
@@ -593,19 +655,29 @@
 			path = ../Shared;
 			sourceTree = "<group>";
 		};
+>>>>>>> javerous/master
 		E870BD7B17A8482300DFA076 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
 				E83AD976127B545E00538925 /* Main */,
+<<<<<<< HEAD
+				E83AD977127B546800538925 /* Buddies */,
+				E870BD8117A848D000DFA076 /* Chat */,
+				E83AD979127B549100538925 /* Assistant */,
+=======
 				E83AD979127B549100538925 /* Assistant */,
 				E83AD977127B546800538925 /* Buddies */,
 				E870BD8117A848D000DFA076 /* Chat */,
+>>>>>>> javerous/master
 				E83AD97A127B54A300538925 /* Files */,
 				E83AD97B127B54B300538925 /* Logs */,
 				E83AD97C127B54C200538925 /* Preferences */,
 				E84C327E199CA3AF00D576F7 /* Update */,
+<<<<<<< HEAD
+=======
 				E844DEE51C49079B005D92C4 /* Tor */,
 				E82EC3991C4C5A6C00B19508 /* Location */,
+>>>>>>> javerous/master
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -615,6 +687,10 @@
 			children = (
 				E8455D3B17A425F00046307B /* TCValue.h */,
 				E8455D3C17A425F00046307B /* TCValue.m */,
+<<<<<<< HEAD
+				E882D1AC1429DD0B009CCD01 /* TCConfigProxy.h */,
+=======
+>>>>>>> javerous/master
 				E8643D441A66C7EB00B8C55F /* TCConfigInterface.h */,
 				E889F0A112531D33000C36B2 /* TCConfigPlist.h */,
 				E889F0A212531D33000C36B2 /* TCConfigPlist.m */,
@@ -760,10 +836,17 @@
 			isa = PBXGroup;
 			children = (
 				E85923F8120A9E3E0035C420 /* AssistantWindow.xib */,
+<<<<<<< HEAD
+				E878984517B05C0B00DB7709 /* AssistantPanel_Mode.xib */,
+				E878984117B05C0B00DB7709 /* AssistantPanel_Advanced.xib */,
+				E878984317B05C0B00DB7709 /* AssistantPanel_Basic.xib */,
+				E878983817B05BC800DB7709 /* AssistantPanel_Welcome.xib */,
+=======
 				E878983817B05BC800DB7709 /* AssistantPanel_Welcome.xib */,
 				E878984517B05C0B00DB7709 /* AssistantPanel_Mode.xib */,
 				E878984317B05C0B00DB7709 /* AssistantPanel_Basic.xib */,
 				E878984117B05C0B00DB7709 /* AssistantPanel_Advanced.xib */,
+>>>>>>> javerous/master
 			);
 			name = XIB;
 			sourceTree = "<group>";
@@ -859,12 +942,15 @@
 				E8F96A391993D37B0050629B /* TCOperationsQueue.m */,
 				E8F15A78130425A4000593E1 /* TCKeyedText.h */,
 				E8F15A79130425A4000593E1 /* TCKeyedText.m */,
+<<<<<<< HEAD
+=======
 				E80D527C1C280B6500BE3D10 /* TCSpeedHelper.h */,
 				E80D527D1C280B6500BE3D10 /* TCSpeedHelper.m */,
 				E80D527F1C281D4200BE3D10 /* TCAmountHelper.h */,
 				E80D52801C281D4200BE3D10 /* TCAmountHelper.m */,
 				E8758BF81C28507B00EE708A /* TCTimeHelper.h */,
 				E8758BF91C28507B00EE708A /* TCTimeHelper.m */,
+>>>>>>> javerous/master
 				E832B27419A20DD300B06194 /* Signature */,
 			);
 			name = Tools;
@@ -874,6 +960,10 @@
 			isa = PBXGroup;
 			children = (
 				E87833E919926FF600D0C67F /* TCPublicKey.h */,
+<<<<<<< HEAD
+				E8AB4D9C199522CF00FF986D /* TCTextConstants.h */,
+=======
+>>>>>>> javerous/master
 			);
 			name = Constants;
 			sourceTree = "<group>";
@@ -905,7 +995,11 @@
 		E81FD9E711E7259B000614D5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+<<<<<<< HEAD
+				LastUpgradeCheck = 0620;
+=======
 				LastUpgradeCheck = 0720;
+>>>>>>> javerous/master
 				ORGANIZATIONNAME = SourceMac;
 			};
 			buildConfigurationList = E81FD9EA11E7259B000614D5 /* Build configuration list for PBXProject "TorChat" */;
@@ -945,7 +1039,10 @@
 				E83423F111F6FA2100922152 /* Localizable.strings in Resources */,
 				E8D717F51A66EF8600304109 /* PrefView_Buddies.xib in Resources */,
 				E849BDB11A66EEA60040E294 /* PrefView_General.xib in Resources */,
+<<<<<<< HEAD
+=======
 				E80A357C1A67F5FA00896518 /* LocationView.xib in Resources */,
+>>>>>>> javerous/master
 				E878984817B05C0B00DB7709 /* AssistantPanel_Basic.xib in Resources */,
 				E878984917B05C0B00DB7709 /* AssistantPanel_Mode.xib in Resources */,
 				E809B14E1859C6F9001664E1 /* ChatTemplate.plist in Resources */,
@@ -955,7 +1052,10 @@
 				E8D718331A66F7F500304109 /* UpdateWindow.xib in Resources */,
 				E8D717F71A66EF8600304109 /* PrefView_Network.xib in Resources */,
 				E809B1E71859F186001664E1 /* Images.xcassets in Resources */,
+<<<<<<< HEAD
+=======
 				E844DEE91C490A9E005D92C4 /* TorWindow.xib in Resources */,
+>>>>>>> javerous/master
 				E8D5E26514DACFA200973297 /* ChatView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -975,7 +1075,11 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
+<<<<<<< HEAD
+			shellScript = "COMMIT_HASH=$( cd \"${PROJECT_DIR}\";  git rev-parse --short HEAD )\n\nif [ $? -eq 0 ]; then\n    /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion ${COMMIT_HASH}\" \"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n    exit 0\nelse\n    echo \"Can't get current commit hash\"\n    exit 1\nfi";
+=======
 			shellScript = "COMMIT_HASH=$( cd \"${PROJECT_DIR}\";  git rev-parse --short HEAD )\n\nif [ $? -ne 0 ]; then\n    COMMIT_HASH=$( cat \"${PROJECT_DIR}/git_hash.txt\" )\n\n    if [ $? -ne 0 ]; then\n        echo \"Can't get current commit hash\"\n        exit 1\n    fi\nfi\n\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion ${COMMIT_HASH}\" \"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\nexit 0\n";
+>>>>>>> javerous/master
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -986,8 +1090,11 @@
 			files = (
 				E8AB4D9A1995095300FF986D /* TCInfo+Render.m in Sources */,
 				E837DAE011E7739D004BC524 /* TCBuddy.m in Sources */,
+<<<<<<< HEAD
+=======
 				E80D52811C281D4200BE3D10 /* TCAmountHelper.m in Sources */,
 				E844DEF21C490B56005D92C4 /* TCTorWindowController.m in Sources */,
+>>>>>>> javerous/master
 				E837DAE111E7739D004BC524 /* TCBuffer.m in Sources */,
 				E837DAE311E7739D004BC524 /* TCCoreManager.m in Sources */,
 				E84C3281199CA3F700D576F7 /* TCUpdateWindowController.m in Sources */,
@@ -1004,13 +1111,20 @@
 				E8F96A3A1993D37B0050629B /* TCOperationsQueue.m in Sources */,
 				E8127AA91854CB1100FEDA7F /* TCChatTextField.m in Sources */,
 				E889F09A12531D07000C36B2 /* TCButton.m in Sources */,
+<<<<<<< HEAD
+=======
 				E80D527E1C280B6500BE3D10 /* TCSpeedHelper.m in Sources */,
+>>>>>>> javerous/master
 				E889F09D12531D12000C36B2 /* TCTableView.m in Sources */,
 				E889F0A012531D1E000C36B2 /* TCTorManager.m in Sources */,
 				E889F0A312531D33000C36B2 /* TCConfigPlist.m in Sources */,
 				E8643D731A66D9C100B8C55F /* TCPrefView_Buddies.m in Sources */,
 				E889F0A612531D3F000C36B2 /* TCBuddiesWindowController.m in Sources */,
+<<<<<<< HEAD
+				E889F0A912531D48000C36B2 /* TCBuddyInfoWindowController.m in Sources */,
+=======
 				E889F0A912531D48000C36B2 /* TCBuddyInfoWindowsController.m in Sources */,
+>>>>>>> javerous/master
 				E889F0AF12531D62000C36B2 /* TCChatWindowController.m in Sources */,
 				E8643D7C1A66DCD700B8C55F /* TCPrefView_Network.m in Sources */,
 				E889F0BB12531D92000C36B2 /* TCAssistantWindowController.m in Sources */,
@@ -1024,7 +1138,10 @@
 				E889F0CB12531DD6000C36B2 /* TorChatAppDelegate.m in Sources */,
 				E832B27319A20CAB00B06194 /* TCDataSignature.m in Sources */,
 				E82B7D7A125A08A800B7BA8A /* TCPreferencesWindowController.m in Sources */,
+<<<<<<< HEAD
+=======
 				E80A357F1A67F61800896518 /* TCLocationViewController.m in Sources */,
+>>>>>>> javerous/master
 				E8643D791A66DBF900B8C55F /* TCPrefView_General.m in Sources */,
 				E852235217B504CA00C6F585 /* TCChatCellView.m in Sources */,
 				E8742543199B682F002A34DD /* NSString+TCPathExtension.m in Sources */,
@@ -1050,7 +1167,10 @@
 				E8455D4617A4386C0046307B /* NSData+TCTools.m in Sources */,
 				E86B5A1817AE7C6C00C715CA /* TCFileCellView.m in Sources */,
 				E80414C917A557B7008220C9 /* NSArray+TCTools.m in Sources */,
+<<<<<<< HEAD
+=======
 				E8758BFA1C28507B00EE708A /* TCTimeHelper.m in Sources */,
+>>>>>>> javerous/master
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1067,6 +1187,8 @@
 			name = LogsWindow.xib;
 			sourceTree = "<group>";
 		};
+<<<<<<< HEAD
+=======
 		E80A357A1A67F5FA00896518 /* LocationView.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -1077,6 +1199,7 @@
 			name = LocationView.xib;
 			sourceTree = "<group>";
 		};
+>>>>>>> javerous/master
 		E81FD9FB11E7259B000614D5 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -1118,6 +1241,8 @@
 			path = TorChat;
 			sourceTree = "<group>";
 		};
+<<<<<<< HEAD
+=======
 		E844DEEB1C490A9E005D92C4 /* TorWindow.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -1128,6 +1253,7 @@
 			name = TorWindow.xib;
 			sourceTree = "<group>";
 		};
+>>>>>>> javerous/master
 		E849BDAF1A66EEA60040E294 /* PrefView_General.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -1252,8 +1378,13 @@
 			isa = PBXVariantGroup;
 			children = (
 				E8D717F21A66EF8600304109 /* Base */,
+<<<<<<< HEAD
+				E8D718011A66EFBF00304109 /* en */,
+				E8D718031A66EFC600304109 /* fr */,
+=======
 				E8EE82AA1C245FF900E1D453 /* en */,
 				E8EE82AC1C24600500E1D453 /* fr */,
+>>>>>>> javerous/master
 			);
 			name = PrefView_Locations.xib;
 			sourceTree = "<group>";
@@ -1299,8 +1430,13 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+<<<<<<< HEAD
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				COPY_PHASE_STRIP = NO;
+=======
 				COPY_PHASE_STRIP = NO;
 				ENABLE_TESTABILITY = YES;
+>>>>>>> javerous/master
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
@@ -1348,6 +1484,10 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+<<<<<<< HEAD
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+=======
+>>>>>>> javerous/master
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_POSTPROCESSING = YES;
@@ -1382,6 +1522,10 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+<<<<<<< HEAD
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+=======
+>>>>>>> javerous/master
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -1392,7 +1536,10 @@
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/system",
 				);
+<<<<<<< HEAD
+=======
 				PRODUCT_BUNDLE_IDENTIFIER = "com.SourceMac.${PRODUCT_NAME:rfc1034identifier}";
+>>>>>>> javerous/master
 				PRODUCT_NAME = TorChat;
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
@@ -1404,6 +1551,10 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+<<<<<<< HEAD
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+=======
+>>>>>>> javerous/master
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PREFIX_HEADER = TorChat/TorChat_Prefix.pch;
@@ -1413,7 +1564,10 @@
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/system",
 				);
+<<<<<<< HEAD
+=======
 				PRODUCT_BUNDLE_IDENTIFIER = "com.SourceMac.${PRODUCT_NAME:rfc1034identifier}";
+>>>>>>> javerous/master
 				PRODUCT_NAME = TorChat;
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;

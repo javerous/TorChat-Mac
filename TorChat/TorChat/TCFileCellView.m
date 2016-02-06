@@ -1,7 +1,11 @@
 /*
  *  TCFileCellView.m
  *
+<<<<<<< HEAD
+ *  Copyright 2014 Avérous Julien-Pierre
+=======
  *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,11 +24,29 @@
  *
  */
 
+<<<<<<< HEAD
+
+
+=======
+>>>>>>> javerous/master
 #import "TCFileCellView.h"
 
 #import "TCButton.h"
 #import "TCFilesCommon.h"
+<<<<<<< HEAD
+
+
+
+/*
+** Prototypes
+*/
+#pragma mark - Prototypes
+
+static NSString *NSStringFromFileSize(uint64_t size);
+
+=======
 #import "TCAmountHelper.h"
+>>>>>>> javerous/master
 
 
 /*
@@ -113,7 +135,11 @@
 	else if (way == tcfile_download)
 		directionText = NSLocalizedString(@"file_progress_from", @"");
 	
+<<<<<<< HEAD
+	statusText = [NSString stringWithFormat:@"%@ %@ (%@) - %@ %@ %@", directionText, buddyName, buddyAddress, NSStringFromFileSize(fileCompletedSize), NSLocalizedString(@"file_progress_of", @""), NSStringFromFileSize(fileSize)];
+=======
 	statusText = [NSString stringWithFormat:@"%@ %@ (%@) - %@ %@ %@", directionText, buddyName, buddyAddress, TCStringFromBytesAmount(fileCompletedSize), NSLocalizedString(@"file_progress_of", @""), TCStringFromBytesAmount(fileSize)];
+>>>>>>> javerous/master
 
 	[_transferStatusField setTextColor:txtColor];
 	[_transferStatusField setStringValue:statusText];
@@ -148,3 +174,72 @@
 }
 
 @end
+<<<<<<< HEAD
+
+
+
+/*
+** C Functions
+*/
+#pragma mark - C Functions
+
+// == Render bytes ==
+static NSString *NSStringFromFileSize(uint64_t size)
+{
+	uint64_t	gb = 0;
+	float		fgb;
+	uint64_t	mb = 0;
+	float		fmb;
+	uint64_t	kb = 0;
+	float		fkb;
+	uint64_t	b = 0;
+	
+	
+	// Compute GB
+	gb = size / (1024 * 1024 * 1024);
+	fgb = (float)size / (float)(1024 * 1024 * 1024);
+	size = size % (1024 * 1024 * 1024);
+	
+	// Compute MB
+	mb = size / (1024 * 1024);
+	fmb = (float)size / (float)(1024 * 1024);
+	size = size % (1024 * 1024);
+	
+	// Compute KB
+	kb = size / (1024);
+	fkb = (float)size / (float)(1024);
+	size = size % (1024);
+	
+	// Compute B
+	b = size;
+	
+	
+	if (gb)
+	{
+		if (mb)
+			return [NSString stringWithFormat:@"%.02f %@", fgb, NSLocalizedString(@"file_gb", @"")];
+		else
+			return [NSString stringWithFormat:@"%llu %@", gb, NSLocalizedString(@"file_gb", @"")];
+	}
+	else if (mb)
+	{
+		if (kb)
+			return [NSString stringWithFormat:@"%.02f %@", fmb, NSLocalizedString(@"file_mb", @"")];
+		else
+			return [NSString stringWithFormat:@"%llu %@", mb, NSLocalizedString(@"file_mb", @"")];
+	}
+	else if (kb)
+	{
+		if (b)
+			return [NSString stringWithFormat:@"%.02f %@", fkb, NSLocalizedString(@"file_kb", @"")];
+		else
+			return [NSString stringWithFormat:@"%llu %@", kb, NSLocalizedString(@"file_kb", @"")];
+	}
+	else if (b)
+		return [NSString stringWithFormat:@"%llu %@", b, NSLocalizedString(@"file_b", @"")];
+	
+	return [NSString stringWithFormat:@"0 %@", NSLocalizedString(@"file_b", @"")];
+}
+
+=======
+>>>>>>> javerous/master

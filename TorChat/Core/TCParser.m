@@ -1,7 +1,13 @@
 /*
+<<<<<<< HEAD
+ *  TCParser.cpp
+ *
+ *  Copyright 2014 Avérous Julien-Pierre
+=======
  *  TCParser.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,6 +26,11 @@
  *
  */
 
+<<<<<<< HEAD
+
+
+=======
+>>>>>>> javerous/master
 #import "TCParser.h"
 
 #import "TCTools.h"
@@ -28,6 +39,10 @@
 #import "NSArray+TCTools.h"
 
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> javerous/master
 /*
 ** TCParser - Private
 */

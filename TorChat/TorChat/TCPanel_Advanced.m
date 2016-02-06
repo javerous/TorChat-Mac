@@ -1,7 +1,11 @@
 /*
  *  TCPanel_Advanced.m
  *
+<<<<<<< HEAD
+ *  Copyright 2014 Avérous Julien-Pierre
+=======
  *  Copyright 2016 Avérous Julien-Pierre
+>>>>>>> javerous/master
  *
  *  This file is part of TorChat.
  *
@@ -20,11 +24,21 @@
  *
  */
 
+<<<<<<< HEAD
+
+
+=======
+>>>>>>> javerous/master
 #import "TCPanel_Advanced.h"
 
 #import "TCLogsManager.h"
 #import "TCConfigPlist.h"
 
+<<<<<<< HEAD
+#import "TCDebugLog.h"
+
+
+=======
 #import "TCLocationViewController.h"
 
 #import "TCDebugLog.h"
@@ -38,6 +52,7 @@
 #define TCLocalizedString(key, comment) [[NSBundle mainBundle] localizedStringForKey:[(key) copy] value:@"" table:nil]
 
 
+>>>>>>> javerous/master
 
 /*
 ** TCPanel_Advanced - Private
@@ -47,15 +62,23 @@
 @interface TCPanel_Advanced ()
 {
 	__weak id <TCAssistantProxy> _proxy;
+<<<<<<< HEAD
+=======
 	
 	TCConfigPlist *_config;
 
 	TCLocationViewController *_torDownloadsLocation;
+>>>>>>> javerous/master
 }
 
 @property (strong, nonatomic)	IBOutlet NSTextField	*imAddressField;
 @property (strong, nonatomic)	IBOutlet NSTextField	*imInPortField;
+<<<<<<< HEAD
+@property (strong, nonatomic)	IBOutlet NSPathControl	*imDownloadPath;
+
+=======
 @property (strong, nonatomic)	IBOutlet NSView			*downloadLocationView;
+>>>>>>> javerous/master
 
 @property (strong, nonatomic)	IBOutlet NSTextField	*torAddressField;
 @property (strong, nonatomic)	IBOutlet NSTextField	*torPortField;
@@ -73,7 +96,11 @@
 
 - (void)dealloc
 {
+<<<<<<< HEAD
+    TCDebugLog("TCPanel_Advanced dealloc");
+=======
     TCDebugLog(@"TCPanel_Advanced dealloc");
+>>>>>>> javerous/master
 }
 
 /*
@@ -102,6 +129,38 @@
 
 - (id)content
 {
+<<<<<<< HEAD
+	NSBundle		*bundle = [NSBundle mainBundle];
+	NSString		*path = nil;
+	TCConfigPlist	*aconfig = nil;
+	
+	// Configuration
+	path = [[[bundle bundlePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"];
+	
+	aconfig = [[TCConfigPlist alloc] initWithFile:path];
+	
+	if (!aconfig)
+	{
+		// Log error
+		NSString *key = NSLocalizedString(@"ac_error_write_file", @"");
+		
+		[[TCLogsManager sharedManager] addGlobalAlertLog:@"ac_error_write_file", path];
+		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:key, path] runModal];
+		return nil;
+	}
+	
+	// Set up the config with the fields
+	[aconfig setTorAddress:[_torAddressField stringValue]];
+	[aconfig setSelfAddress:[_imAddressField stringValue]];
+	[aconfig setDomain:TConfigPathDomainDownloads place:TConfigPathPlaceAbsolute subpath:[[_imDownloadPath URL] path]];
+	
+	[aconfig setTorPort:(uint16_t)[_torPortField intValue]];
+	[aconfig setClientPort:(uint16_t)[_imInPortField intValue]];
+	[aconfig setMode:TCConfigModeAdvanced];
+	
+	// Return the config
+	return @{ @"configuration" : aconfig };
+=======
 	// Set up the config with the fields.
 	[_config setTorAddress:[_torAddressField stringValue]];
 	[_config setSelfAddress:[_imAddressField stringValue]];
@@ -111,6 +170,7 @@
 	
 	// Return the config.
 	return _config;
+>>>>>>> javerous/master
 }
 
 - (void)showPanel
@@ -120,6 +180,18 @@
 	
 	[proxy setIsLastPanel:YES];
 	
+<<<<<<< HEAD
+	// Download path.
+	NSString *path = [[[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"Downloads"];
+	
+	if ([[NSFileManager defaultManager] fileExistsAtPath:path] == NO)
+	{
+		[[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+		[[NSData data] writeToFile:[path stringByAppendingPathComponent:@".localized"] atomically:NO];
+	}
+	
+	[_imDownloadPath setURL:[NSURL fileURLWithPath:path]];
+=======
 	// If we already have a config, stop here
 	if (_config)
 		return;
@@ -155,6 +227,7 @@
 	_torDownloadsLocation = [[TCLocationViewController alloc] initWithConfiguration:_config component:TCConfigPathComponentDownloads];
 	
 	[_torDownloadsLocation addToView:_downloadLocationView];
+>>>>>>> javerous/master
 }
 
 @end
