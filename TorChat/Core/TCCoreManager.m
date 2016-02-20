@@ -24,6 +24,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+@import SMFoundation;
+
 #import "TCCoreManager.h"
 #import "TCConnection.h"
 
@@ -35,8 +37,6 @@
 #import "TCBuddy.h"
 #import "TCBuddy.h"
 #import "TCTools.h"
-#import "TCInfo.h"
-#import "TCSocket.h"
 
 
 /*
@@ -96,7 +96,7 @@
 - (void)_notify:(TCCoreEvent)notice;
 - (void)_notify:(TCCoreEvent)notice context:(id)ctx;
 
-- (void)_sendEvent:(TCInfo *)info;
+- (void)_sendEvent:(SMInfo *)info;
 
 @end
 
@@ -803,7 +803,7 @@
 	[abuddy startHandshake:random status:[self status] avatar:[self profileAvatar] name:[self profileName] text:[self profileText]];
 }
 
-- (void)connection:(TCConnection *)connection pongWithSocket:(TCSocket *)sock andRandomToken:(NSString *)random
+- (void)connection:(TCConnection *)connection pongWithSocket:(SMSocket *)sock andRandomToken:(NSString *)random
 {
 	TCBuddy *buddy = [self buddyWithRandom:random];
 	
@@ -831,7 +831,7 @@
 	[self removeConnection:connection];
 }
 
-- (void)connection:(TCConnection *)connection information:(TCInfo *)info
+- (void)connection:(TCConnection *)connection information:(SMInfo *)info
 {
 	if (!info)
 		return;
@@ -842,7 +842,7 @@
 	});
 	
 	// If it's an error: kill the connection.
-	if (info.kind == TCInfoError)
+	if (info.kind == SMInfoError)
 		[self removeConnection:connection];
 }
 
@@ -884,7 +884,7 @@
 {
 	// > localQueue <
 	
-	TCInfo *err = [TCInfo infoOfKind:TCInfoError domain:TCCoreManagerInfoDomain code:code];
+	SMInfo *err = [SMInfo infoOfKind:SMInfoError domain:TCCoreManagerInfoDomain code:code];
 
 	[self _sendEvent:err];
 		
@@ -896,7 +896,7 @@
 {
 	// > localQueue <
 		
-	TCInfo *err = [TCInfo infoOfKind:TCInfoError domain:TCCoreManagerInfoDomain code:code context:ctx];
+	SMInfo *err = [SMInfo infoOfKind:SMInfoError domain:TCCoreManagerInfoDomain code:code context:ctx];
 	
 	[self _sendEvent:err];
 	
@@ -908,7 +908,7 @@
 {
 	// > localQueue <
 		
-	TCInfo *ifo = [TCInfo infoOfKind:TCInfoInfo domain:TCCoreManagerInfoDomain code:notice];
+	SMInfo *ifo = [SMInfo infoOfKind:SMInfoInfo domain:TCCoreManagerInfoDomain code:notice];
 
 	[self _sendEvent:ifo];
 }
@@ -917,12 +917,12 @@
 {
 	// > localQueue <
 	
-	TCInfo *ifo = [TCInfo infoOfKind:TCInfoInfo domain:TCCoreManagerInfoDomain code:notice context:ctx];
+	SMInfo *ifo = [SMInfo infoOfKind:SMInfoInfo domain:TCCoreManagerInfoDomain code:notice context:ctx];
 
 	[self _sendEvent:ifo];
 }
 
-- (void)_sendEvent:(TCInfo *)info
+- (void)_sendEvent:(SMInfo *)info
 {
 	// > localQueue <
 	

@@ -35,7 +35,7 @@
 
 @interface TCPanel_Welcome ()
 {
-	__weak id <TCAssistantProxy>	_proxy;
+	__weak id <SMAssistantProxy>	_proxy;
 	BOOL							_pathSet;
 	TCConfigPlist					*_config;
 }
@@ -70,11 +70,11 @@
 
 
 /*
-** TCPanel_Welcome - TCAssistantPanel
+** TCPanel_Welcome - SMAssistantPanel
 */
-#pragma mark - TCPanel_Welcome - TCAssistantPanel
+#pragma mark - TCPanel_Welcome - SMAssistantPanel
 
-+ (id <TCAssistantPanel>)panelWithProxy:(id <TCAssistantProxy>)proxy
++ (id <SMAssistantPanel>)panelWithProxy:(id <SMAssistantProxy>)proxy
 {
 	TCPanel_Welcome *panel = [[TCPanel_Welcome alloc] initWithNibName:@"AssistantPanel_Welcome" bundle:nil];
 	
@@ -100,7 +100,7 @@
 
 - (void)showPanel
 {
-	id <TCAssistantProxy> proxy = _proxy;
+	id <SMAssistantProxy> proxy = _proxy;
 	
 	[proxy setIsLastPanel:NO];
 	[proxy setNextPanelID:@"ac_mode"];
@@ -115,7 +115,7 @@
 
 - (IBAction)selectChange:(id)sender
 {
-	id <TCAssistantProxy> proxy = _proxy;
+	id <SMAssistantProxy> proxy = _proxy;
 	
 	NSMatrix	*mtr = sender;
 	NSCell		*obj = [mtr selectedCell];
@@ -139,7 +139,7 @@
 
 - (IBAction)selectFile:(id)sender
 {
-	id <TCAssistantProxy> proxy = _proxy;
+	id <SMAssistantProxy> proxy = _proxy;
 
 	NSOpenPanel	*openDlg = [NSOpenPanel openPanel];
 	

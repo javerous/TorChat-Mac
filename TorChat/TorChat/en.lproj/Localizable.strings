@@ -28,9 +28,6 @@
 "ac_title_advanced" = "Setup the advanced mode";
 "ac_title_basic" = "Setup the basic mode";
 
-"ac_next_continue" = "Continue";
-"ac_next_finish" = "Finish";
-
 "ac_error_build_path" = "Can't build the configuration path because of a system error";
 "ac_error_write_file" = "Can't build a configuration file (%@). Please check write access on your TorChat folder.";
 "ac_error_read_file" = "Can't open the configuration file (%@). Please check read access on your file.";
@@ -92,44 +89,6 @@
 "logs_all_logs" = "All logs";
 "logs_global_logs" = "Globals";
 "logs_error_title" = "TorChat Error";
-
-
-/* Update */
-"update_subtitle_available" = "Tor %@ is now available—you have %@. Would you like to download it now?";
-"update_button_cancel" = "Cancel";
-"update_button_close" = "Close";
-"update_button_done" = "Done";
-
-"update_status_launching" = "Launching update…";
-"update_status_retrieving_info" = "Retrieving archive info…";
-"update_status_downloading_archive" = "Downloading…";
-"update_status_staging_archive" = "Archive staging…";
-"update_status_checking_signature" = "Checking signature…";
-"update_status_relaunching_tor" = "Relaunching tor…";
-"update_status_update_done" = "Update done.";
-"update_status_error" = "Update error.";
-
-"update_error_fmt" = "Error: %@";
-
-"update_download_progress" = "%@ of %@";
-"update_download_progress_stalled" = "%@ of %@ (stalled)";
-"update_download_progress_remaining" = "%@ of %@ (%@ remaining)";
-
-
-/* Tor */
-"tor_button_close" = "Close";
-
-
-/* Amounts */
-"size_gb" = "GB";
-"size_mb" = "MB";
-"size_kb" = "KB";
-"size_b" = "B";
-
-"time_days" = "days";
-"time_hours" = "hours";
-"time_minutes" = "minutes";
-"time_seconds" = "seconds";
 
 
 /* Location */
@@ -217,63 +176,3 @@
 "core_cnx_error_masquerade" = "A remote peer try a masquerade with our address. It was killed.";
 "core_cnx_error_add_buddy" = "Can't add a new buddy on TorChat controller.";
 "core_cnx_error_pong" = "A remote peer try to do a pong, but the buddy can't be found. It was killed.";
-
-
-/* Tor Manager */
-// General
-"tor_out_log" = "Tor: %@";
-"tor_error_log" = "Tor-Error: %@";
-
-// TCTorManagerInfoStartDomain
-"tor_start_info_bootstrap" = "Tor bootstrapping %lu%% (%@).";
-"tor_start_info_hostname" = "Tor started with hostname '%@'.";
-"tor_start_info_url_session" = "Tor proxy ready.";
-"tor_start_info_done" = "Tor is ready.";
-
-"tor_start_warning_canceled" = "Tor start was canceled.";
-
-"tor_start_err_already_running" = "Tor is already running.";
-"tor_start_err_configuration" = "Can't obtain some informations from configuration.";
-"tor_start_err_unarchive" = "Can't unarchive tor.";
-"tor_start_err_signature" = "Can't validate signature.";
-"tor_start_err_launch" = "System can't launch tor binary.";
-"tor_start_err_control_connect" = "Can't connect to tor control port.";
-"tor_start_err_control_authenticate" = "Can't authenticate to control tor.";
-"tor_start_err_control_monitor" = "Can't monitor tor.";
-
-// TCTorManagerInfoCheckUpdateDomain
-"tor_checkupdate_info_version_available" = "Version available on server: %@";
-
-"tor_checkupdate_error_not_running" = "Tor is not running.";
-"tor_checkupdate_error_check_remote_info" = "Can't retrieve remote informations.";
-"tor_checkupdate_error_validate_local_signature" = "Can't validate local signature.";
-"tor_checkupdate_error_nothing_new" = "There is no update available (already up-to-date).";
-
-// TCTorManagerInfoUpdateDomain
-"tor_update_info_retrieve_info" = "Retrieve remote tor informations.";
-"tor_update_info_archive_size" = "Remote archive size: %llu";
-"tor_update_info_downloading" = "Download…";
-"tor_update_info_stage" = "Stage the archive.";
-"tor_update_info_signature_check" = "Check signature.";
-"tor_update_info_relaunch" = "Relaunch.";
-"tor_update_info_done" = "Done.";
-
-"tor_update_err_not_running" = "Tor is not running.";
-"tor_update_err_configuration" = "Can't obtain some informations from configuration.";
-"tor_update_err_internal" = "Internal system error.";
-"tor_update_err_archive_info" = "Can't retrieve remove tor archive informations.";
-"tor_update_err_archive_download" = "Can't download remote tor archive.";
-"tor_update_err_archive_stage" = "Can't stage tor archive.";
-"tor_update_err_relaunch" = "Can't relaunch tor.";
-
-// TCTorManagerInfoOperationDomain
-"tor_operation_info_info" = "Extracted informations";
-"tor_operation_info_done" = "Operation done";
-
-"tor_operation_err_configuration" = "Can't obtain some informations from configuration";
-"tor_operation_err_io" = "I/O error";
-"tor_operation_err_network" = "Network error";
-"tor_operation_err_extract" = "Extraction error";
-"tor_operation_err_signature" = "Signature error";
-"tor_operation_err_tor" = "Tor error";
-"tor_operation_err_internal" = "Internal error";

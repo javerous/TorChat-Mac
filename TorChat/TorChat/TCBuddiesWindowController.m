@@ -20,6 +20,9 @@
  *
  */
 
+@import SMFoundation;
+@import SMTor;
+
 #import "TCBuddiesWindowController.h"
 
 // -- Core --
@@ -47,13 +50,10 @@
 
 // > Managers
 #import "TCLogsManager.h"
-#import "TCTorManager.h"
 
 // > Components
 #import "TCFilesCommon.h"
 
-// > Categories
-#import "TCInfo+Render.h"
 
 
 /*
@@ -406,13 +406,13 @@
 */
 #pragma mark - TCBuddiesController - TCCoreManagerObserver
 
-- (void)torchatManager:(TCCoreManager *)manager information:(TCInfo *)info
+- (void)torchatManager:(TCCoreManager *)manager information:(SMInfo *)info
 {
 	// Log the item
 	[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
 	
 	// Action information
-	if (info.kind == TCInfoInfo)
+	if (info.kind == SMInfoInfo)
 	{
 		switch ((TCCoreEvent)info.code)
 		{
@@ -537,7 +537,7 @@
 */
 #pragma mark - TCBuddiesController - TCBuddyObserver
 
-- (void)buddy:(TCBuddy *)aBuddy information:(TCInfo *)info
+- (void)buddy:(TCBuddy *)aBuddy information:(SMInfo *)info
 {
 	// Add the info in the log manager.
 	[[TCLogsManager sharedManager] addBuddyLogWithAddress:[aBuddy address] name:[aBuddy finalName] info:info];
@@ -545,7 +545,7 @@
 	// Handle info.
 	dispatch_async(_localQueue, ^{
 		
-		if (info.kind == TCInfoInfo)
+		if (info.kind == SMInfoInfo)
 		{
 			// Actions
 			switch ((TCBuddyEvent)info.code)
@@ -786,7 +786,7 @@
 				}
 			}
 		}
-		else if (info.kind == TCInfoError)
+		else if (info.kind == SMInfoError)
 		{
 			switch ((TCBuddyError)info.code)
 			{

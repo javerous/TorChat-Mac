@@ -22,7 +22,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "TCPanel.h"
+@import SMAssistant.SMAssistantPanel;
 
 
 /*
@@ -30,6 +30,6 @@
 */
 #pragma mark - TCPanel_Basic
 
-@interface TCPanel_Basic : NSViewController <TCAssistantPanel>
+@interface TCPanel_Basic : NSViewController <SMAssistantPanel>
 
 @end

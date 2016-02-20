@@ -28,9 +28,6 @@
 "ac_title_advanced" = "Configurer le mode avancé";
 "ac_title_basic" = "Configurer le mode basic";
 
-"ac_next_continue" = "Continuer";
-"ac_next_finish" = "Terminer";
-
 "ac_error_build_path" = "Impossible de créer le chemin d'accès du fichier de configuration suite à une erreur système.";
 "ac_error_write_file" = "Impossible de créer un fichier de configuration (%@). Vérifiez les droits d'écriture sur votre dossier TorChat.";
 "ac_error_read_file" = "Impossible d'ouvrir le fichier configuration (%@). Vérifiez les droits de lecture sur votre fichier.";
@@ -92,44 +89,6 @@
 "logs_all_logs" = "Tous les journaux";
 "logs_global_logs" = "Global";
 "logs_error_title" = "Erreur TorChat";
-
-
-/* Update */
-"update_subtitle_available" = "Tor %@ est disponible — vous utilisez la version %@. Voulez-vous la télécharger ?";
-"update_button_cancel" = "Annuler";
-"update_button_close" = "Fermer";
-"update_button_done" = "Terminer";
-
-"update_status_launching" = "Démarrage de la mise à jour…";
-"update_status_retrieving_info" = "Récupération des informations de l'archive…";
-"update_status_downloading_archive" = "Téléchargement…";
-"update_status_staging_archive" = "Activation de l'archive…";
-"update_status_checking_signature" = "Vérification de la signature…";
-"update_status_relaunching_tor" = "Redémarrage de tor…";
-"update_status_update_done" = "Mise à jour effectuée.";
-"update_status_error" = "Erreur de mise à jour.";
-
-"update_error_fmt" = "Erreur : %@";
-
-"update_download_progress" = "%@ sur %@";
-"update_download_progress_stalled" = "%@ of %@ (stagnant)";
-"update_download_progress_remaining" = "%@ of %@ (%@ restant)";
-
-
-/* Tor */
-"tor_button_close" = "Fermer";
-
-
-/* Amounts */
-"size_gb" = "Go";
-"size_mb" = "Mo";
-"size_kb" = "Ko";
-"size_b" = "B";
-
-"time_days" = "jours";
-"time_hours" = "heures";
-"time_minutes" = "minutes";
-"time_seconds" = "secondes";
 
 
 /* Location */
@@ -217,63 +176,3 @@
 "core_cnx_error_masquerade" = "Un hôte distant essaye de faire du camouflage avec notre adresse. Il a été tué.";
 "core_cnx_error_add_buddy" = "Impossible d'ajouter un nouveau contact.";
 "core_cnx_error_pong" = "Un hôte distant essaye de faire un pong, mais le contact correspondant n'existe pas. Il a été tué.";
-
-
-/* Tor Manager */
-// General
-"tor_out_log" = "Tor: %@";
-"tor_error_log" = "Tor-Erreur: %@";
-
-// TCTorManagerInfoStartDomain
-"tor_start_info_bootstrap" = "Tor est en cours d'amorçage %lu%% (%@).";
-"tor_start_info_hostname" = "Tor a démarré avec le nom d'hôte '%@'.";
-"tor_start_info_url_session" = "Le proxy tor proxy prêt.";
-"tor_start_info_done" = "Tor est prêt.";
-
-"tor_start_warning_canceled" = "Le démarrage de Tor a été annulé.";
-
-"tor_start_err_already_running" = "Tor est déjà en cours d'exécution.";
-"tor_start_err_configuration" = "Impossible d'obtenir certaines informations de la configuration.";
-"tor_start_err_unarchive" = "Impossible de désarchiver tor.";
-"tor_start_err_signature" = "Impossible de valider la signature.";
-"tor_start_err_launch" = "Le système ne peut pas exécuter le binaire tor.";
-"tor_start_err_control_connect" = "Impossible de se connecter au port de contrôle de tor.";
-"tor_start_err_control_authenticate" = "Impossible de s'authentifier pour le contrôle de tor.";
-"tor_start_err_control_monitor" = "Impossible de surveiller tor.";
-
-// TCTorManagerInfoCheckUpdateDomain
-"tor_checkupdate_info_version_available" = "Version disponible sur le serveur: %@";
-
-"tor_checkupdate_error_not_running" = "Tor n'est pas en cours d'exécution.";
-"tor_checkupdate_error_check_remote_info" = "Impossible de télécharger les informations.";
-"tor_checkupdate_error_validate_local_signature" = "Impossible de valider la signature locale.";
-"tor_checkupdate_error_nothing_new" = "Il n'y a pas de mise à jour disponible (déjà à jour).";
-
-// TCTorManagerInfoUpdateDomain
-"tor_update_info_retrieve_info" = "Télécharge les informations de tor.";
-"tor_update_info_archive_size" = "Taille de l'archive distante: %llu";
-"tor_update_info_downloading" = "Télécharge…";
-"tor_update_info_stage" = "Mets en place l'archive.";
-"tor_update_info_signature_check" = "Vérifie la signature.";
-"tor_update_info_relaunch" = "Relance.";
-"tor_update_info_done" = "Terminé.";
-
-"tor_update_err_not_running" = "Tor n'est pas en cours d'exécution.";
-"tor_update_err_configuration" = "Impossible d'obtenir certaines informations de la configuration.";
-"tor_update_err_internal" = "Erreur interne du système.";
-"tor_update_err_archive_info" = "Impossible de télécharger les informations de l'archive tor";
-"tor_update_err_archive_download" = "Impossible de télécharger l'archive tor.";
-"tor_update_err_archive_stage" = "Impossible de mettre en place l'archive tor.";
-"tor_update_err_relaunch" = "Impossible de relancer tor.";
-
-// TCTorManagerInfoOperationDomain
-"tor_operation_info_info" = "Information extraites";
-"tor_operation_info_done" = "Opération terminée";
-
-"tor_operation_err_configuration" = "Impossible d'obtenir certaines informations de la configuration.";
-"tor_operation_err_io" = "Erreur d'E/S";
-"tor_operation_err_network" = "Erreur réseau";
-"tor_operation_err_extract" = "Erreur lors de l'extraction";
-"tor_operation_err_signature" = "Erreur de signature";
-"tor_operation_err_tor" = "Erreur de tor";
-"tor_operation_err_internal" = "Erreur interne";

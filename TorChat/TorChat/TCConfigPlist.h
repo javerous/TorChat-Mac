@@ -22,9 +22,6 @@
 
 #import "TCConfigInterface.h"
 
-#if defined(PROXY_ENABLED) && PROXY_ENABLED
-# import "TCConfigProxy.h"
-#endif
 
 
 /*
@@ -36,9 +33,5 @@
 
 // -- Instance --
 - (id)initWithFile:(NSString *)filepath;
-
-#if defined(PROXY_ENABLED) && PROXY_ENABLED
-- (id)initWithFileProxy:(id <TCConfigProxy>)proxy;
-#endif
 
 @end

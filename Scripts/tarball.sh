@@ -8,16 +8,13 @@ base=$( cd "${base}/../" ; pwd -P )
 pushd "$base" > /dev/null
 
 # Build excludes list
-cat > Misc/exclude <<EOF
-./Misc/exclude
-./Misc/tarball.sh
-./Misc/TorChat.tgz
-./Tests
-./DSym
-./Crash
+cat > Scripts/exclude <<EOF
+./Scripts/exclude
+TorChat.tgz
 xcuserdata
 .DS_Store
-.svn
+.git
+.gitmodules
 EOF
 
 # Prepare environement to not backup extended attributes
@@ -25,13 +22,13 @@ export COPYFILE_DISABLE=true
 export COPY_EXTENDED_ATTRIBUTES_DISABLE=true
 
 # Clean old
-rm -f Misc/TorChat.tgz
+rm -f TorChat.tgz
 
 # Build tarball
-tar -s ':./:TorChat/:' -X misc/exclude -c -z -v -f Misc/TorChat.tgz .
+tar -s ':./:TorChat/:' -X Scripts/exclude -c -z -v -f TorChat.tgz .
 
 # Clean exclude
-rm Misc/exclude
+rm Scripts/exclude
 
 # Restore directory
 popd > /dev/null

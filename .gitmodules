@@ -1,0 +1,9 @@
+[submodule "Externals/SMFoundation"]
+	path = Externals/SMFoundation
+	url = git@github.com:javerous/framework-foundation.git
+[submodule "Externals/SMTor"]
+	path = Externals/SMTor
+	url = git@github.com:javerous/framework-tor.git
+[submodule "Externals/SMAssistant"]
+	path = Externals/SMAssistant
+	url = git@github.com:javerous/framework-assistant.git

@@ -20,6 +20,8 @@
  *
  */
 
+@import SMFoundation;
+
 #import "TCPrefView_Buddies.h"
 
 #import "TCCoreManager.h"
@@ -179,9 +181,9 @@
 */
 #pragma mark - TCPrefView_Buddies - TCCoreManagerObserver
 
-- (void)torchatManager:(TCCoreManager *)manager information:(TCInfo *)info
+- (void)torchatManager:(TCCoreManager *)manager information:(SMInfo *)info
 {
-	if (info.kind == TCInfoInfo && (info.code == TCCoreEventBuddyBlocked || info.code == TCCoreEventBuddyUnblocked))
+	if (info.kind == SMInfoInfo && (info.code == TCCoreEventBuddyBlocked || info.code == TCCoreEventBuddyUnblocked))
 	{
 		dispatch_async(dispatch_get_main_queue(), ^{
 			[_tableView reloadData];

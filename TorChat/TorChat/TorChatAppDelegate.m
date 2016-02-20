@@ -143,9 +143,9 @@
 */
 #pragma mark - TCCoreManagerObserver
 
-- (void)torchatManager:(TCCoreManager *)manager information:(TCInfo *)info
+- (void)torchatManager:(TCCoreManager *)manager information:(SMInfo *)info
 {
-	if (info.kind == TCInfoInfo && (info.code == TCCoreEventBuddyBlocked || info.code == TCCoreEventBuddyUnblocked))
+	if (info.kind == SMInfoInfo && (info.code == TCCoreEventBuddyBlocked || info.code == TCCoreEventBuddyUnblocked))
 	{
 		dispatch_async(dispatch_get_main_queue(), ^{
 

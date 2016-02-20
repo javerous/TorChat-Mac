@@ -38,8 +38,8 @@
 #pragma mark - Forward
 
 @class TCConnection;
-@class TCInfo;
-@class TCSocket;
+@class SMInfo;
+@class SMSocket;
 
 
 
@@ -51,9 +51,9 @@
 @protocol TCConnectionDelegate <NSObject>
 
 - (void)connection:(TCConnection *)connection pingAddress:(NSString *)address withRandomToken:(NSString *)random;
-- (void)connection:(TCConnection *)connection pongWithSocket:(TCSocket *)socket andRandomToken:(NSString *)random;
+- (void)connection:(TCConnection *)connection pongWithSocket:(SMSocket *)socket andRandomToken:(NSString *)random;
 
-- (void)connection:(TCConnection *)connection information:(TCInfo *)info;
+- (void)connection:(TCConnection *)connection information:(SMInfo *)info;
 
 @end
 

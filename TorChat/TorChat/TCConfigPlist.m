@@ -99,10 +99,6 @@
 
 	BOOL				_isDirty;
 	dispatch_source_t	_timer;
-
-#if defined(PROXY_ENABLED) && PROXY_ENABLED
-	id <TCConfigProxy>	_proxy;
-#endif
 }
 
 
@@ -189,37 +185,6 @@
 	
 	return self;
 }
-
-#if defined(PROXY_ENABLED) && PROXY_ENABLED
-
-- (id)initWithFileProxy:(id <TCConfigProxy>)proxy
-{
-	self = [super init];
-	
-	if (self)
-	{
-		NSData *data = nil;
-		
-		// Hold proxy.
-		_proxy = proxy;
-		
-		// Load data.
-		data = [proxy configContent];
-		
-		// Load config.
-		_fcontent = [self loadConfig:data];
-		
-		if (!_fcontent)
-			return nil;
-		
-		// Create queue.
-		_localQueue = dispatch_queue_create("com.torchat.app.config-plist", DISPATCH_QUEUE_CONCURRENT);
-	}
-	
-	return self;
-}
-
-#endif
 
 
 
@@ -1682,28 +1647,6 @@
 	
 	if (!data)
 		return NO;
-	
-#if defined(PROXY_ENABLED) && PROXY_ENABLED
-	
-	// Save by using proxy.
-	if (_proxy)
-	{
-		@try
-		{
-			[_proxy setConfigContent:data];
-			return YES;
-		}
-		@catch (NSException *exception)
-		{
-			_proxy = nil;
-			
-			NSLog(@"Configuration proxy unavailable");
-			
-			return NO;
-		}
-	}
-	
-#endif
 	
 	// Save by using file.
 	if (path)

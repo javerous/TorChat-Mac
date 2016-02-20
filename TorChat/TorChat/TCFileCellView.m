@@ -20,11 +20,12 @@
  *
  */
 
+@import SMFoundation;
+
 #import "TCFileCellView.h"
 
 #import "TCButton.h"
 #import "TCFilesCommon.h"
-#import "TCAmountHelper.h"
 
 
 /*
@@ -113,7 +114,7 @@
 	else if (way == tcfile_download)
 		directionText = NSLocalizedString(@"file_progress_from", @"");
 	
-	statusText = [NSString stringWithFormat:@"%@ %@ (%@) - %@ %@ %@", directionText, buddyName, buddyAddress, TCStringFromBytesAmount(fileCompletedSize), NSLocalizedString(@"file_progress_of", @""), TCStringFromBytesAmount(fileSize)];
+	statusText = [NSString stringWithFormat:@"%@ %@ (%@) - %@ %@ %@", directionText, buddyName, buddyAddress, SMStringFromBytesAmount(fileCompletedSize), NSLocalizedString(@"file_progress_of", @""), SMStringFromBytesAmount(fileSize)];
 
 	[_transferStatusField setTextColor:txtColor];
 	[_transferStatusField setStringValue:statusText];
