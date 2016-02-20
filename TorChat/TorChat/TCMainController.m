@@ -20,29 +20,22 @@
  *
  */
 
+@import SMFoundation;
+@import SMTor;
+@import SMAssistant;
+
 #import "TCMainController.h"
 
 #import "TCConfigPlist.h"
 #import "TCLogsManager.h"
 
 #import "TCBuddiesWindowController.h"
-#import "TCUpdateWindowController.h"
-#import "TCTorWindowController.h"
-#import "TCAssistantWindowController.h"
 #import "TCPanel_Welcome.h"
 #import "TCPanel_Mode.h"
 #import "TCPanel_Advanced.h"
 #import "TCPanel_Basic.h"
 
-#import "TCTorManager.h"
 #import "TCCoreManager.h"
-#import "TCOperationsQueue.h"
-
-#import "TCInfo+Render.h"
-
-#if defined(PROXY_ENABLED) && PROXY_ENABLED
-# import "TCConfigProxy.h"
-#endif
 
 
 /*
@@ -55,9 +48,9 @@
 	dispatch_queue_t _localQueue;
 	
 	id <TCConfigInterface>	_configuration;
-	TCTorManager			*_torManager;
+	SMTorManager			*_torManager;
 	
-	TCAssistantWindowController *_assistant;
+	SMAssistantController	*_assistant;
 	
 	BOOL _running;
 }
@@ -114,49 +107,15 @@
 		
 		_running = YES;
 		
-		TCOperationsQueue *startQueue = [[TCOperationsQueue alloc] initStarted];
-		
-		// -- Try loading config from proxy --
-#if defined(PROXY_ENABLED) && PROXY_ENABLED
-		[startQueue scheduleOnQueue:dispatch_get_main_queue() block:^(TCOperationsControl ctrl) {
-			
-			// Check that we don't have configuration.
-			if (_configuration)
-			{
-				ctrl(TCOperationsControlContinue);
-				return;
-			}
-			
-			// Create distant object.
-			NSDistantObject *proxy = [NSConnection rootProxyForConnectionWithRegisteredName:TCProxyName host:nil];
-			
-			if (proxy)
-			{
-				// Set protocol methods
-				[proxy setProtocolForProxy:@protocol(TCConfigProxy)];
-				
-				// Load
-				_configuration = [[TCConfigPlist alloc] initWithFileProxy:proxy];
-				
-				if (!_configuration)
-				{
-					[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_read_proxy"];
-					[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_error_read_proxy", @"")] runModal];
-				}
-			}
-			
-			// Continue.
-			ctrl(TCOperationsControlContinue);
-		}];
-#endif
+		SMOperationsQueue *startQueue = [[SMOperationsQueue alloc] initStarted];
 		
 		// -- Try loading config from file --
-		[startQueue scheduleOnQueue:dispatch_get_main_queue() block:^(TCOperationsControl ctrl) {
+		[startQueue scheduleOnQueue:dispatch_get_main_queue() block:^(SMOperationsControl ctrl) {
 			
 			// Check that we don't have configuration.
 			if (_configuration)
 			{
-				ctrl(TCOperationsControlContinue);
+				ctrl(SMOperationsControlContinue);
 				return;
 			}
 			
@@ -200,33 +159,33 @@
 			}
 			
 			// Continue.
-			ctrl(TCOperationsControlContinue);
+			ctrl(SMOperationsControlContinue);
 		 }];
 	
 		
 		// -- Try to create a config with assistant --
-		[startQueue scheduleOnQueue:dispatch_get_main_queue() block:^(TCOperationsControl ctrl) {
+		[startQueue scheduleOnQueue:dispatch_get_main_queue() block:^(SMOperationsControl ctrl) {
 
 			// Check that we don't have configuration.
 			if (_configuration)
 			{
-				ctrl(TCOperationsControlContinue);
+				ctrl(SMOperationsControlContinue);
 				return;
 			}
 			
 			// Show assistant.
 			NSArray *panels = @[ [TCPanel_Welcome class], [TCPanel_Mode class], [TCPanel_Advanced class], [TCPanel_Basic class] ];
 			
-			_assistant = [TCAssistantWindowController startAssistantWithPanels:panels completionHandler:^(id context) {
+			_assistant = [SMAssistantController startAssistantWithPanels:panels completionHandler:^(id context) {
 				_configuration = context;
-				ctrl(TCOperationsControlContinue);
+				ctrl(SMOperationsControlContinue);
 			}];
 		}];
 		
 		// -- Start Tor if necessary --
 		__block BOOL torAvailable = NO;
 		
-		[startQueue scheduleOnQueue:dispatch_get_main_queue() block:^(TCOperationsControl ctrl) {
+		[startQueue scheduleOnQueue:dispatch_get_main_queue() block:^(SMOperationsControl ctrl) {
 
 			if (!_configuration)
 			{
@@ -238,57 +197,65 @@
 			// Start tor only in basic mode.
 			if ([_configuration mode] != TCConfigModeBasic)
 			{
-				ctrl(TCOperationsControlContinue);
+				ctrl(SMOperationsControlContinue);
 				return;
 			}
 			
 			// Create tor manager.
-			_torManager = [[TCTorManager alloc] initWithConfiguration:_configuration];
+			SMTorConfiguration *torConfig = [[SMTorConfiguration alloc] init];
 			
-			_torManager.logHandler = ^(TCTorManagerLogKind kind, NSString *log) {
+#warning FIXME : get info from _configuration and fill torConfig + monitor path change.
+
+			_torManager = [[SMTorManager alloc] initWithConfiguration:torConfig];
+			
+			_torManager.logHandler = ^(SMTorManagerLogKind kind, NSString *log) {
 				
 				switch (kind)
 				{
-					case TCTorManagerLogStandard:
+					case SMTorManagerLogStandard:
 						[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogInfo message:@"tor_out_log", log];
 						break;
 						
-					case TCTorManagerLogError:
+					case SMTorManagerLogError:
 						[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"tor_error_log", log];
 						break;
 				}
 			};
 			
 			// Start tor manager via UI.
-			[TCTorWindowController startWithTorManager:_torManager handler:^(TCInfo *startInfo) {
+			[SMTorWindowController startWithTorManager:_torManager infoHandler:^(SMInfo *startInfo) {
 				
 				[[TCLogsManager sharedManager] addGlobalLogWithInfo:startInfo];
 				
-				if ([startInfo.domain isEqualToString:TCTorManagerInfoStartDomain] == NO)
+				if ([startInfo.domain isEqualToString:SMTorManagerInfoStartDomain] == NO)
 					return;
 				
 				switch (startInfo.kind)
 				{
-					case TCInfoInfo:
+					case SMInfoInfo:
 					{
-						if (startInfo.code == TCTorManagerEventStartDone)
+						if (startInfo.code == SMTorManagerEventStartHostname)
+						{
+							[_configuration setSelfAddress:startInfo.context];
+						}
+						else if (startInfo.code == SMTorManagerEventStartDone)
 						{
 							torAvailable = YES;
-							ctrl(TCOperationsControlContinue);
+							ctrl(SMOperationsControlContinue);
 						}
 						break;
 					}
 						
-					case TCInfoWarning:
+					case SMInfoWarning:
 					{
-						if (startInfo.code == TCTorManagerWarningStartCanceled)
-							ctrl(TCOperationsControlContinue);
+						if (startInfo.code == SMTorManagerWarningStartCanceled)
+							ctrl(SMOperationsControlContinue);
 						break;
 					}
 						
-					case TCInfoError:
+					case SMInfoError:
 					{
-						ctrl(TCOperationsControlContinue);
+						ctrl(SMOperationsControlContinue);
 						break;
 					}
 				}
@@ -296,37 +263,39 @@
 		}];
 		
 		// -- Update Tor if necessary --
-		[startQueue scheduleOnQueue:dispatch_get_main_queue() block:^(TCOperationsControl ctrl) {
+		[startQueue scheduleOnQueue:dispatch_get_main_queue() block:^(SMOperationsControl ctrl) {
 
 			if (torAvailable == NO)
 			{
-				ctrl(TCOperationsControlContinue);
+				ctrl(SMOperationsControlContinue);
 				return;
 			}
 			
 			// Launch update check.
-			[_torManager checkForUpdateWithCompletionHandler:^(TCInfo *updateInfo) {
+			[_torManager checkForUpdateWithCompletionHandler:^(SMInfo *updateInfo) {
 				
 				// > Log check.
 				[[TCLogsManager sharedManager] addGlobalLogWithInfo:updateInfo];
 				
 				// > Handle update.
-				if (updateInfo.kind == TCInfoInfo && [updateInfo.domain isEqualToString:TCTorManagerInfoCheckUpdateDomain] && updateInfo.code == TCTorManagerEventCheckUpdateAvailable)
+				if (updateInfo.kind == SMInfoInfo && [updateInfo.domain isEqualToString:SMTorManagerInfoCheckUpdateDomain] && updateInfo.code == SMTorManagerEventCheckUpdateAvailable)
 				{
 					NSDictionary	*context = updateInfo.context;
 					NSString		*oldVersion = context[@"old_version"];
 					NSString		*newVersion = context[@"new_version"];
 					
-					[[TCUpdateWindowController sharedController] handleUpdateFromVersion:oldVersion toVersion:newVersion torManager:_torManager];
+					[[SMTorUpdateWindowController sharedController] handleUpdateFromVersion:oldVersion toVersion:newVersion torManager:_torManager logHandler:^(SMInfo * _Nonnull info) {
+						[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
+					}];
 				}
 			}];
 			
 			// Don't wait for end.
-			ctrl(TCOperationsControlContinue);
+			ctrl(SMOperationsControlContinue);
 		}];
 		
 		// -- Launch torchat --
-		[startQueue scheduleOnQueue:dispatch_get_main_queue() block:^(TCOperationsControl ctrl) {
+		[startQueue scheduleOnQueue:dispatch_get_main_queue() block:^(SMOperationsControl ctrl) {
 			
 			// Create core manager.
 			_core = [[TCCoreManager alloc] initWithConfiguration:_configuration];
@@ -341,7 +310,7 @@
 			_assistant = nil;
 			
 			// Continue.
-			ctrl(TCOperationsControlContinue);
+			ctrl(SMOperationsControlContinue);
 		}];
 	});
 }

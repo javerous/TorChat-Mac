@@ -27,6 +27,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+@import SMFoundation;
+
 #include <arpa/inet.h>
 
 #import "TCBuddy.h"
@@ -34,9 +36,7 @@
 #import "TCDebugLog.h"
 
 #import "TCParser.h"
-#import "TCSocket.h"
 #import "TCImage.h"
-#import "TCInfo.h"
 
 #import "TCFileReceive.h"
 #import "TCFileSend.h"
@@ -129,7 +129,7 @@ static char gLocalQueueContext;
 */
 #pragma mark - TCBuddy - Private
 
-@interface TCBuddy () <TCParserCommand, TCParserDelegate, TCSocketDelegate>
+@interface TCBuddy () <TCParserCommand, TCParserDelegate, SMSocketDelegate>
 {
 	// > Config
 	id <TCConfig>		_config;
@@ -158,8 +158,8 @@ static char gLocalQueueContext;
 	dispatch_queue_t	_localQueue;
 	
 	// > Socket
-	TCSocket			*_inSocket;
-	TCSocket			*_outSocket;
+	SMSocket			*_inSocket;
+	SMSocket			*_outSocket;
 	
 	// > Command
 	NSMutableArray		*_bufferedCommands;
@@ -217,12 +217,12 @@ static char gLocalQueueContext;
 // -- Helper --
 - (void)_error:(TCBuddyError)code fatal:(BOOL)fatal;
 - (void)_error:(TCBuddyError)code context:(id)ctx fatal:(BOOL)fatal;
-- (void)_error:(TCBuddyError)code info:(TCInfo *)subInfo fatal:(BOOL)fatal;
+- (void)_error:(TCBuddyError)code info:(SMInfo *)subInfo fatal:(BOOL)fatal;
 
 - (void)_notify:(TCBuddyEvent)notice;
 - (void)_notify:(TCBuddyEvent)notice context:(id)ctx;
 
-- (void)_sendEvent:(TCInfo *)info;
+- (void)_sendEvent:(SMInfo *)info;
 
 - (NSNumber *)_status;
 
@@ -392,7 +392,7 @@ static char gLocalQueueContext;
 		}
 		
 		// Build a socket with this descriptor
-		_outSocket = [[TCSocket alloc] initWithSocket:s];
+		_outSocket = [[SMSocket alloc] initWithSocket:s];
 		
 		// Set ourself as delegate
 		_outSocket.delegate = self;
@@ -919,7 +919,7 @@ static char gLocalQueueContext;
 	});
 }
 
-- (void)setInputConnection:(TCSocket *)sock
+- (void)setInputConnection:(SMSocket *)sock
 {
 	if (!sock)
 		return;
@@ -945,7 +945,7 @@ static char gLocalQueueContext;
 			_inSocket = sock;
 			_inSocket.delegate = self;
 			
-			[_inSocket setGlobalOperation:TCSocketOperationLine withSize:0 andTag:0];
+			[_inSocket setGlobalOperation:SMSocketOperationLine withSize:0 andTag:0];
 			
 			// Notify that we are ready
 			if (_ponged && _pongSent)
@@ -1079,18 +1079,18 @@ static char gLocalQueueContext;
 
 
 /*
-** TCBuddy - TCSocketDelegate
+** TCBuddy - SMSocketDelegate
 */
-#pragma mark - TCSocketDelegate
+#pragma mark - SMSocketDelegate
 
-- (void)socket:(TCSocket *)socket operationAvailable:(TCSocketOperation)operation tag:(NSUInteger)tag content:(id)content
+- (void)socket:(SMSocket *)socket operationAvailable:(SMSocketOperation)operation tag:(NSUInteger)tag content:(id)content
 {
 	dispatch_async(_localQueue, ^{
 		
 		if (_blocked)
 			return;
 		
-		if (operation == TCSocketOperationData)
+		if (operation == SMSocketOperationData)
 		{
 			// Get the reply
 			NSData			*data = content;
@@ -1103,7 +1103,7 @@ static char gLocalQueueContext;
 				{
 					_socksstate = socks_finish;
 					
-					[_outSocket setGlobalOperation:TCSocketOperationLine withSize:0 andTag:0];
+					[_outSocket setGlobalOperation:SMSocketOperationLine withSize:0 andTag:0];
 					
 					// Notify
 					[self _notify:TCBuddyEventConnectedBuddy];
@@ -1125,7 +1125,7 @@ static char gLocalQueueContext;
 					break;
 			}
 		}
-		else if (operation == TCSocketOperationLine)
+		else if (operation == SMSocketOperationLine)
 		{
 			NSArray *lines = content;
 			
@@ -1141,7 +1141,7 @@ static char gLocalQueueContext;
 	});
 }
 
-- (void)socket:(TCSocket *)socket error:(TCInfo *)error
+- (void)socket:(SMSocket *)socket error:(SMInfo *)error
 {
 	dispatch_async(_localQueue, ^{
 		
@@ -1150,7 +1150,7 @@ static char gLocalQueueContext;
 	});
 }
 
-- (void)socketRunPendingWrite:(TCSocket *)socket
+- (void)socketRunPendingWrite:(SMSocket *)socket
 {
 	dispatch_async(_localQueue, ^{
 		[self _runPendingFileWrite];
@@ -1544,7 +1544,7 @@ static char gLocalQueueContext;
 		return;
 	
 	// Don't get parse error on blocked buddy (prevent spam, etc.)
-	TCInfo *info = [TCInfo infoOfKind:TCInfoError domain:TCBuddyInfoDomain code:error context:information];
+	SMInfo *info = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:error context:information];
 		
 	[self _error:TCBuddyErrorParse info:info fatal:NO];
 }
@@ -1943,7 +1943,7 @@ static char gLocalQueueContext;
 	strcpy(pos, c_host);
 	
 	// Set the next input operation
-	[_outSocket scheduleOperation:TCSocketOperationData withSize:sizeof(struct sockrep) andTag:socks_v4_reply];
+	[_outSocket scheduleOperation:SMSocketOperationData withSize:sizeof(struct sockrep) andTag:socks_v4_reply];
 	
 	// Send the request
 	if ([self _sendBytes:buffer length:datalen channel:TCBuddyChannelOut])
@@ -2005,7 +2005,7 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	TCInfo *err = [TCInfo infoOfKind:TCInfoError domain:TCBuddyInfoDomain code:code];
+	SMInfo *err = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:code];
 	
 	[self _sendEvent:err];
 	
@@ -2018,7 +2018,7 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	TCInfo *err = [TCInfo infoOfKind:TCInfoError domain:TCBuddyInfoDomain code:code context:ctx];
+	SMInfo *err = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:code context:ctx];
 
 	[self _sendEvent:err];
 	
@@ -2027,11 +2027,11 @@ static char gLocalQueueContext;
 		[self stop];
 }
 
-- (void)_error:(TCBuddyError)code info:(TCInfo *)subInfo fatal:(BOOL)fatal
+- (void)_error:(TCBuddyError)code info:(SMInfo *)subInfo fatal:(BOOL)fatal
 {
 	// > localQueue <
 	
-	TCInfo *err = [TCInfo infoOfKind:TCInfoError domain:TCBuddyInfoDomain code:code info:subInfo];
+	SMInfo *err = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:code info:subInfo];
 	
 	[self _sendEvent:err];
 	
@@ -2044,7 +2044,7 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	TCInfo *ifo = [TCInfo infoOfKind:TCInfoInfo domain:TCBuddyInfoDomain code:notice];
+	SMInfo *ifo = [SMInfo infoOfKind:SMInfoInfo domain:TCBuddyInfoDomain code:notice];
 	
 	[self _sendEvent:ifo];
 }
@@ -2053,12 +2053,12 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	TCInfo *ifo = [TCInfo infoOfKind:TCInfoInfo domain:TCBuddyInfoDomain code:notice context:ctx];
+	SMInfo *ifo = [SMInfo infoOfKind:SMInfoInfo domain:TCBuddyInfoDomain code:notice context:ctx];
 	
 	[self _sendEvent:ifo];
 }
 
-- (void)_sendEvent:(TCInfo *)info
+- (void)_sendEvent:(SMInfo *)info
 {
 	// > localQueue <
 	

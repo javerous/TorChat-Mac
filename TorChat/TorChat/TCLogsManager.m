@@ -20,10 +20,10 @@
  *
  */
 
+@import SMFoundation;
+
 #import "TCLogsManager.h"
 
-#import "TCInfo.h"
-#import "TCInfo+Render.h"
 
 
 /*
@@ -198,7 +198,7 @@
 	[self addLogWithTimestamp:nil key:address kind:kind content:msg];
 }
 
-- (void)addBuddyLogWithAddress:(NSString *)address name:(NSString *)name info:(TCInfo *)info
+- (void)addBuddyLogWithAddress:(NSString *)address name:(NSString *)name info:(SMInfo *)info
 {
 	// Add the alias
 	dispatch_async(_localQueue, ^{
@@ -210,15 +210,15 @@
 	
 	switch (info.kind)
 	{
-		case TCInfoError:
+		case SMInfoError:
 			kind = TCLogError;
 			break;
 
-		case TCInfoWarning:
+		case SMInfoWarning:
 			kind = TCLogWarning;
 			break;
 
-		case TCInfoInfo:
+		case SMInfoInfo:
 			kind = TCLogInfo;
 			break;
 	}
@@ -244,22 +244,22 @@
 	[self addLogWithTimestamp:nil key:TCLogsGlobalKey kind:kind content:msg];
 }
 
-- (void)addGlobalLogWithInfo:(TCInfo *)info;
+- (void)addGlobalLogWithInfo:(SMInfo *)info;
 {
 	// Convert kind.
 	TCLogKind kind;
 	
 	switch (info.kind)
 	{
-		case TCInfoError:
+		case SMInfoError:
 			kind = TCLogError;
 			break;
 			
-		case TCInfoWarning:
+		case SMInfoWarning:
 			kind = TCLogWarning;
 			break;
 			
-		case TCInfoInfo:
+		case SMInfoInfo:
 			kind = TCLogInfo;
 			break;
 	}

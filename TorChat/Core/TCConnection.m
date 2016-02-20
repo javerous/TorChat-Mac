@@ -20,14 +20,14 @@
  *
  */
 
+@import SMFoundation;
+
 #import "TCConnection.h"
 
 #import "TCCoreManager.h"
 
 #import "TCDebugLog.h"
 #import "TCParser.h"
-#import "TCSocket.h"
-#import "TCInfo.h"
 #import "TCBuddy.h"
 
 
@@ -36,7 +36,7 @@
 */
 #pragma mark - TCConnection - Private
 
-@interface TCConnection () <TCParserDelegate, TCParserCommand, TCSocketDelegate>
+@interface TCConnection () <TCParserDelegate, TCParserCommand, SMSocketDelegate>
 {
 	// -- Vars --
 	// > Running
@@ -44,7 +44,7 @@
     
 	// > Socket
 	int							_sockd;
-	TCSocket					*_sock;
+	SMSocket					*_sock;
 	
 	// > Parser
 	TCParser					*_parser;
@@ -62,7 +62,7 @@
 // -- Helpers --
 - (void)error:(TCCoreError)code fatal:(BOOL)fatal;
 - (void)error:(TCCoreError)code context:(id)ctx fatal:(BOOL)fatal;
-- (void)error:(TCCoreError)code info:(TCInfo *)subInfo fatal:(BOOL)fatal;
+- (void)error:(TCCoreError)code info:(SMInfo *)subInfo fatal:(BOOL)fatal;
 
 - (void)notify:(TCCoreEvent)notice;
 
@@ -135,10 +135,10 @@
 			_running = YES;
 			
 			// Build a socket
-			_sock = [[TCSocket alloc] initWithSocket:_sockd];
+			_sock = [[SMSocket alloc] initWithSocket:_sockd];
 
 			[_sock setDelegate:self];
-			[_sock scheduleOperation:TCSocketOperationLine withSize:1 andTag:0];
+			[_sock scheduleOperation:SMSocketOperationLine withSize:1 andTag:0];
 			
 			// Notify
 			[self notify:TCCoreEventClientStarted];
@@ -179,7 +179,7 @@
 	// > localQueue <
 
 	// Reschedule a line read.
-	[_sock scheduleOperation:TCSocketOperationLine withSize:1 andTag:0];
+	[_sock scheduleOperation:SMSocketOperationLine withSize:1 andTag:0];
 	
 	// Little security check to detect mass pings with faked host names over the same connection.
 	if ([_last_ping_address length] != 0)
@@ -216,7 +216,7 @@
 	// > localQueue <
 	
 	id <TCConnectionDelegate>	delegate = _delegate;
-	TCSocket					*sock = _sock;
+	SMSocket					*sock = _sock;
 
 	if (!delegate)
 		return;
@@ -319,13 +319,13 @@
 
 
 /*
-** TCConnection - TCSocketDelegate
+** TCConnection - SMSocketDelegate
 */
-#pragma mark - TCConnection - TCSocketDelegate
+#pragma mark - TCConnection - SMSocketDelegate
 
-- (void)socket:(TCSocket *)socket operationAvailable:(TCSocketOperation)operation tag:(NSUInteger)tag content:(id)content
+- (void)socket:(SMSocket *)socket operationAvailable:(SMSocketOperation)operation tag:(NSUInteger)tag content:(id)content
 {
-	if (operation == TCSocketOperationLine)
+	if (operation == SMSocketOperationLine)
 	{
 		NSArray *lines = content;
 		
@@ -338,7 +338,7 @@
 	}
 }
 
-- (void)socket:(TCSocket *)socket error:(TCInfo *)error
+- (void)socket:(SMSocket *)socket error:(SMInfo *)error
 {
 	// Fallback Error
 	[self error:TCCoreErrorSocket info:error fatal:YES];
@@ -356,7 +356,7 @@
 	id <TCConnectionDelegate> delegate = _delegate;
 	
 	if (delegate)
-		[delegate connection:self information:[TCInfo infoOfKind:TCInfoError domain:TCConnectionInfoDomain code:code]];
+		[delegate connection:self information:[SMInfo infoOfKind:SMInfoError domain:TCConnectionInfoDomain code:code]];
 		
 	if (fatal)
 		[self stop];
@@ -367,18 +367,18 @@
 	id <TCConnectionDelegate> delegate = _delegate;
 	
 	if (delegate)
-		[delegate connection:self information:[TCInfo infoOfKind:TCInfoError domain:TCConnectionInfoDomain code:code context:ctx]];
+		[delegate connection:self information:[SMInfo infoOfKind:SMInfoError domain:TCConnectionInfoDomain code:code context:ctx]];
 
 	if (fatal)
 		[self stop];
 }
 
-- (void)error:(TCCoreError)code info:(TCInfo *)subInfo fatal:(BOOL)fatal
+- (void)error:(TCCoreError)code info:(SMInfo *)subInfo fatal:(BOOL)fatal
 {
 	id <TCConnectionDelegate> delegate = _delegate;
 
 	if (delegate)
-		[delegate connection:self information:[TCInfo infoOfKind:TCInfoError domain:TCConnectionInfoDomain code:code info:subInfo]];
+		[delegate connection:self information:[SMInfo infoOfKind:SMInfoError domain:TCConnectionInfoDomain code:code info:subInfo]];
 	
 	if (fatal)
 		[self stop];
@@ -389,7 +389,7 @@
 	id <TCConnectionDelegate> delegate = _delegate;
 
 	if (delegate)
-		[delegate connection:self information:[TCInfo infoOfKind:TCInfoInfo domain:TCConnectionInfoDomain code:notice]];
+		[delegate connection:self information:[SMInfo infoOfKind:SMInfoInfo domain:TCConnectionInfoDomain code:notice]];
 }
 
 @end

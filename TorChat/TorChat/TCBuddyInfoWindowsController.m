@@ -218,10 +218,10 @@
 */
 #pragma mark - TCBuddyInfoWindowsController - TCCoreManagerObserver
 
-- (void)torchatManager:(TCCoreManager *)manager information:(TCInfo *)info
+- (void)torchatManager:(TCCoreManager *)manager information:(SMInfo *)info
 {
 	// Handle buddy remove.
-	if (info.kind == TCInfoInfo && info.code == TCCoreEventBuddyRemove)
+	if (info.kind == SMInfoInfo && info.code == TCCoreEventBuddyRemove)
 	{
 		TCBuddy *buddy = info.context;
 
@@ -568,9 +568,9 @@
 */
 #pragma mark - TCBuddyInfoWindowController - TCBuddyObserver
 
-- (void)buddy:(TCBuddy *)buddy information:(TCInfo *)info
+- (void)buddy:(TCBuddy *)buddy information:(SMInfo *)info
 {
-	if (info.kind == TCInfoInfo)
+	if (info.kind == SMInfoInfo)
 	{
 		switch (info.code)
 		{
@@ -682,9 +682,9 @@
 */
 #pragma mark - TCBuddyInfoWindowController - TCCoreManagerObserver
 
-- (void)torchatManager:(TCCoreManager *)manager information:(TCInfo *)info
+- (void)torchatManager:(TCCoreManager *)manager information:(SMInfo *)info
 {
-	if (info.kind == TCInfoInfo && (info.code == TCCoreEventBuddyBlocked || info.code == TCCoreEventBuddyUnblocked))
+	if (info.kind == SMInfoInfo && (info.code == TCCoreEventBuddyBlocked || info.code == TCCoreEventBuddyUnblocked))
 	{
 		TCBuddy *buddy = info.context;
 		BOOL	blocked = buddy.blocked;

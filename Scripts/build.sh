@@ -53,7 +53,9 @@ fi
 # Copy sources.
 echo '[+] Copy sources to temporary DMG.'
 
+/bin/cp -R "${base}/Externals" "${volume_path}/Externals"
 /bin/cp -R "${base}/TorChat" "${volume_path}/TorChat"
+/bin/cp -R "${base}/TorChat.xcworkspace" "${volume_path}/TorChat.xcworkspace"
 
 if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't copy sources."
@@ -69,18 +71,17 @@ cd "${base}"
 git rev-parse --short HEAD >  "${volume_path}/TorChat/git_hash.txt"
 
 if [ $? -ne 0 ]; then
-	echo "[-] Error: Can't get git hash."
-	/usr/bin/hdiutil detach "${volume_path}" 1>/dev/null 2>/dev/null
-	exit 1	
+	echo "[#] Warning: Can't get git hash."
+	rm "${volume_path}/TorChat/git_hash.txt"
 fi
 
 
 # Compile.
 echo '[+] Compile sources.'
 
-cd "${volume_path}/TorChat"
+cd "${volume_path}"
 
-xcodebuild archive -project 'TorChat.xcodeproj' -scheme 'TorChat' -archivePath "${volume_path}/torchat.xcarchive" 1> "${volume_path}/build.txt" 2> "${volume_path}/build_err.txt"
+xcodebuild archive -workspace 'TorChat.xcworkspace' -scheme 'TorChat' -archivePath "${volume_path}/torchat.xcarchive" 1> "${volume_path}/build.txt" 2> "${volume_path}/build_err.txt"
 
 if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't build sources."

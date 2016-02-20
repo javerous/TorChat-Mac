@@ -40,7 +40,7 @@
 @class TCLogsManager;
 @class TCLogEntry;
 
-@class TCInfo;
+@class SMInfo;
 
 
 
@@ -81,10 +81,10 @@ typedef enum
 
 // -- Logs --
 - (void)addBuddyLogWithAddress:(NSString *)address name:(NSString *)name kind:(TCLogKind)kind message:(NSString *)message, ...;
-- (void)addBuddyLogWithAddress:(NSString *)address name:(NSString *)name info:(TCInfo *)info;
+- (void)addBuddyLogWithAddress:(NSString *)address name:(NSString *)name info:(SMInfo *)info;
 
 - (void)addGlobalLogWithKind:(TCLogKind)kind message:(NSString *)message, ...;
-- (void)addGlobalLogWithInfo:(TCInfo *)info;
+- (void)addGlobalLogWithInfo:(SMInfo *)info;
 
 
 // -- Properties --

@@ -46,7 +46,7 @@
 
 @interface TCPanel_Advanced ()
 {
-	__weak id <TCAssistantProxy> _proxy;
+	__weak id <SMAssistantProxy> _proxy;
 	
 	TCConfigPlist *_config;
 
@@ -77,11 +77,11 @@
 }
 
 /*
-** TCPanel_Advanced - TCAssistantPanel
+** TCPanel_Advanced - SMAssistantPanel
 */
-#pragma mark - TCPanel_Advanced - TCAssistantPanel
+#pragma mark - TCPanel_Advanced - SMAssistantPanel
 
-+ (id <TCAssistantPanel>)panelWithProxy:(id <TCAssistantProxy>)proxy
++ (id <SMAssistantPanel>)panelWithProxy:(id <SMAssistantProxy>)proxy
 {
 	TCPanel_Advanced *panel = [[TCPanel_Advanced alloc] initWithNibName:@"AssistantPanel_Advanced" bundle:nil];
 	
@@ -116,7 +116,7 @@
 - (void)showPanel
 {
 	// Configure assistant.
-	id <TCAssistantProxy> proxy = _proxy;
+	id <SMAssistantProxy> proxy = _proxy;
 	
 	[proxy setIsLastPanel:YES];
 	

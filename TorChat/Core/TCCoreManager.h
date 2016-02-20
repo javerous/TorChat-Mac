@@ -20,9 +20,9 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+@import Foundation;
+@import SMFoundation;
 
-#import "TCInfo.h"
 #import "TCConfig.h"
 #import "TCBuddy.h"
 
@@ -77,7 +77,7 @@ typedef enum
 	TCCoreErrorServAccept,
 	TCCoreErrorServAcceptAsync,
 	
-	TCCoreErrorSocket,			// info: TCInfo (TCSocketInfoDomain)
+	TCCoreErrorSocket,			// info: SMInfo (SMSocketInfoDomain)
 	TCCoreErrorSocketCreate,
 	TCCoreErrorSocketOption,
 	TCCoreErrorSocketBind,
@@ -112,7 +112,7 @@ typedef enum
 // -- Observer --
 @protocol TCCoreManagerObserver <NSObject>
 
-- (void)torchatManager:(TCCoreManager *)manager information:(TCInfo *)info;
+- (void)torchatManager:(TCCoreManager *)manager information:(SMInfo *)info;
 
 @end
 

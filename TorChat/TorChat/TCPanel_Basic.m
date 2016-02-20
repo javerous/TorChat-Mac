@@ -20,17 +20,17 @@
  *
  */
 
+@import SMFoundation;
+@import SMTor;
+
 #import "TCPanel_Basic.h"
 
 #import "TCLogsManager.h"
 #import "TCConfigPlist.h"
-#import "TCTorManager.h"
 
 #import "TCLocationViewController.h"
 
 #import "TCDebugLog.h"
-
-#import "TCInfo.h"
 
 
 /*
@@ -49,10 +49,10 @@
 
 @interface TCPanel_Basic ()
 {
-	__weak id <TCAssistantProxy> _proxy;
+	__weak id <SMAssistantProxy> _proxy;
 
 	TCConfigPlist	*_config;
-	TCTorManager	*_tor;
+	SMTorManager	*_tor;
 	
 	TCLocationViewController *_torDownloadsLocation;
 }
@@ -88,11 +88,11 @@
 
 
 /*
-** TCPanel_Basic - TCAssistantPanel
+** TCPanel_Basic - SMAssistantPanel
 */
-#pragma mark - TCPanel_Basic - TCAssistantPanel
+#pragma mark - TCPanel_Basic - SMAssistantPanel
 
-+ (id <TCAssistantPanel>)panelWithProxy:(id <TCAssistantProxy>)proxy
++ (id <SMAssistantPanel>)panelWithProxy:(id <SMAssistantProxy>)proxy
 {
 	TCPanel_Basic *panel = [[TCPanel_Basic alloc] initWithNibName:@"AssistantPanel_Basic" bundle:nil];
 	
@@ -118,7 +118,7 @@
 
 - (void)showPanel
 {
-	id <TCAssistantProxy> proxy = _proxy;
+	id <SMAssistantProxy> proxy = _proxy;
 
 	[proxy setIsLastPanel:YES];
 	[proxy setDisableContinue:YES]; // Wait for tor
@@ -166,29 +166,34 @@
 	// Create tor manager & start it.
 	__weak NSTextField *weakIMAddressField = _imAddressField;
 
-	_tor = [[TCTorManager alloc] initWithConfiguration:_config];
+	SMTorConfiguration *torConfig = [[SMTorConfiguration alloc] init];
+	
+#warning Fill torConfig with _config.
+	
+	_tor = [[SMTorManager alloc] initWithConfiguration:torConfig];
 	
 	[_loadingIndicator startAnimation:self];
 
-	[_tor startWithHandler:^(TCInfo *info) {
+	[_tor startWithHandler:^(SMInfo *info) {
 		
 		NSTextField *imAddressField = weakIMAddressField;
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
 
-			if (info.kind == TCInfoError)
+			if (info.kind == SMInfoError)
 			{
 				[_loadingIndicator stopAnimation:self];
 				[proxy setDisableContinue:YES];
 			}
-			else if (info.kind == TCInfoInfo)
+			else if (info.kind == SMInfoInfo)
 			{
-				if (info.code == TCTorManagerEventStartHostname)
+				if (info.code == SMTorManagerEventStartHostname)
 				{
 					[imAddressField setStringValue:info.context];
+					[_config setSelfAddress:info.context];
 					[_tor stopWithCompletionHandler:nil];
 				}
-				else if (info.code == TCTorManagerEventStartDone)
+				else if (info.code == SMTorManagerEventStartDone)
 				{
 					[_tor stopWithCompletionHandler:^{
 						dispatch_async(dispatch_get_main_queue(), ^{
@@ -198,9 +203,9 @@
 					}];
 				}
 			}
-			else if (info.kind == TCInfoWarning)
+			else if (info.kind == SMInfoWarning)
 			{
-				if (info.code == TCTorManagerWarningStartCanceled)
+				if (info.code == SMTorManagerWarningStartCanceled)
 				{
 					[_loadingIndicator stopAnimation:self];
 

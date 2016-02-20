@@ -32,7 +32,7 @@
 
 @interface TCPanel_Mode ()
 {
-    __weak id <TCAssistantProxy> _proxy;
+    __weak id <SMAssistantProxy> _proxy;
 }
 
 @property (strong, nonatomic) IBOutlet NSMatrix *buttonMatrix;
@@ -63,11 +63,11 @@
 
 
 /*
-** TCPanel_Mode - TCAssistantPanel
+** TCPanel_Mode - SMAssistantPanel
 */
-#pragma mark - TCPanel_Mode - TCAssistantPanel
+#pragma mark - TCPanel_Mode - SMAssistantPanel
 
-+ (id <TCAssistantPanel>)panelWithProxy:(id <TCAssistantProxy>)proxy
++ (id <SMAssistantPanel>)panelWithProxy:(id <SMAssistantProxy>)proxy
 {
 	TCPanel_Mode *panel = [[TCPanel_Mode alloc] initWithNibName:@"AssistantPanel_Mode" bundle:nil];
 	
@@ -93,7 +93,7 @@
 
 - (void)showPanel;
 {
-	id <TCAssistantProxy> proxy = _proxy;
+	id <SMAssistantProxy> proxy = _proxy;
 
 	[proxy setIsLastPanel:NO];
 	[proxy setNextPanelID:@"ac_basic"];
@@ -107,7 +107,7 @@
 
 - (IBAction)selectChange:(id)sender
 {
-	id <TCAssistantProxy> proxy = _proxy;
+	id <SMAssistantProxy> proxy = _proxy;
 
 	NSMatrix	*mtr = sender;
 	NSCell		*obj = [mtr selectedCell];

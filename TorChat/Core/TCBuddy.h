@@ -40,8 +40,8 @@
 #pragma mark - Forward
 
 @class TCBuddy;
-@class TCSocket;
-@class TCInfo;
+@class SMSocket;
+@class SMInfo;
 @class TCImage;
 
 
@@ -96,7 +96,7 @@ typedef enum
 	TCBuddyErrorResolveTor,
 	TCBuddyErrorConnectTor,
 	
-	TCBuddyErrorSocket,				// info: TCInfo (TCSocketInfoDomain)
+	TCBuddyErrorSocket,				// info: SMInfo (SMSocketInfoDomain)
 	
 	TCBuddyErrorSocks,				// context: NSNumber (<socks_error>)
 	TCBuddyErrorSocksRequest,
@@ -109,7 +109,7 @@ typedef enum
 	TCBuddyErrorFileOffline,		// context: NSString (<file_path>)
 	TCBuddyErrorFileBlocked,		// context: NSString (<file_path>)
 	
-	TCBuddyErrorParse				// info: TCInfo (TCSocketInfoDomain)
+	TCBuddyErrorParse				// info: SMInfo (SMSocketInfoDomain)
 } TCBuddyError;
 
 // == File ==
@@ -135,7 +135,7 @@ typedef enum
 
 @protocol TCBuddyObserver <NSObject>
 
-- (void)buddy:(TCBuddy *)buddy information:(TCInfo *)info;
+- (void)buddy:(TCBuddy *)buddy information:(SMInfo *)info;
 
 @end
 
@@ -191,7 +191,7 @@ typedef enum
 
 // -- Action --
 - (void)startHandshake:(NSString *)remoteRandom status:(TCStatus)status avatar:(TCImage *)avatar name:(NSString *)name text:(NSString *)text;
-- (void)setInputConnection:(TCSocket *)sock;
+- (void)setInputConnection:(SMSocket *)sock;
 
 // -- Content --
 - (NSString *)peerClient;
