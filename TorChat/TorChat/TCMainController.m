@@ -281,7 +281,7 @@
 			}
 			
 			// Launch update check.
-			[_torManager checkForUpdateWithCompletionHandler:^(SMInfo *updateInfo) {
+			[_torManager checkForUpdateWithInfoHandler:^(SMInfo *updateInfo) {
 				
 				// > Log check.
 				[[TCLogsManager sharedManager] addGlobalLogWithInfo:updateInfo];
@@ -293,7 +293,7 @@
 					NSString		*oldVersion = context[@"old_version"];
 					NSString		*newVersion = context[@"new_version"];
 					
-					[[SMTorUpdateWindowController sharedController] handleUpdateFromVersion:oldVersion toVersion:newVersion torManager:_torManager logHandler:^(SMInfo * _Nonnull info) {
+					[[SMTorUpdateWindowController sharedController] handleUpdateFromVersion:oldVersion toVersion:newVersion torManager:_torManager infoHandler:^(SMInfo * _Nonnull info) {
 						[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
 					}];
 				}
@@ -390,7 +390,7 @@
 				
 				SMTorConfiguration *torConfig = [[SMTorConfiguration alloc] initWithTorChatConfiguration:_configuration];
 				
-				[_torManager loadConfiguration:torConfig];
+				[_torManager loadConfiguration:torConfig infoHandler:nil];
 			});
 			
 			dispatch_resume(_torChangesTimer);
