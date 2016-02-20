@@ -98,6 +98,11 @@
 "location_reset" = "Reset";
 
 
+/* Tor */
+"tor_out_log" = "Tor: %@";
+"tor_error_log" = "Tor-Error: %@";
+
+
 /* Core */
 // General
 "core_mng_myself" = "myself";
@@ -139,13 +144,6 @@
 "core_bd_error_filereceive" = "Can't open file to receive incoming file.";
 "core_bd_error_file_offline" = "Can't send a file to an offline buddy.";
 "core_bd_error_file_blocked" = "Can't send a file to an blocked buddy.";
-
-// TCSocketInfoDomain
-"core_socket_read_error" = "Socket read error.";
-"core_socket_read_closed" = "Socket was closed by remote peer on read.";
-"core_socker_read_full" = "Socket buffer is full. Unable to buffer more data.";
-"core_socket_write_error" = "Socket write error.";
-"core_socket_write_closed" = "Socket was closed by remote peer on write.";
 
 // TCConnectionInfoDomain
 "core_cnx_event_started" = "Connection controller was started.";

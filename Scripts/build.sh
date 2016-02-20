@@ -36,7 +36,7 @@ fi
 # Mount temporary DMG
 echo '[+] Attach temporary DMG.'
 
-/usr/bin/hdiutil attach "${dmg_path}" -plist > /tmp/torchat_output.plist
+/usr/bin/hdiutil attach "${dmg_path}" -nobrowse -plist > /tmp/torchat_output.plist
 
 if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't attach temporary DMG."

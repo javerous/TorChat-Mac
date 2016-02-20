@@ -243,6 +243,11 @@ static char gLocalQueueContext;
 */
 #pragma mark - TCBuddy - Instance
 
++ (void)initialize
+{
+	[self registerInfoDescriptors];
+}
+
 - (id)initWithConfiguration:(id <TCConfig>)configuration alias:(NSString *)alias address:(NSString *)address notes:(NSString *)notes
 {
 	self = [super init];
@@ -2085,6 +2090,368 @@ static char gLocalQueueContext;
 		res = TCStatusOffline;
 	
 	return @(res);
+}
+
+
+
+/*
+** TCBuddy - Infos
+*/
+#pragma mark - TCBuddy - Infos
+
++ (void)registerInfoDescriptors
+{
+	NSMutableDictionary *descriptors = [[NSMutableDictionary alloc] init];
+	
+	// == TCBuddyInfoDomain ==
+	descriptors[TCBuddyInfoDomain] = ^ NSDictionary * (SMInfoKind kind, int code) {
+		
+		switch (kind)
+		{
+			case SMInfoInfo:
+			{
+				switch ((TCBuddyEvent)code)
+				{
+					case TCBuddyEventConnectedTor:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyEventConnectedTor",
+							SMInfoTextKey : @"core_bd_event_tor_connected",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyEventConnectedBuddy:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyEventConnectedBuddy",
+							SMInfoTextKey : @"core_bd_event_connected",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyEventDisconnected:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyEventDisconnected",
+							SMInfoTextKey : @"core_bd_event_stopped",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyEventIdentified:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyEventIdentified",
+							SMInfoTextKey : @"core_bd_event_identified",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyEventStatus:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyEventStatus",
+							SMInfoDynTextKey : ^ NSString *(NSNumber *context) {
+									 
+								NSString *status = @"-";
+									 
+								switch ([context intValue])
+								{
+									case TCStatusOffline:	status = NSLocalizedString(@"bd_status_offline", @""); break;
+									case TCStatusAvailable: status = NSLocalizedString(@"bd_status_available", @""); break;
+									case TCStatusAway:		status = NSLocalizedString(@"bd_status_away", @""); break;
+									case TCStatusXA:		status = NSLocalizedString(@"bd_status_xa", @""); break;
+								}
+									 
+								return [NSString stringWithFormat:NSLocalizedString(@"core_bd_event_status_changed", @""), status];
+							},
+							SMInfoLocalizableKey : @NO,
+						};
+					}
+						
+					case TCBuddyEventMessage:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyEventMessage",
+							SMInfoTextKey : @"core_bd_event_new_message",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyEventAlias:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyEventAlias",
+							SMInfoTextKey : @"core_bd_event_alias_changed",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyEventNotes:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyEventNotes",
+							SMInfoTextKey : @"core_bd_event_notes_changed",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyEventVersion:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyEventVersion",
+							SMInfoTextKey : @"core_bd_event_new_version",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyEventClient:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyEventClient",
+							SMInfoTextKey : @"core_bd_event_new_client",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyEventFileSendStart:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyEventFileSendStart",
+							SMInfoTextKey : @"core_bd_event_file_send_start",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyEventFileSendRunning:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyEventFileSendRunning",
+							SMInfoTextKey : @"core_bd_event_file_chunk_send",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyEventFileSendFinish:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyEventFileSendFinish",
+							SMInfoTextKey : @"core_bd_event_file_send_finish",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyEventFileSendStopped:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyEventFileSendStopped",
+							SMInfoTextKey : @"core_bd_event_file_send_canceled",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyEventFileReceiveStart:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyEventFileReceiveStart",
+							SMInfoTextKey : @"core_bd_event_file_receive_start",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyEventFileReceiveRunning:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyEventFileReceiveRunning",
+							SMInfoTextKey : @"core_bd_event_file_chunk_receive",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyEventFileReceiveFinish:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyEventFileReceiveFinish",
+							SMInfoTextKey : @"core_bd_event_file_receive_finish",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyEventFileReceiveStopped:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyEventFileReceiveStopped",
+							SMInfoTextKey : @"core_bd_event_file_receive_stopped",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyEventProfileText:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyEventProfileText",
+							SMInfoTextKey : @"core_bd_event_new_profile_text",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyEventProfileName:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyEventProfileName",
+							SMInfoTextKey : @"core_bd_event_new_profile_name",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyEventProfileAvatar:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyEventProfileAvatar",
+							SMInfoTextKey : @"core_bd_event_new_profile_avatar",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+				}
+				break;
+			}
+				
+			case SMInfoWarning:
+			{
+				break;
+			}
+				
+			case SMInfoError:
+			{
+				switch ((TCBuddyError)code)
+				{
+					case TCBuddyErrorResolveTor:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyErrorResolveTor",
+							SMInfoTextKey : @"core_bd_error_tor_resolve",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyErrorConnectTor:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyErrorConnectTor",
+							SMInfoTextKey : @"core_bd_error_tor_connect",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyErrorSocket:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyErrorSocket",
+							SMInfoTextKey : @"core_bd_error_socket",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyErrorSocks:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyErrorSocks",
+							SMInfoDynTextKey : ^ NSString *(NSNumber *context) {
+								
+								if ([context intValue] == 91)
+									return @"core_bd_error_socks_91";
+								else if ([context intValue] == 92)
+									return @"core_bd_error_socks_92";
+								else if ([context intValue] == 93)
+									return @"core_bd_error_socks_93";
+								else
+									return @"core_bd_error_socks_unknown";
+							},
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyErrorSocksRequest:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyErrorSocksRequest",
+							SMInfoTextKey : @"core_bd_error_socks_request",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyErrorMessageOffline:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyErrorMessageOffline",
+							SMInfoTextKey : @"core_bd_error_message_offline",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyErrorMessageBlocked:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyErrorMessageBlocked",
+							SMInfoTextKey : @"core_bd_error_message_blocked",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyErrorSendFile:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyErrorSendFile",
+							SMInfoTextKey : @"core_bd_error_filesend",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyErrorReceiveFile:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyErrorReceiveFile",
+							SMInfoTextKey : @"core_bd_error_filereceive",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyErrorFileOffline:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyErrorFileOffline",
+							SMInfoTextKey : @"core_bd_error_file_offline",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyErrorFileBlocked:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyErrorFileBlocked",
+							SMInfoTextKey : @"core_bd_error_file_blocked",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCBuddyErrorParse:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyErrorParse",
+						};
+					}
+				}
+				break;
+			}
+		}
+		
+		return nil;
+	};
+	
+	[SMInfo registerDomainsDescriptors:descriptors localizer:^NSString * _Nonnull(NSString * _Nonnull token) {
+		return NSLocalizedString(token, @"");
+	}];
 }
 
 @end

@@ -36,6 +36,7 @@
 #import "TCPanel_Basic.h"
 
 #import "TCCoreManager.h"
+#import "SMTorConfiguration+TCConfig.h"
 
 
 /*
@@ -53,6 +54,13 @@
 	SMAssistantController	*_assistant;
 	
 	BOOL _running;
+	
+	// Path monitor.
+	id	_torIdentityPathObserver;
+	id	_torBinPathObserver;
+	id	_torDataPathObserver;
+	
+	dispatch_source_t _torChangesTimer;
 }
 
 
@@ -202,10 +210,7 @@
 			}
 			
 			// Create tor manager.
-			SMTorConfiguration *torConfig = [[SMTorConfiguration alloc] init];
-			
-#warning FIXME : get info from _configuration and fill torConfig + monitor path change.
-#warning FIXME: migrate localization descriptors
+			SMTorConfiguration *torConfig = [[SMTorConfiguration alloc] initWithTorChatConfiguration:_configuration];
 			
 			_torManager = [[SMTorManager alloc] initWithConfiguration:torConfig];
 			
@@ -261,6 +266,9 @@
 					}
 				}
 			}];
+			
+			// Monitor paths changes.
+			[self monitorPathsChanges];
 		}];
 		
 		// -- Update Tor if necessary --
@@ -339,6 +347,57 @@
 		
 		[[TCBuddiesWindowController sharedController] stop];
 		[[TCBuddiesWindowController sharedController] startWithConfiguration:_configuration coreManager:_core];
+	});
+}
+
+
+
+/*
+** TCMainController - Helpers
+*/
+#pragma mark - TCMainController - Helpers
+
+- (void)monitorPathsChanges
+{
+	__weak TCMainController *weakSelf = self;
+
+	_torIdentityPathObserver = [_configuration addPathObserverForComponent:TCConfigPathComponentTorIdentity queue:nil usingBlock:^{
+		[weakSelf handleTorPathChange];
+	}];
+	
+	_torBinPathObserver = [_configuration addPathObserverForComponent:TCConfigPathComponentTorBinary queue:nil usingBlock:^{
+		[weakSelf handleTorPathChange];
+	}];
+	
+	_torDataPathObserver = [_configuration addPathObserverForComponent:TCConfigPathComponentTorData queue:nil usingBlock:^{
+		[weakSelf handleTorPathChange];
+	}];
+}
+
+- (void)handleTorPathChange
+{
+	dispatch_async(_localQueue, ^{
+		
+		// Lazily create timer.
+		if (!_torChangesTimer)
+		{
+			_torChangesTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _localQueue);
+			
+			dispatch_source_set_timer(_torChangesTimer, DISPATCH_TIME_FOREVER, 0, 0);
+			
+			dispatch_source_set_event_handler(_torChangesTimer, ^{
+				dispatch_source_set_timer(_torChangesTimer, DISPATCH_TIME_FOREVER, 0, 0);
+				
+				SMTorConfiguration *torConfig = [[SMTorConfiguration alloc] initWithTorChatConfiguration:_configuration];
+				
+				[_torManager loadConfiguration:torConfig];
+			});
+			
+			dispatch_resume(_torChangesTimer);
+		}
+		
+		// Schedule a change.
+		dispatch_source_set_timer(_torChangesTimer, dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), 0, 1 * NSEC_PER_SEC);
 	});
 }
 

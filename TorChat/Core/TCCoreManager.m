@@ -115,6 +115,11 @@
 */
 #pragma mark - TCCoreManager - Instance
 
++ (void)initialize
+{
+	[self registerInfoDescriptors];
+}
+
 - (id)initWithConfiguration:(id <TCConfig>)config
 {
 	self = [super init];
@@ -935,6 +940,382 @@
 			[observer torchatManager:self information:info];
 		});
 	}
+}
+
+
+
+/*
+** TCCoreManager - Infos
+*/
+#pragma mark - TCCoreManager - Infos
+
++ (void)registerInfoDescriptors
+{
+	NSMutableDictionary *descriptors = [[NSMutableDictionary alloc] init];
+	
+	// == TCCoreManagerInfoDomain ==
+	descriptors[TCCoreManagerInfoDomain] = ^ NSDictionary * (SMInfoKind kind, int code) {
+		
+		switch (kind) {
+			case SMInfoInfo:
+			{
+				switch ((TCCoreEvent)code)
+				{
+					case TCCoreEventStarted:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreEventStarted",
+							SMInfoTextKey : @"core_mng_event_started",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCCoreEventStopped:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreEventStopped",
+							SMInfoTextKey : @"core_mng_event_stopped",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCCoreEventStatus:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreEventStatus",
+							SMInfoDynTextKey : ^ NSString *(NSNumber *context) {
+								
+								NSString *status = @"-";
+								
+								switch ([context intValue])
+								{
+									case TCStatusOffline:	status = NSLocalizedString(@"bd_status_offline", @""); break;
+									case TCStatusAvailable: status = NSLocalizedString(@"bd_status_available", @""); break;
+									case TCStatusAway:		status = NSLocalizedString(@"bd_status_away", @""); break;
+									case TCStatusXA:		status = NSLocalizedString(@"bd_status_xa", @""); break;
+								}
+								
+								return [NSString stringWithFormat:NSLocalizedString(@"core_mng_event_status", @""), status];
+							},
+							SMInfoLocalizableKey : @NO,
+						};
+					}
+						
+					case TCCoreEventProfileAvatar:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreEventProfileAvatar",
+							SMInfoTextKey : @"core_mng_event_profile_avatar",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCCoreEventProfileName:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreEventProfileName",
+							SMInfoTextKey : @"core_mng_event_profile_name",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCCoreEventProfileText:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreEventProfileText",
+							SMInfoTextKey : @"core_mng_event_profile_text",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCCoreEventBuddyNew:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreEventBuddyNew",
+							SMInfoDynTextKey : ^ NSString *(TCBuddy *context) {
+								return [NSString stringWithFormat:NSLocalizedString(@"core_mng_event_new_buddy", @""), context.address];
+							},
+							SMInfoLocalizableKey : @NO,
+						};
+					}
+						
+					case TCCoreEventBuddyRemove:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreEventBuddyRemove",
+							SMInfoDynTextKey : ^ NSString *(TCBuddy *context) {
+								return [NSString stringWithFormat:NSLocalizedString(@"core_mng_event_remove_buddy", @""), context.address];
+							},
+							SMInfoLocalizableKey : @NO,
+						};
+					}
+						
+					case TCCoreEventBuddyBlocked:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreEventBuddyBlocked",
+							SMInfoDynTextKey : ^ NSString *(TCBuddy *context) {
+								return [NSString stringWithFormat:NSLocalizedString(@"core_mng_event_blocked_buddy", @""), context.address];
+							},
+							SMInfoLocalizableKey : @NO,
+						};
+					}
+						
+					case TCCoreEventBuddyUnblocked:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreEventBuddyUnblocked",
+							SMInfoDynTextKey : ^ NSString *(TCBuddy *context) {
+								return [NSString stringWithFormat:NSLocalizedString(@"core_mng_event_unblock_buddy", @""), context.address];
+							},
+							SMInfoLocalizableKey : @NO,
+						};
+					}
+						
+					case TCCoreEventClientStarted:
+						return nil; // can't happen in this domain.
+						
+					case TCCoreEventClientStopped:
+						return nil; // can't happen in this domain.
+				}
+				
+				break;
+			}
+				
+			case SMInfoWarning:
+			{
+				break;
+			}
+				
+			case SMInfoError:
+			{
+				switch ((TCCoreError)code)
+				{
+					case TCCoreErrorSocket:
+						return nil; // can't happen in this domain.
+						
+					case TCCoreErrorSocketCreate:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorSocketCreate",
+							SMInfoTextKey : @"core_mng_error_socket",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCCoreErrorSocketOption:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorSocketOption",
+							SMInfoTextKey : @"core_mng_error_setsockopt",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCCoreErrorSocketBind:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorSocketBind",
+							SMInfoTextKey : @"core_mng_error_bind",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCCoreErrorSocketListen:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorSocketListen",
+							SMInfoTextKey : @"core_mng_error_listen",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCCoreErrorServAccept:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorServAccept",
+							SMInfoTextKey : @"core_mng_error_accept",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCCoreErrorServAcceptAsync:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorServAcceptAsync",
+							SMInfoTextKey : @"core_mng_error_async",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCCoreErrorClientAlreadyPinged:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorClientAlreadyPinged",
+							SMInfoTextKey : @"core_cnx_error_already_pinged",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCCoreErrorClientMasquerade:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorClientMasquerade",
+							SMInfoTextKey : @"core_cnx_error_masquerade",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCCoreErrorClientAddBuddy:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorClientAddBuddy",
+							SMInfoTextKey : @"core_cnx_error_add_buddy",
+							SMInfoLocalizableKey : @YES,
+							};
+					}
+						
+					case TCCoreErrorClientCmdUnknownCommand:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorClientCmdUnknownCommand",
+						};
+					}
+						
+					case TCCoreErrorClientCmdPing:
+						return nil; // can't happen in this domain.
+						
+					case TCCoreErrorClientCmdPong:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorClientCmdPong",
+							SMInfoTextKey : @"core_cnx_error_pong",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case TCCoreErrorClientCmdStatus:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorClientCmdStatus",
+						};
+					}
+						
+					case TCCoreErrorClientCmdVersion:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorClientCmdVersion",
+						};
+					}
+						
+					case TCCoreErrorClientCmdClient:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorClientCmdClient",
+						};
+					}
+						
+					case TCCoreErrorClientCmdProfileText:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorClientCmdProfileText",
+						};
+					}
+						
+					case TCCoreErrorClientCmdProfileName:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorClientCmdProfileName",
+						};
+					}
+						
+					case TCCoreErrorClientCmdProfileAvatar:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorClientCmdProfileAvatar",
+						};
+					}
+						
+					case TCCoreErrorClientCmdProfileAvatarAlpha:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorClientCmdProfileAvatarAlpha",
+						};
+					}
+						
+					case TCCoreErrorClientCmdMessage:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorClientCmdMessage",
+						};
+					}
+						
+					case TCCoreErrorClientCmdAddMe:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorClientCmdAddMe",
+						};
+					}
+						
+					case TCCoreErrorClientCmdRemoveMe:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorClientCmdRemoveMe",
+						};
+					}
+						
+					case TCCoreErrorClientCmdFileName:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorClientCmdFileName",
+						};
+					}
+						
+					case TCCoreErrorClientCmdFileData:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorClientCmdFileData",
+						};
+					}
+						
+					case TCCoreErrorClientCmdFileDataOk:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorClientCmdFileDataOk",
+						};
+					}
+						
+					case TCCoreErrorClientCmdFileDataError:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorClientCmdFileDataError",
+						};
+					}
+						
+					case TCCoreErrorClientCmdFileStopSending:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorClientCmdFileStopSending",
+						};
+					}
+						
+					case TCCoreErrorClientCmdFileStopReceiving:
+					{
+						return @{
+							SMInfoNameKey : @"TCCoreErrorClientCmdFileStopReceiving",
+						};
+					}
+				}
+				break;
+			}
+		}
+		
+		return nil;
+	};
+	
+	[SMInfo registerDomainsDescriptors:descriptors localizer:^NSString * _Nonnull(NSString * _Nonnull token) {
+		return NSLocalizedString(token, @"");
+	}];
 }
 
 @end

@@ -98,32 +98,20 @@ typedef enum
 @protocol TCConfig <NSObject>
 
 // -- Tor --
-- (NSString *)torAddress;
-- (void)setTorAddress:(NSString *)address;
-
-- (uint16_t)torPort;
-- (void)setTorPort:(uint16_t) port;
+@property NSString *torAddress;
+@property uint16_t torPort;
 
 // -- TorChat --
-- (NSString *)selfAddress;
-- (void)setSelfAddress:(NSString *)address;
-
-- (uint16_t)clientPort;
-- (void)setClientPort:(uint16_t)port;
+@property NSString *selfAddress;
+@property uint16_t clientPort;
 
 // -- Mode --
-- (TCConfigMode)mode;
-- (void)setMode:(TCConfigMode)mode;
+@property TCConfigMode mode;
 
 // -- Profile --
-- (NSString *)profileName;
-- (void)setProfileName:(NSString *)name;
-
-- (NSString *)profileText;
-- (void)setProfileText:(NSString *)text;
-
-- (TCImage *)profileAvatar;
-- (void)setProfileAvatar:(TCImage *)picture;
+@property NSString	*profileName;
+@property NSString	*profileText;
+@property TCImage	*profileAvatar;
 
 // -- Buddies --
 - (NSArray *)buddies; // Array of dictionary.
