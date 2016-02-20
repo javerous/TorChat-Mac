@@ -205,7 +205,8 @@
 			SMTorConfiguration *torConfig = [[SMTorConfiguration alloc] init];
 			
 #warning FIXME : get info from _configuration and fill torConfig + monitor path change.
-
+#warning FIXME: migrate localization descriptors
+			
 			_torManager = [[SMTorManager alloc] initWithConfiguration:torConfig];
 			
 			_torManager.logHandler = ^(SMTorManagerLogKind kind, NSString *log) {
