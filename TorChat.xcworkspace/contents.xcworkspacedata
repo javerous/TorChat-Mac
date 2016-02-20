@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:TorChat/TorChat.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Externals/SMTor/SMTor/SMTor.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Externals/SMFoundation/SMFoundation.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Externals/SMAssistant/SMAssistant.xcodeproj">
+   </FileRef>
+</Workspace>

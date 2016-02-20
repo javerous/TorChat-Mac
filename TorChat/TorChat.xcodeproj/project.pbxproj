@@ -40,6 +40,7 @@
 		E8455D3D17A425F00046307B /* TCValue.m in Sources */ = {isa = PBXBuildFile; fileRef = E8455D3C17A425F00046307B /* TCValue.m */; };
 		E8455D4617A4386C0046307B /* NSData+TCTools.m in Sources */ = {isa = PBXBuildFile; fileRef = E8455D4517A438660046307B /* NSData+TCTools.m */; };
 		E849BDB11A66EEA60040E294 /* PrefView_General.xib in Resources */ = {isa = PBXBuildFile; fileRef = E849BDAF1A66EEA60040E294 /* PrefView_General.xib */; };
+		E84CBD3A1C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = E84CBD391C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.m */; };
 		E852235217B504CA00C6F585 /* TCChatCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E852235117B504CA00C6F585 /* TCChatCellView.m */; };
 		E85923F7120A9E060035C420 /* FilesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E85923F5120A9E060035C420 /* FilesWindow.xib */; };
 		E8643D731A66D9C100B8C55F /* TCPrefView_Buddies.m in Sources */ = {isa = PBXBuildFile; fileRef = E8643D721A66D9C100B8C55F /* TCPrefView_Buddies.m */; };
@@ -149,6 +150,8 @@
 		E849BDB21A66EEBC0040E294 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/PrefView_General.xib; sourceTree = "<group>"; };
 		E849BDB41A66EF110040E294 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/PrefView_General.strings; sourceTree = "<group>"; };
 		E849BDB61A66EF1B0040E294 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/PrefView_General.strings; sourceTree = "<group>"; };
+		E84CBD381C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SMTorConfiguration+TCConfig.h"; sourceTree = "<group>"; };
+		E84CBD391C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SMTorConfiguration+TCConfig.m"; sourceTree = "<group>"; };
 		E84FE49617B06357006E2D12 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/MainMenu.strings; sourceTree = "<group>"; };
 		E84FE49717B06375006E2D12 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/ChatWindow.strings; sourceTree = "<group>"; };
 		E84FE49817B0637C006E2D12 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/ChatView.strings; sourceTree = "<group>"; };
@@ -686,6 +689,8 @@
 				E8742545199B6A61002A34DD /* NSString+TCXMLExtension.m */,
 				E809B1461859C5BC001664E1 /* NSImage+TCExtension.h */,
 				E809B1471859C5BC001664E1 /* NSImage+TCExtension.m */,
+				E84CBD381C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.h */,
+				E84CBD391C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -868,6 +873,7 @@
 				E80A357F1A67F61800896518 /* TCLocationViewController.m in Sources */,
 				E8643D791A66DBF900B8C55F /* TCPrefView_General.m in Sources */,
 				E852235217B504CA00C6F585 /* TCChatCellView.m in Sources */,
+				E84CBD3A1C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.m in Sources */,
 				E8742543199B682F002A34DD /* NSString+TCPathExtension.m in Sources */,
 				E809B1481859C5BC001664E1 /* NSImage+TCExtension.m in Sources */,
 				E8742546199B6A61002A34DD /* NSString+TCXMLExtension.m in Sources */,

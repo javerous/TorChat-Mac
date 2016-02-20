@@ -1,0 +1,44 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "525D53C7DA67D2329503F1145E04406CB2FBC1EC",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "C72EAD2DB71AA579DD81C848C61935E78ADEC157" : 0,
+    "0BB4D438F47EB92D7CC2A9BCFFCE5033357F65C6" : 0,
+    "756D6A6E9ABC242A5612C2C12C4467564F55DE1B" : 0,
+    "525D53C7DA67D2329503F1145E04406CB2FBC1EC" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "091C20A9-B007-44A8-85A3-10D9BE331EF4",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "C72EAD2DB71AA579DD81C848C61935E78ADEC157" : "externals\/Externals\/SMFoundation\/",
+    "0BB4D438F47EB92D7CC2A9BCFFCE5033357F65C6" : "externals\/Externals\/SMTor\/",
+    "756D6A6E9ABC242A5612C2C12C4467564F55DE1B" : "externals\/Externals\/SMAssistant\/",
+    "525D53C7DA67D2329503F1145E04406CB2FBC1EC" : "externals\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "TorChat",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "TorChat.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:javerous\/framework-tor.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "0BB4D438F47EB92D7CC2A9BCFFCE5033357F65C6"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:javerous\/TorChat-Mac.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "525D53C7DA67D2329503F1145E04406CB2FBC1EC"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:javerous\/framework-assistant.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "756D6A6E9ABC242A5612C2C12C4467564F55DE1B"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:javerous\/framework-foundation.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "C72EAD2DB71AA579DD81C848C61935E78ADEC157"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "525D53C7DA67D2329503F1145E04406CB2FBC1EC",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "525D53C7DA67D2329503F1145E04406CB2FBC1EC" : 0,
+    "0BB4D438F47EB92D7CC2A9BCFFCE5033357F65C6" : 0,
+    "C72EAD2DB71AA579DD81C848C61935E78ADEC157" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "612768A3-98BD-4B0A-84A9-6A110AE5E33E",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "525D53C7DA67D2329503F1145E04406CB2FBC1EC" : "externals\/",
+    "0BB4D438F47EB92D7CC2A9BCFFCE5033357F65C6" : "externals\/Externals\/SMTor\/",
+    "C72EAD2DB71AA579DD81C848C61935E78ADEC157" : "externals\/Externals\/SMFoundation\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Workspace",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Workspace.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:javerous\/framework-tor.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "0BB4D438F47EB92D7CC2A9BCFFCE5033357F65C6"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:javerous\/TorChat-Mac.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "525D53C7DA67D2329503F1145E04406CB2FBC1EC"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:javerous\/framework-foundation.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "C72EAD2DB71AA579DD81C848C61935E78ADEC157"
+    }
+  ]
+}

@@ -98,6 +98,11 @@
 "location_reset" = "Réinitialiser";
 
 
+/* Tor */
+"tor_out_log" = "Tor: %@";
+"tor_error_log" = "Tor-Erreur: %@";
+
+
 /* Core */
 // General
 "core_mng_myself" = "moi";
@@ -139,13 +144,6 @@
 "core_bd_error_filereceive" = "Impossible d'ouvrir un fichier pour la réception.";
 "core_bd_error_file_offline" = "Impossible d'envoyer un fichier à un contact hors ligne.";
 "core_bd_error_file_blocked" = "Impossible d'envoyer un fichier à un contact bloqué.";
-
-// TCSocketInfoDomain
-"core_socket_read_error" = "Erreur de lecture sur un socket.";
-"core_socket_read_closed" = "Un socket a été fermé par l'hôte distant lors d'une lecture.";
-"core_socker_read_full" = "La cache d'un socket est pleine. Impossible de recevoir plus de données.";
-"core_socket_write_error" = "Erreur d'écriture sur un socket.";
-"core_socket_write_closed" = "Un socket a été fermé par l'hôte distant lors d'une écriture.";
 
 // TCConnectionInfoDomain
 "core_cnx_event_started" = "Contrôleur de connexion démarré.";

@@ -31,6 +31,7 @@
 #import "TCLocationViewController.h"
 
 #import "TCDebugLog.h"
+#import "SMTorConfiguration+TCConfig.h"
 
 
 /*
@@ -159,16 +160,15 @@
 	[_torDownloadsLocation addToView:_downloadLocationView];
 	
 	// Set default configuration.
-	[_config setTorAddress:@"localhost"];
-	[_config setTorPort:60600];
-	[_config setClientPort:60601];
+	_config.torAddress = @"localhost";
+	_config.torPort = 60600;
+	_config.clientPort = 60601;
+	
+	// Create tor configuration.
+	SMTorConfiguration *torConfig = [[SMTorConfiguration alloc] initWithTorChatConfiguration:_config];
 	
 	// Create tor manager & start it.
 	__weak NSTextField *weakIMAddressField = _imAddressField;
-
-	SMTorConfiguration *torConfig = [[SMTorConfiguration alloc] init];
-	
-#warning Fill torConfig with _config.
 	
 	_tor = [[SMTorManager alloc] initWithConfiguration:torConfig];
 	

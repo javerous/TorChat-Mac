@@ -83,6 +83,11 @@
 */
 #pragma mark - TCConnection - Instance
 
++ (void)initialize
+{
+	[self registerInfoDescriptors];
+}
+
 - (id)initWithDelegate:(id <TCConnectionDelegate>)delegate andSocket:(int)sock
 {
 	self = [super init];
@@ -390,6 +395,79 @@
 
 	if (delegate)
 		[delegate connection:self information:[SMInfo infoOfKind:SMInfoInfo domain:TCConnectionInfoDomain code:notice]];
+}
+
+
+
+/*
+** TCConnection - Infos
+*/
+#pragma mark - TCConnection - Infos
+
++ (void)registerInfoDescriptors
+{
+	NSMutableDictionary *descriptors = [[NSMutableDictionary alloc] init];
+	
+	// == TCConnectionInfoDomain ==
+	descriptors[TCConnectionInfoDomain] = ^ NSDictionary * (SMInfoKind kind, int code) {
+		
+		switch (kind)
+		{
+			case SMInfoInfo:
+			{
+				if (code == TCCoreEventClientStarted)
+				{
+					return @{
+						SMInfoNameKey : @"TCCoreEventClientStarted",
+						SMInfoTextKey : @"core_cnx_event_started",
+						SMInfoLocalizableKey : @YES,
+					};
+				}
+				else if (code == TCCoreEventClientStopped)
+				{
+					return @{
+						SMInfoNameKey : @"TCCoreEventClientStopped",
+						SMInfoTextKey : @"core_cnx_event_stopped",
+						SMInfoLocalizableKey : @YES,
+					};
+				}
+				
+				break;
+			}
+			
+			case SMInfoWarning:
+			{
+				break;
+			}
+				
+			case SMInfoError:
+			{
+				if (code == TCCoreErrorSocket)
+				{
+					return @{
+						SMInfoNameKey : @"TCCoreErrorSocket",
+						SMInfoTextKey : @"core_cnx_error_socket",
+						SMInfoLocalizableKey : @YES,
+					};
+				}
+				else if (code == TCCoreErrorClientCmdPing)
+				{
+					return @{
+						SMInfoNameKey : @"TCCoreErrorClientCmdPing",
+						SMInfoTextKey : @"core_cnx_error_fake_ping",
+						SMInfoLocalizableKey : @YES,
+					};
+				}
+				break;
+			}
+		}
+		
+		return nil;
+	};
+	
+	[SMInfo registerDomainsDescriptors:descriptors localizer:^NSString * _Nonnull(NSString * _Nonnull token) {
+		return NSLocalizedString(token, @"");
+	}];
 }
 
 @end
