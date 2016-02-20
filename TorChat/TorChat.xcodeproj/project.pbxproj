@@ -1207,6 +1207,7 @@
 				GCC_PREFIX_HEADER = TorChat/TorChat_Prefix.pch;
 				INFOPLIST_FILE = "TorChat/TorChat-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/system",
@@ -1228,6 +1229,7 @@
 				GCC_PREFIX_HEADER = TorChat/TorChat_Prefix.pch;
 				INFOPLIST_FILE = "TorChat/TorChat-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/system",
