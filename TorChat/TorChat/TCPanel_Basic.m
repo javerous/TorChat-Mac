@@ -174,7 +174,7 @@
 	
 	[_loadingIndicator startAnimation:self];
 
-	[_tor startWithHandler:^(SMInfo *info) {
+	[_tor startWithInfoHandler:^(SMInfo *info) {
 		
 		NSTextField *imAddressField = weakIMAddressField;
 		

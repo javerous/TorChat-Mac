@@ -293,7 +293,7 @@
 					NSString		*oldVersion = context[@"old_version"];
 					NSString		*newVersion = context[@"new_version"];
 					
-					[[SMTorUpdateWindowController sharedController] handleUpdateFromVersion:oldVersion toVersion:newVersion torManager:_torManager infoHandler:^(SMInfo * _Nonnull info) {
+					[[SMTorUpdateWindowController sharedController] handleUpdateWithTorManager:_torManager oldVersion:oldVersion newVersion:newVersion infoHandler:^(SMInfo * _Nonnull info) {
 						[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
 					}];
 				}
