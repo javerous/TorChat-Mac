@@ -44,7 +44,6 @@
 		E849BDB11A66EEA60040E294 /* PrefView_General.xib in Resources */ = {isa = PBXBuildFile; fileRef = E849BDAF1A66EEA60040E294 /* PrefView_General.xib */; };
 		E84C3281199CA3F700D576F7 /* TCUpdateWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E84C3280199CA3F700D576F7 /* TCUpdateWindowController.m */; };
 		E852235217B504CA00C6F585 /* TCChatCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E852235117B504CA00C6F585 /* TCChatCellView.m */; };
-		E85903B211EC9877005CE53F /* TCTools.m in Sources */ = {isa = PBXBuildFile; fileRef = E85903B011EC9877005CE53F /* TCTools.m */; };
 		E85923F7120A9E060035C420 /* FilesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E85923F5120A9E060035C420 /* FilesWindow.xib */; };
 		E8643D731A66D9C100B8C55F /* TCPrefView_Buddies.m in Sources */ = {isa = PBXBuildFile; fileRef = E8643D721A66D9C100B8C55F /* TCPrefView_Buddies.m */; };
 		E8643D761A66D9D300B8C55F /* TCPrefView.m in Sources */ = {isa = PBXBuildFile; fileRef = E8643D751A66D9D300B8C55F /* TCPrefView.m */; };
@@ -991,7 +990,6 @@
 				E837DAE111E7739D004BC524 /* TCBuffer.m in Sources */,
 				E837DAE311E7739D004BC524 /* TCCoreManager.m in Sources */,
 				E84C3281199CA3F700D576F7 /* TCUpdateWindowController.m in Sources */,
-				E85903B211EC9877005CE53F /* TCTools.m in Sources */,
 				E88AE83711EDE9D50037D808 /* TCConnection.m in Sources */,
 				E8CCCD7211FEE70E00C8EEFF /* TCFileSend.m in Sources */,
 				E809B1451859C593001664E1 /* TCChatTranscriptViewController.m in Sources */,
