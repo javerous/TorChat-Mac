@@ -523,14 +523,9 @@
 	});
 }
 
-- (BOOL)removeBuddy:(NSString *)address
+- (void)removeBuddy:(NSString *)address
 {
-	__block BOOL found = NO;
-	
-	if (!address)
-		return NO;
-	
-	dispatch_barrier_sync(_localQueue, ^{
+	dispatch_barrier_async(_localQueue, ^{
 		
 		// Remove from Cocoa version.
 		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
@@ -543,7 +538,6 @@
 			if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
 			{
 				[array removeObjectAtIndex:i];
-				found = YES;
 				break;
 			}
 		}
@@ -551,8 +545,6 @@
 		// Mark dirty.
 		[self _markDirty];
 	});
-	
-	return found;
 }
 
 - (void)setBuddy:(NSString *)address alias:(NSString *)alias
@@ -860,10 +852,8 @@
 	return result;
 }
 
-- (BOOL)addBlockedBuddy:(NSString *)address
+- (void)addBlockedBuddy:(NSString *)address
 {
-	__block BOOL result = NO;
-	
 	dispatch_barrier_sync(_localQueue, ^{
 		
 		// Add to cocoa version
@@ -882,20 +872,11 @@
 		
 		// Mark dirty.
 		[self _markDirty];
-		
-		result = YES;
 	});
-	
-	return result;
 }
 
-- (BOOL)removeBlockedBuddy:(NSString *)address
+- (void)removeBlockedBuddy:(NSString *)address
 {
-	__block BOOL found = NO;
-	
-	if (!address)
-		return NO;
-	
 	dispatch_barrier_sync(_localQueue, ^{
 		
 		// Remove from Cocoa version.
@@ -909,7 +890,6 @@
 			if ([buddy isEqualToString:address])
 			{
 				[array removeObjectAtIndex:i];
-				found = YES;
 				break;
 			}
 		}
@@ -917,9 +897,6 @@
 		// Mark dirty.
 		[self _markDirty];
 	});
-
-	
-	return found;
 }
 
 
@@ -1068,15 +1045,13 @@
 
 #pragma mark > Set
 
-- (BOOL)setPathForComponent:(TCConfigPathComponent)component pathType:(TCConfigPathType)pathType path:(NSString *)path
+- (void)setPathForComponent:(TCConfigPathComponent)component pathType:(TCConfigPathType)pathType path:(NSString *)path
 {
-	// Handle special referal component.
-	if (component == TCConfigPathComponentReferal)
-	{
-		__block BOOL result = NO;
+	dispatch_barrier_async(_localQueue, ^{
 		
-		dispatch_barrier_sync(_localQueue, ^{
-
+		// Handle special referal component.
+		if (component == TCConfigPathComponentReferal)
+		{
 			// Check parameter.
 			BOOL isDirectory = NO;
 			
@@ -1102,56 +1077,47 @@
 				if ([self _pathTypeForComponent:aComponent] == TCConfigPathTypeReferal)
 					[self _notifyPathChangeForComponent:aComponent];
 			}];
-			
-			// Flag success.
-			result = YES;
-		});
-		
-		return result;
-	}
-	
-	// Handle common components.
-	dispatch_barrier_async(_localQueue, ^{
-		
-		// Handle paths.
-		NSMutableDictionary *paths = _fcontent[TCCONF_KEY_PATHS];
-		
-		if (!paths)
-		{
-			paths = [[NSMutableDictionary alloc] init];
-			
-			_fcontent[TCCONF_KEY_PATHS] = paths;
 		}
-		
-		// Handle components.
-		NSString			*componentKey = [self componentKeyForComponent:component];
-		NSMutableDictionary	*componentConfig = paths[componentKey];
-		
-		// > Create component if not exist.
-		if (!componentConfig)
-		{
-			componentConfig = [[NSMutableDictionary alloc] init];
-			
-			paths[componentKey] = componentConfig;
-		}
-		
-		// > Store / remove component subpath.
-		if (path)
-			componentConfig[TCCONF_KEY_PATH_SUBPATH] = path;
 		else
-			[componentConfig removeObjectForKey:TCCONF_KEY_PATH_SUBPATH];
-		
-		// > Store component path type.
-		componentConfig[TCCONF_KEY_PATH_TYPE] = [self pathTypeValueForPathType:pathType];
-
-		// > Mark dirty.
-		[self _markDirty];
-		
-		// Notify.
-		[self _notifyPathChangeForComponent:component];
+		{
+			// Handle paths.
+			NSMutableDictionary *paths = _fcontent[TCCONF_KEY_PATHS];
+			
+			if (!paths)
+			{
+				paths = [[NSMutableDictionary alloc] init];
+				
+				_fcontent[TCCONF_KEY_PATHS] = paths;
+			}
+			
+			// Handle components.
+			NSString			*componentKey = [self componentKeyForComponent:component];
+			NSMutableDictionary	*componentConfig = paths[componentKey];
+			
+			// > Create component if not exist.
+			if (!componentConfig)
+			{
+				componentConfig = [[NSMutableDictionary alloc] init];
+				
+				paths[componentKey] = componentConfig;
+			}
+			
+			// > Store / remove component subpath.
+			if (path)
+				componentConfig[TCCONF_KEY_PATH_SUBPATH] = path;
+			else
+				[componentConfig removeObjectForKey:TCCONF_KEY_PATH_SUBPATH];
+			
+			// > Store component path type.
+			componentConfig[TCCONF_KEY_PATH_TYPE] = [self pathTypeValueForPathType:pathType];
+			
+			// > Mark dirty.
+			[self _markDirty];
+			
+			// Notify.
+			[self _notifyPathChangeForComponent:component];
+		}
 	});
-	
-	return YES;
 }
 
 
@@ -1481,9 +1447,9 @@
 
 
 /*
-** TCConfigPlist - synchronize
+** TCConfigPlist - Synchronize
 */
-#pragma mark - TCConfigPlist - synchronize
+#pragma mark - TCConfigPlist - Synchronize
 
 - (void)synchronize
 {

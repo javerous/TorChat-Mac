@@ -652,57 +652,40 @@
 */
 #pragma mark - TCCoreManager - Blocked Buddies
 
-- (BOOL)addBlockedBuddy:(NSString *)address
+- (void)addBlockedBuddy:(NSString *)address
 {
-	__block BOOL result = false;
-	
-	dispatch_sync(_localQueue, ^{
-		
-		// Add the address to the configuration.
-		if ([_config addBlockedBuddy:address] == YES)
-			result = YES;
-	});
+	// Add blocked buddy to configuration.
+	[_config addBlockedBuddy:address];
 	
 	// Mark the buddy as blocked.
-	if (result)
+	TCBuddy *buddy = [self buddyWithAddress:address];
+	
+	if (buddy)
 	{
-		TCBuddy *buddy = [self buddyWithAddress:address];
-		
 		[buddy setBlocked:YES];
-		
+	
 		dispatch_async(_localQueue, ^{
 			[self _notify:TCCoreEventBuddyBlocked context:buddy];
 		});
 	}
-
-	
-	return result;
 }
 
-- (BOOL)removeBlockedBuddy:(NSString *)address
+- (void)removeBlockedBuddy:(NSString *)address
 {
-	__block BOOL result = false;
-	
-	dispatch_sync(_localQueue, ^{
-		
-		// Remove the address from the configuration.
-		if ([_config removeBlockedBuddy:address] == YES)
-			result = YES;
-	});
+	// Remove blocked buddy from configuration.
+	[_config removeBlockedBuddy:address];
 	
 	// Mark the buddy as unblocked.
-	if (result)
+	TCBuddy *buddy = [self buddyWithAddress:address];
+	
+	if (buddy)
 	{
-		TCBuddy *buddy = [self buddyWithAddress:address];
-		
 		[buddy setBlocked:NO];
 		
 		dispatch_async(_localQueue, ^{
 			[self _notify:TCCoreEventBuddyUnblocked context:buddy];
 		});
 	}
-	
-	return result;
 }
 
 - (void)_checkBlocked:(TCBuddy *)buddy

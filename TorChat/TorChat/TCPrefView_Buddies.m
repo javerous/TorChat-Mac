@@ -132,11 +132,7 @@
 	address = [_addBlockedField stringValue];
 	
 	// Add on blocked list.
-	if ([self.core addBlockedBuddy:address] == NO)
-	{
-		NSBeep();
-		return;
-	}
+	[self.core addBlockedBuddy:address];
 	
 	// Reload list.
 	[_tableView reloadData];

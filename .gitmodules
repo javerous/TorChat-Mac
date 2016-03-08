@@ -7,3 +7,6 @@
 [submodule "Externals/SMAssistant"]
 	path = Externals/SMAssistant
 	url = git@github.com:javerous/framework-assistant.git
+[submodule "Externals/SMCryptoFile"]
+	path = Externals/SMCryptoFile
+	url = git@github.com:javerous/SMCryptoFile.git

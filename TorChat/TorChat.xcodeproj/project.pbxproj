@@ -70,6 +70,11 @@
 		E889F0C812531DC9000C36B2 /* TCLogsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0C712531DC9000C36B2 /* TCLogsWindowController.m */; };
 		E889F0CB12531DD6000C36B2 /* TorChatAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E889F0CA12531DD6000C36B2 /* TorChatAppDelegate.m */; };
 		E88AE83711EDE9D50037D808 /* TCConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = E88AE83511EDE9D50037D808 /* TCConnection.m */; };
+		E89E47021C8D904D004A5D72 /* SMCryptoFile.c in Sources */ = {isa = PBXBuildFile; fileRef = E89E47001C8D904D004A5D72 /* SMCryptoFile.c */; };
+		E89E47051C8D905E004A5D72 /* SMSQLiteCryptoVFS.c in Sources */ = {isa = PBXBuildFile; fileRef = E89E47031C8D905E004A5D72 /* SMSQLiteCryptoVFS.c */; };
+		E89E47071C8D907F004A5D72 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E89E47061C8D907F004A5D72 /* libsqlite3.tbd */; };
+		E89E470D1C8D966F004A5D72 /* TCConfigSQLite.m in Sources */ = {isa = PBXBuildFile; fileRef = E89E470C1C8D966F004A5D72 /* TCConfigSQLite.m */; };
+		E89E47111C8DA17C004A5D72 /* TCConfigurationCopy.m in Sources */ = {isa = PBXBuildFile; fileRef = E89E47101C8DA17C004A5D72 /* TCConfigurationCopy.m */; };
 		E8A2CC49185CC2AF00624448 /* TCThreePartImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A2CC48185CC2AF00624448 /* TCThreePartImageView.m */; };
 		E8A6FE2C17A993FC00C4DEAB /* TCPanel_Welcome.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A6FE2B17A993FC00C4DEAB /* TCPanel_Welcome.m */; };
 		E8A6FE3217A995AB00C4DEAB /* TCPanel_Mode.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A6FE3117A995AB00C4DEAB /* TCPanel_Mode.m */; };
@@ -237,6 +242,15 @@
 		E889F0CA12531DD6000C36B2 /* TorChatAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TorChatAppDelegate.m; sourceTree = "<group>"; };
 		E88AE83511EDE9D50037D808 /* TCConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCConnection.m; sourceTree = "<group>"; };
 		E88AE83611EDE9D50037D808 /* TCConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCConnection.h; sourceTree = "<group>"; };
+		E89E47001C8D904D004A5D72 /* SMCryptoFile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = SMCryptoFile.c; path = Sources/SMCryptoFile.c; sourceTree = "<group>"; };
+		E89E47011C8D904D004A5D72 /* SMCryptoFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMCryptoFile.h; path = Sources/SMCryptoFile.h; sourceTree = "<group>"; };
+		E89E47031C8D905E004A5D72 /* SMSQLiteCryptoVFS.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = SMSQLiteCryptoVFS.c; path = Sources/Extra/SQLite/SMSQLiteCryptoVFS.c; sourceTree = "<group>"; };
+		E89E47041C8D905E004A5D72 /* SMSQLiteCryptoVFS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMSQLiteCryptoVFS.h; path = Sources/Extra/SQLite/SMSQLiteCryptoVFS.h; sourceTree = "<group>"; };
+		E89E47061C8D907F004A5D72 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		E89E470B1C8D966F004A5D72 /* TCConfigSQLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCConfigSQLite.h; sourceTree = "<group>"; };
+		E89E470C1C8D966F004A5D72 /* TCConfigSQLite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCConfigSQLite.m; sourceTree = "<group>"; };
+		E89E470F1C8DA17C004A5D72 /* TCConfigurationCopy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCConfigurationCopy.h; sourceTree = "<group>"; };
+		E89E47101C8DA17C004A5D72 /* TCConfigurationCopy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCConfigurationCopy.m; sourceTree = "<group>"; };
 		E8A2CC47185CC2AF00624448 /* TCThreePartImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCThreePartImageView.h; sourceTree = "<group>"; };
 		E8A2CC48185CC2AF00624448 /* TCThreePartImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCThreePartImageView.m; sourceTree = "<group>"; };
 		E8A6FE2A17A993FC00C4DEAB /* TCPanel_Welcome.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCPanel_Welcome.h; sourceTree = "<group>"; };
@@ -289,6 +303,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E89E47071C8D907F004A5D72 /* libsqlite3.tbd in Frameworks */,
 				E809B1A51859CC4B001664E1 /* WebKit.framework in Frameworks */,
 				E80414CB17A57722008220C9 /* Security.framework in Frameworks */,
 				E81FD9F811E7259B000614D5 /* Cocoa.framework in Frameworks */,
@@ -304,6 +319,7 @@
 		E81FD9E511E7259B000614D5 = {
 			isa = PBXGroup;
 			children = (
+				E89E46FE1C8D9025004A5D72 /* Externals */,
 				E837DAD411E7739D004BC524 /* Core */,
 				E837DAD311E7739D004BC524 /* TorChat */,
 				E81FD9ED11E7259B000614D5 /* Supporting Files */,
@@ -337,6 +353,7 @@
 		E81FD9EF11E7259B000614D5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E89E47061C8D907F004A5D72 /* libsqlite3.tbd */,
 				E844C4A91C77EAE700D3AB2D /* SMAssistant.framework */,
 				E844C49E1C77E68600D3AB2D /* SMFoundation.framework */,
 				E844C49F1C77E68600D3AB2D /* SMTor.framework */,
@@ -510,11 +527,9 @@
 		E870BD7C17A8483500DFA076 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				E89E470E1C8D96AB004A5D72 /* Configuration */,
 				E8455D3B17A425F00046307B /* TCValue.h */,
 				E8455D3C17A425F00046307B /* TCValue.m */,
-				E8643D441A66C7EB00B8C55F /* TCConfigInterface.h */,
-				E889F0A112531D33000C36B2 /* TCConfigPlist.h */,
-				E889F0A212531D33000C36B2 /* TCConfigPlist.m */,
 				E8CC776D18ED50C5003AB0BF /* TCDragImage.h */,
 				E8CC776E18ED50C5003AB0BF /* TCDragImage.m */,
 			);
@@ -695,6 +710,38 @@
 			name = Categories;
 			sourceTree = "<group>";
 		};
+		E89E46FE1C8D9025004A5D72 /* Externals */ = {
+			isa = PBXGroup;
+			children = (
+				E89E46FF1C8D903D004A5D72 /* SMCryptoFile */,
+			);
+			name = Externals;
+			sourceTree = "<group>";
+		};
+		E89E46FF1C8D903D004A5D72 /* SMCryptoFile */ = {
+			isa = PBXGroup;
+			children = (
+				E89E47011C8D904D004A5D72 /* SMCryptoFile.h */,
+				E89E47001C8D904D004A5D72 /* SMCryptoFile.c */,
+				E89E47041C8D905E004A5D72 /* SMSQLiteCryptoVFS.h */,
+				E89E47031C8D905E004A5D72 /* SMSQLiteCryptoVFS.c */,
+			);
+			name = SMCryptoFile;
+			path = ../Externals/SMCryptoFile;
+			sourceTree = "<group>";
+		};
+		E89E470E1C8D96AB004A5D72 /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				E8643D441A66C7EB00B8C55F /* TCConfigInterface.h */,
+				E889F0A112531D33000C36B2 /* TCConfigPlist.h */,
+				E889F0A212531D33000C36B2 /* TCConfigPlist.m */,
+				E89E470B1C8D966F004A5D72 /* TCConfigSQLite.h */,
+				E89E470C1C8D966F004A5D72 /* TCConfigSQLite.m */,
+			);
+			name = Configuration;
+			sourceTree = "<group>";
+		};
 		E8A6FE2917A993A700C4DEAB /* Panels */ = {
 			isa = PBXGroup;
 			children = (
@@ -729,6 +776,8 @@
 			children = (
 				E8F15A78130425A4000593E1 /* TCKeyedText.h */,
 				E8F15A79130425A4000593E1 /* TCKeyedText.m */,
+				E89E470F1C8DA17C004A5D72 /* TCConfigurationCopy.h */,
+				E89E47101C8DA17C004A5D72 /* TCConfigurationCopy.m */,
 			);
 			name = Tools;
 			sourceTree = "<group>";
@@ -872,11 +921,13 @@
 				E82B7D7A125A08A800B7BA8A /* TCPreferencesWindowController.m in Sources */,
 				E80A357F1A67F61800896518 /* TCLocationViewController.m in Sources */,
 				E8643D791A66DBF900B8C55F /* TCPrefView_General.m in Sources */,
+				E89E47051C8D905E004A5D72 /* SMSQLiteCryptoVFS.c in Sources */,
 				E852235217B504CA00C6F585 /* TCChatCellView.m in Sources */,
 				E84CBD3A1C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.m in Sources */,
 				E8742543199B682F002A34DD /* NSString+TCPathExtension.m in Sources */,
 				E809B1481859C5BC001664E1 /* NSImage+TCExtension.m in Sources */,
 				E8742546199B6A61002A34DD /* NSString+TCXMLExtension.m in Sources */,
+				E89E47021C8D904D004A5D72 /* SMCryptoFile.c in Sources */,
 				E82B7D8F125A115400B7BA8A /* TCMainController.m in Sources */,
 				E8A2CC49185CC2AF00624448 /* TCThreePartImageView.m in Sources */,
 				E8C1EFF312F7169400E24C42 /* TCImage.m in Sources */,
@@ -884,6 +935,7 @@
 				E8CC776F18ED50C5003AB0BF /* TCDragImage.m in Sources */,
 				E874146B12FAE0C200BD4862 /* TCDropButton.m in Sources */,
 				E88879FF1303EA9F00C7D60E /* TCDragImageView.m in Sources */,
+				E89E47111C8DA17C004A5D72 /* TCConfigurationCopy.m in Sources */,
 				E8643D761A66D9D300B8C55F /* TCPrefView.m in Sources */,
 				E8F15A7A130425A4000593E1 /* TCKeyedText.m in Sources */,
 				E8A7F6DE185D22F8002A4495 /* TCChatTableView.m in Sources */,
@@ -896,6 +948,7 @@
 				E8455D4617A4386C0046307B /* NSData+TCTools.m in Sources */,
 				E86B5A1817AE7C6C00C715CA /* TCFileCellView.m in Sources */,
 				E80414C917A557B7008220C9 /* NSArray+TCTools.m in Sources */,
+				E89E470D1C8D966F004A5D72 /* TCConfigSQLite.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1205,6 +1258,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PREFIX_HEADER = TorChat/TorChat_Prefix.pch;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				INFOPLIST_FILE = "TorChat/TorChat-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
@@ -1227,6 +1281,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PREFIX_HEADER = TorChat/TorChat_Prefix.pch;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				INFOPLIST_FILE = "TorChat/TorChat-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";

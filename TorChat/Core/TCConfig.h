@@ -116,7 +116,7 @@ typedef enum
 // -- Buddies --
 - (NSArray *)buddies; // Array of dictionary.
 - (void)addBuddy:(NSString *)address alias:(NSString *)alias notes:(NSString *)notes;
-- (BOOL)removeBuddy:(NSString *)address;
+- (void)removeBuddy:(NSString *)address;
 
 - (void)setBuddy:(NSString *)address alias:(NSString *)alias;
 - (void)setBuddy:(NSString *)address notes:(NSString *)notes;
@@ -132,8 +132,8 @@ typedef enum
 
 // -- Blocked --
 - (NSArray *)blockedBuddies;
-- (BOOL)addBlockedBuddy:(NSString *)address;
-- (BOOL)removeBlockedBuddy:(NSString *)address;
+- (void)addBlockedBuddy:(NSString *)address;
+- (void)removeBlockedBuddy:(NSString *)address;
 
 // -- Client --
 - (NSString *)clientVersion:(TCConfigGet)get;
@@ -143,7 +143,7 @@ typedef enum
 - (void)setClientName:(NSString *)name;
 
 // -- Paths --
-- (BOOL)setPathForComponent:(TCConfigPathComponent)component pathType:(TCConfigPathType)pathType path:(NSString *)path;
+- (void)setPathForComponent:(TCConfigPathComponent)component pathType:(TCConfigPathType)pathType path:(NSString *)path;
 - (NSString *)pathForComponent:(TCConfigPathComponent)component fullPath:(BOOL)fullPath;
 - (TCConfigPathType)pathTypeForComponent:(TCConfigPathComponent)component;
 
