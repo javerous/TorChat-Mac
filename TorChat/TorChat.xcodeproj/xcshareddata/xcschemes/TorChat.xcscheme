@@ -3,7 +3,7 @@
    LastUpgradeVersion = "0720"
    version = "1.8">
    <BuildAction
-      parallelizeBuildables = "NO"
+      parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
    </BuildAction>
    <TestAction

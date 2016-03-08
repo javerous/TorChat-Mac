@@ -1,5 +1,5 @@
 /*
- *  TCImage.h
+ *  TCConfigSQLite.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -22,45 +22,20 @@
 
 #import <Foundation/Foundation.h>
 
-#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-#	import <UIKit/UIKit.h>
-#else
-#	import <AppKit/AppKit.h>
-#endif
+#import "TCConfigInterface.h"
 
 
 /*
-** TCImage
+** TCConfigSQLite
 */
-#pragma mark - TCImage
+#pragma mark - TCConfigSQLite
 
-@interface TCImage : NSObject <NSCopying>
+@interface TCConfigSQLite : NSObject <TCConfigInterface>
 
 // -- Instance --
-- (id)initWithWidth:(NSUInteger)width andHeight:(NSUInteger)height;
-#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-- (id)initWithImage:(UIImage *)image;
-#else
-- (id)initWithImage:(NSImage *)image;
-#endif
+- (id)initWithFile:(NSString *)filepath password:(NSString *)password;
 
-// -- Content --
-- (BOOL)setBitmap:(NSData *)bitmap;
-- (BOOL)setBitmapAlpha:(NSData *)bitmap;
+// -- Tools --
++ (BOOL)isEncryptedFile:(NSString *)filepath;
 
-- (NSData *)bitmap;
-- (NSData *)bitmapAlpha;
-
-- (NSData *)bitmapMixed;
-
-// -- Properties --
-- (NSUInteger)width;
-- (NSUInteger)height;
-
-// -- Representation --
-#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-- (UIImage *)imageRepresentation;
-#else
-- (NSImage *)imageRepresentation;
-#endif
 @end

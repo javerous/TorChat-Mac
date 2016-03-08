@@ -156,8 +156,8 @@ typedef enum
 - (TCBuddy *)buddyWithRandom:(NSString *)random;
 
 // -- Blocked Buddies --
-- (BOOL)addBlockedBuddy:(NSString *)address;
-- (BOOL)removeBlockedBuddy:(NSString *)address;
+- (void)addBlockedBuddy:(NSString *)address;
+- (void)removeBlockedBuddy:(NSString *)address;
 
 // -- Observers --
 - (void)addObserver:(id <TCCoreManagerObserver>)observer;
