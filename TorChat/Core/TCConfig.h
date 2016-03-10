@@ -156,4 +156,6 @@ typedef enum
 // -- Synchronize --
 - (void)synchronize;
 
+- (void)close;
+
 @end

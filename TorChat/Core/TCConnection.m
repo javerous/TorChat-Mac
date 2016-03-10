@@ -151,12 +151,18 @@
 	});
 }
 
-- (void)stop
+- (void)stopWithCompletionHandler:(dispatch_block_t)handler
 {
+	if (!handler)
+		handler = ^{ };
+	
 	dispatch_async(_localQueue, ^{
 		
 		if (!_running)
+		{
+			handler();
 			return;
+		}
 		
 		_running = false;
 		
@@ -169,6 +175,9 @@
 		
 		// Clean socket descriptor
 		_sockd = -1;
+		
+		// Notify.
+		handler();
 	});
 }
 
@@ -364,7 +373,7 @@
 		[delegate connection:self information:[SMInfo infoOfKind:SMInfoError domain:TCConnectionInfoDomain code:code]];
 		
 	if (fatal)
-		[self stop];
+		[self stopWithCompletionHandler:nil];
 }
 
 - (void)error:(TCCoreError)code context:(id)ctx fatal:(BOOL)fatal
@@ -375,7 +384,7 @@
 		[delegate connection:self information:[SMInfo infoOfKind:SMInfoError domain:TCConnectionInfoDomain code:code context:ctx]];
 
 	if (fatal)
-		[self stop];
+		[self stopWithCompletionHandler:nil];
 }
 
 - (void)error:(TCCoreError)code info:(SMInfo *)subInfo fatal:(BOOL)fatal
@@ -386,7 +395,7 @@
 		[delegate connection:self information:[SMInfo infoOfKind:SMInfoError domain:TCConnectionInfoDomain code:code info:subInfo]];
 	
 	if (fatal)
-		[self stop];
+		[self stopWithCompletionHandler:nil];
 }
 
 - (void)notify:(TCCoreEvent)notice

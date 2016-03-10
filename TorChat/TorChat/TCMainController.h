@@ -22,7 +22,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "TCConfigInterface.h"
+#import "TCConfigEncryptable.h"
 
 
 /*
@@ -45,13 +45,13 @@
 + (TCMainController *)sharedController;
 
 // -- Life --
-- (void)startWithCompletionHandler:(void (^)(id <TCConfigInterface> configuration, TCCoreManager *core))handler;
-- (void)stop;
+- (void)startWithCompletionHandler:(void (^)(id <TCConfigEncryptable> configuration, TCCoreManager *core))handler;
+- (void)startWithConfiguration:(id <TCConfigEncryptable>)configuration completionHandler:(void (^)(TCCoreManager *core))handler;
 
-- (void)reload;
+- (void)stopWithCompletionHandler:(dispatch_block_t)handler;
 
 // -- Properties --
-@property (strong, readonly, nonatomic) id <TCConfigInterface>	configuration;
-@property (strong, readonly, nonatomic) TCCoreManager			*core;
+@property (strong, readonly, nonatomic) id <TCConfigEncryptable>	configuration;
+@property (strong, readonly, nonatomic) TCCoreManager				*core;
 
 @end

@@ -24,6 +24,22 @@
 
 
 /*
+** TCPrefView - Private
+*/
+#pragma mark - TCPrefView - Private
+
+@interface TCPrefView ()
+
+@property (strong, nonatomic) void (^reloadConfig)(id <TCConfigEncryptable>);
+
+@property (strong, nonatomic) id <TCConfigEncryptable>	config;
+@property (strong, nonatomic) TCCoreManager				*core;
+
+@end
+
+
+
+/*
 ** TCPrefView
 */
 #pragma mark - TCPrefView
@@ -36,16 +52,20 @@
 */
 #pragma mark - TCPrefView - Config
 
-- (void)loadConfig
+- (void)didLoad
 {
 	// Must be redefined
 }
 
-- (BOOL)saveConfig
+- (void)didUnload
 {
 	// Must be redefined
-	
-	return NO;
+}
+
+- (void)reloadConfig:(id <TCConfigEncryptable>)config
+{
+	if (_reloadConfig)
+		_reloadConfig(config);
 }
 
 @end

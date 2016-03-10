@@ -24,6 +24,7 @@
 
 /* Assistant Pannel */
 "ac_title_welcome" = "Configure TorChat for Mac";
+"ac_title_security" = "Security settings";
 "ac_title_mode" = "Select a mode";
 "ac_title_advanced" = "Setup the advanced mode";
 "ac_title_basic" = "Setup the basic mode";

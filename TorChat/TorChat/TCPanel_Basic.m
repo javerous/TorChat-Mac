@@ -26,7 +26,7 @@
 #import "TCPanel_Basic.h"
 
 #import "TCLogsManager.h"
-#import "TCConfigPlist.h"
+#import "TCConfigEncryptable.h"
 
 #import "TCLocationViewController.h"
 
@@ -50,10 +50,8 @@
 
 @interface TCPanel_Basic ()
 {
-	__weak id <SMAssistantProxy> _proxy;
-
-	TCConfigPlist	*_config;
-	SMTorManager	*_tor;
+	id <TCConfigEncryptable> _currentConfig;
+	SMTorManager *_tor;
 	
 	TCLocationViewController *_torDownloadsLocation;
 }
@@ -73,6 +71,9 @@
 
 @implementation TCPanel_Basic
 
+@synthesize proxy;
+@synthesize previousContent;
+
 
 /*
 ** TCPanel_Basic - Instance
@@ -81,8 +82,6 @@
 
 - (void)dealloc
 {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	
 	TCDebugLog(@"TCPanel_Basic dealloc");
 }
 
@@ -93,13 +92,9 @@
 */
 #pragma mark - TCPanel_Basic - SMAssistantPanel
 
-+ (id <SMAssistantPanel>)panelWithProxy:(id <SMAssistantProxy>)proxy
++ (id <SMAssistantPanel>)panel
 {
-	TCPanel_Basic *panel = [[TCPanel_Basic alloc] initWithNibName:@"AssistantPanel_Basic" bundle:nil];
-	
-	panel->_proxy = proxy;
-	
-	return panel;
+	return [[TCPanel_Basic alloc] initWithNibName:@"AssistantPanel_Basic" bundle:nil];
 }
 
 + (NSString *)identifiant
@@ -114,58 +109,29 @@
 
 - (id)content
 {
-	return _config;
+	NSLog(@"xxxxxx: %@", _currentConfig);
+	return _currentConfig;
 }
 
-- (void)showPanel
+- (void)didAppear
 {
-	id <SMAssistantProxy> proxy = _proxy;
+	_currentConfig = self.previousContent;
 
-	[proxy setIsLastPanel:YES];
-	[proxy setDisableContinue:YES]; // Wait for tor
-	
-	// If we already a config, stop here
-	if (_config)
-		return;
-	
-	// Get the default tor config path.
-	NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
-	NSString *configPath = [[bundlePath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"];
-	
-	if (!configPath)
-	{
-		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_build_path"];
-		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_error_build_path", @"")] runModal];
-		return;
-	}
-
-	// Try to build a new config file.
-	_config = [[TCConfigPlist alloc] initWithFile:configPath];
-	
-	if (!_config)
-	{
-		[_imAddressField setStringValue:NSLocalizedString(@"ac_error_config", @"")];
-		
-		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_write_file", configPath];
-		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:TCLocalizedString(@"ac_error_write_file", @""), configPath] runModal];
-
-		return;
-	}
-	
-	[_config setMode:TCConfigModeBasic];
+	[self.proxy setIsLastPanel:YES];
+	[self.proxy setDisableContinue:YES]; // Wait for tor
 	
 	// Add view to configure download path.
-	_torDownloadsLocation = [[TCLocationViewController alloc] initWithConfiguration:_config component:TCConfigPathComponentDownloads];
+	_torDownloadsLocation = [[TCLocationViewController alloc] initWithConfiguration:_currentConfig component:TCConfigPathComponentDownloads];
 	
 	[_torDownloadsLocation addToView:_downloadLocationView];
 	
 	// Set default configuration.
-	_config.torAddress = @"localhost";
-	_config.torPort = 60600;
-	_config.clientPort = 60601;
+	_currentConfig.torAddress = @"localhost";
+	_currentConfig.torPort = 60600;
+	_currentConfig.clientPort = 60601;
 	
 	// Create tor configuration.
-	SMTorConfiguration *torConfig = [[SMTorConfiguration alloc] initWithTorChatConfiguration:_config];
+	SMTorConfiguration *torConfig = [[SMTorConfiguration alloc] initWithTorChatConfiguration:_currentConfig];
 	
 	// Create tor manager & start it.
 	__weak NSTextField *weakIMAddressField = _imAddressField;
@@ -183,14 +149,14 @@
 			if (info.kind == SMInfoError)
 			{
 				[_loadingIndicator stopAnimation:self];
-				[proxy setDisableContinue:YES];
+				[self.proxy setDisableContinue:YES];
 			}
 			else if (info.kind == SMInfoInfo)
 			{
 				if (info.code == SMTorManagerEventStartHostname)
 				{
 					[imAddressField setStringValue:info.context];
-					[_config setSelfAddress:info.context];
+					[_currentConfig setSelfAddress:info.context];
 					[_tor stopWithCompletionHandler:nil];
 				}
 				else if (info.code == SMTorManagerEventStartDone)
@@ -198,7 +164,7 @@
 					[_tor stopWithCompletionHandler:^{
 						dispatch_async(dispatch_get_main_queue(), ^{
 							[_loadingIndicator stopAnimation:self];
-							[proxy setDisableContinue:NO];
+							[self.proxy setDisableContinue:NO];
 						});
 					}];
 				}
@@ -210,7 +176,7 @@
 					[_loadingIndicator stopAnimation:self];
 
 					if (imAddressField.stringValue.length > 0)
-						[proxy setDisableContinue:NO];
+						[self.proxy setDisableContinue:NO];
 				}
 			}
 		});

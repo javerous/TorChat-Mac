@@ -32,8 +32,96 @@
 
 + (BOOL)copyConfiguration:(id <TCConfigInterface>)source toConfiguration:(id <TCConfigInterface>)target
 {
-	// FIXME
-	return NO;
+	if (!source || !target)
+		return NO;
+	
+	// Tor.
+	target.torAddress = source.torAddress;
+	target.torPort = source.torPort;
+	
+	// TorChat.
+	target.selfAddress = source.selfAddress;
+	target.clientPort = source.clientPort;
+
+	// Mode.
+	target.mode = source.mode;
+	
+	// Profile.
+	target.profileName = source.profileName;
+	target.profileText = source.profileText;
+	target.profileAvatar = source.profileAvatar;
+	
+	// Buddies.
+	NSArray *buddies = [source buddies];
+	
+	for (NSDictionary *buddy in buddies)
+	{
+		NSString *address = buddy[TCConfigBuddyAddress];
+		NSString *alias = buddy[TCConfigBuddyAlias];
+		NSString *notes = buddy[TCConfigBuddyNotes];
+		NSString *lastName = buddy[TCConfigBuddyLastName];
+		NSString *lastText = buddy[TCConfigBuddyLastText];
+		TCImage *lastAvatar = buddy[TCConfigBuddyLastAvatar];
+
+		if (!address)
+			continue;
+		
+		[target addBuddy:address alias:alias notes:notes];
+		
+		[target setBuddy:address lastProfileName:lastName];
+		[target setBuddy:address lastProfileText:lastText];
+		[target setBuddy:address lastProfileAvatar:lastAvatar];
+	}
+	
+	// Blocked.
+	NSArray *blocked = [source blockedBuddies];
+	
+	for (NSString *address in blocked)
+		[target addBlockedBuddy:address];
+	
+	// Client.
+	NSString *version = [source clientVersion:TCConfigGetDefined];
+	
+	if (version.length > 0)
+		[target setClientVersion:version];
+	
+
+	NSString *name = [source clientName:TCConfigGetDefined];
+	
+	if (name.length > 0)
+		[target setClientVersion:name];
+	
+	// Paths.
+	void (^handleComponent)(TCConfigPathComponent component) = ^(TCConfigPathComponent component) {
+		
+		TCConfigPathType type = [source pathTypeForComponent:component];
+		
+		switch (type)
+		{
+			case TCConfigPathTypeReferal:
+				[target setPathForComponent:component pathType:TCConfigPathTypeReferal path:[source pathForComponent:component fullPath:NO]];
+				break;
+				
+			case TCConfigPathTypeStandard:
+				[target setPathForComponent:component pathType:TCConfigPathTypeStandard path:nil];
+				break;
+				
+			case TCConfigPathTypeAbsolute:
+				[target setPathForComponent:component pathType:TCConfigPathTypeAbsolute path:[source pathForComponent:component fullPath:NO]];
+				break;
+		}
+	};
+	
+	handleComponent(TCConfigPathComponentTorBinary);
+	handleComponent(TCConfigPathComponentTorData);
+	handleComponent(TCConfigPathComponentTorIdentity);
+	handleComponent(TCConfigPathComponentDownloads);
+
+	
+	// Synchronize.
+	[target synchronize];
+
+	return YES;
 }
 
 @end

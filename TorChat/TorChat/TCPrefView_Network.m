@@ -85,7 +85,7 @@
 */
 #pragma mark - TCPrefView_Network - TCPrefView
 
-- (void)loadConfig
+- (void)didLoad
 {
 	TCConfigMode mode;
 	
@@ -120,12 +120,9 @@
 	[_torPortField setStringValue:[@([self.config torPort]) description]];
 }
 
-- (BOOL)saveConfig
+- (void)didUnload
 {
-	if (!self.config)
-		return NO;
-	
-	if ([self.config mode] == TCConfigModeAdvanced)
+	if (changes && [self.config mode] == TCConfigModeAdvanced)
 	{
 		// Set config value.
 		[self.config setSelfAddress:[_imAddressField stringValue]];
@@ -134,14 +131,8 @@
 		[self.config setTorPort:(uint16_t)[[_torPortField stringValue] intValue]];
 		
 		// Reload config.
-		if (changes)
-		{
-			changes = NO;
-			return YES;
-		}
+		[self reloadConfig:self.config];
 	}
-	
-	return NO;
 }
 
 @end

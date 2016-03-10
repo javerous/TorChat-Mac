@@ -158,11 +158,11 @@
 	
 	// Close client
 	for (TCConnection *connection in _connections)
-		[connection stop];
+		[connection stopWithCompletionHandler:nil];
 
 	// Stop buddies
 	for (TCBuddy *buddy in _buddies)
-		[buddy stop];
+		[buddy stopWithCompletionHandler:nil];
 }
 
 
@@ -340,38 +340,59 @@
 	});
 }
 
-- (void)stop
+- (void)stopWithCompletionHandler:(dispatch_block_t)handler
 {
-	dispatch_async(_localQueue, ^{
+	dispatch_group_t group = dispatch_group_create();
+
+	if (!handler)
+		handler = ^{ };
+	
+	// Stop.
+	dispatch_group_async(group, _localQueue, ^{
 		
-		// Check if we are running
+		// Check if we are running.
 		if (!_running)
 			return;
 		
-		// Cancel the socket
+		// Cancel the socket.
 		dispatch_source_cancel(_socketAccept);
 		
-		// Cancel the timer
+		// Cancel the timer.
 		if (_timer)
 			dispatch_source_cancel(_timer);
 		
 		_socketAccept = nil;
 		
-		// Stop & release clients
+		// Stop & release clients.
 		for (TCConnection *connection in _connections)
-			[connection stop];
+		{
+			dispatch_group_enter(group);
+			
+			[connection stopWithCompletionHandler:^{
+				dispatch_group_leave(group);
+			}];
+		}
 		
 		[_connections removeAllObjects];
 		
-		// Stop buddies
+		// Stop buddies.
 		for (TCBuddy *buddy in _buddies)
-			[buddy stop];
+		{
+			dispatch_group_enter(group);
+
+			[buddy stopWithCompletionHandler:^{
+				dispatch_group_leave(group);
+			}];
+		}
 		
-		// Notify
+		// Notify.
 		[self _notify:TCCoreEventStopped];
 		
 		_running = false;
 	});
+	
+	// Wait for end.
+	dispatch_group_notify(group, _externalQueue, handler);
 }
 
 
@@ -585,7 +606,7 @@
 			if ([[buddy address] isEqualToString:address])
 			{
 				// Stop and release.
-				[buddy stop];
+				[buddy stopWithCompletionHandler:nil];
 				
 				[_buddies removeObjectAtIndex:i];
 				
@@ -708,7 +729,7 @@
 		if ([address isEqualToString:[buddy address]])
 		{
 			[buddy setBlocked:YES];
-			[buddy stop];
+			[buddy stopWithCompletionHandler:nil];
 			break;
 		}
 	}
@@ -801,7 +822,7 @@
 		if ([buddy blocked])
 		{
 			// Stop buddy
-			[buddy stop];
+			[buddy stopWithCompletionHandler:nil];
 			
 			// Stop socket
 			[sock stop];
@@ -855,7 +876,7 @@
 - (void)removeConnection:(TCConnection *)connection
 {
 	dispatch_async(_socketQueue, ^{
-		[connection stop];
+		[connection stopWithCompletionHandler:nil];
 		[_connections removeObject:connection];
 	});
 }
@@ -877,7 +898,7 @@
 	[self _sendEvent:err];
 		
 	if (fatal)
-		[self stop];
+		[self stopWithCompletionHandler:nil];
 }
 
 - (void)_error:(TCCoreError)code context:(id)ctx fatal:(BOOL)fatal
@@ -889,7 +910,7 @@
 	[self _sendEvent:err];
 	
 	if (fatal)
-		[self stop];
+		[self stopWithCompletionHandler:nil];
 }
 
 - (void)_notify:(TCCoreEvent)notice

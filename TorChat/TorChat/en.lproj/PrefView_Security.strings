@@ -1,0 +1,21 @@
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "237-Kb-YBi"; */
+"237-Kb-YBi.title" = "Cancel";
+
+/* Class = "NSTextFieldCell"; title = "Password"; ObjectID = "6Rj-9p-CfT"; */
+"6Rj-9p-CfT.title" = "Password";
+
+/* Class = "NSWindow"; title = "<DONT-TRANSLATE>"; ObjectID = "KmS-ic-aHe"; */
+"KmS-ic-aHe.title" = "<DONT-TRANSLATE>";
+
+/* Class = "NSButtonCell"; title = "Encrypted configuration file"; ObjectID = "gkA-gs-4Nn"; */
+"gkA-gs-4Nn.title" = "Encrypted configuration file";
+
+/* Class = "NSTextFieldCell"; title = "Verify"; ObjectID = "lRN-wg-SIX"; */
+"lRN-wg-SIX.title" = "Verify";
+
+/* Class = "NSButtonCell"; title = "Validate"; ObjectID = "xd6-Oy-0Az"; */
+"xd6-Oy-0Az.title" = "Validate";
+
+/* Class = "NSButtonCell"; title = "Change password…"; ObjectID = "y7Y-LE-Jsb"; */
+"y7Y-LE-Jsb.title" = "Change password…";

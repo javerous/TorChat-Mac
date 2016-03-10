@@ -63,7 +63,7 @@
 
 @interface TCBuddiesWindowController () <TCCoreManagerObserver, TCBuddyObserver, TCDropButtonDelegate, TCChatWindowControllerDelegate>
 {
-	id <TCConfigInterface>	_configuration;
+	id <TCConfigEncryptable>	_configuration;
 	TCCoreManager		*_control;
 	
 	dispatch_queue_t	_localQueue;
@@ -193,7 +193,7 @@
 */
 #pragma mark - TCBuddiesController - Running
 
-- (void)startWithConfiguration:(id <TCConfigInterface>)configuration coreManager:(TCCoreManager *)coreMananager
+- (void)startWithConfiguration:(id <TCConfigEncryptable>)configuration coreManager:(TCCoreManager *)coreMananager
 {
 	if (!configuration || !coreMananager)
 	{
@@ -261,9 +261,11 @@
 	});
 }
 
-- (void)stop
+- (void)stopWithCompletionHandler:(dispatch_block_t)handler
 {
-	dispatch_async(dispatch_get_main_queue(), ^{
+	dispatch_group_t group = dispatch_group_create();
+	
+	dispatch_group_async(group, dispatch_get_main_queue(), ^{
 		
 		if (!_running)
 			return;
@@ -292,6 +294,9 @@
 		// Update status.
 		_running = NO;
 	});
+	
+	// Wait for end.
+	dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), handler);
 }
 
 
@@ -937,7 +942,7 @@
 	switch ([_imStatus selectedTag])
 	{
 		case 0:
-			[_control stop];
+			[_control stopWithCompletionHandler:nil];
 			[self updateStatusUI:-2];
 			break;
 			

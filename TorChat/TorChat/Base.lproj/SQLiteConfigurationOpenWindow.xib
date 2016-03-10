@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10115" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10115"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="TCSQLiteOpenWindowController">
+            <connections>
+                <outlet property="openButton" destination="b7o-eV-R8b" id="MGY-HE-gPo"/>
+                <outlet property="passwordField" destination="yuL-UJ-Yxd" id="86a-by-SBw"/>
+                <outlet property="window" destination="QvC-M9-y7g" id="V5G-L9-bXt"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <window title="Configuration File" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="QvC-M9-y7g">
+            <windowStyleMask key="styleMask" titled="YES"/>
+            <rect key="contentRect" x="196" y="240" width="414" height="128"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+            <view key="contentView" id="EiT-Mj-1SZ">
+                <rect key="frame" x="0.0" y="0.0" width="414" height="128"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="WNY-lq-Rty">
+                        <rect key="frame" x="102" y="91" width="294" height="17"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Please enter the file configuration password." id="KIh-zW-UNd">
+                            <font key="font" metaFont="systemBold"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <secureTextField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="yuL-UJ-Yxd">
+                        <rect key="frame" x="104" y="61" width="290" height="22"/>
+                        <secureTextFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" usesSingleLineMode="YES" id="DbH-WP-sBz">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                            <allowedInputSourceLocales>
+                                <string>NSAllRomanInputSourcesLocaleIdentifier</string>
+                            </allowedInputSourceLocales>
+                        </secureTextFieldCell>
+                        <connections>
+                            <outlet property="delegate" destination="-2" id="rYz-0l-hSm"/>
+                        </connections>
+                    </secureTextField>
+                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dqw-Mx-aXS">
+                        <rect key="frame" x="20" y="44" width="64" height="64"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="64" id="yMh-4L-SKT"/>
+                            <constraint firstAttribute="width" constant="64" id="zkq-2z-3sj"/>
+                        </constraints>
+                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="AppIcon" id="SHw-j3-1fC"/>
+                    </imageView>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="apx-ym-6lb">
+                        <rect key="frame" x="245" y="13" width="82" height="32"/>
+                        <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pOc-Lu-qJW">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="doQuit:" target="-2" id="0Qs-yu-GfM"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="b7o-eV-R8b">
+                        <rect key="frame" x="327" y="13" width="73" height="32"/>
+                        <buttonCell key="cell" type="push" title="Open" bezelStyle="rounded" alignment="center" enabled="NO" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="X9N-mV-LPa">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="doOpen:" target="-2" id="9vU-au-7A2"/>
+                        </connections>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="dqw-Mx-aXS" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="20" symbolic="YES" id="4hQ-ou-jmd"/>
+                    <constraint firstItem="b7o-eV-R8b" firstAttribute="top" secondItem="yuL-UJ-Yxd" secondAttribute="bottom" constant="20" id="AgS-c2-0sH"/>
+                    <constraint firstAttribute="bottom" secondItem="apx-ym-6lb" secondAttribute="bottom" constant="20" symbolic="YES" id="HkD-ca-hGx"/>
+                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="WNY-lq-Rty" secondAttribute="trailing" constant="20" symbolic="YES" id="JgY-Q7-EYy"/>
+                    <constraint firstItem="yuL-UJ-Yxd" firstAttribute="top" secondItem="WNY-lq-Rty" secondAttribute="bottom" constant="8" symbolic="YES" id="WIV-Bb-FbQ"/>
+                    <constraint firstItem="dqw-Mx-aXS" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" constant="20" symbolic="YES" id="Zq4-if-3uh"/>
+                    <constraint firstAttribute="trailing" secondItem="yuL-UJ-Yxd" secondAttribute="trailing" constant="20" symbolic="YES" id="agY-vO-WOA"/>
+                    <constraint firstAttribute="trailing" secondItem="b7o-eV-R8b" secondAttribute="trailing" constant="20" symbolic="YES" id="bzF-Ke-KMq"/>
+                    <constraint firstItem="WNY-lq-Rty" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="20" symbolic="YES" id="cCe-A2-Wrl"/>
+                    <constraint firstItem="yuL-UJ-Yxd" firstAttribute="leading" secondItem="dqw-Mx-aXS" secondAttribute="trailing" constant="20" id="dpZ-xX-Euz"/>
+                    <constraint firstItem="WNY-lq-Rty" firstAttribute="top" secondItem="dqw-Mx-aXS" secondAttribute="top" id="eo7-90-CtY"/>
+                    <constraint firstAttribute="bottom" secondItem="b7o-eV-R8b" secondAttribute="bottom" constant="20" symbolic="YES" id="fVk-kV-N5F"/>
+                    <constraint firstItem="WNY-lq-Rty" firstAttribute="leading" secondItem="dqw-Mx-aXS" secondAttribute="trailing" constant="20" id="fzj-3t-0hz"/>
+                    <constraint firstItem="b7o-eV-R8b" firstAttribute="leading" secondItem="apx-ym-6lb" secondAttribute="trailing" constant="12" id="r0a-XR-xFN"/>
+                </constraints>
+            </view>
+            <point key="canvasLocation" x="179" y="659"/>
+        </window>
+    </objects>
+    <resources>
+        <image name="AppIcon" width="128" height="128"/>
+    </resources>
+</document>

@@ -28,6 +28,7 @@
 #import "SMSQLiteCryptoVFS.h"
 #import "TCImage.h"
 
+#import "TCFileHelper.h"
 
 
 /*
@@ -77,6 +78,7 @@
 	
 	NSString			*_dtbPath;
 	void				*_dtbPassword;
+	const char			*_dtbUUID;
 	sqlite3				*_dtb;
 	
 	sqlite3_stmt		*_stmtInsertSetting;
@@ -113,7 +115,7 @@
 	}
 }
 
-- (id)initWithFile:(NSString *)filepath password:(NSString *)password
+- (id)initWithFile:(NSString *)filepath password:(NSString *)password error:(NSError **)error
 {
 	self = [super init];
 	
@@ -123,11 +125,19 @@
 		_dtbPath = filepath;
 		
 		if (!_dtbPath)
+		{
+			if (error)
+				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:1 userInfo:nil];
 			return nil;
+		}
 		
 		// Check parameters.
 		if ([[self class] isEncryptedFile:_dtbPath] && password == nil)
+		{
+			if (error)
+				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:2 userInfo:nil];
 			return nil;
+		}
 		
 		// Copy password in 'safe' place.
 		if (password)
@@ -138,10 +148,16 @@
 				hostPageSize = 4096;
 			
 			if (posix_memalign(&_dtbPassword, hostPageSize, hostPageSize) != 0)
+			{
+				if (error)
+					*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:3 userInfo:nil];
 				return nil;
+			}
 			
 			if (mlock(_dtbPassword, hostPageSize) != 0)
 			{
+				if (error)
+					*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:4 userInfo:nil];
 				free(_dtbPassword);
 				return nil;
 			}
@@ -153,7 +169,7 @@
 		}
 
 		// Open database.
-		if ([self _openDatabase] == NO)
+		if ([self _openDatabaseWithError:error] == NO)
 			return nil;
 
 		// Create queue.
@@ -163,14 +179,23 @@
 	return self;
 }
 
-
 - (void)dealloc
 {
 	// Close database.
 	[self _closeDatabase];
 	
 	// Free password.
-	free(_dtbPassword);
+	if (_dtbPassword)
+	{
+		vm_size_t hostPageSize = 0;
+		
+		if (host_page_size(mach_host_self(), &hostPageSize) != KERN_SUCCESS)
+			hostPageSize = 4096;
+		
+		memset_s(_dtbPassword, hostPageSize, 0, hostPageSize);
+		munlock(_dtbPassword, hostPageSize);
+		free(_dtbPassword);
+	}
 }
 
 
@@ -194,23 +219,44 @@
 
 #pragma mark Instance
 
-- (BOOL)_openDatabase
+- (BOOL)_openDatabaseWithError:(NSError **)error
 {
 	// > localQueue <
+	
+#define tc_sqlite3_exec(Database, Sql) do { \
+	int __res = sqlite3_exec(Database, Sql, NULL, NULL, NULL);\
+	if (__res != SQLITE_OK) {	\
+		if (error)				\
+			*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(__res) }];\
+		return NO;				\
+	}							\
+} while (0)
+	
+#define tc_sqlite3_prepare(Dtb, Sql, Stmt) do { \
+	int __res = sqlite3_prepare_v2(Dtb, Sql, -1, Stmt, NULL);\
+	if (__res != SQLITE_OK) {	\
+		if (error)				\
+			*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(__res) }];\
+		return NO;				\
+	}\
+} while (0)
 
 	// Open database.
 	int result;
 	
 	if (_dtbPassword)
 	{
-		const char	*uuid = SMSQLiteCryptoVFSSettingsAdd(_dtbPassword, SMCryptoFileKeySize256);
-		const char	*uriPath = [[NSString stringWithFormat:@"file://%@?crypto-uuid=%s", _dtbPath, uuid] UTF8String];
+		const char *uriPath;
+		
+		_dtbUUID = SMSQLiteCryptoVFSSettingsAdd(_dtbPassword, SMCryptoFileKeySize256);
+		uriPath = [[NSString stringWithFormat:@"file://%@?crypto-uuid=%s", _dtbPath, _dtbUUID] UTF8String];
 		
 		result = sqlite3_open_v2(uriPath, &_dtb, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_URI, SMSQLiteCryptoVFSName());
 		
 		if (result != SQLITE_OK)
 		{
-			NSLog(@"Can't open encrypted sqlite base (%i)", result);
+			if (error)
+				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:5 userInfo:@{ TCConfigSQLiteErrorKey : @(result), TCConfigSMCryptoFileErrorKey : @(SMSQLiteCryptoVFSLastFileCryptoError()) }];
 			return NO;
 		}
 	}
@@ -220,106 +266,71 @@
 		
 		if (result != SQLITE_OK)
 		{
-			NSLog(@"Can't open sqlite base (%i)", result);
+			if (error)
+				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:6 userInfo:@{ TCConfigSQLiteErrorKey : @(result) }];
+
 			return NO;
 		}
 	}
 	
 	
 	// Pragmas.
-	sqlite3_exec(_dtb, "PRAGMA foreign_keys = ON", NULL, NULL, NULL);
+	tc_sqlite3_exec(_dtb, "PRAGMA foreign_keys = ON");
 
 	
 	// Create 'settings' table.
 	// > Table.
-	if (sqlite3_exec(_dtb, "CREATE TABLE IF NOT EXISTS settings (key TEXT NOT NULL, value, UNIQUE (key) ON CONFLICT REPLACE)", NULL, NULL, NULL) != SQLITE_OK)
-		return NO;
+	tc_sqlite3_exec(_dtb, "CREATE TABLE IF NOT EXISTS settings (key TEXT NOT NULL, value, UNIQUE (key) ON CONFLICT REPLACE)");
 
 	// > Index.
-	if (sqlite3_exec(_dtb, "CREATE INDEX IF NOT EXISTS settings_idx ON settings(key)", NULL, NULL, NULL) != SQLITE_OK)
-		return NO;
+	tc_sqlite3_exec(_dtb, "CREATE INDEX IF NOT EXISTS settings_idx ON settings(key)");
 	
 	// > Statements.
-	if (sqlite3_prepare_v2(_dtb, "INSERT INTO settings (key, value) VALUES (?, ?)", -1, &_stmtInsertSetting, NULL) != SQLITE_OK)
-		return NO;
-	
-	if (sqlite3_prepare_v2(_dtb, "SELECT value FROM settings WHERE key=? LIMIT 1", -1, &_stmtSelectSetting, NULL) != SQLITE_OK)
-		return NO;
-	
-	if (sqlite3_prepare_v2(_dtb, "DELETE FROM settings WHERE key=? LIMIT 1", -1, &_stmtDeleteSetting, NULL) != SQLITE_OK)
-		return NO;
+	tc_sqlite3_prepare(_dtb, "INSERT INTO settings (key, value) VALUES (?, ?)", &_stmtInsertSetting);
+	tc_sqlite3_prepare(_dtb, "SELECT value FROM settings WHERE key=? LIMIT 1", &_stmtSelectSetting);
+	tc_sqlite3_prepare(_dtb, "DELETE FROM settings WHERE key=? LIMIT 1", &_stmtDeleteSetting);
 	
 	
 	// Create 'buddies' table.
 	// > Tables.
-	if (sqlite3_exec(_dtb, "CREATE TABLE IF NOT EXISTS buddies (id INTEGER PRIMARY KEY AUTOINCREMENT, address TEXT NOT NULL, UNIQUE (address) ON CONFLICT ABORT)", NULL, NULL, NULL) != SQLITE_OK)
-		return NO;
-
-	if (sqlite3_exec(_dtb, "CREATE TABLE IF NOT EXISTS buddies_properties (buddy_id INTEGER, key TEXT NOT NULL, value, FOREIGN KEY(buddy_id) REFERENCES buddies(id) ON DELETE CASCADE, UNIQUE (buddy_id, key) ON CONFLICT REPLACE)", NULL, NULL, NULL) != SQLITE_OK)
-		return NO;
+	tc_sqlite3_exec(_dtb, "CREATE TABLE IF NOT EXISTS buddies (id INTEGER PRIMARY KEY AUTOINCREMENT, address TEXT NOT NULL, UNIQUE (address) ON CONFLICT ABORT)");
+	tc_sqlite3_exec(_dtb, "CREATE TABLE IF NOT EXISTS buddies_properties (buddy_id INTEGER, key TEXT NOT NULL, value, FOREIGN KEY(buddy_id) REFERENCES buddies(id) ON DELETE CASCADE, UNIQUE (buddy_id, key) ON CONFLICT REPLACE)");
 	
 	// > Indexes.
-	if (sqlite3_exec(_dtb, "CREATE INDEX IF NOT EXISTS buddies_idx ON buddies(address)", NULL, NULL, NULL) != SQLITE_OK)
-		return NO;
-	
-	if (sqlite3_exec(_dtb, "CREATE INDEX IF NOT EXISTS buddies_properties_idx ON buddies_properties(buddy_id, key)", NULL, NULL, NULL) != SQLITE_OK)
-		return NO;
+	tc_sqlite3_exec(_dtb, "CREATE INDEX IF NOT EXISTS buddies_idx ON buddies(address)");
+	tc_sqlite3_exec(_dtb, "CREATE INDEX IF NOT EXISTS buddies_properties_idx ON buddies_properties(buddy_id, key)");
 	
 	// > Statements.
-	if (sqlite3_prepare_v2(_dtb, "INSERT INTO buddies (address) VALUES (?)", -1, &_stmtInsertBuddy, NULL) != SQLITE_OK)
-		return NO;
-	
-	if (sqlite3_prepare_v2(_dtb, "INSERT INTO buddies_properties (buddy_id, key, value) VALUES (?, ?, ?)", -1, &_stmtInsertBuddyProperty, NULL) != SQLITE_OK)
-		return NO;
-	
-	if (sqlite3_prepare_v2(_dtb, "SELECT id FROM buddies WHERE address=? LIMIT 1", -1, &_stmtSelectBuddyID, NULL) != SQLITE_OK)
-		return NO;
-	
-	if (sqlite3_prepare_v2(_dtb, "SELECT address, key, value FROM buddies LEFT OUTER JOIN buddies_properties ON buddies.id=buddies_properties.buddy_id", -1, &_stmtSelectBuddyAll, NULL) != SQLITE_OK)
-		return NO;
-	
-	if (sqlite3_prepare_v2(_dtb, "SELECT value FROM buddies_properties WHERE buddy_id=? AND key=? LIMIT 1", -1, &_stmtSelectBuddyProperty, NULL) != SQLITE_OK)
-		return NO;
-	
-	if (sqlite3_prepare_v2(_dtb, "DELETE FROM buddies WHERE address=? LIMIT 1", -1, &_stmtDeleteBuddy, NULL) != SQLITE_OK)
-		return NO;
+	tc_sqlite3_prepare(_dtb, "INSERT INTO buddies (address) VALUES (?)", &_stmtInsertBuddy);
+	tc_sqlite3_prepare(_dtb, "INSERT INTO buddies_properties (buddy_id, key, value) VALUES (?, ?, ?)", &_stmtInsertBuddyProperty);
+	tc_sqlite3_prepare(_dtb, "SELECT id FROM buddies WHERE address=? LIMIT 1", &_stmtSelectBuddyID);
+	tc_sqlite3_prepare(_dtb, "SELECT address, key, value FROM buddies LEFT OUTER JOIN buddies_properties ON buddies.id=buddies_properties.buddy_id", &_stmtSelectBuddyAll);
+	tc_sqlite3_prepare(_dtb, "SELECT value FROM buddies_properties WHERE buddy_id=? AND key=? LIMIT 1", &_stmtSelectBuddyProperty);
+	tc_sqlite3_prepare(_dtb, "DELETE FROM buddies WHERE address=? LIMIT 1", &_stmtDeleteBuddy);
 	
 	
 	// Create 'blocked' table.
 	// > Table.
-	if (sqlite3_exec(_dtb, "CREATE TABLE IF NOT EXISTS blocked (address TEXT NOT NULL, UNIQUE (address) ON CONFLICT ABORT)", NULL, NULL, NULL) != SQLITE_OK)
-		return NO;
+	tc_sqlite3_exec(_dtb, "CREATE TABLE IF NOT EXISTS blocked (address TEXT NOT NULL, UNIQUE (address) ON CONFLICT ABORT)");
 	
 	// > Indexes.
-	if (sqlite3_exec(_dtb, "CREATE INDEX IF NOT EXISTS blocked_idx ON blocked(address)", NULL, NULL, NULL) != SQLITE_OK)
-		return NO;
+	tc_sqlite3_exec(_dtb, "CREATE INDEX IF NOT EXISTS blocked_idx ON blocked(address)");
 	
 	// > Statements.
-	if (sqlite3_prepare_v2(_dtb, "INSERT INTO blocked (address) VALUES (?)", -1, &_stmtInsertBlocked, NULL) != SQLITE_OK)
-		return NO;
-	
-	if (sqlite3_prepare_v2(_dtb, "SELECT address FROM blocked LIMIT 1", -1, &_stmtSelectBlocked, NULL) != SQLITE_OK)
-		return NO;
-	
-	if (sqlite3_prepare_v2(_dtb, "DELETE FROM blocked WHERE address=?", -1, &_stmtDeleteBlocked, NULL) != SQLITE_OK)
-		return NO;
-	
+	tc_sqlite3_prepare(_dtb, "INSERT INTO blocked (address) VALUES (?)", &_stmtInsertBlocked);
+	tc_sqlite3_prepare(_dtb, "SELECT address FROM blocked LIMIT 1", &_stmtSelectBlocked);
+	tc_sqlite3_prepare(_dtb, "DELETE FROM blocked WHERE address=?", &_stmtDeleteBlocked);
 	
 	// Create 'paths' table.
 	// > Table.
-	if (sqlite3_exec(_dtb, "CREATE TABLE IF NOT EXISTS paths (component TEXT NOT NULL, type TEXT NOT NULL, path TEXT, UNIQUE (component) ON CONFLICT REPLACE)", NULL, NULL, NULL) != SQLITE_OK)
-		return NO;
+	tc_sqlite3_exec(_dtb, "CREATE TABLE IF NOT EXISTS paths (component TEXT NOT NULL, type TEXT NOT NULL, path TEXT, UNIQUE (component) ON CONFLICT REPLACE)");
 	
 	// > Indexes.
-	if (sqlite3_exec(_dtb, "CREATE INDEX IF NOT EXISTS paths_idx ON paths(component)", NULL, NULL, NULL) != SQLITE_OK)
-		return NO;
+	tc_sqlite3_exec(_dtb, "CREATE INDEX IF NOT EXISTS paths_idx ON paths(component)");
 	
 	// > Statements.
-	if (sqlite3_prepare_v2(_dtb, "INSERT INTO paths (component, type, path) VALUES (?, ?, ?)", -1, &_stmtInsertPath, NULL) != SQLITE_OK)
-		return NO;
-	
-	if (sqlite3_prepare_v2(_dtb, "SELECT type, path FROM paths WHERE component=?", -1, &_stmtSelectPath, NULL) != SQLITE_OK)
-		return NO;
+	tc_sqlite3_prepare(_dtb, "INSERT INTO paths (component, type, path) VALUES (?, ?, ?)", &_stmtInsertPath);
+	tc_sqlite3_prepare(_dtb, "SELECT type, path FROM paths WHERE component=?", &_stmtSelectPath);
 	
 	return YES;
 }
@@ -355,6 +366,13 @@
 		sqlite3_close(_dtb);
 		_dtb = NULL;
 	}
+	
+	// Remove VFS info.
+	if (_dtbUUID)
+	{
+		SMSQLiteCryptoVFSSettingsRemove(_dtbUUID);
+		_dtbUUID = NULL;
+	}
 }
 
 
@@ -362,7 +380,7 @@
 
 - (id)_sqliteValueForStatement:(sqlite3_stmt *)stmt column:(int)column
 {
-	if (!stmt)
+	if (!stmt || !_dtb)
 		return nil;
 	
 	int type = sqlite3_column_type(stmt, column);
@@ -414,7 +432,7 @@
 {
 	// > localQueue <
 	
-	if (!stmt)
+	if (!stmt || !_dtb)
 		return nil;
 	
 	id	obj = nil;
@@ -435,7 +453,7 @@
 {
 	// > localQueue <
 	
-	if (!value || !stmt)
+	if (!value || !stmt || !_dtb)
 		return;
 
 	// Bind.
@@ -488,6 +506,9 @@
 	
 	dispatch_sync(_localQueue, ^{
 		
+		if (!_dtb)
+			return;
+		
 		sqlite3_bind_text(_stmtSelectSetting, 1, key.UTF8String, -1, SQLITE_TRANSIENT);
 
 		obj = [self _sqliteStepValueForStatement:_stmtSelectSetting column:0];
@@ -502,6 +523,9 @@
 		return;
 	
 	dispatch_async(_localQueue, ^{
+		
+		if (!_dtb)
+			return;
 		
 		if (value)
 		{
@@ -529,7 +553,7 @@
 
 - (sqlite3_int64)_buddyIDForAddress:(NSString *)address
 {
-	if (!address)
+	if (!address || !_dtb)
 		return -1;
 	
 	sqlite3_int64 result = -1;
@@ -552,7 +576,7 @@
 {
 	// > localQueue <
 	
-	if (!key)
+	if (!key || !_dtb)
 		return nil;
 	
 	sqlite3_bind_int64(_stmtSelectBuddyProperty, 1, buddyID);
@@ -565,6 +589,9 @@
 {
 	// > localQueue <
 	
+	if (!_dtb)
+		return;
+	
 	sqlite3_bind_int64(_stmtInsertBuddyProperty, 1, buddyID);
 	sqlite3_bind_text(_stmtInsertBuddyProperty, 2, key.UTF8String, -1, SQLITE_TRANSIENT);
 		
@@ -574,9 +601,9 @@
 
 
 /*
-** TCConfigSQLite - TCConfigInterface
+** TCConfigSQLite - TCConfig
 */
-#pragma mark - TCConfigSQLite - TCConfigInterface
+#pragma mark - TCConfigSQLite - TCConfig
 
 #pragma mark Tor
 
@@ -753,9 +780,12 @@
 
 - (NSArray *)buddies
 {
-	__block NSMutableArray *result = [[NSMutableArray alloc] init];
+	NSMutableArray *result = [[NSMutableArray alloc] init];
 	
 	dispatch_sync(_localQueue, ^{
+		
+		if (!_dtb)
+			return;
 		
 		NSString			*currentAddress = nil;
 		NSMutableDictionary	*currentEntry = nil;
@@ -802,6 +832,9 @@
 	
 	dispatch_async(_localQueue, ^{
 
+		if (!_dtb)
+			return;
+		
 		int result;
 
 		// Bind.
@@ -830,6 +863,9 @@
 	
 	dispatch_async(_localQueue, ^{
 
+		if (!_dtb)
+			return;
+		
 		// Bind.
 		sqlite3_bind_text(_stmtDeleteBuddy, 1, address.UTF8String, -1, SQLITE_TRANSIENT);
 
@@ -1059,6 +1095,9 @@
 	
 	dispatch_sync(_localQueue, ^{
 		
+		if (!_dtb)
+			return;
+		
 		while (sqlite3_step(_stmtSelectBlocked) == SQLITE_ROW)
 		{
 			const char *address = (const char *)sqlite3_column_text(_stmtSelectBlocked, 0);
@@ -1080,6 +1119,9 @@
 	
 	dispatch_async(_localQueue, ^{
 		
+		if (!_dtb)
+			return;
+		
 		// Bind.
 		sqlite3_bind_text(_stmtInsertBlocked, 1, address.UTF8String, -1, SQLITE_TRANSIENT);
 
@@ -1095,6 +1137,9 @@
 {
 	dispatch_async(_localQueue, ^{
 
+		if (!_dtb)
+			return;
+		
 		// Bind.
 		sqlite3_bind_text(_stmtDeleteBlocked, 1, address.UTF8String, -1, SQLITE_TRANSIENT);
 		
@@ -1221,6 +1266,9 @@
 {
 	dispatch_async(_localQueue, ^{
 		
+		if (!_dtb)
+			return;
+		
 		// Handle special referal component.
 		if (component == TCConfigPathComponentReferal)
 		{
@@ -1242,7 +1290,7 @@
 			// Move.
 			if ([[NSFileManager defaultManager] moveItemAtPath:_dtbPath toPath:newPath error:nil] == NO)
 			{
-				[self _openDatabase]; // re-open.
+				[self _openDatabaseWithError:nil]; // re-open.
 				return;
 			}
 			
@@ -1250,7 +1298,7 @@
 			_dtbPath = newPath;
 			
 			// Re-open on new path.
-			[self _openDatabase];
+			[self _openDatabaseWithError:nil];
 			
 			// Notify this component.
 			[self _notifyPathChangeForComponent:TCConfigPathComponentReferal];
@@ -1303,6 +1351,9 @@
 - (NSString *)_pathForComponent:(TCConfigPathComponent)component fullPath:(BOOL)fullPath
 {
 	// > localQueue <
+	
+	if (!_dtb)
+		return nil;
 	
 	// Get default subpath.
 	NSString	*standardSubPath = nil;
@@ -1466,6 +1517,9 @@
 - (TCConfigPathType)_pathTypeForComponent:(TCConfigPathComponent)component
 {
 	// > localQueue <
+	
+	if (!_dtb)
+		return TCConfigPathTypeReferal;
 	
 	NSString *componentStr = [self componentNameForComponent:component];
 	
@@ -1651,6 +1705,391 @@
 - (void)synchronize
 {
 	dispatch_sync(_localQueue, ^{ });
+}
+
+- (void)close
+{
+	dispatch_sync(_localQueue, ^{
+		[self _closeDatabase];
+	});
+}
+
+
+
+/*
+** TCConfigSQLite - TCConfigEncryptable
+*/
+#pragma mark - TCConfigSQLite - TCConfigEncryptable
+
+- (BOOL)isEncrypted
+{
+	__block BOOL result = NO;
+	
+	dispatch_sync(_localQueue, ^{
+		result = (_dtbPassword != NULL);
+	});
+	
+	return result;
+}
+
+- (void)changePassword:(NSString *)newPassword completionHandler:(void (^)(NSError *error))handler
+{
+	if (!handler)
+		handler = ^(NSError *error) { };
+	
+	dispatch_async(_localQueue, ^{
+		
+		dispatch_queue_t	queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+		NSError				*error = nil;
+		
+		if ([self _changePassword:newPassword error:&error])
+		{
+			dispatch_async(queue, ^{
+				handler(nil);
+			});
+		}
+		else
+		{
+			dispatch_async(queue, ^{
+				handler(error);
+			});
+		}
+	});
+}
+
+- (BOOL)_changePassword:(NSString *)newPassword error:(NSError **)error
+{
+	// > localQueue <
+	
+	if (!_dtb)
+		return NO;
+	
+	if (_dtbPassword)
+	{
+		// Is encrypted + new password : change password.
+		if (newPassword)
+		{
+			SMCryptoFileError	smError;
+			BOOL				result;
+			
+			result = SMSQLiteCryptoVFSChangePassword(_dtb, newPassword.UTF8String, &smError);
+			
+			if (result == NO)
+				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSMCryptoFileErrorKey : @(smError) }];
+			
+			return result;
+		}
+		
+		// Is encrypted + no new password  : deactivate encryption.
+		else
+		{
+			NSFileManager	*mng = [NSFileManager defaultManager];
+			NSString		*tpath = [_dtbPath stringByAppendingString:@"-tmp"];
+			int				sres;
+			
+			sqlite3			*ndtb = NULL;
+			sqlite3			*odtb = NULL;
+			void			*odtbPassword = NULL;
+			const char		*odtbUUID = NULL;
+			
+			sqlite3_backup	*backup = NULL;
+			
+			// Close database.
+			[self _closeDatabase];
+			
+			// Move encrypted database to tmp base.
+			if ([mng moveItemAtPath:_dtbPath toPath:tpath error:error] == NO)
+				goto errDec;
+			
+			// Open encrypted moved database.
+			const char *uriPath;
+			
+			odtbUUID = SMSQLiteCryptoVFSSettingsAdd(_dtbPassword, SMCryptoFileKeySize256);
+			uriPath = [[NSString stringWithFormat:@"file://%@?crypto-uuid=%s", tpath, odtbUUID] UTF8String];
+			
+			sres = sqlite3_open_v2(uriPath, &odtb, SQLITE_OPEN_READONLY | SQLITE_OPEN_URI, SMSQLiteCryptoVFSName());
+			
+			if (sres != SQLITE_OK)
+			{
+				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres), TCConfigSMCryptoFileErrorKey : @(SMSQLiteCryptoVFSLastFileCryptoError()) }];
+				goto errDec;
+			}
+			
+			sqlite3_exec(odtb, "PRAGMA foreign_keys = ON", NULL, NULL, NULL);
+			
+			// Open new clear database.
+			sres = sqlite3_open_v2(_dtbPath.fileSystemRepresentation, &ndtb, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+			
+			if (sres != SQLITE_OK)
+			{
+				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres) }];
+				goto errDec;
+			}
+			
+			sqlite3_exec(ndtb, "PRAGMA foreign_keys = ON", NULL, NULL, NULL);
+			
+			
+			// Create backup.
+			backup = sqlite3_backup_init(ndtb, "main", odtb, "main");
+			
+			if (!backup)
+			{
+				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ NSLocalizedDescriptionKey : @"can't create backup object" }];
+				goto errDec;
+			}
+			
+			// Backup.
+			sres = sqlite3_backup_step(backup, -1);
+			
+			if (sres != SQLITE_DONE)
+			{
+				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres) }];
+				goto errDec;
+			}
+			
+			sqlite3_backup_finish(backup);
+			backup = NULL;
+			
+			// Close databases.
+			sqlite3_close(odtb);
+			sqlite3_close(ndtb);
+			
+			odtb = NULL;
+			ndtb = NULL;
+			
+			// Free UUID.
+			SMSQLiteCryptoVFSSettingsRemove(odtbUUID);
+			odtbUUID = NULL;
+			
+			// Move crypto info.
+			odtbPassword = _dtbPassword;
+			_dtbPassword = NULL;
+			
+			// Re-open database.
+			if ([self _openDatabaseWithError:error] == NO)
+				goto errDec;
+			
+			// Free password.
+			vm_size_t hostPageSize = 0;
+			
+			if (host_page_size(mach_host_self(), &hostPageSize) != KERN_SUCCESS)
+				hostPageSize = 4096;
+			
+			memset_s(odtbPassword, hostPageSize, 0, hostPageSize);
+			munlock(odtbPassword, hostPageSize);
+			free(odtbPassword);
+			
+			odtbPassword = NULL;
+			
+			// Remove old file.
+			[mng removeItemAtPath:tpath error:error];
+			
+			// Everything is ok.
+			return YES;
+			
+		errDec:
+			
+			if (backup)
+				sqlite3_backup_finish(backup);
+			
+			// Close new)database.
+			if (ndtb)
+				sqlite3_close(ndtb);
+			
+			// Close old-database.
+			if (odtb)
+				sqlite3_close(odtb);
+			
+			// Remove crypto setting.
+			if (odtbUUID)
+			{
+				SMSQLiteCryptoVFSSettingsRemove(odtbUUID);
+				odtbUUID = NULL;
+			}
+			
+			// Move back database.
+			if ([mng fileExistsAtPath:tpath] && [mng fileExistsAtPath:_dtbPath])
+			{
+				[mng removeItemAtPath:_dtbPath error:nil];
+				[mng moveItemAtPath:tpath toPath:_dtbPath error:nil];
+			}
+			
+			// Re-set password.
+			if (odtbPassword)
+				_dtbPassword = odtbPassword;
+			
+			// Re-open database.
+			if (!_dtb)
+				[self _openDatabaseWithError:nil];
+			
+			return NO;
+		}
+	}
+	else
+	{
+		// Is not encrypted + new password : activate encryption.
+		if (newPassword)
+		{
+			NSFileManager	*mng = [NSFileManager defaultManager];
+			NSString		*tpath = [_dtbPath stringByAppendingString:@"-tmp"];
+			int				sres;
+			
+			void		*ndtbPassword = NULL;
+			const char	*ndtbUUID = NULL;
+			sqlite3		*ndtb = NULL;
+			sqlite3		*odtb = NULL;
+			
+			sqlite3_backup *backup = NULL;
+			
+			// Copy password.
+			vm_size_t hostPageSize = 0;
+			
+			if (host_page_size(mach_host_self(), &hostPageSize) != KERN_SUCCESS)
+				hostPageSize = 4096;
+			
+			if (posix_memalign(&ndtbPassword, hostPageSize, hostPageSize) != 0)
+			{
+				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ NSLocalizedDescriptionKey : @"can't allocate password buffer" }];
+				goto errEnc;
+			}
+			
+			if (mlock(ndtbPassword, hostPageSize) != 0)
+			{
+				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ NSLocalizedDescriptionKey : @"can't mlock password buffer" }];
+				goto errEnc;
+			}
+			
+			strlcpy(ndtbPassword, newPassword.UTF8String, hostPageSize);
+			
+			// Close database.
+			[self _closeDatabase];
+			
+			// Move clear database to tmp base.
+			if ([mng moveItemAtPath:_dtbPath toPath:tpath error:error] == NO)
+				goto errEnc;
+			
+			// Open moved clear database.
+			sres = sqlite3_open_v2(tpath.fileSystemRepresentation, &odtb, SQLITE_OPEN_READONLY, NULL);
+			
+			if (sres != SQLITE_OK)
+			{
+				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres) }];
+				goto errEnc;
+			}
+			
+			sqlite3_exec(odtb, "PRAGMA foreign_keys = ON", NULL, NULL, NULL);
+			
+			
+			// Open new encrypted database.
+			const char *uriPath;
+			
+			ndtbUUID = SMSQLiteCryptoVFSSettingsAdd(ndtbPassword, SMCryptoFileKeySize256);
+			uriPath = [[NSString stringWithFormat:@"file://%@?crypto-uuid=%s", _dtbPath, ndtbUUID] UTF8String];
+			
+			sres = sqlite3_open_v2(uriPath, &ndtb, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_URI, SMSQLiteCryptoVFSName());
+			
+			if (sres != SQLITE_OK)
+			{
+				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres), TCConfigSMCryptoFileErrorKey : @(SMSQLiteCryptoVFSLastFileCryptoError()) }];
+				goto errEnc;
+			}
+			
+			sqlite3_exec(ndtb, "PRAGMA foreign_keys = ON", NULL, NULL, NULL);
+			
+			// Create backup.
+			backup = sqlite3_backup_init(ndtb, "main", odtb, "main");
+			
+			if (!backup)
+			{
+				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ NSLocalizedDescriptionKey : @"can't create backup object" }];
+				goto errEnc;
+			}
+			
+			// Backup.
+			sres = sqlite3_backup_step(backup, -1);
+			
+			if (sres != SQLITE_DONE)
+			{
+				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres) }];
+				goto errEnc;
+			}
+			
+			sqlite3_backup_finish(backup);
+			backup = NULL;
+			
+			// Close databases.
+			sqlite3_close(odtb);
+			sqlite3_close(ndtb);
+			
+			odtb = NULL;
+			ndtb = NULL;
+			
+			// Hold crypto info.
+			_dtbPassword = ndtbPassword;
+			_dtbUUID = ndtbUUID;
+			
+			// Re-open database.
+			if ([self _openDatabaseWithError:error] == NO)
+				goto errEnc;
+			
+			// Remove old clear file.
+			TCFileSecureRemove(tpath);
+			
+			// Everything is ok.
+			return YES;
+			
+		errEnc:
+			
+			// Free backup.
+			if (backup)
+				sqlite3_backup_finish(backup);
+			
+			// Close new-database.
+			if (ndtb)
+				sqlite3_close(ndtb);
+			
+			// Close old-database.
+			if (odtb)
+				sqlite3_close(odtb);
+			
+			// Free new-password.
+			if (ndtbPassword)
+			{
+				memset_s(ndtbPassword, hostPageSize, 0, hostPageSize);
+				munlock(ndtbPassword, hostPageSize);
+				free(ndtbPassword);
+				
+				_dtbPassword = NULL;
+			}
+			
+			// Remove new-setting.
+			if (ndtbUUID)
+			{
+				SMSQLiteCryptoVFSSettingsRemove(ndtbUUID);
+				_dtbUUID = NULL;
+			}
+			
+			// Move back database.
+			if ([mng fileExistsAtPath:tpath] && [mng fileExistsAtPath:_dtbPath])
+			{
+				[mng removeItemAtPath:_dtbPath error:nil];
+				[mng moveItemAtPath:tpath toPath:_dtbPath error:nil];
+			}
+			
+			// Re-open database.
+			if (!_dtb)
+				[self _openDatabaseWithError:nil];
+			
+			return NO;
+		}
+		
+		// Is not encrypted + no new password : nop.
+		else
+		{
+			// Nothing to do.
+			return YES;
+		}
+	}
 }
 
 @end

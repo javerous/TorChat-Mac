@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10089" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10115" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10089"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10115"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCPreferencesWindowController">
@@ -41,12 +41,18 @@
                             <action selector="doToolbarItem:" target="-2" id="dHM-hm-xrG"/>
                         </connections>
                     </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="E7FA5327-F064-478C-9292-36024858FE2E" explicitItemIdentifier="security" label="Security" paletteLabel="Security" tag="-1" image="lock" selectable="YES" id="rej-tl-Kh3">
+                        <connections>
+                            <action selector="doToolbarItem:" target="-2" id="jMf-L3-BXY"/>
+                        </connections>
+                    </toolbarItem>
                 </allowedToolbarItems>
                 <defaultToolbarItems>
                     <toolbarItem reference="83"/>
                     <toolbarItem reference="82"/>
                     <toolbarItem reference="84"/>
                     <toolbarItem reference="UEu-Ia-LhZ"/>
+                    <toolbarItem reference="rej-tl-Kh3"/>
                 </defaultToolbarItems>
             </toolbar>
             <connections>
@@ -61,5 +67,6 @@
         <image name="NSPreferencesGeneral" width="32" height="32"/>
         <image name="NSUserGroup" width="32" height="32"/>
         <image name="locations" width="32" height="32"/>
+        <image name="lock" width="32" height="32"/>
     </resources>
 </document>

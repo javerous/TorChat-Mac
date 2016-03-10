@@ -23,7 +23,7 @@
 #import "TCPanel_Advanced.h"
 
 #import "TCLogsManager.h"
-#import "TCConfigPlist.h"
+#import "TCConfigEncryptable.h"
 
 #import "TCLocationViewController.h"
 
@@ -46,9 +46,7 @@
 
 @interface TCPanel_Advanced ()
 {
-	__weak id <SMAssistantProxy> _proxy;
-	
-	TCConfigPlist *_config;
+	id <TCConfigEncryptable> _currentConfig;
 
 	TCLocationViewController *_torDownloadsLocation;
 }
@@ -71,23 +69,23 @@
 
 @implementation TCPanel_Advanced
 
+@synthesize proxy;
+@synthesize previousContent;
+
 - (void)dealloc
 {
     TCDebugLog(@"TCPanel_Advanced dealloc");
 }
+
 
 /*
 ** TCPanel_Advanced - SMAssistantPanel
 */
 #pragma mark - TCPanel_Advanced - SMAssistantPanel
 
-+ (id <SMAssistantPanel>)panelWithProxy:(id <SMAssistantProxy>)proxy
++ (id <SMAssistantPanel>)panel
 {
-	TCPanel_Advanced *panel = [[TCPanel_Advanced alloc] initWithNibName:@"AssistantPanel_Advanced" bundle:nil];
-	
-	panel->_proxy = proxy;
-	
-	return panel;
+	return [[TCPanel_Advanced alloc] initWithNibName:@"AssistantPanel_Advanced" bundle:nil];
 }
 
 + (NSString *)identifiant
@@ -103,56 +101,27 @@
 - (id)content
 {
 	// Set up the config with the fields.
-	[_config setTorAddress:[_torAddressField stringValue]];
-	[_config setSelfAddress:[_imAddressField stringValue]];
+	[_currentConfig setTorAddress:[_torAddressField stringValue]];
+	[_currentConfig setSelfAddress:[_imAddressField stringValue]];
 	
-	[_config setTorPort:(uint16_t)[_torPortField intValue]];
-	[_config setClientPort:(uint16_t)[_imInPortField intValue]];
+	[_currentConfig setTorPort:(uint16_t)[_torPortField intValue]];
+	[_currentConfig setClientPort:(uint16_t)[_imInPortField intValue]];
 	
 	// Return the config.
-	return _config;
+	return _currentConfig;
 }
 
-- (void)showPanel
+- (void)didAppear
 {
+	_currentConfig = self.previousContent;
+	
 	// Configure assistant.
-	id <SMAssistantProxy> proxy = _proxy;
+	[self.proxy setIsLastPanel:YES];
 	
-	[proxy setIsLastPanel:YES];
-	
-	// If we already have a config, stop here
-	if (_config)
-		return;
-	
-	// Get the default tor config path.
-	NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
-	NSString *configPath = [[bundlePath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"];
-	
-	if (!configPath)
-	{
-		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_build_path"];
-		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_error_build_path", @"")] runModal];
-		return;
-	}
-	
-	// Try to build a new config file.
-	_config = [[TCConfigPlist alloc] initWithFile:configPath];
-	
-	if (!_config)
-	{
-		[_imAddressField setStringValue:NSLocalizedString(@"ac_error_config", @"")];
-		
-		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_write_file", configPath];
-		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:TCLocalizedString(@"ac_error_write_file", @""), configPath] runModal];
-		
-		return;
-	}
-	
-	[_config setMode:TCConfigModeAdvanced];
-
+	[_currentConfig setMode:TCConfigModeAdvanced];
 	
 	// Add view to configure download path.
-	_torDownloadsLocation = [[TCLocationViewController alloc] initWithConfiguration:_config component:TCConfigPathComponentDownloads];
+	_torDownloadsLocation = [[TCLocationViewController alloc] initWithConfiguration:_currentConfig component:TCConfigPathComponentDownloads];
 	
 	[_torDownloadsLocation addToView:_downloadLocationView];
 }

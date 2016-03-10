@@ -1,5 +1,5 @@
 /*
- *  TCBuddyInfoWindowsController.h
+ *  TCFileHelper.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,34 +20,7 @@
  *
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
-#import "TCConfigEncryptable.h"
-
-
-/*
-** Forward
-*/
-#pragma mark - Forward
-
-@class TCBuddy;
-@class TCDragImageView;
-@class TCCoreManager;
-
-
-
-/*
-** TCBuddyInfoController
-*/
-#pragma mark - TCBuddyInfoController
-
-@interface TCBuddyInfoWindowsController : NSObject
-
-// -- Instance --
-- (instancetype)initWithCoreManager:(TCCoreManager *)coreManager;
-
-// -- Tools --
-- (void)showInfoForBuddy:(TCBuddy *)buddy;
-- (void)closeInfoForBuddy:(TCBuddy *)buddy;
-
-@end
+// useless on most SSD, but do it for other kinds of devices.
+BOOL TCFileSecureRemove(NSString *path);

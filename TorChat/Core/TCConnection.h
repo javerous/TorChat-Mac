@@ -71,6 +71,6 @@
 
 // -- Life --
 - (void)start;
-- (void)stop;
+- (void)stopWithCompletionHandler:(dispatch_block_t)handler;
 
 @end

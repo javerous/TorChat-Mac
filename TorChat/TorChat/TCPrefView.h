@@ -22,7 +22,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "TCConfigInterface.h"
+#import "TCConfigEncryptable.h"
 
 
 /*
@@ -41,10 +41,15 @@
 
 @interface TCPrefView : NSViewController
 
-@property (strong, nonatomic) id <TCConfigInterface>	config;
-@property (strong, nonatomic) TCCoreManager				*core;
+// Properties.
+@property (strong, nonatomic, readonly) id <TCConfigEncryptable>	config;
+@property (strong, nonatomic, readonly) TCCoreManager				*core;
 
-- (void)loadConfig;
-- (BOOL)saveConfig;
+// Event.
+- (void)didLoad;	// can be subclassed.
+- (void)didUnload;	// can be subclassed.
+
+// Tools.
+- (void)reloadConfig:(id <TCConfigEncryptable>)config;
 
 @end
