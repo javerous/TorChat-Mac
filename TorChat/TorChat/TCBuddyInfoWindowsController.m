@@ -138,11 +138,6 @@
 	return self;
 }
 
-- (void)dealloc
-{
-	[_coreManager removeObserver:self];
-}
-
 
 
 /*
@@ -309,10 +304,7 @@
 	// -- Configure content --
 	// Name.
 	NSString *name = [_buddy profileName];
-	
-	if ([name length] == 0)
-		name = [_buddy lastProfileName];
-	
+
 	[self setInfo:name withKey:BICInfoProfileName];
 	
 	// Avatar.

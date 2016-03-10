@@ -1,5 +1,5 @@
 /*
- *  TCBuddyInfoWindowsController.h
+ *  TCPrefView_Security.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,34 +20,14 @@
  *
  */
 
-#import <Cocoa/Cocoa.h>
-
-#import "TCConfigEncryptable.h"
+#import "TCPrefView.h"
 
 
 /*
-** Forward
+** TCPrefView_Security
 */
-#pragma mark - Forward
+#pragma mark - TCPrefView_Security
 
-@class TCBuddy;
-@class TCDragImageView;
-@class TCCoreManager;
-
-
-
-/*
-** TCBuddyInfoController
-*/
-#pragma mark - TCBuddyInfoController
-
-@interface TCBuddyInfoWindowsController : NSObject
-
-// -- Instance --
-- (instancetype)initWithCoreManager:(TCCoreManager *)coreManager;
-
-// -- Tools --
-- (void)showInfoForBuddy:(TCBuddy *)buddy;
-- (void)closeInfoForBuddy:(TCBuddy *)buddy;
+@interface TCPrefView_Security : TCPrefView
 
 @end

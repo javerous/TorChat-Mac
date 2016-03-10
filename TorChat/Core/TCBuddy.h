@@ -154,7 +154,7 @@ typedef enum
 
 // -- Run --
 - (void)start;
-- (void)stop;
+- (void)stopWithCompletionHandler:(dispatch_block_t)handler;
 
 - (BOOL)isRunning;
 - (BOOL)isPonged;
@@ -199,10 +199,9 @@ typedef enum
 
 - (NSString *)profileText;
 - (TCImage *)profileAvatar;
-- (NSString *)profileName;		// Current profile name
+- (NSString *)profileName;
 
-- (NSString *)lastProfileName;	// Last know profile name
-- (NSString *)finalName;		// Best name representation (alias / profile name / last know profile name)
+- (NSString *)finalName; // Best name representation (alias / profile name)
 
 // -- Observers --
 - (void)addObserver:(id <TCBuddyObserver>)observer;

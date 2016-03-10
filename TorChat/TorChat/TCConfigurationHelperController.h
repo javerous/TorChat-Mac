@@ -1,5 +1,5 @@
 /*
- *  TCBuddyInfoWindowsController.h
+ *  TCConfigurationHelperController.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,34 +20,33 @@
  *
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 #import "TCConfigEncryptable.h"
 
 
 /*
-** Forward
+** Types
 */
-#pragma mark - Forward
+#pragma mark - Types
 
-@class TCBuddy;
-@class TCDragImageView;
-@class TCCoreManager;
+typedef enum
+{
+	TCConfigurationHelperCompletionTypeCanceled,	// configuration = nil
+	TCConfigurationHelperCompletionTypeDone,		// configuration loaded, or nil if error
+} TCConfigurationHelperCompletionType;
+
+typedef void (^TCConfigurationHelperCompletionHandler)(TCConfigurationHelperCompletionType type, id <TCConfigEncryptable> configuration);
 
 
 
 /*
-** TCBuddyInfoController
+** TCConfigurationHelperController
 */
-#pragma mark - TCBuddyInfoController
+#pragma mark - TCConfigurationHelperController
 
-@interface TCBuddyInfoWindowsController : NSObject
+@interface TCConfigurationHelperController : NSObject
 
-// -- Instance --
-- (instancetype)initWithCoreManager:(TCCoreManager *)coreManager;
-
-// -- Tools --
-- (void)showInfoForBuddy:(TCBuddy *)buddy;
-- (void)closeInfoForBuddy:(TCBuddy *)buddy;
++ (void)openConfigurationAtPath:(NSString *)path completionHandler:(TCConfigurationHelperCompletionHandler)handler;
 
 @end

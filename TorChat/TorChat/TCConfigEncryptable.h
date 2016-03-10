@@ -1,5 +1,5 @@
 /*
- *  TCBuddyInfoWindowsController.h
+ *  TCConfigEncryptable.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,34 +20,18 @@
  *
  */
 
-#import <Cocoa/Cocoa.h>
-
-#import "TCConfigEncryptable.h"
+#import "TCConfigInterface.h"
 
 
 /*
-** Forward
+** TCConfigEncryptable
 */
-#pragma mark - Forward
+#pragma mark - TCConfigEncryptable
 
-@class TCBuddy;
-@class TCDragImageView;
-@class TCCoreManager;
+@protocol TCConfigEncryptable <TCConfigInterface>
 
+- (BOOL)isEncrypted;
 
-
-/*
-** TCBuddyInfoController
-*/
-#pragma mark - TCBuddyInfoController
-
-@interface TCBuddyInfoWindowsController : NSObject
-
-// -- Instance --
-- (instancetype)initWithCoreManager:(TCCoreManager *)coreManager;
-
-// -- Tools --
-- (void)showInfoForBuddy:(TCBuddy *)buddy;
-- (void)closeInfoForBuddy:(TCBuddy *)buddy;
+- (void)changePassword:(NSString *)newPassword completionHandler:(void (^)(NSError *error))handler;
 
 @end

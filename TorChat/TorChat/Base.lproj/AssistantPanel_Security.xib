@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10115" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10115"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="TCPanel_Security">
+            <connections>
+                <outlet property="encryptCheckBox" destination="WOH-cU-5NS" id="B2E-Xf-TcW"/>
+                <outlet property="passwordField" destination="gKi-CM-Nz7" id="jqm-0M-raY"/>
+                <outlet property="passwordTitle" destination="xiM-hi-roa" id="r4N-kz-41R"/>
+                <outlet property="verifyField" destination="srX-24-dkT" id="I6g-S4-XtM"/>
+                <outlet property="verifyTitle" destination="7jJ-Xf-Rgj" id="PSr-EJ-Kla"/>
+                <outlet property="view" destination="nfa-Yn-Y4a" id="HsI-8L-TSu"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="nfa-Yn-Y4a" userLabel="SecurityView">
+            <rect key="frame" x="0.0" y="0.0" width="420" height="327"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <textField verticalHuggingPriority="750" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wrj-Cp-BS7">
+                    <rect key="frame" x="18" y="290" width="365" height="17"/>
+                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Please specify the security to use for your configuration file" id="orc-zu-V4h">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField verticalHuggingPriority="750" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nQc-qs-6PX">
+                    <rect key="frame" x="18" y="254" width="341" height="28"/>
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="If you activate encryption, your configuration file will be entirely encrypted with AES-XTS 256 bits." id="MdA-og-otk">
+                        <font key="font" metaFont="smallSystem"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <button translatesAutoresizingMaskIntoConstraints="NO" id="WOH-cU-5NS">
+                    <rect key="frame" x="18" y="205" width="175" height="18"/>
+                    <buttonCell key="cell" type="check" title="Encrypt configuration file" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="ex6-hW-wuO">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="doEncrypt:" target="-2" id="OdY-qd-Lvh"/>
+                    </connections>
+                </button>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xiM-hi-roa">
+                    <rect key="frame" x="43" y="180" width="63" height="17"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Password" id="DqV-nF-ZSw">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7jJ-Xf-Rgj">
+                    <rect key="frame" x="66" y="148" width="40" height="17"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Verify" id="w6q-S2-5N1">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <secureTextField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gKi-CM-Nz7">
+                    <rect key="frame" x="112" y="177" width="288" height="22"/>
+                    <constraints>
+                        <constraint firstAttribute="width" priority="250" constant="10000" id="hRz-J2-dpJ"/>
+                    </constraints>
+                    <secureTextFieldCell key="cell" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" usesSingleLineMode="YES" id="10w-nW-JaQ">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        <allowedInputSourceLocales>
+                            <string>NSAllRomanInputSourcesLocaleIdentifier</string>
+                        </allowedInputSourceLocales>
+                    </secureTextFieldCell>
+                    <connections>
+                        <outlet property="delegate" destination="-2" id="LaQ-Vg-Q2f"/>
+                        <outlet property="nextKeyView" destination="srX-24-dkT" id="7bB-Gc-EVc"/>
+                    </connections>
+                </secureTextField>
+                <secureTextField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="srX-24-dkT">
+                    <rect key="frame" x="112" y="145" width="288" height="22"/>
+                    <secureTextFieldCell key="cell" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" usesSingleLineMode="YES" id="z2E-zv-EY8">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        <allowedInputSourceLocales>
+                            <string>NSAllRomanInputSourcesLocaleIdentifier</string>
+                        </allowedInputSourceLocales>
+                    </secureTextFieldCell>
+                    <connections>
+                        <outlet property="delegate" destination="-2" id="X1j-cH-c9G"/>
+                        <outlet property="nextKeyView" destination="gKi-CM-Nz7" id="nm5-SB-F6M"/>
+                    </connections>
+                </secureTextField>
+            </subviews>
+            <constraints>
+                <constraint firstItem="gKi-CM-Nz7" firstAttribute="top" secondItem="WOH-cU-5NS" secondAttribute="bottom" constant="8" symbolic="YES" id="1Sx-YA-OwX"/>
+                <constraint firstItem="wrj-Cp-BS7" firstAttribute="leading" secondItem="nfa-Yn-Y4a" secondAttribute="leading" constant="20" id="2eI-3h-Xhr"/>
+                <constraint firstItem="nQc-qs-6PX" firstAttribute="leading" secondItem="nfa-Yn-Y4a" secondAttribute="leading" constant="20" id="Bfm-50-NMr"/>
+                <constraint firstItem="nQc-qs-6PX" firstAttribute="top" secondItem="wrj-Cp-BS7" secondAttribute="bottom" constant="8" symbolic="YES" id="Hcz-aI-1JX"/>
+                <constraint firstItem="7jJ-Xf-Rgj" firstAttribute="centerY" secondItem="srX-24-dkT" secondAttribute="centerY" id="IdP-u5-vhy"/>
+                <constraint firstItem="xiM-hi-roa" firstAttribute="centerY" secondItem="gKi-CM-Nz7" secondAttribute="centerY" id="Ivz-6z-sWI"/>
+                <constraint firstItem="wrj-Cp-BS7" firstAttribute="top" secondItem="nfa-Yn-Y4a" secondAttribute="top" constant="20" id="Kqd-cB-G1T"/>
+                <constraint firstAttribute="trailing" secondItem="gKi-CM-Nz7" secondAttribute="trailing" constant="20" symbolic="YES" id="OMC-hd-FcC"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="wrj-Cp-BS7" secondAttribute="trailing" constant="20" symbolic="YES" id="RGY-Mq-Mmf"/>
+                <constraint firstItem="srX-24-dkT" firstAttribute="top" secondItem="gKi-CM-Nz7" secondAttribute="bottom" constant="10" symbolic="YES" id="WrG-SH-5Eq"/>
+                <constraint firstItem="7jJ-Xf-Rgj" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="WOH-cU-5NS" secondAttribute="leading" constant="25" id="bZq-Aw-SUj"/>
+                <constraint firstItem="gKi-CM-Nz7" firstAttribute="leading" secondItem="xiM-hi-roa" secondAttribute="trailing" constant="8" id="cUW-BW-GuL"/>
+                <constraint firstItem="srX-24-dkT" firstAttribute="leading" secondItem="gKi-CM-Nz7" secondAttribute="leading" id="chW-qu-SyP"/>
+                <constraint firstAttribute="trailing" secondItem="srX-24-dkT" secondAttribute="trailing" constant="20" symbolic="YES" id="drA-46-aMu"/>
+                <constraint firstItem="xiM-hi-roa" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="WOH-cU-5NS" secondAttribute="leading" constant="25" id="faJ-Ne-0Dm"/>
+                <constraint firstItem="WOH-cU-5NS" firstAttribute="leading" secondItem="nQc-qs-6PX" secondAttribute="leading" id="gwu-Yv-5NV"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="nQc-qs-6PX" secondAttribute="trailing" constant="20" symbolic="YES" id="lc9-5a-9zK"/>
+                <constraint firstItem="WOH-cU-5NS" firstAttribute="top" secondItem="nQc-qs-6PX" secondAttribute="bottom" constant="33" id="qwG-S4-080"/>
+                <constraint firstItem="srX-24-dkT" firstAttribute="leading" secondItem="7jJ-Xf-Rgj" secondAttribute="trailing" constant="8" id="tWu-H2-0zG"/>
+            </constraints>
+            <point key="canvasLocation" x="335" y="467.5"/>
+        </customView>
+    </objects>
+</document>

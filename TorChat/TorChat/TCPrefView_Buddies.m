@@ -82,20 +82,19 @@
 */
 #pragma mark - TCPrefView_Buddies - TCPrefView
 
-- (void)loadConfig
+- (void)didLoad
 {
 	// Load view.
 	[self view];
 	
-	// Observe core info.
+	// Monitor core info.
 	[self.core addObserver:self];
 }
 
-- (BOOL)saveConfig
+- (void)didUnload
 {
+	// Unmonitor core info.
 	[self.core removeObserver:self];
-	
-	return NO;
 }
 
 

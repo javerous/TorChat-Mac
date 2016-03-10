@@ -1,0 +1,15 @@
+
+/* Class = "NSTextFieldCell"; title = "Password"; ObjectID = "DqV-nF-ZSw"; */
+"DqV-nF-ZSw.title" = "Password";
+
+/* Class = "NSTextFieldCell"; title = "If you activate encryption, your configuration file will be entirely encrypted with AES-XTS 256 bits."; ObjectID = "MdA-og-otk"; */
+"MdA-og-otk.title" = "If you activate encryption, your configuration file will be entirely encrypted with AES-XTS 256 bits.";
+
+/* Class = "NSButtonCell"; title = "Encrypt configuration file"; ObjectID = "ex6-hW-wuO"; */
+"ex6-hW-wuO.title" = "Encrypt configuration file";
+
+/* Class = "NSTextFieldCell"; title = "Please specify the security to use for your configuration file"; ObjectID = "orc-zu-V4h"; */
+"orc-zu-V4h.title" = "Please specify the security to use for your configuration file";
+
+/* Class = "NSTextFieldCell"; title = "Verify"; ObjectID = "w6q-S2-5N1"; */
+"w6q-S2-5N1.title" = "Verify";

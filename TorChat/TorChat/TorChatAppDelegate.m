@@ -87,15 +87,25 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddySelectChanged:) name:TCBuddiesWindowControllerSelectChanged object:nil];
 
 	// Start TorChat.
-	[[TCMainController sharedController] startWithCompletionHandler:^(id<TCConfigInterface> configuration, TCCoreManager *core) {
+	[[TCMainController sharedController] startWithCompletionHandler:^(id<TCConfigEncryptable> configuration, TCCoreManager *core) {
+		
+		if (!configuration || !core)
+		{
+			[[NSApplication sharedApplication] terminate:nil];
+			return;
+		}
+		
 		[core addObserver:self];
 	}];
 }
 
-- (void)applicationWillTerminate:(NSNotification *)notification
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
-	// Stop TorChat
-	[[TCMainController sharedController] stop];
+	[[TCMainController sharedController] stopWithCompletionHandler:^{
+		[sender replyToApplicationShouldTerminate:YES];
+	}];
+	
+	return NSTerminateLater;
 }
 
 

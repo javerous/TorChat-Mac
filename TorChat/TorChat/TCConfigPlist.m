@@ -97,6 +97,7 @@
 	
 	NSMutableDictionary *_pathObservers;
 
+	BOOL				_isClosed;
 	BOOL				_isDirty;
 	dispatch_source_t	_timer;
 }
@@ -1454,15 +1455,26 @@
 - (void)synchronize
 {
 	dispatch_barrier_sync(_localQueue, ^{
-		
-		if (_isDirty)
-		{
-			[self saveConfig:_fcontent toFile:_fpath];
-			_isDirty = NO;
-		}
+		[self _synchronize];
 	});
 }
 
+- (void)_synchronize
+{
+	if (_isDirty)
+	{
+		[self saveConfig:_fcontent toFile:_fpath];
+		_isDirty = NO;
+	}
+}
+
+- (void)close
+{
+	dispatch_barrier_sync(_localQueue, ^{
+		[self _synchronize];
+		_isClosed = YES;
+	});
+}
 
 
 /*
@@ -1472,8 +1484,11 @@
 
 - (void)_markDirty
 {
-	// > /localQueue <
+	// > localQueue <
 
+	if (_isClosed)
+		return;
+	
 	_isDirty = YES;
 	dispatch_source_set_timer(_timer, dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), 0, 1 * NSEC_PER_SEC);
 }

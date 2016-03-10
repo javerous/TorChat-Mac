@@ -1,0 +1,12 @@
+
+/* Class = "NSTextFieldCell"; title = "Please enter the file configuration password."; ObjectID = "KIh-zW-UNd"; */
+"KIh-zW-UNd.title" = "Merci d'entrer le mot de passe du fichier de configuration.";
+
+/* Class = "NSWindow"; title = "Configuration File"; ObjectID = "QvC-M9-y7g"; */
+"QvC-M9-y7g.title" = "Fichier de Configuration";
+
+/* Class = "NSButtonCell"; title = "Open"; ObjectID = "X9N-mV-LPa"; */
+"X9N-mV-LPa.title" = "Ouvrir";
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "pOc-Lu-qJW"; */
+"pOc-Lu-qJW.title" = "Annuler";

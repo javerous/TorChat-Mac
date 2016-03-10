@@ -22,7 +22,18 @@
 
 #import <Foundation/Foundation.h>
 
-#import "TCConfigInterface.h"
+#import "TCConfigEncryptable.h"
+
+
+/*
+** Defines
+*/
+#pragma mark - Defines
+
+#define TCConfigSQLiteErrorDomain		@"TCConfigSQLiteErrorDomain"
+#define TCConfigSMCryptoFileErrorKey	@"TCConfigSMCryptoFileErrorKey"
+#define TCConfigSQLiteErrorKey			@"TCConfigSQLiteErrorKey"
+
 
 
 /*
@@ -30,10 +41,10 @@
 */
 #pragma mark - TCConfigSQLite
 
-@interface TCConfigSQLite : NSObject <TCConfigInterface>
+@interface TCConfigSQLite : NSObject <TCConfigEncryptable>
 
 // -- Instance --
-- (id)initWithFile:(NSString *)filepath password:(NSString *)password;
+- (id)initWithFile:(NSString *)filepath password:(NSString *)password error:(NSError **)error;
 
 // -- Tools --
 + (BOOL)isEncryptedFile:(NSString *)filepath;

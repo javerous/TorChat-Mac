@@ -287,9 +287,12 @@ static char gLocalQueueContext;
 		_status = TCStatusOffline;
 		
 		// Init profiles
-		_profileName = @"";
-		_profileText = @"";
-		_profileAvatar = [[TCImage alloc] initWithWidth:64 andHeight:64];
+		_profileName = [_config getBuddyLastProfileName:_address] ?: @"";
+		_profileText = [_config getBuddyLastProfileText:_address] ?: @"";
+		_profileAvatar = [_config getBuddyLastProfileAvatar:_address];
+
+		if (!_profileAvatar)
+			_profileAvatar = [[TCImage alloc] initWithWidth:64 andHeight:64];
 		
 		// Init remotes
 		_peerClient = @"";
@@ -413,8 +416,11 @@ static char gLocalQueueContext;
 	});
 }
 
-- (void)stop
+- (void)stopWithCompletionHandler:(dispatch_block_t)handler
 {
+	if (!handler)
+		handler = ^{ };
+	
 	dispatch_async(_localQueue, ^{
 		
 		if (_running)
@@ -456,6 +462,9 @@ static char gLocalQueueContext;
 			
 			[self _notify:TCBuddyEventDisconnected];
 		}
+		
+		// Notify end.
+		dispatch_async(_externalQueue, handler);
 	});
 }
 
@@ -993,11 +1002,7 @@ static char gLocalQueueContext;
 	__block NSString * result = NULL;
 	
 	dispatch_sync(_localQueue, ^{
-		
-		if ([_profileText length] > 0)
-			result = _profileText;
-		else
-			result = [_config getBuddyLastProfileText:_address];
+		result = _profileText;
 	});
 	
 	return result;
@@ -1008,11 +1013,7 @@ static char gLocalQueueContext;
 	__block id result = NULL;
 	
 	dispatch_sync(_localQueue, ^{
-	
-		if (_profileAvatar)
-			result = _profileAvatar;
-		else
-			result = [_config getBuddyLastProfileAvatar:_address];
+		result = _profileAvatar;
 	});
 	
 	return result;
@@ -1029,17 +1030,6 @@ static char gLocalQueueContext;
 	return result;
 }
 
-- (NSString *)lastProfileName
-{
-	__block NSString *result = NULL;
-	
-	dispatch_sync(_localQueue, ^{
-		result = [_config getBuddyLastProfileName:_address];
-	});
-	
-	return result;
-}
-
 - (NSString *)finalName
 {
 	__block NSString *result = NULL;
@@ -1048,10 +1038,8 @@ static char gLocalQueueContext;
 		
 		if ([_alias length] > 0)
 			result = _alias;
-		else if ([_profileName length] > 0)
-			result = _profileName;
 		else
-			result = [_config getBuddyLastProfileName:_address];
+			result = _profileName;
 	});
 	
 	return result;
@@ -2016,7 +2004,7 @@ static char gLocalQueueContext;
 	
 	// Fatal -> stop
 	if (fatal)
-		[self stop];
+		[self stopWithCompletionHandler:nil];
 }
 
 - (void)_error:(TCBuddyError)code context:(id)ctx fatal:(BOOL)fatal
@@ -2029,7 +2017,7 @@ static char gLocalQueueContext;
 	
 	// Fatal -> stop
 	if (fatal)
-		[self stop];
+		[self stopWithCompletionHandler:nil];
 }
 
 - (void)_error:(TCBuddyError)code info:(SMInfo *)subInfo fatal:(BOOL)fatal
@@ -2042,7 +2030,7 @@ static char gLocalQueueContext;
 	
 	// Fatal -> stop
 	if (fatal)
-		[self stop];
+		[self stopWithCompletionHandler:nil];
 }
 
 - (void)_notify:(TCBuddyEvent)notice

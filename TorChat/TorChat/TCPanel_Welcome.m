@@ -22,7 +22,6 @@
 
 #import "TCPanel_Welcome.h"
 
-#import "TCConfigPlist.h"
 #import "TCLogsManager.h"
 
 #import "TCDebugLog.h"
@@ -34,10 +33,8 @@
 #pragma mark - TCPanel_Welcome - Private
 
 @interface TCPanel_Welcome ()
-{
-	__weak id <SMAssistantProxy>	_proxy;
-	BOOL							_pathSet;
-	TCConfigPlist					*_config;
+{	
+	NSString *_configPath;
 }
 
 @property (strong, nonatomic) IBOutlet NSMatrix		*buttonMatrix;
@@ -57,6 +54,9 @@
 
 @implementation TCPanel_Welcome
 
+@synthesize proxy;
+@synthesize previousContent;
+
 - (void)awakeFromNib
 {
 	[_buttonMatrix setAutorecalculatesCellSize:YES];
@@ -74,13 +74,9 @@
 */
 #pragma mark - TCPanel_Welcome - SMAssistantPanel
 
-+ (id <SMAssistantPanel>)panelWithProxy:(id <SMAssistantProxy>)proxy
++ (id <SMAssistantPanel>)panel
 {
-	TCPanel_Welcome *panel = [[TCPanel_Welcome alloc] initWithNibName:@"AssistantPanel_Welcome" bundle:nil];
-	
-	panel->_proxy = proxy;
-	
-	return panel;
+	return [[TCPanel_Welcome alloc] initWithNibName:@"AssistantPanel_Welcome" bundle:nil];
 }
 
 + (NSString *)identifiant
@@ -95,15 +91,13 @@
 
 - (id)content
 {
-	return _config;
+	return _configPath;
 }
 
-- (void)showPanel
+- (void)didAppear
 {
-	id <SMAssistantProxy> proxy = _proxy;
-	
-	[proxy setIsLastPanel:NO];
-	[proxy setNextPanelID:@"ac_mode"];
+	[self.proxy setIsLastPanel:NO];
+	[self.proxy setNextPanelID:@"ac_security"];
 }
 
 
@@ -115,32 +109,28 @@
 
 - (IBAction)selectChange:(id)sender
 {
-	id <SMAssistantProxy> proxy = _proxy;
-	
 	NSMatrix	*mtr = sender;
 	NSCell		*obj = [mtr selectedCell];
 	NSInteger	tag = [obj tag];
 	
 	if (tag == 1)
 	{
-		[proxy setIsLastPanel:NO];
-		[proxy setNextPanelID:@"ac_mode"];
+		[self.proxy setIsLastPanel:NO];
+		[self.proxy setNextPanelID:@"ac_mode"];
 		
-		[proxy setDisableContinue:NO];
+		[self.proxy setDisableContinue:NO];
 	}
 	else if (tag == 2)
 	{
-		[proxy setIsLastPanel:YES];
-		[proxy setNextPanelID:nil];
+		[self.proxy setIsLastPanel:YES];
+		[self.proxy setNextPanelID:nil];
 		
-		[proxy setDisableContinue:!_pathSet];
+		[self.proxy setDisableContinue:!_configPath];
 	}
 }
 
 - (IBAction)selectFile:(id)sender
 {
-	id <SMAssistantProxy> proxy = _proxy;
-
 	NSOpenPanel	*openDlg = [NSOpenPanel openPanel];
 	
 	// Ask for a file.
@@ -153,26 +143,11 @@
 	{
 		NSArray			*urls = [openDlg URLs];
 		NSURL			*url = [urls objectAtIndex:0];
-		TCConfigPlist	*aconfig = [[TCConfigPlist alloc] initWithFile:[url path]];
 		
-		if (!aconfig)
-		{
-			// Log error
-			NSString *key = NSLocalizedString(@"ac_error_read_file", @"");
-
-			[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_read_file", [url path]];
-			[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:key, [url path]] runModal];
-
-			return;
-		}
+		_configPath = [url path];
+		[_confPathField setStringValue:_configPath];
 		
-		// Update status
-		_config = aconfig;
-		_pathSet = YES;
-		
-		[_confPathField setStringValue:[url path]];
-		
-		[proxy setDisableContinue:NO];
+		[self.proxy setDisableContinue:NO];
 	}
 }
 

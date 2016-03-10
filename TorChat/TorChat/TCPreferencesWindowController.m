@@ -30,6 +30,23 @@
 #import "TCPrefView_Network.h"
 #import "TCPrefView_Buddies.h"
 #import "TCPrefView_Locations.h"
+#import "TCPrefView_Security.h"
+
+
+/*
+** TCPrefView - Private
+*/
+#pragma mark - TCPrefView - Private
+
+@interface TCPrefView ()
+
+@property (strong, nonatomic) id <TCConfigEncryptable>	config;
+@property (strong, nonatomic) TCCoreManager				*core;
+
+@property (strong, nonatomic) void (^reloadConfig)(id <TCConfigEncryptable>);
+
+@end
+
 
 
 /*
@@ -68,10 +85,10 @@
 
 + (TCPreferencesWindowController *)sharedController
 {
-	static dispatch_once_t	pred;
+	static dispatch_once_t					onceToken;
 	static TCPreferencesWindowController	*instance = nil;
 	
-	dispatch_once(&pred, ^{
+	dispatch_once(&onceToken, ^{
 		instance = [[TCPreferencesWindowController alloc] init];
 	});
 	
@@ -114,7 +131,7 @@
 - (void)loadViewIdentifier:(NSString *)identifier animated:(BOOL)animated
 {
 	TCPrefView				*viewCtrl = nil;
-	id <TCConfigInterface>	config = [[TCMainController sharedController] configuration];
+	id <TCConfigEncryptable> config = [[TCMainController sharedController] configuration];
 	TCCoreManager			*core = [[TCMainController sharedController] core];
 
 	if ([identifier isEqualToString:@"general"])
@@ -125,6 +142,8 @@
 		viewCtrl = [[TCPrefView_Buddies alloc] init];
 	else if ([identifier isEqualToString:@"locations"])
 		viewCtrl = [[TCPrefView_Locations alloc] init];
+	else if ([identifier isEqualToString:@"security"])
+		viewCtrl = [[TCPrefView_Security alloc] init];
 	
 	if (!viewCtrl)
 		return;
@@ -140,14 +159,26 @@
 	_currentCtrl.config = config;
 	_currentCtrl.core = core;
 	
-	if ([_currentCtrl saveConfig])
-		[[TCMainController sharedController] reload];
+	[_currentCtrl didUnload];
 	
 	// Load new view config.
+	__weak TCPrefView *weakViewCtrl = viewCtrl;
+	
 	viewCtrl.config = config;
 	viewCtrl.core = core;
+	viewCtrl.reloadConfig = ^(id <TCConfigEncryptable> rConfig) {
+
+		// XXX lock everything to prevent user to change something while re-starting.
+		
+		// Restart main controller.
+		[[TCMainController sharedController] startWithConfiguration:rConfig completionHandler:^(TCCoreManager *aCore) {
+			dispatch_async(dispatch_get_main_queue(), ^{
+				weakViewCtrl.core = aCore;
+			});
+		}];
+	};
 	
-	[viewCtrl loadConfig];
+	[viewCtrl didLoad];
 		
 	NSView *view = viewCtrl.view;
 	
@@ -209,14 +240,13 @@
 
 - (void)windowWillClose:(NSNotification *)notification
 {
-	id <TCConfigInterface>	config = [[TCMainController sharedController] configuration];
-	TCCoreManager			*core = [[TCMainController sharedController] core];
+	id <TCConfigEncryptable> config = [[TCMainController sharedController] configuration];
+	TCCoreManager			 *core = [[TCMainController sharedController] core];
 	
 	_currentCtrl.config = config;
 	_currentCtrl.core = core;
 	
-	if ([_currentCtrl saveConfig])
-		[[TCMainController sharedController] reload];
+	[_currentCtrl didUnload];
 }
 
 @end

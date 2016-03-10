@@ -23,6 +23,7 @@
 #import "TCPanel_Mode.h"
 
 #import "TCDebugLog.h"
+#import "TCConfigEncryptable.h"
 
 
 /*
@@ -32,7 +33,9 @@
 
 @interface TCPanel_Mode ()
 {
-    __weak id <SMAssistantProxy> _proxy;
+	IBOutlet NSMatrix *modeMatrix;
+
+	id <TCConfigEncryptable> _currentConfig;
 }
 
 @property (strong, nonatomic) IBOutlet NSMatrix *buttonMatrix;
@@ -49,6 +52,9 @@
 #pragma mark - TCPanel_Mode
 
 @implementation TCPanel_Mode
+
+@synthesize proxy;
+@synthesize previousContent;
 
 - (void)awakeFromNib
 {
@@ -67,13 +73,9 @@
 */
 #pragma mark - TCPanel_Mode - SMAssistantPanel
 
-+ (id <SMAssistantPanel>)panelWithProxy:(id <SMAssistantProxy>)proxy
++ (id <SMAssistantPanel>)panel
 {
-	TCPanel_Mode *panel = [[TCPanel_Mode alloc] initWithNibName:@"AssistantPanel_Mode" bundle:nil];
-	
-	panel->_proxy = proxy;
-	
-	return panel;
+	return [[TCPanel_Mode alloc] initWithNibName:@"AssistantPanel_Mode" bundle:nil];
 }
 
 + (NSString *)identifiant
@@ -88,16 +90,22 @@
 
 - (id)content
 {
-	return nil;
+	if ([modeMatrix selectedTag] == 1)
+		[_currentConfig setMode:TCConfigModeBasic];
+	else
+		[_currentConfig setMode:TCConfigModeAdvanced];
+	
+	return _currentConfig;
 }
 
-- (void)showPanel;
+- (void)didAppear
 {
-	id <SMAssistantProxy> proxy = _proxy;
-
-	[proxy setIsLastPanel:NO];
-	[proxy setNextPanelID:@"ac_basic"];
+	_currentConfig = self.previousContent;
+	
+	[self.proxy setIsLastPanel:NO];
+	[self.proxy setNextPanelID:@"ac_basic"];
 }
+
 
 
 /*
@@ -107,18 +115,14 @@
 
 - (IBAction)selectChange:(id)sender
 {
-	id <SMAssistantProxy> proxy = _proxy;
-
-	NSMatrix	*mtr = sender;
-	NSCell		*obj = [mtr selectedCell];
-	NSInteger	tag = [obj tag];
+	NSInteger tag = [modeMatrix selectedTag];
 	
 	if (tag == 1)
-		[proxy setNextPanelID:@"ac_basic"];
+		[self.proxy setNextPanelID:@"ac_basic"];
 	else if (tag == 2)
-		[proxy setNextPanelID:@"ac_advanced"];
+		[self.proxy setNextPanelID:@"ac_advanced"];
 	else
-		[proxy setNextPanelID:nil];
+		[self.proxy setNextPanelID:nil];
 }
 
 @end

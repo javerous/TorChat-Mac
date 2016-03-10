@@ -1,0 +1,24 @@
+
+/* Class = "NSButtonCell"; title = "Convert"; ObjectID = "0gD-1P-TMo"; */
+"0gD-1P-TMo.title" = "Convertir";
+
+/* Class = "NSButtonCell"; title = "Encrypt configuration file"; ObjectID = "152-NT-Mn3"; */
+"152-NT-Mn3.title" = "Chiffrer le fichier de configuration";
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "H3h-NT-d8X"; */
+"H3h-NT-d8X.title" = "Annuler";
+
+/* Class = "NSWindow"; title = "Configuration File"; ObjectID = "QvC-M9-y7g"; */
+"QvC-M9-y7g.title" = "Fichier de Configuration";
+
+/* Class = "NSTextFieldCell"; title = "Password"; ObjectID = "aBM-xc-aY6"; */
+"aBM-xc-aY6.title" = "Mot de passe";
+
+/* Class = "NSTextFieldCell"; title = "Convert your configuration file to new format"; ObjectID = "nQU-U3-0dH"; */
+"nQU-U3-0dH.title" = "Convertir votre fichier de configuration vers un nouveau format";
+
+/* Class = "NSTextFieldCell"; title = "Verify"; ObjectID = "oXn-t7-c3a"; */
+"oXn-t7-c3a.title" = "Vérification";
+
+/* Class = "NSTextFieldCell"; title = "Your configuration file uses an old format. Do you want to convert it to a new format? If you do so, previous version of TorChat will not be able to open it."; ObjectID = "rKq-Wb-1kL"; */
+"rKq-Wb-1kL.title" = "Votre fichier configuration utilise un vieux format. Voulez-vous vous la convertir vers un nouveau format ? Si vous faites cela, les versions précédentes de TorChat ne pourront plus l'ouvrir.";

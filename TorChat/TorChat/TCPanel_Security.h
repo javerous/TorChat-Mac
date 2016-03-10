@@ -1,5 +1,5 @@
 /*
- *  TCBuddyInfoWindowsController.h
+ *  TCPanel_Security.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -22,32 +22,14 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "TCConfigEncryptable.h"
+@import SMAssistant.SMAssistantPanel;
 
 
 /*
-** Forward
+** TCPanel_Security
 */
-#pragma mark - Forward
+#pragma mark - TCPanel_Security
 
-@class TCBuddy;
-@class TCDragImageView;
-@class TCCoreManager;
-
-
-
-/*
-** TCBuddyInfoController
-*/
-#pragma mark - TCBuddyInfoController
-
-@interface TCBuddyInfoWindowsController : NSObject
-
-// -- Instance --
-- (instancetype)initWithCoreManager:(TCCoreManager *)coreManager;
-
-// -- Tools --
-- (void)showInfoForBuddy:(TCBuddy *)buddy;
-- (void)closeInfoForBuddy:(TCBuddy *)buddy;
+@interface TCPanel_Security : NSViewController <SMAssistantPanel>
 
 @end

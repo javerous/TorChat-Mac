@@ -132,7 +132,7 @@ typedef enum
 
 // -- Life --
 - (void)start;
-- (void)stop;
+- (void)stopWithCompletionHandler:(dispatch_block_t)handler;
 
 // -- Status --
 - (void)setStatus:(TCStatus)status;
