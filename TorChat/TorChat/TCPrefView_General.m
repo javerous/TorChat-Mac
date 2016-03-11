@@ -70,7 +70,7 @@
 */
 #pragma mark - TCPrefView_General - TCPrefView
 
-- (void)didLoad
+- (void)panelDidAppear
 {
 	// Load view.
 	[self view];
@@ -83,7 +83,7 @@
 	[_clientVersionField setStringValue:[self.config clientVersion:TCConfigGetDefined]];
 }
 
-- (void)didUnload
+- (void)panelDidDisappear
 {
 	[self.config setClientName:[_clientNameField stringValue]];
 	[self.config setClientVersion:[_clientVersionField stringValue]];

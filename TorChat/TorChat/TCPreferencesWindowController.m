@@ -159,7 +159,7 @@
 	_currentCtrl.config = config;
 	_currentCtrl.core = core;
 	
-	[_currentCtrl didUnload];
+	[_currentCtrl panelDidDisappear];
 	
 	// Load new view config.
 	__weak TCPrefView *weakViewCtrl = viewCtrl;
@@ -178,7 +178,7 @@
 		}];
 	};
 	
-	[viewCtrl didLoad];
+	[viewCtrl panelDidAppear];
 		
 	NSView *view = viewCtrl.view;
 	
@@ -246,7 +246,7 @@
 	_currentCtrl.config = config;
 	_currentCtrl.core = core;
 	
-	[_currentCtrl didUnload];
+	[_currentCtrl panelDidDisappear];
 }
 
 @end

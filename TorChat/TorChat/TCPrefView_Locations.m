@@ -99,7 +99,7 @@
 */
 #pragma mark - TCPrefView_Locations - TCPrefView
 
-- (void)didLoad
+- (void)panelDidAppear
 {
 	// Load view.
 	[self view];
@@ -115,7 +115,7 @@
 	}];
 }
 
-- (void)didUnload
+- (void)panelDidDisappear
 {
 	// Remove observer.
 	[self.config removePathObserver:_pathObserver];

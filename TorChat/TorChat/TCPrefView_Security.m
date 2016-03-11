@@ -75,7 +75,7 @@
 */
 #pragma mark - TCPrefView_Security - TCPrefView
 
-- (void)didLoad
+- (void)panelDidAppear
 {
 	// Load view.
 	[self view];

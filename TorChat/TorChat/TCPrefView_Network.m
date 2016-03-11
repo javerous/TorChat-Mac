@@ -85,7 +85,7 @@
 */
 #pragma mark - TCPrefView_Network - TCPrefView
 
-- (void)didLoad
+- (void)panelDidAppear
 {
 	TCConfigMode mode;
 	
@@ -120,7 +120,7 @@
 	[_torPortField setStringValue:[@([self.config torPort]) description]];
 }
 
-- (void)didUnload
+- (void)panelDidDisappear
 {
 	if (changes && [self.config mode] == TCConfigModeAdvanced)
 	{
