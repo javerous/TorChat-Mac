@@ -8,8 +8,8 @@
 /* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "H3h-NT-d8X"; */
 "H3h-NT-d8X.title" = "Annuler";
 
-/* Class = "NSWindow"; title = "Configuration File"; ObjectID = "QvC-M9-y7g"; */
-"QvC-M9-y7g.title" = "Fichier de Configuration";
+/* Class = "NSWindow"; title = "Configuration Conversion"; ObjectID = "QvC-M9-y7g"; */
+"QvC-M9-y7g.title" = "Conversion de configuration";
 
 /* Class = "NSTextFieldCell"; title = "Password"; ObjectID = "aBM-xc-aY6"; */
 "aBM-xc-aY6.title" = "Mot de passe";
