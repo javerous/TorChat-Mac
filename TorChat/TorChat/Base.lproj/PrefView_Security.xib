@@ -51,8 +51,8 @@
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="r5V-F6-GQ1" secondAttribute="trailing" constant="20" symbolic="YES" id="On9-cd-qoH"/>
                 <constraint firstItem="WaU-oq-j8f" firstAttribute="leading" secondItem="r5V-F6-GQ1" secondAttribute="leading" constant="25" id="P3I-a5-hcQ"/>
                 <constraint firstAttribute="height" constant="95" id="WUq-cI-U7a"/>
-                <constraint firstItem="r5V-F6-GQ1" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" constant="20" id="jp4-Ig-uC6"/>
-                <constraint firstItem="r5V-F6-GQ1" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" constant="20" id="rAS-cb-0xb"/>
+                <constraint firstItem="r5V-F6-GQ1" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" constant="20" symbolic="YES" id="jp4-Ig-uC6"/>
+                <constraint firstItem="r5V-F6-GQ1" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" constant="20" symbolic="YES" id="rAS-cb-0xb"/>
                 <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="WaU-oq-j8f" secondAttribute="bottom" constant="20" symbolic="YES" id="zq5-08-0e6"/>
             </constraints>
             <point key="canvasLocation" x="431" y="250.5"/>

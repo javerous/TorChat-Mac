@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10089" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10115" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10089"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10115"/>
         <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
@@ -25,15 +25,18 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="JO7-1V-TFA">
-                                <rect key="frame" x="11" y="49" width="138" height="17"/>
-                                <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="TorChat Client Name :" usesSingleLineMode="YES" id="Wbm-Mq-qe0">
+                                <rect key="frame" x="21" y="49" width="130" height="17"/>
+                                <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="TorChat Client Name" usesSingleLineMode="YES" id="Wbm-Mq-qe0">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="97Z-Ty-l16">
-                                <rect key="frame" x="155" y="46" width="201" height="22"/>
+                                <rect key="frame" x="157" y="46" width="199" height="22"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" priority="250" constant="10000" id="Owh-St-Uuu"/>
+                                </constraints>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="EY7-lD-U0B">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -41,15 +44,15 @@
                                 </textFieldCell>
                             </textField>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="q4e-aN-Vii">
-                                <rect key="frame" x="11" y="17" width="147" height="17"/>
-                                <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="TorChat Client Version :" usesSingleLineMode="YES" id="Bhc-4g-w2A">
+                                <rect key="frame" x="11" y="17" width="140" height="17"/>
+                                <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="TorChat Client Version" usesSingleLineMode="YES" id="Bhc-4g-w2A">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="aD4-Ie-0nq">
-                                <rect key="frame" x="164" y="14" width="192" height="22"/>
+                                <rect key="frame" x="157" y="14" width="199" height="22"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="C7Q-SO-Cxx">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -57,15 +60,18 @@
                                 </textFieldCell>
                             </textField>
                         </subviews>
+                        <constraints>
+                            <constraint firstItem="aD4-Ie-0nq" firstAttribute="leading" secondItem="97Z-Ty-l16" secondAttribute="leading" id="Kgr-HD-yuF"/>
+                        </constraints>
                     </view>
                     <constraints>
-                        <constraint firstItem="JO7-1V-TFA" firstAttribute="leading" secondItem="RqU-qW-Fpu" secondAttribute="leading" constant="11" id="9uN-hu-lav"/>
+                        <constraint firstItem="JO7-1V-TFA" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="RqU-qW-Fpu" secondAttribute="leading" constant="11" id="9uN-hu-lav"/>
                         <constraint firstAttribute="trailing" secondItem="aD4-Ie-0nq" secondAttribute="trailing" constant="16" id="Ckv-Ys-ZXp"/>
-                        <constraint firstItem="q4e-aN-Vii" firstAttribute="leading" secondItem="RqU-qW-Fpu" secondAttribute="leading" constant="11" id="F8M-Zs-yEL"/>
+                        <constraint firstItem="q4e-aN-Vii" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="RqU-qW-Fpu" secondAttribute="leading" constant="11" id="F8M-Zs-yEL"/>
                         <constraint firstAttribute="height" constant="89" id="G6n-9G-MVQ"/>
                         <constraint firstItem="97Z-Ty-l16" firstAttribute="top" secondItem="RqU-qW-Fpu" secondAttribute="top" constant="24" id="Qor-vR-3c7"/>
                         <constraint firstItem="aD4-Ie-0nq" firstAttribute="leading" secondItem="q4e-aN-Vii" secondAttribute="trailing" constant="8" symbolic="YES" id="QtA-OR-aeT"/>
-                        <constraint firstItem="q4e-aN-Vii" firstAttribute="centerY" secondItem="aD4-Ie-0nq" secondAttribute="centerY" constant="-0.5" id="V1v-RP-n4H"/>
+                        <constraint firstItem="q4e-aN-Vii" firstAttribute="centerY" secondItem="aD4-Ie-0nq" secondAttribute="centerY" id="V1v-RP-n4H"/>
                         <constraint firstAttribute="trailing" secondItem="97Z-Ty-l16" secondAttribute="trailing" constant="16" id="XzN-5Z-uxB"/>
                         <constraint firstItem="aD4-Ie-0nq" firstAttribute="top" secondItem="97Z-Ty-l16" secondAttribute="bottom" constant="10" symbolic="YES" id="bZn-en-hTK"/>
                         <constraint firstItem="JO7-1V-TFA" firstAttribute="centerY" secondItem="97Z-Ty-l16" secondAttribute="centerY" constant="-0.5" id="iKG-UP-Sns"/>
@@ -83,7 +89,7 @@
                 <constraint firstAttribute="trailing" secondItem="RqU-qW-Fpu" secondAttribute="trailing" constant="20" symbolic="YES" id="g2n-cS-rka"/>
                 <constraint firstAttribute="width" constant="410" id="vrM-Cy-LoY"/>
             </constraints>
-            <point key="canvasLocation" x="620.5" y="347.5"/>
+            <point key="canvasLocation" x="295" y="301"/>
         </view>
     </objects>
 </document>
