@@ -1,9 +1,12 @@
 
-/* Class = "NSTextFieldCell"; title = "Please enter the file configuration password."; ObjectID = "KIh-zW-UNd"; */
-"KIh-zW-UNd.title" = "Please enter the file configuration password.";
+/* Class = "NSTextFieldCell"; title = "Encrypted configuration file"; ObjectID = "KIh-zW-UNd"; */
+"KIh-zW-UNd.title" = "Encrypted configuration file";
 
-/* Class = "NSWindow"; title = "Configuration File"; ObjectID = "QvC-M9-y7g"; */
-"QvC-M9-y7g.title" = "Configuration File";
+/* Class = "NSWindow"; title = "Encrypted Configuration"; ObjectID = "QvC-M9-y7g"; */
+"QvC-M9-y7g.title" = "Encrypted Configuration";
+
+/* Class = "NSTextFieldCell"; title = "Please enter the password of your configuration file to open it."; ObjectID = "UAf-a8-uKo"; */
+"UAf-a8-uKo.title" = "Please enter the password of your configuration file to open it.";
 
 /* Class = "NSButtonCell"; title = "Open"; ObjectID = "X9N-mV-LPa"; */
 "X9N-mV-LPa.title" = "Open";
