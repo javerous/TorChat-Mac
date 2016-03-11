@@ -53,8 +53,8 @@
 
 @implementation TCPanel_Mode
 
-@synthesize proxy;
-@synthesize previousContent;
+@synthesize panelProxy;
+@synthesize panelPreviousContent;
 
 - (void)awakeFromNib
 {
@@ -73,22 +73,27 @@
 */
 #pragma mark - TCPanel_Mode - SMAssistantPanel
 
-+ (id <SMAssistantPanel>)panel
++ (id <SMAssistantPanel>)panelInstance
 {
 	return [[TCPanel_Mode alloc] initWithNibName:@"AssistantPanel_Mode" bundle:nil];
 }
 
-+ (NSString *)identifiant
++ (NSString *)panelIdentifier
 {
 	return @"ac_mode";
 }
 
-+ (NSString *)title
++ (NSString *)panelTitle
 {
 	return NSLocalizedString(@"ac_title_mode", @"");
 }
 
-- (id)content
+- (NSView *)panelView
+{
+	return self.view;
+}
+
+- (id)panelContent
 {
 	if ([modeMatrix selectedTag] == 1)
 		[_currentConfig setMode:TCConfigModeBasic];
@@ -98,12 +103,12 @@
 	return _currentConfig;
 }
 
-- (void)didAppear
+- (void)panelDidAppear
 {
-	_currentConfig = self.previousContent;
+	_currentConfig = self.panelPreviousContent;
 	
-	[self.proxy setIsLastPanel:NO];
-	[self.proxy setNextPanelID:@"ac_basic"];
+	[self.panelProxy setIsLastPanel:NO];
+	[self.panelProxy setNextPanelID:@"ac_basic"];
 }
 
 
@@ -118,11 +123,11 @@
 	NSInteger tag = [modeMatrix selectedTag];
 	
 	if (tag == 1)
-		[self.proxy setNextPanelID:@"ac_basic"];
+		[self.panelProxy setNextPanelID:@"ac_basic"];
 	else if (tag == 2)
-		[self.proxy setNextPanelID:@"ac_advanced"];
+		[self.panelProxy setNextPanelID:@"ac_advanced"];
 	else
-		[self.proxy setNextPanelID:nil];
+		[self.panelProxy setNextPanelID:nil];
 }
 
 @end

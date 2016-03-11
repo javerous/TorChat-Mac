@@ -69,8 +69,8 @@
 
 @implementation TCPanel_Advanced
 
-@synthesize proxy;
-@synthesize previousContent;
+@synthesize panelProxy;
+@synthesize panelPreviousContent;
 
 - (void)dealloc
 {
@@ -83,22 +83,27 @@
 */
 #pragma mark - TCPanel_Advanced - SMAssistantPanel
 
-+ (id <SMAssistantPanel>)panel
++ (id <SMAssistantPanel>)panelInstance
 {
 	return [[TCPanel_Advanced alloc] initWithNibName:@"AssistantPanel_Advanced" bundle:nil];
 }
 
-+ (NSString *)identifiant
++ (NSString *)panelIdentifier
 {
 	return @"ac_advanced";
 }
 
-+ (NSString *)title
++ (NSString *)panelTitle
 {
 	return NSLocalizedString(@"ac_title_advanced", @"");
 }
 
-- (id)content
+- (NSView *)panelView
+{
+	return self.view;
+}
+
+- (id)panelContent
 {
 	// Set up the config with the fields.
 	[_currentConfig setTorAddress:[_torAddressField stringValue]];
@@ -111,12 +116,12 @@
 	return _currentConfig;
 }
 
-- (void)didAppear
+- (void)panelDidAppear
 {
-	_currentConfig = self.previousContent;
+	_currentConfig = self.panelPreviousContent;
 	
 	// Configure assistant.
-	[self.proxy setIsLastPanel:YES];
+	[self.panelProxy setIsLastPanel:YES];
 	
 	[_currentConfig setMode:TCConfigModeAdvanced];
 	

@@ -54,8 +54,8 @@
 
 @implementation TCPanel_Welcome
 
-@synthesize proxy;
-@synthesize previousContent;
+@synthesize panelProxy;
+@synthesize panelPreviousContent;
 
 - (void)awakeFromNib
 {
@@ -74,30 +74,35 @@
 */
 #pragma mark - TCPanel_Welcome - SMAssistantPanel
 
-+ (id <SMAssistantPanel>)panel
++ (id <SMAssistantPanel>)panelInstance
 {
 	return [[TCPanel_Welcome alloc] initWithNibName:@"AssistantPanel_Welcome" bundle:nil];
 }
 
-+ (NSString *)identifiant
++ (NSString *)panelIdentifier
 {
 	return @"ac_welcome";
 }
 
-+ (NSString *)title
++ (NSString *)panelTitle
 {
 	return NSLocalizedString(@"ac_title_welcome", @"");
 }
 
-- (id)content
+- (NSView *)panelView
+{
+	return self.view;
+}
+
+- (id)panelContent
 {
 	return _configPath;
 }
 
-- (void)didAppear
+- (void)panelDidAppear
 {
-	[self.proxy setIsLastPanel:NO];
-	[self.proxy setNextPanelID:@"ac_security"];
+	[self.panelProxy setIsLastPanel:NO];
+	[self.panelProxy setNextPanelID:@"ac_security"];
 }
 
 
@@ -115,17 +120,17 @@
 	
 	if (tag == 1)
 	{
-		[self.proxy setIsLastPanel:NO];
-		[self.proxy setNextPanelID:@"ac_mode"];
+		[self.panelProxy setIsLastPanel:NO];
+		[self.panelProxy setNextPanelID:@"ac_mode"];
 		
-		[self.proxy setDisableContinue:NO];
+		[self.panelProxy setDisableContinue:NO];
 	}
 	else if (tag == 2)
 	{
-		[self.proxy setIsLastPanel:YES];
-		[self.proxy setNextPanelID:nil];
+		[self.panelProxy setIsLastPanel:YES];
+		[self.panelProxy setNextPanelID:nil];
 		
-		[self.proxy setDisableContinue:!_configPath];
+		[self.panelProxy setDisableContinue:!_configPath];
 	}
 }
 
@@ -147,7 +152,7 @@
 		_configPath = [url path];
 		[_confPathField setStringValue:_configPath];
 		
-		[self.proxy setDisableContinue:NO];
+		[self.panelProxy setDisableContinue:NO];
 	}
 }
 
