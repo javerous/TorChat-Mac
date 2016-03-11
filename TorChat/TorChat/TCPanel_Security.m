@@ -55,8 +55,8 @@
 
 @implementation TCPanel_Security
 
-@synthesize proxy;
-@synthesize previousContent;
+@synthesize panelProxy;
+@synthesize panelPreviousContent;
 
 - (void)dealloc
 {
@@ -70,22 +70,27 @@
 */
 #pragma mark - TCPanel_Security - SMAssistantPanel
 
-+ (id <SMAssistantPanel>)panel
++ (id <SMAssistantPanel>)panelInstance
 {
 	return [[TCPanel_Security alloc] initWithNibName:@"AssistantPanel_Security" bundle:nil];
 }
 
-+ (NSString *)identifiant
++ (NSString *)panelIdentifier
 {
 	return @"ac_security";
 }
 
-+ (NSString *)title
++ (NSString *)panelTitle
 {
 	return NSLocalizedString(@"ac_title_security", @"");
 }
 
-- (id)content
+- (NSView *)panelView
+{
+	return self.view;
+}
+
+- (id)panelContent
 {
 	// Build configuration path.
 	NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
@@ -120,10 +125,10 @@
 	return config;
 }
 
-- (void)didAppear
+- (void)panelDidAppear
 {
-	[self.proxy setIsLastPanel:NO];
-	[self.proxy setNextPanelID:@"ac_mode"];
+	[self.panelProxy setIsLastPanel:NO];
+	[self.panelProxy setNextPanelID:@"ac_mode"];
 	
 	[self checkValidity];
 }
@@ -166,9 +171,9 @@
 - (void)checkValidity
 {
 	if (encryptCheckBox.state == NSOnState)
-		[self.proxy setDisableContinue:(passwordField.stringValue.length == 0 || [passwordField.stringValue isEqualToString:verifyField.stringValue] == NO)];
+		[self.panelProxy setDisableContinue:(passwordField.stringValue.length == 0 || [passwordField.stringValue isEqualToString:verifyField.stringValue] == NO)];
 	else
-		[self.proxy setDisableContinue:NO];
+		[self.panelProxy setDisableContinue:NO];
 }
 
 @end

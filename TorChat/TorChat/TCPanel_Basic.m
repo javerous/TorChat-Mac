@@ -71,8 +71,8 @@
 
 @implementation TCPanel_Basic
 
-@synthesize proxy;
-@synthesize previousContent;
+@synthesize panelProxy;
+@synthesize panelPreviousContent;
 
 
 /*
@@ -92,33 +92,37 @@
 */
 #pragma mark - TCPanel_Basic - SMAssistantPanel
 
-+ (id <SMAssistantPanel>)panel
++ (id <SMAssistantPanel>)panelInstance
 {
 	return [[TCPanel_Basic alloc] initWithNibName:@"AssistantPanel_Basic" bundle:nil];
 }
 
-+ (NSString *)identifiant
++ (NSString *)panelIdentifier
 {
 	return @"ac_basic";
 }
 
-+ (NSString *)title
++ (NSString *)panelTitle
 {
 	return NSLocalizedString(@"ac_title_basic", @"");
 }
 
-- (id)content
+- (NSView *)panelView
 {
-	NSLog(@"xxxxxx: %@", _currentConfig);
+	return self.view;
+}
+
+- (id)panelContent
+{
 	return _currentConfig;
 }
 
-- (void)didAppear
+- (void)panelDidAppear
 {
-	_currentConfig = self.previousContent;
+	_currentConfig = self.panelPreviousContent;
 
-	[self.proxy setIsLastPanel:YES];
-	[self.proxy setDisableContinue:YES]; // Wait for tor
+	[self.panelProxy setIsLastPanel:YES];
+	[self.panelProxy setDisableContinue:YES]; // Wait for tor
 	
 	// Add view to configure download path.
 	_torDownloadsLocation = [[TCLocationViewController alloc] initWithConfiguration:_currentConfig component:TCConfigPathComponentDownloads];
@@ -149,7 +153,7 @@
 			if (info.kind == SMInfoError)
 			{
 				[_loadingIndicator stopAnimation:self];
-				[self.proxy setDisableContinue:YES];
+				[self.panelProxy setDisableContinue:YES];
 			}
 			else if (info.kind == SMInfoInfo)
 			{
@@ -164,7 +168,7 @@
 					[_tor stopWithCompletionHandler:^{
 						dispatch_async(dispatch_get_main_queue(), ^{
 							[_loadingIndicator stopAnimation:self];
-							[self.proxy setDisableContinue:NO];
+							[self.panelProxy setDisableContinue:NO];
 						});
 					}];
 				}
@@ -176,7 +180,7 @@
 					[_loadingIndicator stopAnimation:self];
 
 					if (imAddressField.stringValue.length > 0)
-						[self.proxy setDisableContinue:NO];
+						[self.panelProxy setDisableContinue:NO];
 				}
 			}
 		});
