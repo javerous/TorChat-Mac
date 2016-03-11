@@ -15,74 +15,6 @@
                 <outlet property="view" destination="VCL-50-a02" id="0mU-Np-w59"/>
             </connections>
         </customObject>
-        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
-        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <window title="Add Blocked" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="EdI-Ur-HSK">
-            <windowStyleMask key="styleMask" titled="YES"/>
-            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="283" y="348" width="255" height="88"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
-            <view key="contentView" id="4t0-pi-xaP">
-                <rect key="frame" x="0.0" y="0.0" width="255" height="88"/>
-                <autoresizingMask key="autoresizingMask"/>
-                <subviews>
-                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="JHW-YA-cBT">
-                        <rect key="frame" x="18" y="51" width="54" height="17"/>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Address" id="rvK-dY-7yO">
-                            <font key="font" metaFont="system"/>
-                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
-                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="01c-Fy-Ut7">
-                        <rect key="frame" x="78" y="46" width="157" height="22"/>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="j9P-Lo-9Y4">
-                            <font key="font" metaFont="system"/>
-                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
-                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qxq-BV-zAk">
-                        <rect key="frame" x="176" y="10" width="65" height="32"/>
-                        <buttonCell key="cell" type="push" title="Add" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="isc-2a-Req">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                            <string key="keyEquivalent" base64-UTF8="YES">
-DQ
-</string>
-                        </buttonCell>
-                        <connections>
-                            <action selector="doAddBlockedOK:" target="-2" id="0HF-sz-p1b"/>
-                        </connections>
-                    </button>
-                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0c5-uw-jEd">
-                        <rect key="frame" x="94" y="10" width="82" height="32"/>
-                        <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0KK-fi-hFR">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                            <string key="keyEquivalent" base64-UTF8="YES">
-Gw
-</string>
-                        </buttonCell>
-                        <connections>
-                            <action selector="doAddBlockedCancel:" target="-2" id="n28-ir-4aE"/>
-                        </connections>
-                    </button>
-                </subviews>
-                <constraints>
-                    <constraint firstItem="01c-Fy-Ut7" firstAttribute="leading" secondItem="JHW-YA-cBT" secondAttribute="trailing" constant="8" symbolic="YES" id="2fO-v1-6VX"/>
-                    <constraint firstItem="01c-Fy-Ut7" firstAttribute="top" secondItem="4t0-pi-xaP" secondAttribute="top" constant="20" symbolic="YES" id="Cgp-Qs-rUa"/>
-                    <constraint firstItem="JHW-YA-cBT" firstAttribute="centerY" secondItem="01c-Fy-Ut7" secondAttribute="centerY" constant="-2.5" id="EY0-zS-TJT"/>
-                    <constraint firstAttribute="trailing" secondItem="qxq-BV-zAk" secondAttribute="trailing" constant="20" symbolic="YES" id="KEB-7Z-nTd"/>
-                    <constraint firstItem="qxq-BV-zAk" firstAttribute="leading" secondItem="0c5-uw-jEd" secondAttribute="trailing" constant="12" symbolic="YES" id="Lgd-Dq-Nf0"/>
-                    <constraint firstAttribute="trailing" secondItem="01c-Fy-Ut7" secondAttribute="trailing" constant="20" symbolic="YES" id="Nic-x9-6T5"/>
-                    <constraint firstItem="qxq-BV-zAk" firstAttribute="top" secondItem="01c-Fy-Ut7" secondAttribute="bottom" constant="8" symbolic="YES" id="RFb-H7-4OE"/>
-                    <constraint firstItem="JHW-YA-cBT" firstAttribute="leading" secondItem="4t0-pi-xaP" secondAttribute="leading" constant="20" symbolic="YES" id="YNu-NB-OTQ"/>
-                    <constraint firstItem="0c5-uw-jEd" firstAttribute="top" secondItem="01c-Fy-Ut7" secondAttribute="bottom" constant="8" symbolic="YES" id="geo-GZ-C9A"/>
-                </constraints>
-            </view>
-            <point key="canvasLocation" x="-82.5" y="268"/>
-        </window>
         <view translatesAutoresizingMaskIntoConstraints="NO" id="VCL-50-a02" userLabel="Buddies">
             <rect key="frame" x="0.0" y="0.0" width="410" height="290"/>
             <subviews>
@@ -188,8 +120,76 @@ Gw
                 <constraint firstAttribute="trailing" secondItem="ZWE-9T-ybU" secondAttribute="trailing" constant="20" symbolic="YES" id="ivy-hu-ibX"/>
                 <constraint firstAttribute="bottom" secondItem="ZWE-9T-ybU" secondAttribute="bottom" constant="20" symbolic="YES" id="lHM-3t-QKi"/>
             </constraints>
-            <point key="canvasLocation" x="-126.5" y="559"/>
+            <point key="canvasLocation" x="-127" y="244"/>
         </view>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <window title="Add Blocked" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="EdI-Ur-HSK">
+            <windowStyleMask key="styleMask" titled="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="283" y="348" width="255" height="88"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+            <view key="contentView" id="4t0-pi-xaP">
+                <rect key="frame" x="0.0" y="0.0" width="255" height="88"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="JHW-YA-cBT">
+                        <rect key="frame" x="18" y="51" width="54" height="17"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Address" id="rvK-dY-7yO">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="01c-Fy-Ut7">
+                        <rect key="frame" x="78" y="46" width="157" height="22"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="j9P-Lo-9Y4">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qxq-BV-zAk">
+                        <rect key="frame" x="176" y="10" width="65" height="32"/>
+                        <buttonCell key="cell" type="push" title="Add" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="isc-2a-Req">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="doAddBlockedOK:" target="-2" id="0HF-sz-p1b"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0c5-uw-jEd">
+                        <rect key="frame" x="94" y="10" width="82" height="32"/>
+                        <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0KK-fi-hFR">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="doAddBlockedCancel:" target="-2" id="n28-ir-4aE"/>
+                        </connections>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="01c-Fy-Ut7" firstAttribute="leading" secondItem="JHW-YA-cBT" secondAttribute="trailing" constant="8" symbolic="YES" id="2fO-v1-6VX"/>
+                    <constraint firstItem="01c-Fy-Ut7" firstAttribute="top" secondItem="4t0-pi-xaP" secondAttribute="top" constant="20" symbolic="YES" id="Cgp-Qs-rUa"/>
+                    <constraint firstItem="JHW-YA-cBT" firstAttribute="centerY" secondItem="01c-Fy-Ut7" secondAttribute="centerY" constant="-2.5" id="EY0-zS-TJT"/>
+                    <constraint firstAttribute="trailing" secondItem="qxq-BV-zAk" secondAttribute="trailing" constant="20" symbolic="YES" id="KEB-7Z-nTd"/>
+                    <constraint firstItem="qxq-BV-zAk" firstAttribute="leading" secondItem="0c5-uw-jEd" secondAttribute="trailing" constant="12" symbolic="YES" id="Lgd-Dq-Nf0"/>
+                    <constraint firstAttribute="trailing" secondItem="01c-Fy-Ut7" secondAttribute="trailing" constant="20" symbolic="YES" id="Nic-x9-6T5"/>
+                    <constraint firstItem="qxq-BV-zAk" firstAttribute="top" secondItem="01c-Fy-Ut7" secondAttribute="bottom" constant="8" symbolic="YES" id="RFb-H7-4OE"/>
+                    <constraint firstItem="JHW-YA-cBT" firstAttribute="leading" secondItem="4t0-pi-xaP" secondAttribute="leading" constant="20" symbolic="YES" id="YNu-NB-OTQ"/>
+                    <constraint firstItem="0c5-uw-jEd" firstAttribute="top" secondItem="01c-Fy-Ut7" secondAttribute="bottom" constant="8" symbolic="YES" id="geo-GZ-C9A"/>
+                </constraints>
+            </view>
+            <point key="canvasLocation" x="-154.5" y="488"/>
+        </window>
     </objects>
     <resources>
         <image name="NSAddTemplate" width="11" height="11"/>

@@ -240,11 +240,15 @@
 	if (!view)
 		return;
 	
-	NSRect viewFrame = view.frame;
+	NSDictionary	*viewsDictionary;
+	NSView			*sview = self.view;
 	
-	[self.view setFrame:NSMakeRect(0, 0, viewFrame.size.width, viewFrame.size.height)];
+	[view addSubview:sview];
 	
-	[view addSubview:self.view];
+	viewsDictionary = NSDictionaryOfVariableBindings(sview);
+	
+	[view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[sview]|" options:0 metrics:nil views:viewsDictionary]];
+	[view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[sview]|" options:0 metrics:nil views:viewsDictionary]];
 }
 
 
