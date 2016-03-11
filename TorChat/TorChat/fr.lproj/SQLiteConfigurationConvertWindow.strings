@@ -21,4 +21,4 @@
 "oXn-t7-c3a.title" = "Vérification";
 
 /* Class = "NSTextFieldCell"; title = "Your configuration file uses an old format. Do you want to convert it to a new format? If you do so, previous version of TorChat will not be able to open it."; ObjectID = "rKq-Wb-1kL"; */
-"rKq-Wb-1kL.title" = "Votre fichier configuration utilise un vieux format. Voulez-vous vous la convertir vers un nouveau format ? Si vous faites cela, les versions précédentes de TorChat ne pourront plus l'ouvrir.";
+"rKq-Wb-1kL.title" = "Votre fichier de configuration utilise un ancien format. Voulez-vous vous le convertir vers un nouveau format ? Si vous faites cela, les versions précédentes de TorChat ne pourront plus l'ouvrir.";

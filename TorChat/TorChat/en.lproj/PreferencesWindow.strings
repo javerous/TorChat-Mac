@@ -25,3 +25,9 @@
 
 /* Class = "NSToolbarItem"; paletteLabel = "Locations"; ObjectID = "UEu-Ia-LhZ"; */
 "UEu-Ia-LhZ.paletteLabel" = "Locations";
+
+/* Class = "NSToolbarItem"; label = "Security"; ObjectID = "rej-tl-Kh3"; */
+"rej-tl-Kh3.label" = "Security";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Security"; ObjectID = "rej-tl-Kh3"; */
+"rej-tl-Kh3.paletteLabel" = "Security";
