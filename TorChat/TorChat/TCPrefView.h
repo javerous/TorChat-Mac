@@ -46,8 +46,8 @@
 @property (strong, nonatomic, readonly) TCCoreManager				*core;
 
 // Event.
-- (void)didLoad;	// can be subclassed.
-- (void)didUnload;	// can be subclassed.
+- (void)panelDidAppear;		// can be subclassed.
+- (void)panelDidDisappear;	// can be subclassed.
 
 // Tools.
 - (void)reloadConfig:(id <TCConfigEncryptable>)config;

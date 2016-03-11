@@ -82,7 +82,7 @@
 */
 #pragma mark - TCPrefView_Buddies - TCPrefView
 
-- (void)didLoad
+- (void)panelDidAppear
 {
 	// Load view.
 	[self view];
@@ -91,7 +91,7 @@
 	[self.core addObserver:self];
 }
 
-- (void)didUnload
+- (void)panelDidDisappear
 {
 	// Unmonitor core info.
 	[self.core removeObserver:self];

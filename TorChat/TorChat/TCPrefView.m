@@ -52,12 +52,12 @@
 */
 #pragma mark - TCPrefView - Config
 
-- (void)didLoad
+- (void)panelDidAppear
 {
 	// Must be redefined
 }
 
-- (void)didUnload
+- (void)panelDidDisappear
 {
 	// Must be redefined
 }
