@@ -571,13 +571,28 @@
 
 - (NSArray *)buddies
 {
-	__block NSArray *buddies;
+	NSMutableArray *result = [[NSMutableArray alloc] init];
 	
 	dispatch_sync(_localQueue, ^{
-		buddies = [[_fcontent objectForKey:TCCONF_KEY_BUDDIES] copy];
+		
+		NSArray *buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		
+		for (NSDictionary *buddy in buddies)
+		{
+			NSMutableDictionary *mbuddy = [buddy mutableCopy];
+			NSString			*identifier = mbuddy[TCConfigBuddyPlistIdentifier];
+			
+			if (identifier)
+			{
+				[mbuddy removeObjectForKey:TCConfigBuddyPlistIdentifier];
+				[mbuddy setObject:identifier forKey:TCConfigBuddyIdentifier];
+			}
+			
+			[result addObject:mbuddy];
+		}
 	});
 	
-	return buddies;
+	return result;
 }
 
 - (void)addBuddyWithIdentifier:(NSString *)identifier alias:(NSString *)alias notes:(NSString *)notes
