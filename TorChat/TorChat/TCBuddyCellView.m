@@ -35,7 +35,7 @@
 
 @property (retain, nonatomic) IBOutlet NSImageView *statusView;
 @property (retain, nonatomic) IBOutlet NSImageView *avatarView;
-@property (retain, nonatomic) IBOutlet NSTextField *addressField;
+@property (retain, nonatomic) IBOutlet NSTextField *identifierField;
 
 @end
 
@@ -92,8 +92,8 @@
 	else
 		[self.textField setStringValue:@""];
 	
-	// Address.
-	[_addressField setStringValue:[buddy address]];
+	// Identifier.
+	[_identifierField setStringValue:[buddy identifier]];
 	
 	// Avatar.
 	TCImage *tcImage = [buddy profileAvatar];
@@ -119,12 +119,12 @@
     switch (style)
 	{
         case NSBackgroundStyleLight:
-			[_addressField setTextColor:[NSColor grayColor]];
+			[_identifierField setTextColor:[NSColor grayColor]];
             break;
 			
         case NSBackgroundStyleDark:
         default:
-			[_addressField setTextColor:[NSColor whiteColor]];
+			[_identifierField setTextColor:[NSColor whiteColor]];
             break;
     }
 }

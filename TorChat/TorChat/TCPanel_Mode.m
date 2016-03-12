@@ -23,7 +23,7 @@
 #import "TCPanel_Mode.h"
 
 #import "TCDebugLog.h"
-#import "TCConfigEncryptable.h"
+#import "TCConfigAppEncryptable.h"
 
 
 /*
@@ -35,7 +35,7 @@
 {
 	IBOutlet NSMatrix *modeMatrix;
 
-	id <TCConfigEncryptable> _currentConfig;
+	id <TCConfigAppEncryptable> _currentConfig;
 }
 
 @property (strong, nonatomic) IBOutlet NSMatrix *buttonMatrix;

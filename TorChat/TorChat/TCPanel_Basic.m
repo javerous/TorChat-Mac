@@ -26,7 +26,7 @@
 #import "TCPanel_Basic.h"
 
 #import "TCLogsManager.h"
-#import "TCConfigEncryptable.h"
+#import "TCConfigAppEncryptable.h"
 
 #import "TCLocationViewController.h"
 
@@ -50,13 +50,13 @@
 
 @interface TCPanel_Basic ()
 {
-	id <TCConfigEncryptable> _currentConfig;
+	id <TCConfigAppEncryptable> _currentConfig;
 	SMTorManager *_tor;
 	
 	TCLocationViewController *_torDownloadsLocation;
 }
 
-@property (strong, nonatomic)	IBOutlet NSTextField			*imAddressField;
+@property (strong, nonatomic)	IBOutlet NSTextField			*imIdentifierField;
 @property (strong, nonatomic)	IBOutlet NSProgressIndicator	*loadingIndicator;
 @property (strong, nonatomic)	IBOutlet NSView					*downloadLocationView;
 
@@ -138,7 +138,7 @@
 	SMTorConfiguration *torConfig = [[SMTorConfiguration alloc] initWithTorChatConfiguration:_currentConfig];
 	
 	// Create tor manager & start it.
-	__weak NSTextField *weakIMAddressField = _imAddressField;
+	__weak NSTextField *weakIMIdentifierField = _imIdentifierField;
 	
 	_tor = [[SMTorManager alloc] initWithConfiguration:torConfig];
 	
@@ -146,7 +146,7 @@
 
 	[_tor startWithInfoHandler:^(SMInfo *info) {
 		
-		NSTextField *imAddressField = weakIMAddressField;
+		NSTextField *imIdentifierField = weakIMIdentifierField;
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
 
@@ -159,8 +159,8 @@
 			{
 				if (info.code == SMTorManagerEventStartHostname)
 				{
-					[imAddressField setStringValue:info.context];
-					[_currentConfig setSelfAddress:info.context];
+					[imIdentifierField setStringValue:info.context];
+					[_currentConfig setSelfIdentifier:info.context];
 					[_tor stopWithCompletionHandler:nil];
 				}
 				else if (info.code == SMTorManagerEventStartDone)
@@ -179,7 +179,7 @@
 				{
 					[_loadingIndicator stopAnimation:self];
 
-					if (imAddressField.stringValue.length > 0)
+					if (imIdentifierField.stringValue.length > 0)
 						[self.panelProxy setDisableContinue:NO];
 				}
 			}

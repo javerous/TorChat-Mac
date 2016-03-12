@@ -20,8 +20,8 @@
 /* Class = "NSTextFieldCell"; title = "localhost"; ObjectID = "iY6-So-IOG"; */
 "iY6-So-IOG.title" = "localhost";
 
-/* Class = "NSTextFieldCell"; title = "TorChat IM Address :"; ObjectID = "jcZ-1Y-MeD"; */
-"jcZ-1Y-MeD.title" = "TorChat IM Address :";
+/* Class = "NSTextFieldCell"; title = "TorChat IM Identifier :"; ObjectID = "jcZ-1Y-MeD"; */
+"jcZ-1Y-MeD.title" = "TorChat IM Identifier :";
 
 /* Class = "NSTextFieldCell"; title = "11009"; ObjectID = "wF2-UR-Igx"; */
 "wF2-UR-Igx.title" = "11009";

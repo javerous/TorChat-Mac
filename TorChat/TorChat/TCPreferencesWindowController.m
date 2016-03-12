@@ -40,10 +40,10 @@
 
 @interface TCPrefView ()
 
-@property (strong, nonatomic) id <TCConfigEncryptable>	config;
+@property (strong, nonatomic) id <TCConfigAppEncryptable>	config;
 @property (strong, nonatomic) TCCoreManager				*core;
 
-@property (strong, nonatomic) void (^reloadConfig)(id <TCConfigEncryptable>);
+@property (strong, nonatomic) void (^reloadConfig)(id <TCConfigAppEncryptable>);
 
 @end
 
@@ -130,9 +130,9 @@
 
 - (void)loadViewIdentifier:(NSString *)identifier animated:(BOOL)animated
 {
-	TCPrefView				*viewCtrl = nil;
-	id <TCConfigEncryptable> config = [[TCMainController sharedController] configuration];
-	TCCoreManager			*core = [[TCMainController sharedController] core];
+	TCPrefView *viewCtrl = nil;
+	id <TCConfigAppEncryptable> config = [[TCMainController sharedController] configuration];
+	TCCoreManager *core = [[TCMainController sharedController] core];
 
 	if ([identifier isEqualToString:@"general"])
 		viewCtrl = [[TCPrefView_General alloc] init];
@@ -166,7 +166,7 @@
 	
 	viewCtrl.config = config;
 	viewCtrl.core = core;
-	viewCtrl.reloadConfig = ^(id <TCConfigEncryptable> rConfig) {
+	viewCtrl.reloadConfig = ^(id <TCConfigAppEncryptable> rConfig) {
 
 		// XXX lock everything to prevent user to change something while re-starting.
 		
@@ -240,8 +240,8 @@
 
 - (void)windowWillClose:(NSNotification *)notification
 {
-	id <TCConfigEncryptable> config = [[TCMainController sharedController] configuration];
-	TCCoreManager			 *core = [[TCMainController sharedController] core];
+	id <TCConfigAppEncryptable> config = [[TCMainController sharedController] configuration];
+	TCCoreManager				*core = [[TCMainController sharedController] core];
 	
 	_currentCtrl.config = config;
 	_currentCtrl.core = core;

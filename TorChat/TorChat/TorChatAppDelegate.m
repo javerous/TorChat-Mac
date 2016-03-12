@@ -91,7 +91,7 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddySelectChanged:) name:TCBuddiesWindowControllerSelectChanged object:nil];
 
 	// Start TorChat.
-	[[TCMainController sharedController] startWithCompletionHandler:^(id<TCConfigEncryptable> configuration, TCCoreManager *core) {
+	[[TCMainController sharedController] startWithCompletionHandler:^(id <TCConfigAppEncryptable> configuration, TCCoreManager *core) {
 		
 		if (!configuration || !core)
 		{
@@ -232,9 +232,9 @@
 		dispatch_async(dispatch_get_main_queue(), ^{
 
 			TCBuddy		*buddy = info.context;
-			NSString	*selected = [[[TCBuddiesWindowController sharedController] selectedBuddy] address];
+			NSString	*selected = [[[TCBuddiesWindowController sharedController] selectedBuddy] identifier];
 			
-			if ([buddy.address isEqualToString:selected])
+			if ([buddy.identifier isEqualToString:selected])
 			{
 				if (info.code == TCCoreEventBuddyBlocked)
 					[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_unblock_buddy", @"")];

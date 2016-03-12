@@ -53,8 +53,8 @@
 	dispatch_queue_t	_localQueue;
 	SMOperationsQueue	*_opQueue;
 
-	id <TCConfigEncryptable> _configuration;
-	SMTorManager			*_torManager;
+	id <TCConfigAppEncryptable> _configuration;
+	SMTorManager				*_torManager;
 	
 	// Path monitor.
 	id	_torIdentityPathObserver;
@@ -104,15 +104,15 @@
 
 #pragma mark Start
 
-- (void)startWithCompletionHandler:(void (^)(id <TCConfigEncryptable> configuration, TCCoreManager *core))handler
+- (void)startWithCompletionHandler:(void (^)(id <TCConfigAppEncryptable> configuration, TCCoreManager *core))handler
 {
 	if (!handler)
-		handler = ^(id <TCConfigEncryptable> configuration, TCCoreManager *core) { };
+		handler = ^(id <TCConfigAppEncryptable> configuration, TCCoreManager *core) { };
 	
 	[_opQueue scheduleBlock:^(SMOperationsControl  _Nonnull opCtrl) {
 		
 		SMOperationsQueue *operations = [[SMOperationsQueue alloc] init];
-		__block id <TCConfigEncryptable> configuration = nil;
+		__block id <TCConfigAppEncryptable> configuration = nil;
 
 		// -- Stop if necessary --
 		[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
@@ -154,7 +154,7 @@
 			}
 			
 			// Open configuration.
-			[TCConfigurationHelperController openConfigurationAtPath:path completionHandler:^(TCConfigurationHelperCompletionType type, id <TCConfigEncryptable> aConfiguration) {
+			[TCConfigurationHelperController openConfigurationAtPath:path completionHandler:^(TCConfigurationHelperCompletionType type, id <TCConfigAppEncryptable> aConfiguration) {
 				switch (type)
 				{
 					case TCConfigurationHelperCompletionTypeCanceled:
@@ -201,7 +201,7 @@
 						if ([context isKindOfClass:[NSString class]])
 						{
 							// Open configuration.
-							[TCConfigurationHelperController openConfigurationAtPath:context completionHandler:^(TCConfigurationHelperCompletionType confCompType, id <TCConfigEncryptable> aConfiguration) {
+							[TCConfigurationHelperController openConfigurationAtPath:context completionHandler:^(TCConfigurationHelperCompletionType confCompType, id <TCConfigAppEncryptable> aConfiguration) {
 								switch (confCompType)
 								{
 									case TCConfigurationHelperCompletionTypeCanceled:
@@ -251,7 +251,7 @@
 	}];
 }
 
-- (void)startWithConfiguration:(id <TCConfigEncryptable>)configuration completionHandler:(void (^)(TCCoreManager *core))handler
+- (void)startWithConfiguration:(id <TCConfigAppEncryptable>)configuration completionHandler:(void (^)(TCCoreManager *core))handler
 {
 	if (!handler)
 		handler = ^(TCCoreManager *core) { };
@@ -279,7 +279,7 @@
 }
 
 
-- (void)_startWithConfiguration:(id <TCConfigEncryptable>)configuration completionHandler:(void (^)(TCCoreManager *core))handler
+- (void)_startWithConfiguration:(id <TCConfigAppEncryptable>)configuration completionHandler:(void (^)(TCCoreManager *core))handler
 {
 	// > opQueue <
 	
@@ -339,7 +339,7 @@
 				{
 					if (startInfo.code == SMTorManagerEventStartHostname)
 					{
-						[_configuration setSelfAddress:startInfo.context];
+						[_configuration setSelfIdentifier:startInfo.context];
 					}
 					else if (startInfo.code == SMTorManagerEventStartDone)
 					{

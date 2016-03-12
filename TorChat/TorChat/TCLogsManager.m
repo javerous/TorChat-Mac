@@ -177,7 +177,7 @@
 	});
 }
 
-- (void)addBuddyLogWithAddress:(NSString *)address name:(NSString *)name kind:(TCLogKind)kind message:(NSString *)message, ...
+- (void)addBuddyLogWithBuddyIdentifier:(NSString *)identifier name:(NSString *)name kind:(TCLogKind)kind message:(NSString *)message, ...
 {
 	va_list		ap;
 	NSString	*msg;
@@ -191,18 +191,18 @@
 	
 	// Add the alias
 	dispatch_async(_localQueue, ^{
-		[_names setObject:name forKey:address];
+		[_names setObject:name forKey:identifier];
 	});
 		
 	// Add the rendered log.
-	[self addLogWithTimestamp:nil key:address kind:kind content:msg];
+	[self addLogWithTimestamp:nil key:identifier kind:kind content:msg];
 }
 
-- (void)addBuddyLogWithAddress:(NSString *)address name:(NSString *)name info:(SMInfo *)info
+- (void)addBuddyLogWithBuddyIdentifier:(NSString *)identifier name:(NSString *)name info:(SMInfo *)info
 {
 	// Add the alias
 	dispatch_async(_localQueue, ^{
-		[_names setObject:name forKey:address];
+		[_names setObject:name forKey:identifier];
 	});
 	
 	// Convert kind.
@@ -224,7 +224,7 @@
 	}
 	
 	// Add the rendered log.
-	[self addLogWithTimestamp:info.timestamp key:address kind:kind content:[info renderComplete]];
+	[self addLogWithTimestamp:info.timestamp key:identifier kind:kind content:[info renderComplete]];
 }
 
 
@@ -326,10 +326,10 @@
 	if (!observer)
 		return;
 	
-	// Build obserever item
+	// Build observer item
 	dispatch_async(_localQueue, ^{
 		
-		// Add it for this address
+		// Add it for this identifier
 		if (key)
 			[_keyObservers setObject:observer forKey:key];
 		else

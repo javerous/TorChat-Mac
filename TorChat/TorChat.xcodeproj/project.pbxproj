@@ -152,7 +152,7 @@
 		E83423EB11F6F97B00922152 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		E837DAD511E7739D004BC524 /* TCBuddy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = TCBuddy.m; sourceTree = "<group>"; };
 		E837DAD611E7739D004BC524 /* TCBuddy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCBuddy.h; sourceTree = "<group>"; };
-		E837DADA11E7739D004BC524 /* TCConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCConfig.h; sourceTree = "<group>"; };
+		E837DADA11E7739D004BC524 /* TCConfigCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCConfigCore.h; sourceTree = "<group>"; };
 		E837DADB11E7739D004BC524 /* TCCoreManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCCoreManager.m; sourceTree = "<group>"; };
 		E837DADC11E7739D004BC524 /* TCCoreManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCCoreManager.h; sourceTree = "<group>"; };
 		E844C49E1C77E68600D3AB2D /* SMFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SMFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -175,7 +175,7 @@
 		E852235117B504CA00C6F585 /* TCChatCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatCellView.m; sourceTree = "<group>"; };
 		E85903B011EC9877005CE53F /* TCTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCTools.m; sourceTree = "<group>"; };
 		E85903B111EC9877005CE53F /* TCTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCTools.h; sourceTree = "<group>"; };
-		E8643D441A66C7EB00B8C55F /* TCConfigInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TCConfigInterface.h; sourceTree = "<group>"; };
+		E8643D441A66C7EB00B8C55F /* TCConfigApp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TCConfigApp.h; sourceTree = "<group>"; };
 		E8643D711A66D9C100B8C55F /* TCPrefView_Buddies.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCPrefView_Buddies.h; sourceTree = "<group>"; };
 		E8643D721A66D9C100B8C55F /* TCPrefView_Buddies.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCPrefView_Buddies.m; sourceTree = "<group>"; };
 		E8643D741A66D9D300B8C55F /* TCPrefView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCPrefView.h; sourceTree = "<group>"; };
@@ -214,7 +214,7 @@
 		E878984217B05C0B00DB7709 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/AssistantPanel_Advanced.xib; sourceTree = "<group>"; };
 		E878984417B05C0B00DB7709 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/AssistantPanel_Basic.xib; sourceTree = "<group>"; };
 		E878984617B05C0B00DB7709 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/AssistantPanel_Mode.xib; sourceTree = "<group>"; };
-		E87942401C90BBF3002F17FF /* TCConfigEncryptable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TCConfigEncryptable.h; sourceTree = "<group>"; };
+		E87942401C90BBF3002F17FF /* TCConfigAppEncryptable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TCConfigAppEncryptable.h; sourceTree = "<group>"; };
 		E87E205A17B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/BuddiesWindow.strings; sourceTree = "<group>"; };
 		E87E205B17B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/BuddyInfoWindow.strings; sourceTree = "<group>"; };
 		E87E205C17B1084A00FAB545 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ChatWindow.strings; sourceTree = "<group>"; };
@@ -438,7 +438,7 @@
 		E837DAD411E7739D004BC524 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				E837DADA11E7739D004BC524 /* TCConfig.h */,
+				E837DADA11E7739D004BC524 /* TCConfigCore.h */,
 				E84641AF186091FE0046BEFB /* TCDebugLog.h */,
 				E837DADC11E7739D004BC524 /* TCCoreManager.h */,
 				E837DADB11E7739D004BC524 /* TCCoreManager.m */,
@@ -767,8 +767,8 @@
 		E89E470E1C8D96AB004A5D72 /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
-				E8643D441A66C7EB00B8C55F /* TCConfigInterface.h */,
-				E87942401C90BBF3002F17FF /* TCConfigEncryptable.h */,
+				E8643D441A66C7EB00B8C55F /* TCConfigApp.h */,
+				E87942401C90BBF3002F17FF /* TCConfigAppEncryptable.h */,
 				E889F0A112531D33000C36B2 /* TCConfigPlist.h */,
 				E889F0A212531D33000C36B2 /* TCConfigPlist.m */,
 				E89E470B1C8D966F004A5D72 /* TCConfigSQLite.h */,

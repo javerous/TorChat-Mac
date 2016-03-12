@@ -22,7 +22,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "TCConfigEncryptable.h"
+#import "TCConfigAppEncryptable.h"
 
 
 /*
@@ -42,7 +42,7 @@
 @interface TCPrefView : NSViewController
 
 // Properties.
-@property (strong, nonatomic, readonly) id <TCConfigEncryptable>	config;
+@property (strong, nonatomic, readonly) id <TCConfigAppEncryptable>	config;
 @property (strong, nonatomic, readonly) TCCoreManager				*core;
 
 // Event.
@@ -50,6 +50,6 @@
 - (void)panelDidDisappear;	// can be subclassed.
 
 // Tools.
-- (void)reloadConfig:(id <TCConfigEncryptable>)config;
+- (void)reloadConfig:(id <TCConfigAppEncryptable>)config;
 
 @end

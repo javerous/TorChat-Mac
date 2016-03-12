@@ -136,7 +136,7 @@
 		return;
 	
 	NSDictionary *file = _files[(NSUInteger)row];
-	NSDictionary *dict = @{ @"uuid" : file[TCFileUUIDKey], @"address" : file[TCFileBuddyAddressKey], @"way" : file[TCFileWayKey] };
+	NSDictionary *dict = @{ @"uuid" : file[TCFileUUIDKey], @"identifier" : file[TCFileBuddyIdentifierKey], @"way" : file[TCFileWayKey] };
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:TCFileCancelNotification object:nil userInfo:dict];
 }
@@ -182,9 +182,9 @@
 */
 #pragma mark - TCFilesWindowController - Action
 
-- (void)startFileTransfert:(NSString *)uuid withFilePath:(NSString *)filePath buddyAddress:(NSString *)address buddyName:(NSString *)name transfertWay:(tcfile_way)way fileSize:(uint64_t)size
+- (void)startFileTransfert:(NSString *)uuid withFilePath:(NSString *)filePath buddyIdentifier:(NSString *)identifier buddyName:(NSString *)name transfertWay:(tcfile_way)way fileSize:(uint64_t)size
 {
-	if (!uuid || !filePath || !name || !address)
+	if (!uuid || !filePath || !name || !identifier)
 		return;
 	
 	// Build file description
@@ -208,7 +208,7 @@
 	
 	[item setObject:uuid forKey:TCFileUUIDKey];
 	[item setObject:filePath forKey:TCFileFilePathKey];
-	[item setObject:address forKey:TCFileBuddyAddressKey];
+	[item setObject:identifier forKey:TCFileBuddyIdentifierKey];
 	[item setObject:name forKey:TCFileBuddyNameKey];
 	[item setObject:[NSNumber numberWithInt:way] forKey:TCFileWayKey];
 	[item setObject:[NSNumber numberWithInt:tcfile_status_running] forKey:TCFileStatusKey];

@@ -8,7 +8,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="TCPanel_Advanced">
             <connections>
                 <outlet property="downloadLocationView" destination="Xup-45-IAH" id="2nI-ch-lgG"/>
-                <outlet property="imAddressField" destination="GCY-ZD-Qpx" id="oyI-Sn-feo"/>
+                <outlet property="imIdentifierField" destination="GCY-ZD-Qpx" id="mGO-pt-A2a"/>
                 <outlet property="imInPortField" destination="xcW-WL-RhM" id="lCC-y7-sgW"/>
                 <outlet property="torAddressField" destination="PFh-zn-GSc" id="tzp-hU-C2Q"/>
                 <outlet property="torPortField" destination="7SE-iv-QXd" id="Q2M-Ta-bZn"/>
@@ -22,7 +22,7 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="quQ-6b-i5g">
-                    <rect key="frame" x="41" y="128" width="108" height="17"/>
+                    <rect key="frame" x="46" y="128" width="108" height="17"/>
                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Tor Port SOCKS :" usesSingleLineMode="YES" id="iPT-zo-mhb">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -30,15 +30,15 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="swj-78-NTV">
-                    <rect key="frame" x="18" y="245" width="131" height="17"/>
-                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="TorChat IM Address :" usesSingleLineMode="YES" id="jcZ-1Y-MeD">
+                    <rect key="frame" x="18" y="245" width="136" height="17"/>
+                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="TorChat IM Identifier :" usesSingleLineMode="YES" id="jcZ-1Y-MeD">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bm3-qS-N8O">
-                    <rect key="frame" x="64" y="161" width="85" height="17"/>
+                    <rect key="frame" x="69" y="161" width="85" height="17"/>
                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Tor Address :" usesSingleLineMode="YES" id="BFY-aa-rem">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -46,7 +46,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7SE-iv-QXd">
-                    <rect key="frame" x="155" y="126" width="55" height="22"/>
+                    <rect key="frame" x="160" y="126" width="55" height="22"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="55" id="wFg-ZX-hQm"/>
                     </constraints>
@@ -57,7 +57,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="PFh-zn-GSc">
-                    <rect key="frame" x="155" y="158" width="245" height="22"/>
+                    <rect key="frame" x="160" y="158" width="240" height="22"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="localhost" drawsBackground="YES" id="iY6-So-IOG">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -65,7 +65,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GCY-ZD-Qpx">
-                    <rect key="frame" x="155" y="242" width="245" height="22"/>
+                    <rect key="frame" x="160" y="242" width="240" height="22"/>
                     <constraints>
                         <constraint firstAttribute="width" priority="250" constant="10000" id="QDc-dG-BOl"/>
                     </constraints>
@@ -76,7 +76,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4la-y6-j6W">
-                    <rect key="frame" x="45" y="213" width="104" height="17"/>
+                    <rect key="frame" x="50" y="213" width="104" height="17"/>
                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="TorChat In Port :" usesSingleLineMode="YES" id="Noe-hl-LIA">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -84,7 +84,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xcW-WL-RhM">
-                    <rect key="frame" x="155" y="210" width="55" height="22"/>
+                    <rect key="frame" x="160" y="210" width="55" height="22"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="55" id="WFH-GI-N4y"/>
                     </constraints>
@@ -103,7 +103,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="05u-ZS-OlH">
-                    <rect key="frame" x="35" y="81" width="114" height="17"/>
+                    <rect key="frame" x="40" y="81" width="114" height="17"/>
                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Download Folder :" usesSingleLineMode="YES" id="7U1-C2-uYZ">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -111,7 +111,7 @@
                     </textFieldCell>
                 </textField>
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="Xup-45-IAH">
-                    <rect key="frame" x="37" y="31" width="363" height="42"/>
+                    <rect key="frame" x="42" y="31" width="358" height="42"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="42" id="WjG-gg-EGg"/>
                     </constraints>

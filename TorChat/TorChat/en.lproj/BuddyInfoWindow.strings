@@ -1,6 +1,15 @@
 
-/* Class = "NSPanel"; title = "Buddy"; ObjectID = "1"; */
+/* Class = "NSWindow"; title = "Buddy"; ObjectID = "1"; */
 "1.title" = "Buddy";
+
+/* Class = "NSTextFieldCell"; title = "xxx"; ObjectID = "23"; */
+"23.title" = "xxx";
+
+/* Class = "NSTextFieldCell"; title = "Alias:"; ObjectID = "24"; */
+"24.title" = "Alias:";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "4Jn-Cx-6PJ"; */
+"4Jn-Cx-6PJ.title" = "Text Cell";
 
 /* Class = "NSSegmentedCell"; 5.ibShadowedLabels[0] = "Info"; ObjectID = "5"; */
 "5.ibShadowedLabels[0]" = "Info";
@@ -17,14 +26,8 @@
 /* Class = "NSTabViewItem"; label = "Logs"; ObjectID = "7"; */
 "7.label" = "Logs";
 
-/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "14"; */
-"14.title" = "Text Cell";
-
-/* Class = "NSTextFieldCell"; title = "xxx"; ObjectID = "23"; */
-"23.title" = "xxx";
-
-/* Class = "NSTextFieldCell"; title = "Alias:"; ObjectID = "24"; */
-"24.title" = "Alias:";
-
 /* Class = "NSTabViewItem"; label = "note"; ObjectID = "70"; */
 "70.label" = "note";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "Iyi-Dx-V2j"; */
+"Iyi-Dx-V2j.title" = "Text Cell";

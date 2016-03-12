@@ -1,5 +1,5 @@
 /*
- *  TCConfigEncryptable.h
+ *  TCConfigAppEncryptable.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,15 +20,15 @@
  *
  */
 
-#import "TCConfigInterface.h"
+#import "TCConfigApp.h"
 
 
 /*
-** TCConfigEncryptable
+** TCConfigAppEncryptable
 */
-#pragma mark - TCConfigEncryptable
+#pragma mark - TCConfigAppEncryptable
 
-@protocol TCConfigEncryptable <TCConfigInterface>
+@protocol TCConfigAppEncryptable <TCConfigApp>
 
 - (BOOL)isEncrypted;
 

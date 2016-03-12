@@ -22,7 +22,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "TCConfigEncryptable.h"
+#import "TCConfigAppEncryptable.h"
 
 
 /*
@@ -45,13 +45,13 @@
 + (TCMainController *)sharedController;
 
 // -- Life --
-- (void)startWithCompletionHandler:(void (^)(id <TCConfigEncryptable> configuration, TCCoreManager *core))handler;
-- (void)startWithConfiguration:(id <TCConfigEncryptable>)configuration completionHandler:(void (^)(TCCoreManager *core))handler;
+- (void)startWithCompletionHandler:(void (^)(id <TCConfigAppEncryptable> configuration, TCCoreManager *core))handler;
+- (void)startWithConfiguration:(id <TCConfigAppEncryptable>)configuration completionHandler:(void (^)(TCCoreManager *core))handler;
 
 - (void)stopWithCompletionHandler:(dispatch_block_t)handler;
 
 // -- Properties --
-@property (strong, readonly, nonatomic) id <TCConfigEncryptable>	configuration;
+@property (strong, readonly, nonatomic) id <TCConfigAppEncryptable>	configuration;
 @property (strong, readonly, nonatomic) TCCoreManager				*core;
 
 @end

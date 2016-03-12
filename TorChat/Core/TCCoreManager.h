@@ -23,7 +23,7 @@
 @import Foundation;
 @import SMFoundation;
 
-#import "TCConfig.h"
+#import "TCConfigCore.h"
 #import "TCBuddy.h"
 
 
@@ -128,7 +128,7 @@ typedef enum
 
 
 // -- Instance --
-- (id)initWithConfiguration:(id <TCConfig>)config;
+- (id)initWithConfiguration:(id <TCConfigCore>)config;
 
 // -- Life --
 - (void)start;
@@ -149,15 +149,15 @@ typedef enum
 - (NSString *)profileText;
 
 // -- Buddies --
-- (void)addBuddy:(NSString *)name address:(NSString *)address;
-- (void)addBuddy:(NSString *)name address:(NSString *)address comment:(NSString *)comment;
-- (void)removeBuddy:(NSString *)address;
-- (TCBuddy *)buddyWithAddress:(NSString *)address;
+- (void)addBuddyWithIdentifier:(NSString *)identifier name:(NSString *)name;
+- (void)addBuddyWithIdentifier:(NSString *)identifier name:(NSString *)name comment:(NSString *)comment;
+- (void)removeBuddyWithIdentifier:(NSString *)identifier;
+- (TCBuddy *)buddyWithIdentifier:(NSString *)identifier;
 - (TCBuddy *)buddyWithRandom:(NSString *)random;
 
 // -- Blocked Buddies --
-- (void)addBlockedBuddy:(NSString *)address;
-- (void)removeBlockedBuddy:(NSString *)address;
+- (void)addBlockedBuddyWithIdentifier:(NSString *)identifier;
+- (void)removeBlockedBuddyWithIdentifier:(NSString *)identifier;
 
 // -- Observers --
 - (void)addObserver:(id <TCCoreManagerObserver>)observer;

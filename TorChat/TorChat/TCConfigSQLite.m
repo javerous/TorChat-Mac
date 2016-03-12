@@ -39,7 +39,7 @@
 #define TCCONF_KEY_TOR_ADDRESS		@"tor_address"
 #define TCCONF_KEY_TOR_PORT			@"tor_socks_port"
 
-#define TCCONF_KEY_IM_ADDRESS		@"im_address"
+#define TCCONF_KEY_IM_IDENTIFIER	@"im_identifier"
 #define TCCONF_KEY_IM_PORT			@"im_in_port"
 
 #define TCCONF_KEY_MODE				@"mode"
@@ -293,33 +293,33 @@
 	
 	// Create 'buddies' table.
 	// > Tables.
-	tc_sqlite3_exec(_dtb, "CREATE TABLE IF NOT EXISTS buddies (id INTEGER PRIMARY KEY AUTOINCREMENT, address TEXT NOT NULL, UNIQUE (address) ON CONFLICT ABORT)");
+	tc_sqlite3_exec(_dtb, "CREATE TABLE IF NOT EXISTS buddies (id INTEGER PRIMARY KEY AUTOINCREMENT, identifier TEXT NOT NULL, UNIQUE (identifier) ON CONFLICT ABORT)");
 	tc_sqlite3_exec(_dtb, "CREATE TABLE IF NOT EXISTS buddies_properties (buddy_id INTEGER, key TEXT NOT NULL, value, FOREIGN KEY(buddy_id) REFERENCES buddies(id) ON DELETE CASCADE, UNIQUE (buddy_id, key) ON CONFLICT REPLACE)");
 	
 	// > Indexes.
-	tc_sqlite3_exec(_dtb, "CREATE INDEX IF NOT EXISTS buddies_idx ON buddies(address)");
+	tc_sqlite3_exec(_dtb, "CREATE INDEX IF NOT EXISTS buddies_idx ON buddies(identifier)");
 	tc_sqlite3_exec(_dtb, "CREATE INDEX IF NOT EXISTS buddies_properties_idx ON buddies_properties(buddy_id, key)");
 	
 	// > Statements.
-	tc_sqlite3_prepare(_dtb, "INSERT INTO buddies (address) VALUES (?)", &_stmtInsertBuddy);
+	tc_sqlite3_prepare(_dtb, "INSERT INTO buddies (identifier) VALUES (?)", &_stmtInsertBuddy);
 	tc_sqlite3_prepare(_dtb, "INSERT INTO buddies_properties (buddy_id, key, value) VALUES (?, ?, ?)", &_stmtInsertBuddyProperty);
-	tc_sqlite3_prepare(_dtb, "SELECT id FROM buddies WHERE address=? LIMIT 1", &_stmtSelectBuddyID);
-	tc_sqlite3_prepare(_dtb, "SELECT address, key, value FROM buddies LEFT OUTER JOIN buddies_properties ON buddies.id=buddies_properties.buddy_id", &_stmtSelectBuddyAll);
+	tc_sqlite3_prepare(_dtb, "SELECT id FROM buddies WHERE identifier=? LIMIT 1", &_stmtSelectBuddyID);
+	tc_sqlite3_prepare(_dtb, "SELECT identifier, key, value FROM buddies LEFT OUTER JOIN buddies_properties ON buddies.id=buddies_properties.buddy_id", &_stmtSelectBuddyAll);
 	tc_sqlite3_prepare(_dtb, "SELECT value FROM buddies_properties WHERE buddy_id=? AND key=? LIMIT 1", &_stmtSelectBuddyProperty);
-	tc_sqlite3_prepare(_dtb, "DELETE FROM buddies WHERE address=? LIMIT 1", &_stmtDeleteBuddy);
+	tc_sqlite3_prepare(_dtb, "DELETE FROM buddies WHERE identifier=? LIMIT 1", &_stmtDeleteBuddy);
 	
 	
 	// Create 'blocked' table.
 	// > Table.
-	tc_sqlite3_exec(_dtb, "CREATE TABLE IF NOT EXISTS blocked (address TEXT NOT NULL, UNIQUE (address) ON CONFLICT ABORT)");
+	tc_sqlite3_exec(_dtb, "CREATE TABLE IF NOT EXISTS blocked (identifier TEXT NOT NULL, UNIQUE (identifier) ON CONFLICT ABORT)");
 	
 	// > Indexes.
-	tc_sqlite3_exec(_dtb, "CREATE INDEX IF NOT EXISTS blocked_idx ON blocked(address)");
+	tc_sqlite3_exec(_dtb, "CREATE INDEX IF NOT EXISTS blocked_idx ON blocked(identifier)");
 	
 	// > Statements.
-	tc_sqlite3_prepare(_dtb, "INSERT INTO blocked (address) VALUES (?)", &_stmtInsertBlocked);
-	tc_sqlite3_prepare(_dtb, "SELECT address FROM blocked LIMIT 1", &_stmtSelectBlocked);
-	tc_sqlite3_prepare(_dtb, "DELETE FROM blocked WHERE address=?", &_stmtDeleteBlocked);
+	tc_sqlite3_prepare(_dtb, "INSERT INTO blocked (identifier) VALUES (?)", &_stmtInsertBlocked);
+	tc_sqlite3_prepare(_dtb, "SELECT identifier FROM blocked LIMIT 1", &_stmtSelectBlocked);
+	tc_sqlite3_prepare(_dtb, "DELETE FROM blocked WHERE identifier=?", &_stmtDeleteBlocked);
 	
 	// Create 'paths' table.
 	// > Table.
@@ -551,15 +551,15 @@
 
 #pragma mark Buddies
 
-- (sqlite3_int64)_buddyIDForAddress:(NSString *)address
+- (sqlite3_int64)_buddyIDForIdentifier:(NSString *)identifier
 {
-	if (!address || !_dtb)
+	if (!identifier || !_dtb)
 		return -1;
 	
 	sqlite3_int64 result = -1;
 	
 	// Bind.
-	sqlite3_bind_text(_stmtSelectBuddyID, 1, address.UTF8String, -1, SQLITE_TRANSIENT);
+	sqlite3_bind_text(_stmtSelectBuddyID, 1, identifier.UTF8String, -1, SQLITE_TRANSIENT);
 
 	// Execute.
 	if (sqlite3_step(_stmtSelectBuddyID) == SQLITE_ROW)
@@ -640,9 +640,9 @@
 
 #pragma mark TorChat
 
-- (NSString *)selfAddress
+- (NSString *)selfIdentifier
 {
-	NSString *result = [self settingForKey:TCCONF_KEY_IM_ADDRESS];
+	NSString *result = [self settingForKey:TCCONF_KEY_IM_IDENTIFIER];
 	
 	if (result)
 		return result;
@@ -650,9 +650,9 @@
 	return @"xxx";
 }
 
-- (void)setSelfAddress:(NSString *)address
+- (void)setSelfIdentifier:(NSString *)identifier
 {
-	[self setSetting:address forKey:TCCONF_KEY_IM_ADDRESS];
+	[self setSetting:identifier forKey:TCCONF_KEY_IM_IDENTIFIER];
 }
 
 - (uint16_t)clientPort
@@ -776,400 +776,6 @@
 }
 
 
-#pragma mark Buddies
-
-- (NSArray *)buddies
-{
-	NSMutableArray *result = [[NSMutableArray alloc] init];
-	
-	dispatch_sync(_localQueue, ^{
-		
-		if (!_dtb)
-			return;
-		
-		NSString			*currentAddress = nil;
-		NSMutableDictionary	*currentEntry = nil;
-
-		while (sqlite3_step(_stmtSelectBuddyAll) == SQLITE_ROW)
-		{
-			const char	*address = (const char *)sqlite3_column_text(_stmtSelectBuddyAll, 0);
-			const char	*key = (const char *)sqlite3_column_text(_stmtSelectBuddyAll, 1);
-			id			value = [self _sqliteValueForStatement:_stmtSelectBuddyAll column:2];
-			
-			if (!address)
-				continue;
-			
-			if ([currentAddress isEqualToString:@(address)] == NO)
-			{
-				currentEntry = [[NSMutableDictionary alloc] init];
-				currentAddress = @(address);
-				
-				currentEntry[TCConfigBuddyAddress] = currentAddress;
-				
-				[result addObject:currentEntry];
-			}
-			
-			if (key && value)
-				currentEntry[@(key)] = value;
-		}
-		
-		sqlite3_reset(_stmtSelectBuddyAll);
-	});
-	
-	return result;
-}
-
-- (void)addBuddy:(NSString *)address alias:(NSString *)alias notes:(NSString *)notes
-{
-	if (!address)
-		return;
-	
-	if (!alias)
-		alias = @"";
-	
-	if (!notes)
-		notes = @"";
-	
-	dispatch_async(_localQueue, ^{
-
-		if (!_dtb)
-			return;
-		
-		int result;
-
-		// Bind.
-		sqlite3_bind_text(_stmtInsertBuddy, 1, address.UTF8String, -1, SQLITE_TRANSIENT);
-		
-		// Execute
-		result = sqlite3_step(_stmtInsertBuddy);
-		
-		// Reset.
-		sqlite3_reset(_stmtInsertBuddy);
-		
-		if (result == SQLITE_DONE)
-		{
-			sqlite3_int64 buddyID = sqlite3_last_insert_rowid(_dtb);
-			
-			[self _setBuddyProperty:buddyID key:TCConfigBuddyAlias value:alias];
-			[self _setBuddyProperty:buddyID key:TCConfigBuddyNotes value:notes];
-		}
-	});
-}
-
-- (void)removeBuddy:(NSString *)address
-{
-	if (!address)
-		return;
-	
-	dispatch_async(_localQueue, ^{
-
-		if (!_dtb)
-			return;
-		
-		// Bind.
-		sqlite3_bind_text(_stmtDeleteBuddy, 1, address.UTF8String, -1, SQLITE_TRANSIENT);
-
-		// Execute
-		sqlite3_step(_stmtDeleteBuddy);
-		
-		// Reset.
-		sqlite3_reset(_stmtDeleteBuddy);
-	});
-}
-
-- (void)setBuddy:(NSString *)address alias:(NSString *)alias
-{
-	if (!address)
-		return;
-	
-	if (!alias)
-		alias = @"";
-	
-	dispatch_async(_localQueue, ^{
-		
-		sqlite3_int64 buddyID = [self _buddyIDForAddress:address];
-		
-		if (buddyID < 0)
-			return;
-		
-		[self _setBuddyProperty:buddyID key:TCConfigBuddyAlias value:alias];
-	});
-}
-
-- (void)setBuddy:(NSString *)address notes:(NSString *)notes
-{
-	if (!address)
-		return;
-	
-	if (!notes)
-		notes = @"";
-	
-	dispatch_async(_localQueue, ^{
-		
-		sqlite3_int64 buddyID = [self _buddyIDForAddress:address];
-		
-		if (buddyID < 0)
-			return;
-		
-		[self _setBuddyProperty:buddyID key:TCConfigBuddyNotes value:notes];
-	});
-}
-
-- (void)setBuddy:(NSString *)address lastProfileName:(NSString *)lastName
-{
-	if (!address)
-		return;
-	
-	if (!lastName)
-		lastName = @"";
-	
-	dispatch_async(_localQueue, ^{
-		
-		sqlite3_int64 buddyID = [self _buddyIDForAddress:address];
-		
-		if (buddyID < 0)
-			return;
-		
-		[self _setBuddyProperty:buddyID key:TCConfigBuddyLastName value:lastName];
-	});
-}
-
-- (void)setBuddy:(NSString *)address lastProfileText:(NSString *)lastText
-{
-	if (!address)
-		return;
-	
-	if (!lastText)
-		lastText = @"";
-	
-	dispatch_async(_localQueue, ^{
-		
-		sqlite3_int64 buddyID = [self _buddyIDForAddress:address];
-		
-		if (buddyID < 0)
-			return;
-		
-		[self _setBuddyProperty:buddyID key:TCConfigBuddyLastText value:lastText];
-	});
-}
-
-- (void)setBuddy:(NSString *)address lastProfileAvatar:(TCImage *)lastAvatar
-{
-	if (!address || !lastAvatar)
-		return;
-	
-	dispatch_async(_localQueue, ^{
-		
-		sqlite3_int64 buddyID = [self _buddyIDForAddress:address];
-		
-		if (buddyID < 0)
-			return;
-		
-		// Create PNG representation.
-		NSImage *image = [lastAvatar imageRepresentation];
-		NSData	*tiffData = [image TIFFRepresentation];
-		NSData	*pngData;
-		
-		if (!tiffData)
-			return;
-		
-		pngData = [[[NSBitmapImageRep alloc] initWithData:tiffData] representationUsingType:NSPNGFileType properties:@{ }];
-		
-		if (!pngData)
-			return;
-		
-		// Save
-		[self _setBuddyProperty:buddyID key:TCConfigBuddyLastAvatar value:pngData];
-	});
-}
-
-- (NSString *)getBuddyAlias:(NSString *)address
-{
-	if (!address)
-		return @"";
-	
-	__block NSString *result = @"";
-	
-	dispatch_sync(_localQueue, ^{
-		
-		sqlite3_int64 buddyID = [self _buddyIDForAddress:address];
-		
-		if (buddyID < 0)
-			return;
-		
-		result = [self _getBuddyProperty:buddyID key:TCConfigBuddyAlias];
-	});
-	
-	return result;
-}
-
-- (NSString *)getBuddyNotes:(NSString *)address
-{
-	if (!address)
-		return @"";
-	
-	__block NSString *result = @"";
-	
-	dispatch_sync(_localQueue, ^{
-		
-		sqlite3_int64 buddyID = [self _buddyIDForAddress:address];
-		
-		if (buddyID < 0)
-			return;
-		
-		result = [self _getBuddyProperty:buddyID key:TCConfigBuddyNotes];
-	});
-	
-	return result;
-}
-
-- (NSString *)getBuddyLastProfileName:(NSString *)address
-{
-	if (!address)
-		return @"";
-	
-	__block NSString *result = @"";
-	
-	dispatch_sync(_localQueue, ^{
-		
-		sqlite3_int64 buddyID = [self _buddyIDForAddress:address];
-		
-		if (buddyID < 0)
-			return;
-		
-		result = [self _getBuddyProperty:buddyID key:TCConfigBuddyLastName];
-	});
-	
-	return result;
-}
-
-- (NSString *)getBuddyLastProfileText:(NSString *)address
-{
-	if (!address)
-		return @"";
-	
-	__block NSString *result = @"";
-	
-	dispatch_sync(_localQueue, ^{
-		
-		sqlite3_int64 buddyID = [self _buddyIDForAddress:address];
-		
-		if (buddyID < 0)
-			return;
-		
-		result = [self _getBuddyProperty:buddyID key:TCConfigBuddyLastText];
-	});
-	
-	return result;
-}
-
-- (TCImage *)getBuddyLastProfileAvatar:(NSString *)address
-{
-	if (!address)
-		return nil;
-	
-	__block TCImage *result;
-	
-	dispatch_sync(_localQueue, ^{
-		
-		sqlite3_int64 buddyID = [self _buddyIDForAddress:address];
-		
-		if (buddyID < 0)
-			return;
-		
-		NSData	*data = [self _getBuddyProperty:buddyID key:TCConfigBuddyLastAvatar];
-		NSImage *image = [[NSImage alloc] initWithData:data];
-		
-		result = [[TCImage alloc] initWithImage:image];
-	});
-	
-	return result;
-}
-
-
-#pragma mark Blocked
-
-- (NSArray *)blockedBuddies
-{
-	NSMutableArray *result = [[NSMutableArray alloc] init];
-	
-	dispatch_sync(_localQueue, ^{
-		
-		if (!_dtb)
-			return;
-		
-		while (sqlite3_step(_stmtSelectBlocked) == SQLITE_ROW)
-		{
-			const char *address = (const char *)sqlite3_column_text(_stmtSelectBlocked, 0);
-			
-			if (address)
-				[result addObject:@(address)];
-		}
-		
-		sqlite3_reset(_stmtSelectBlocked);
-	});
-	
-	return result;
-}
-
-- (void)addBlockedBuddy:(NSString *)address
-{
-	if (!address)
-		return;
-	
-	dispatch_async(_localQueue, ^{
-		
-		if (!_dtb)
-			return;
-		
-		// Bind.
-		sqlite3_bind_text(_stmtInsertBlocked, 1, address.UTF8String, -1, SQLITE_TRANSIENT);
-
-		// Execute.
-		sqlite3_step(_stmtInsertBlocked);
-		
-		// Reset.
-		sqlite3_reset(_stmtInsertBlocked);
-	});
-}
-
-- (void)removeBlockedBuddy:(NSString *)address
-{
-	dispatch_async(_localQueue, ^{
-
-		if (!_dtb)
-			return;
-		
-		// Bind.
-		sqlite3_bind_text(_stmtDeleteBlocked, 1, address.UTF8String, -1, SQLITE_TRANSIENT);
-		
-		// Execute.
-		sqlite3_step(_stmtDeleteBlocked);
-		
-		// Reset.
-		sqlite3_reset(_stmtDeleteBlocked);
-	});
-}
-
-
-#pragma mark UI
-
-- (TCConfigTitle)modeTitle
-{
-	NSNumber *result = [self settingForKey:TCCONF_KEY_UI_TITLE];
-	
-	if (!result)
-		return TCConfigTitleAddress;
-	
-	return (TCConfigTitle)[result unsignedShortValue];
-}
-
-- (void)setModeTitle:(TCConfigTitle)mode
-{
-	[self setSetting:@(mode) forKey:TCCONF_KEY_UI_TITLE];
-}
-
-
 #pragma mark Client
 
 - (NSString *)clientVersion:(TCConfigGet)get
@@ -1257,6 +863,382 @@
 		return;
 	
 	[self setSetting:name forKey:TCCONF_KEY_CLIENT_NAME];
+}
+
+
+#pragma mark Buddies
+
+- (NSArray *)buddies
+{
+	NSMutableArray *result = [[NSMutableArray alloc] init];
+	
+	dispatch_sync(_localQueue, ^{
+		
+		if (!_dtb)
+			return;
+		
+		NSString			*currentIdentifier = nil;
+		NSMutableDictionary	*currentEntry = nil;
+
+		while (sqlite3_step(_stmtSelectBuddyAll) == SQLITE_ROW)
+		{
+			const char	*identifier = (const char *)sqlite3_column_text(_stmtSelectBuddyAll, 0);
+			const char	*key = (const char *)sqlite3_column_text(_stmtSelectBuddyAll, 1);
+			id			value = [self _sqliteValueForStatement:_stmtSelectBuddyAll column:2];
+			
+			if (!identifier)
+				continue;
+			
+			if ([currentIdentifier isEqualToString:@(identifier)] == NO)
+			{
+				currentEntry = [[NSMutableDictionary alloc] init];
+				currentIdentifier = @(identifier);
+				
+				currentEntry[TCConfigBuddyIdentifier] = currentIdentifier;
+				
+				[result addObject:currentEntry];
+			}
+			
+			if (key && value)
+				currentEntry[@(key)] = value;
+		}
+		
+		sqlite3_reset(_stmtSelectBuddyAll);
+	});
+	
+	return result;
+}
+
+- (void)addBuddyWithIdentifier:(NSString *)identifier alias:(NSString *)alias notes:(NSString *)notes
+{
+	if (!identifier)
+		return;
+	
+	if (!alias)
+		alias = @"";
+	
+	if (!notes)
+		notes = @"";
+	
+	dispatch_async(_localQueue, ^{
+
+		if (!_dtb)
+			return;
+		
+		int result;
+
+		// Bind.
+		sqlite3_bind_text(_stmtInsertBuddy, 1, identifier.UTF8String, -1, SQLITE_TRANSIENT);
+		
+		// Execute
+		result = sqlite3_step(_stmtInsertBuddy);
+		
+		// Reset.
+		sqlite3_reset(_stmtInsertBuddy);
+		
+		if (result == SQLITE_DONE)
+		{
+			sqlite3_int64 buddyID = sqlite3_last_insert_rowid(_dtb);
+			
+			[self _setBuddyProperty:buddyID key:TCConfigBuddyAlias value:alias];
+			[self _setBuddyProperty:buddyID key:TCConfigBuddyNotes value:notes];
+		}
+	});
+}
+
+- (void)removeBuddyWithIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return;
+	
+	dispatch_async(_localQueue, ^{
+
+		if (!_dtb)
+			return;
+		
+		// Bind.
+		sqlite3_bind_text(_stmtDeleteBuddy, 1, identifier.UTF8String, -1, SQLITE_TRANSIENT);
+
+		// Execute
+		sqlite3_step(_stmtDeleteBuddy);
+		
+		// Reset.
+		sqlite3_reset(_stmtDeleteBuddy);
+	});
+}
+
+- (void)setBuddyAlias:(NSString *)alias forBuddyIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return;
+	
+	if (!alias)
+		alias = @"";
+	
+	dispatch_async(_localQueue, ^{
+		
+		sqlite3_int64 buddyID = [self _buddyIDForIdentifier:identifier];
+		
+		if (buddyID < 0)
+			return;
+		
+		[self _setBuddyProperty:buddyID key:TCConfigBuddyAlias value:alias];
+	});
+}
+
+- (void)setBuddyNotes:(NSString *)notes forBuddyIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return;
+	
+	if (!notes)
+		notes = @"";
+	
+	dispatch_async(_localQueue, ^{
+		
+		sqlite3_int64 buddyID = [self _buddyIDForIdentifier:identifier];
+		
+		if (buddyID < 0)
+			return;
+		
+		[self _setBuddyProperty:buddyID key:TCConfigBuddyNotes value:notes];
+	});
+}
+
+- (void)setBuddyLastName:(NSString *)lastName forBuddyIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return;
+	
+	if (!lastName)
+		lastName = @"";
+	
+	dispatch_async(_localQueue, ^{
+		
+		sqlite3_int64 buddyID = [self _buddyIDForIdentifier:identifier];
+		
+		if (buddyID < 0)
+			return;
+		
+		[self _setBuddyProperty:buddyID key:TCConfigBuddyLastName value:lastName];
+	});
+}
+
+- (void)setBuddyLastText:(NSString *)lastText forBuddyIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return;
+	
+	if (!lastText)
+		lastText = @"";
+	
+	dispatch_async(_localQueue, ^{
+		
+		sqlite3_int64 buddyID = [self _buddyIDForIdentifier:identifier];
+		
+		if (buddyID < 0)
+			return;
+		
+		[self _setBuddyProperty:buddyID key:TCConfigBuddyLastText value:lastText];
+	});
+}
+
+- (void)setBuddyLastAvatar:(TCImage *)lastAvatar forBuddyIdentifier:(NSString *)identifier
+{
+	if (!identifier || !lastAvatar)
+		return;
+	
+	dispatch_async(_localQueue, ^{
+		
+		sqlite3_int64 buddyID = [self _buddyIDForIdentifier:identifier];
+		
+		if (buddyID < 0)
+			return;
+		
+		// Create PNG representation.
+		NSImage *image = [lastAvatar imageRepresentation];
+		NSData	*tiffData = [image TIFFRepresentation];
+		NSData	*pngData;
+		
+		if (!tiffData)
+			return;
+		
+		pngData = [[[NSBitmapImageRep alloc] initWithData:tiffData] representationUsingType:NSPNGFileType properties:@{ }];
+		
+		if (!pngData)
+			return;
+		
+		// Save
+		[self _setBuddyProperty:buddyID key:TCConfigBuddyLastAvatar value:pngData];
+	});
+}
+
+- (NSString *)buddyAliasForBuddyIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return @"";
+	
+	__block NSString *result = @"";
+	
+	dispatch_sync(_localQueue, ^{
+		
+		sqlite3_int64 buddyID = [self _buddyIDForIdentifier:identifier];
+		
+		if (buddyID < 0)
+			return;
+		
+		result = [self _getBuddyProperty:buddyID key:TCConfigBuddyAlias];
+	});
+	
+	return result;
+}
+
+- (NSString *)buddyNotesForBuddyIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return @"";
+	
+	__block NSString *result = @"";
+	
+	dispatch_sync(_localQueue, ^{
+		
+		sqlite3_int64 buddyID = [self _buddyIDForIdentifier:identifier];
+		
+		if (buddyID < 0)
+			return;
+		
+		result = [self _getBuddyProperty:buddyID key:TCConfigBuddyNotes];
+	});
+	
+	return result;
+}
+
+- (NSString *)buddyLastNameForBuddyIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return @"";
+	
+	__block NSString *result = @"";
+	
+	dispatch_sync(_localQueue, ^{
+		
+		sqlite3_int64 buddyID = [self _buddyIDForIdentifier:identifier];
+		
+		if (buddyID < 0)
+			return;
+		
+		result = [self _getBuddyProperty:buddyID key:TCConfigBuddyLastName];
+	});
+	
+	return result;
+}
+
+- (NSString *)buddyLastTextForBuddyIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return @"";
+	
+	__block NSString *result = @"";
+	
+	dispatch_sync(_localQueue, ^{
+		
+		sqlite3_int64 buddyID = [self _buddyIDForIdentifier:identifier];
+		
+		if (buddyID < 0)
+			return;
+		
+		result = [self _getBuddyProperty:buddyID key:TCConfigBuddyLastText];
+	});
+	
+	return result;
+}
+
+- (TCImage *)buddyLastAvatarForBuddyIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return nil;
+	
+	__block TCImage *result;
+	
+	dispatch_sync(_localQueue, ^{
+		
+		sqlite3_int64 buddyID = [self _buddyIDForIdentifier:identifier];
+		
+		if (buddyID < 0)
+			return;
+		
+		NSData	*data = [self _getBuddyProperty:buddyID key:TCConfigBuddyLastAvatar];
+		NSImage *image = [[NSImage alloc] initWithData:data];
+		
+		result = [[TCImage alloc] initWithImage:image];
+	});
+	
+	return result;
+}
+
+
+#pragma mark Blocked
+
+- (NSArray *)blockedBuddies
+{
+	NSMutableArray *result = [[NSMutableArray alloc] init];
+	
+	dispatch_sync(_localQueue, ^{
+		
+		if (!_dtb)
+			return;
+		
+		while (sqlite3_step(_stmtSelectBlocked) == SQLITE_ROW)
+		{
+			const char *identifier = (const char *)sqlite3_column_text(_stmtSelectBlocked, 0);
+			
+			if (identifier)
+				[result addObject:@(identifier)];
+		}
+		
+		sqlite3_reset(_stmtSelectBlocked);
+	});
+	
+	return result;
+}
+
+- (void)addBlockedBuddyWithIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return;
+	
+	dispatch_async(_localQueue, ^{
+		
+		if (!_dtb)
+			return;
+		
+		// Bind.
+		sqlite3_bind_text(_stmtInsertBlocked, 1, identifier.UTF8String, -1, SQLITE_TRANSIENT);
+
+		// Execute.
+		sqlite3_step(_stmtInsertBlocked);
+		
+		// Reset.
+		sqlite3_reset(_stmtInsertBlocked);
+	});
+}
+
+- (void)removeBlockedBuddyWithIdentifier:(NSString *)identifier
+{
+	dispatch_async(_localQueue, ^{
+
+		if (!_dtb)
+			return;
+		
+		// Bind.
+		sqlite3_bind_text(_stmtDeleteBlocked, 1, identifier.UTF8String, -1, SQLITE_TRANSIENT);
+		
+		// Execute.
+		sqlite3_step(_stmtDeleteBlocked);
+		
+		// Reset.
+		sqlite3_reset(_stmtDeleteBlocked);
+	});
 }
 
 
@@ -1501,6 +1483,7 @@
 	return nil;
 }
 
+
 #pragma mark > Type
 
 - (TCConfigPathType)pathTypeForComponent:(TCConfigPathComponent)component
@@ -1577,6 +1560,7 @@
 	return nil;
 }
 
+
 #pragma mark > Component
 
 - (NSString *)componentNameForComponent:(TCConfigPathComponent)component
@@ -1609,6 +1593,7 @@
 	block(TCConfigPathComponentTorIdentity);
 	block(TCConfigPathComponentDownloads);
 }
+
 
 #pragma mark > Observers
 
@@ -1707,11 +1692,36 @@
 	dispatch_sync(_localQueue, ^{ });
 }
 
+
+#pragma mark Life
+
 - (void)close
 {
 	dispatch_sync(_localQueue, ^{
 		[self _closeDatabase];
 	});
+}
+
+
+
+/*
+** TCConfigSQLite - TCConfigInterface
+*/
+#pragma mark - TCConfigSQLite - TCConfigInterface
+
+- (TCConfigTitle)modeTitle
+{
+	NSNumber *result = [self settingForKey:TCCONF_KEY_UI_TITLE];
+	
+	if (!result)
+		return TCConfigTitleIdentifier;
+	
+	return (TCConfigTitle)[result unsignedShortValue];
+}
+
+- (void)setModeTitle:(TCConfigTitle)mode
+{
+	[self setSetting:@(mode) forKey:TCCONF_KEY_UI_TITLE];
 }
 
 

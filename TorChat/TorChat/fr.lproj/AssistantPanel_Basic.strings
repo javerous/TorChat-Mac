@@ -2,20 +2,14 @@
 /* Class = "NSTextFieldCell"; title = "Download Folder :"; ObjectID = "099-Q4-nzo"; */
 "099-Q4-nzo.title" = "Dossier de téléchargement :";
 
-/* Class = "NSButtonCell"; title = "Select"; ObjectID = "BNr-Ox-Soj"; */
-"BNr-Ox-Soj.title" = "Sélectionner";
-
 /* Class = "NSTextFieldCell"; title = "The file received from your buddies will be saved on this folder."; ObjectID = "KYR-YN-XaI"; */
 "KYR-YN-XaI.title" = "Les fichiers envoyés par vos contacts seront enregistrés dans ce dossier.";
 
-/* Class = "NSTextFieldCell"; title = "TorChat IM Address :"; ObjectID = "XPC-c6-X6m"; */
-"XPC-c6-X6m.title" = "Adresse TorChat :";
+/* Class = "NSTextFieldCell"; title = "TorChat IM Identifier :"; ObjectID = "XPC-c6-X6m"; */
+"XPC-c6-X6m.title" = "Identifiant TorChat :";
 
 /* Class = "NSTextFieldCell"; title = "Waiting for tor..."; ObjectID = "cIw-gC-I31"; */
 "cIw-gC-I31.title" = "En attente de tor…";
 
-/* Class = "NSTextFieldCell"; title = "Please specify your setting bellow :"; ObjectID = "qpy-aS-rWl"; */
+/* Class = "NSTextFieldCell"; title = "Please specify your setting bellow."; ObjectID = "qpy-aS-rWl"; */
 "qpy-aS-rWl.title" = "Entrez vos réglages ci-dessous.";
-
-/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "wGA-Lf-M2Z"; */
-"wGA-Lf-M2Z.title" = "Téléchargement";

@@ -24,13 +24,13 @@
 
 
 /*
-** SMTorConfiguration + TCConfig
+** SMTorConfiguration + TCConfigCore
 */
-#pragma mark - SMTorConfiguration + TCConfig
+#pragma mark - SMTorConfiguration + TCConfigCore
 
-@implementation SMTorConfiguration (TCConfig)
+@implementation SMTorConfiguration (TCConfigCore)
 
-- (instancetype)initWithTorChatConfiguration:(id <TCConfig>)config
+- (instancetype)initWithTorChatConfiguration:(id <TCConfigCore>)config
 {
 	self = [super init];
 	

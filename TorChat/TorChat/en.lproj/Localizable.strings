@@ -172,6 +172,6 @@
 "core_mng_error_accept" = "Can't accept new client because of a system error.";
 "core_mng_error_async" = "Can't use async I/O on system socket.";
 "core_cnx_error_already_pinged" = "A remote peer try to ping a buddy already pinged. It was killed.";
-"core_cnx_error_masquerade" = "A remote peer try a masquerade with our address. It was killed.";
+"core_cnx_error_masquerade" = "A remote peer try a masquerade with our identifier. It was killed.";
 "core_cnx_error_add_buddy" = "Can't add a new buddy on TorChat controller.";
 "core_cnx_error_pong" = "A remote peer try to do a pong, but the buddy can't be found. It was killed.";

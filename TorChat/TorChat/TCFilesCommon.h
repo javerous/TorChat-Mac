@@ -54,7 +54,7 @@ typedef enum
 
 #define TCFileUUIDKey			@"uuid"
 #define TCFileFilePathKey		@"filepath"
-#define TCFileBuddyAddressKey	@"buddy_address"
+#define TCFileBuddyIdentifierKey @"buddy_identifier"
 #define TCFileBuddyNameKey		@"buddy_name"
 #define TCFileWayKey			@"way"
 #define TCFileStatusKey			@"status"

@@ -40,6 +40,9 @@
 
 
 // -- Config Keys --
+// > Compatibility.
+#define TCConfigBuddyPlistIdentifier @"address"
+
 // > Config
 #define TCCONF_KEY_VERSION			@"version"
 
@@ -47,7 +50,7 @@
 #define TCCONF_KEY_TOR_ADDRESS		@"tor_address"
 #define TCCONF_KEY_TOR_PORT			@"tor_socks_port"
 
-#define TCCONF_KEY_IM_ADDRESS		@"im_address"
+#define TCCONF_KEY_IM_IDENTIFIER	@"im_address"
 #define TCCONF_KEY_IM_PORT			@"im_in_port"
 
 #define TCCONF_KEY_MODE				@"mode"
@@ -190,9 +193,11 @@
 
 
 /*
-** TCConfigPlist - Tor
+** TCConfigPlist - TCConfig
 */
-#pragma mark - TCConfigPlist - Tor
+#pragma mark - TCConfigPlist - TCConfig
+
+#pragma mark Tor
 
 - (NSString *)torAddress
 {
@@ -242,18 +247,14 @@
 }
 
 
+#pragma mark TorChat
 
-/*
-** TCConfigPlist - TorChat
-*/
-#pragma mark - TCConfigPlist - TorChat
-
-- (NSString *)selfAddress
+- (NSString *)selfIdentifier
 {
 	__block NSString *value;
  
 	dispatch_sync(_localQueue, ^{
-		value = [_fcontent objectForKey:TCCONF_KEY_IM_ADDRESS];
+		value = [_fcontent objectForKey:TCCONF_KEY_IM_IDENTIFIER];
 	});
 	
 	if (value)
@@ -262,13 +263,13 @@
 		return @"xxx";
 }
 
-- (void)setSelfAddress:(NSString *)address
+- (void)setSelfIdentifier:(NSString *)identifier
 {
-	if (!address)
+	if (!identifier)
 		return;
 	
 	dispatch_barrier_async(_localQueue, ^{
-		[_fcontent setObject:address forKey:TCCONF_KEY_IM_ADDRESS];
+		[_fcontent setObject:identifier forKey:TCCONF_KEY_IM_IDENTIFIER];
 		[self _markDirty];
 	});
 }
@@ -296,11 +297,7 @@
 }
 
 
-
-/*
-** TCConfigPlist - Mode
-*/
-#pragma mark - TCConfigPlist - Mode
+#pragma mark Mode
 
 - (TCConfigMode)mode
 {
@@ -334,11 +331,7 @@
 }
 
 
-
-/*
-** TCConfigPlist - Profile
-*/
-#pragma mark - TCConfigPlist - Profile
+#pragma mark Profile
 
 - (NSString *)profileName
 {
@@ -470,471 +463,7 @@
 }
 
 
-
-/*
-** TCConfigPlist - Buddies
-*/
-#pragma mark - TCConfigPlist - Buddies
-
-- (NSArray *)buddies
-{
-	__block NSArray *buddies;
-	
-	dispatch_sync(_localQueue, ^{
-		buddies = [[_fcontent objectForKey:TCCONF_KEY_BUDDIES] copy];
-	});
-	
-	return buddies;
-}
-
-- (void)addBuddy:(NSString *)address alias:(NSString *)alias notes:(NSString *)notes
-{
-	if (!address)
-		return;
-	
-	if (!alias)
-		alias = @"";
-	
-	if (!notes)
-		notes = @"";
-	
-	dispatch_barrier_async(_localQueue, ^{
-		
-		// Get buddies list.
-		NSMutableArray *buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-		
-		if (!buddies)
-		{
-			buddies = [[NSMutableArray alloc] init];
-			[_fcontent setObject:buddies forKey:TCCONF_KEY_BUDDIES];
-		}
-		
-		// Create buddy entry.
-		NSMutableDictionary *buddy = [[NSMutableDictionary alloc] init];
-		
-		[buddy setObject:address forKey:TCConfigBuddyAddress];
-		[buddy setObject:alias forKey:TCConfigBuddyAlias];
-		[buddy setObject:notes forKey:TCConfigBuddyNotes];
-		[buddy setObject:@"" forKey:TCConfigBuddyLastName];
-		
-		[buddies addObject:buddy];
-		
-		// Mark dirty.
-		[self _markDirty];
-	});
-}
-
-- (void)removeBuddy:(NSString *)address
-{
-	dispatch_barrier_async(_localQueue, ^{
-		
-		// Remove from Cocoa version.
-		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-		NSUInteger		i, cnt = [array count];
-		
-		for (i = 0; i < cnt; i++)
-		{
-			NSDictionary *buddy = [array objectAtIndex:i];
-			
-			if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
-			{
-				[array removeObjectAtIndex:i];
-				break;
-			}
-		}
-		
-		// Mark dirty.
-		[self _markDirty];
-	});
-}
-
-- (void)setBuddy:(NSString *)address alias:(NSString *)alias
-{
-	if (!address)
-		return;
-	
-	if (!alias)
-		alias = @"";
-	
-	dispatch_barrier_async(_localQueue, ^{
-		
-		// Change from Cocoa version.
-		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-		NSUInteger		i, cnt = [array count];
-		
-		for (i = 0; i < cnt; i++)
-		{
-			NSMutableDictionary *buddy = [array objectAtIndex:i];
-			
-			if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
-			{
-				[buddy setObject:alias forKey:TCConfigBuddyAlias];
-				break;
-			}
-		}
-		
-		// Mark dirty.
-		[self _markDirty];
-	});
-}
-
-- (void)setBuddy:(NSString *)address notes:(NSString *)notes
-{
-	if (!address)
-		return;
-	
-	if (!notes)
-		notes = @"";
-	
-	dispatch_barrier_async(_localQueue, ^{
-	
-		// Change from Cocoa version.
-		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-		NSUInteger		i, cnt = [array count];
-		
-		for (i = 0; i < cnt; i++)
-		{
-			NSMutableDictionary *buddy = [array objectAtIndex:i];
-			
-			if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
-			{
-				[buddy setObject:notes forKey:TCConfigBuddyNotes];
-				break;
-			}
-		}
-		
-		// Mark dirty.
-		[self _markDirty];
-	});
-}
-
-- (void)setBuddy:(NSString *)address lastProfileName:(NSString *)lastName
-{
-	if (!address)
-		return;
-	
-	if (!lastName)
-		lastName = @"";
-	
-	dispatch_barrier_async(_localQueue, ^{
-		
-		// Change from Cocoa version
-		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-		NSUInteger		i, cnt = [array count];
-		
-		for (i = 0; i < cnt; i++)
-		{
-			NSMutableDictionary *buddy = [array objectAtIndex:i];
-			
-			if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
-			{
-				[buddy setObject:lastName forKey:TCConfigBuddyLastName];
-				break;
-			}
-		}
-		
-		// Mark dirty.
-		[self _markDirty];
-	});
-}
-
-- (void)setBuddy:(NSString *)address lastProfileText:(NSString *)lastText
-{
-	if (!address)
-		return;
-	
-	if (!lastText)
-		lastText = @"";
-	
-	dispatch_barrier_async(_localQueue, ^{
-		
-		// Change from Cocoa version
-		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-		NSUInteger		i, cnt = [array count];
-		
-		for (i = 0; i < cnt; i++)
-		{
-			NSMutableDictionary *buddy = [array objectAtIndex:i];
-			
-			if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
-			{
-				[buddy setObject:lastText forKey:TCConfigBuddyLastText];
-				break;
-			}
-		}
-		
-		// Mark dirty.
-		[self _markDirty];
-	});
-}
-
-- (void)setBuddy:(NSString *)address lastProfileAvatar:(TCImage *)lastAvatar
-{
-	if (!address || !lastAvatar)
-		return;
-	
-	// Create PNG representation.
-	NSImage *image = [lastAvatar imageRepresentation];
-	NSData	*tiffData = [image TIFFRepresentation];
-	NSData	*pngData;
-	
-	if (!tiffData)
-		return;
-	
-	pngData = [[[NSBitmapImageRep alloc] initWithData:tiffData] representationUsingType:NSPNGFileType properties:@{ }];
-	
-	if (!pngData)
-		return;
-	
-	// Change item.
-	dispatch_barrier_async(_localQueue, ^{
-		
-		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-		NSUInteger		i, cnt = [array count];
-		
-		for (i = 0; i < cnt; i++)
-		{
-			NSMutableDictionary *buddy = [array objectAtIndex:i];
-			
-			if ([[buddy objectForKey:TCConfigBuddyAddress] isEqualToString:address])
-			{
-				[buddy setObject:pngData forKey:TCConfigBuddyLastAvatar];
-				break;
-			}
-		}
-		
-		// Mark dirty.
-		[self _markDirty];
-	});
-}
-
-- (NSString *)getBuddyAlias:(NSString *)address
-{
-	if (!address)
-		return @"";
-	
-	__block NSString *result = @"";
-	
-	dispatch_sync(_localQueue, ^{
-		
-		NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-		
-		for (NSDictionary *buddy in buddies)
-		{
-			if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
-			{
-				result = buddy[TCConfigBuddyAlias];
-				return;
-			}
-		}
-	});
-	
-	return result;
-}
-
-- (NSString *)getBuddyNotes:(NSString *)address
-{
-	if (!address)
-		return @"";
-	
-	__block NSString *result = @"";
-	
-	dispatch_sync(_localQueue, ^{
-		
-		NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-		
-		for (NSDictionary *buddy in buddies)
-		{
-			if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
-			{
-				result = buddy[TCConfigBuddyNotes];
-				return;
-			}
-		}
-	});
-	
-	return result;
-}
-
-- (NSString *)getBuddyLastProfileName:(NSString *)address
-{
-	if (!address)
-		return @"";
-	
-	__block NSString *result = @"";
-
-	dispatch_sync(_localQueue, ^{
-		
-		NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-		
-		for (NSDictionary *buddy in buddies)
-		{
-			if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
-			{
-				result = buddy[TCConfigBuddyLastName];
-				return;
-			}
-		}
-	});
-	
-	return result;
-}
-
-- (NSString *)getBuddyLastProfileText:(NSString *)address
-{
-	if (!address)
-		return @"";
-	
-	__block NSString *result = @"";
-	
-	dispatch_sync(_localQueue, ^{
-		
-		NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-		
-		for (NSDictionary *buddy in buddies)
-		{
-			if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
-			{
-				result = buddy[TCConfigBuddyLastText];
-				return;
-			}
-		}
-	});
-	
-	return result;
-}
-
-- (TCImage *)getBuddyLastProfileAvatar:(NSString *)address
-{
-	if (!address)
-		return nil;
-	
-	__block NSData *result = nil;
-	
-	dispatch_sync(_localQueue, ^{
-		NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-		
-		for (NSDictionary *buddy in buddies)
-		{
-			if ([buddy[TCConfigBuddyAddress] isEqualToString:address])
-			{
-				result = buddy[TCConfigBuddyLastAvatar];
-				return;
-			}
-		}
-	});
-	
-	
-	if (result)
-	{
-		NSImage *image = [[NSImage alloc] initWithData:result];
-		
-		return [[TCImage alloc] initWithImage:image];
-	}
-	else
-		return nil;
-}
-
-
-
-/*
-** TCConfigPlist - Blocked
-*/
-#pragma mark - TCConfigPlist - Blocked
-
-- (NSArray *)blockedBuddies
-{
-	__block NSArray *result;
-	
-	dispatch_sync(_localQueue, ^{
-		result = [[_fcontent objectForKey:TCCONF_KEY_BLOCKED] copy];
-	});
-	
-	return result;
-}
-
-- (void)addBlockedBuddy:(NSString *)address
-{
-	dispatch_barrier_sync(_localQueue, ^{
-		
-		// Add to cocoa version
-		NSMutableArray *list = [_fcontent objectForKey:TCCONF_KEY_BLOCKED];
-		
-		if (list && [list indexOfObject:address] != NSNotFound)
-			return;
-		
-		if (!list)
-		{
-			list = [[NSMutableArray alloc] init];
-			[_fcontent setObject:list forKey:TCCONF_KEY_BLOCKED];
-		}
-		
-		[list addObject:address];
-		
-		// Mark dirty.
-		[self _markDirty];
-	});
-}
-
-- (void)removeBlockedBuddy:(NSString *)address
-{
-	dispatch_barrier_sync(_localQueue, ^{
-		
-		// Remove from Cocoa version.
-		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BLOCKED];
-		NSUInteger		i, cnt = [array count];
-		
-		for (i = 0; i < cnt; i++)
-		{
-			NSString *buddy = [array objectAtIndex:i];
-			
-			if ([buddy isEqualToString:address])
-			{
-				[array removeObjectAtIndex:i];
-				break;
-			}
-		}
-
-		// Mark dirty.
-		[self _markDirty];
-	});
-}
-
-
-
-/*
-** TCConfigPlist - UI
-*/
-#pragma mark - TCConfigPlist - UI
-
-- (TCConfigTitle)modeTitle
-{
-	__block NSNumber *value;
- 
-	dispatch_barrier_sync(_localQueue, ^{
-		value = [_fcontent objectForKey:TCCONF_KEY_UI_TITLE];
-	});
-	
-	if (!value)
-		return TCConfigTitleAddress;
-	
-	return (TCConfigTitle)[value unsignedShortValue];
-}
-
-- (void)setModeTitle:(TCConfigTitle)mode
-{
-	dispatch_barrier_async(_localQueue, ^{
-		[_fcontent setObject:@(mode) forKey:TCCONF_KEY_UI_TITLE];
-		[self _markDirty];
-	});
-}
-
-
-
-/*
-** TCConfigPlist - Client
-*/
-#pragma mark - TCConfigPlist - Client
+#pragma mark Client
 
 - (NSString *)clientVersion:(TCConfigGet)get
 {
@@ -982,7 +511,7 @@
 {
 	if (!version)
 		return;
-
+	
 	dispatch_barrier_async(_localQueue, ^{
 		[_fcontent setObject:version forKey:TCCONF_KEY_CLIENT_VERSION];
 		[self _markDirty];
@@ -1038,11 +567,430 @@
 }
 
 
+#pragma mark Buddies
 
-/*
-** TCConfigPlist - Paths
-*/
-#pragma mark - TCConfigPlist - Paths
+- (NSArray *)buddies
+{
+	__block NSArray *buddies;
+	
+	dispatch_sync(_localQueue, ^{
+		buddies = [[_fcontent objectForKey:TCCONF_KEY_BUDDIES] copy];
+	});
+	
+	return buddies;
+}
+
+- (void)addBuddyWithIdentifier:(NSString *)identifier alias:(NSString *)alias notes:(NSString *)notes
+{
+	if (!identifier)
+		return;
+	
+	if (!alias)
+		alias = @"";
+	
+	if (!notes)
+		notes = @"";
+	
+	dispatch_barrier_async(_localQueue, ^{
+		
+		// Get buddies list.
+		NSMutableArray *buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		
+		if (!buddies)
+		{
+			buddies = [[NSMutableArray alloc] init];
+			[_fcontent setObject:buddies forKey:TCCONF_KEY_BUDDIES];
+		}
+		
+		// Create buddy entry.
+		NSMutableDictionary *buddy = [[NSMutableDictionary alloc] init];
+		
+		[buddy setObject:identifier forKey:TCConfigBuddyPlistIdentifier];
+		[buddy setObject:alias forKey:TCConfigBuddyAlias];
+		[buddy setObject:notes forKey:TCConfigBuddyNotes];
+		[buddy setObject:@"" forKey:TCConfigBuddyLastName];
+		
+		[buddies addObject:buddy];
+		
+		// Mark dirty.
+		[self _markDirty];
+	});
+}
+
+- (void)removeBuddyWithIdentifier:(NSString *)identifier
+{
+	dispatch_barrier_async(_localQueue, ^{
+		
+		// Remove from Cocoa version.
+		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		NSUInteger		i, cnt = [array count];
+		
+		for (i = 0; i < cnt; i++)
+		{
+			NSDictionary *buddy = [array objectAtIndex:i];
+			
+			if ([[buddy objectForKey:TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			{
+				[array removeObjectAtIndex:i];
+				break;
+			}
+		}
+		
+		// Mark dirty.
+		[self _markDirty];
+	});
+}
+
+- (void)setBuddyAlias:(NSString *)alias forBuddyIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return;
+	
+	if (!alias)
+		alias = @"";
+	
+	dispatch_barrier_async(_localQueue, ^{
+		
+		// Change from Cocoa version.
+		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		NSUInteger		i, cnt = [array count];
+		
+		for (i = 0; i < cnt; i++)
+		{
+			NSMutableDictionary *buddy = [array objectAtIndex:i];
+			
+			if ([[buddy objectForKey:TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			{
+				[buddy setObject:alias forKey:TCConfigBuddyAlias];
+				break;
+			}
+		}
+		
+		// Mark dirty.
+		[self _markDirty];
+	});
+}
+
+- (void)setBuddyNotes:(NSString *)notes forBuddyIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return;
+	
+	if (!notes)
+		notes = @"";
+	
+	dispatch_barrier_async(_localQueue, ^{
+	
+		// Change from Cocoa version.
+		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		NSUInteger		i, cnt = [array count];
+		
+		for (i = 0; i < cnt; i++)
+		{
+			NSMutableDictionary *buddy = [array objectAtIndex:i];
+			
+			if ([[buddy objectForKey:TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			{
+				[buddy setObject:notes forKey:TCConfigBuddyNotes];
+				break;
+			}
+		}
+		
+		// Mark dirty.
+		[self _markDirty];
+	});
+}
+
+- (void)setBuddyLastName:(NSString *)lastName forBuddyIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return;
+	
+	if (!lastName)
+		lastName = @"";
+	
+	dispatch_barrier_async(_localQueue, ^{
+		
+		// Change from Cocoa version
+		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		NSUInteger		i, cnt = [array count];
+		
+		for (i = 0; i < cnt; i++)
+		{
+			NSMutableDictionary *buddy = [array objectAtIndex:i];
+			
+			if ([[buddy objectForKey:TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			{
+				[buddy setObject:lastName forKey:TCConfigBuddyLastName];
+				break;
+			}
+		}
+		
+		// Mark dirty.
+		[self _markDirty];
+	});
+}
+
+- (void)setBuddyLastText:(NSString *)lastText forBuddyIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return;
+	
+	if (!lastText)
+		lastText = @"";
+	
+	dispatch_barrier_async(_localQueue, ^{
+		
+		// Change from Cocoa version
+		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		NSUInteger		i, cnt = [array count];
+		
+		for (i = 0; i < cnt; i++)
+		{
+			NSMutableDictionary *buddy = [array objectAtIndex:i];
+			
+			if ([[buddy objectForKey:TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			{
+				[buddy setObject:lastText forKey:TCConfigBuddyLastText];
+				break;
+			}
+		}
+		
+		// Mark dirty.
+		[self _markDirty];
+	});
+}
+
+- (void)setBuddyLastAvatar:(TCImage *)lastAvatar forBuddyIdentifier:(NSString *)identifier
+{
+	if (!identifier || !lastAvatar)
+		return;
+	
+	// Create PNG representation.
+	NSImage *image = [lastAvatar imageRepresentation];
+	NSData	*tiffData = [image TIFFRepresentation];
+	NSData	*pngData;
+	
+	if (!tiffData)
+		return;
+	
+	pngData = [[[NSBitmapImageRep alloc] initWithData:tiffData] representationUsingType:NSPNGFileType properties:@{ }];
+	
+	if (!pngData)
+		return;
+	
+	// Change item.
+	dispatch_barrier_async(_localQueue, ^{
+		
+		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		NSUInteger		i, cnt = [array count];
+		
+		for (i = 0; i < cnt; i++)
+		{
+			NSMutableDictionary *buddy = [array objectAtIndex:i];
+			
+			if ([[buddy objectForKey:TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			{
+				[buddy setObject:pngData forKey:TCConfigBuddyLastAvatar];
+				break;
+			}
+		}
+		
+		// Mark dirty.
+		[self _markDirty];
+	});
+}
+
+- (NSString *)buddyAliasForBuddyIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return @"";
+	
+	__block NSString *result = @"";
+	
+	dispatch_sync(_localQueue, ^{
+		
+		NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		
+		for (NSDictionary *buddy in buddies)
+		{
+			if ([buddy[TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			{
+				result = buddy[TCConfigBuddyAlias];
+				return;
+			}
+		}
+	});
+	
+	return result;
+}
+
+- (NSString *)buddyNotesForBuddyIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return @"";
+	
+	__block NSString *result = @"";
+	
+	dispatch_sync(_localQueue, ^{
+		
+		NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		
+		for (NSDictionary *buddy in buddies)
+		{
+			if ([buddy[TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			{
+				result = buddy[TCConfigBuddyNotes];
+				return;
+			}
+		}
+	});
+	
+	return result;
+}
+
+- (NSString *)buddyLastNameForBuddyIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return @"";
+	
+	__block NSString *result = @"";
+
+	dispatch_sync(_localQueue, ^{
+		
+		NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		
+		for (NSDictionary *buddy in buddies)
+		{
+			if ([buddy[TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			{
+				result = buddy[TCConfigBuddyLastName];
+				return;
+			}
+		}
+	});
+	
+	return result;
+}
+
+- (NSString *)buddyLastTextForBuddyIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return @"";
+	
+	__block NSString *result = @"";
+	
+	dispatch_sync(_localQueue, ^{
+		
+		NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		
+		for (NSDictionary *buddy in buddies)
+		{
+			if ([buddy[TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			{
+				result = buddy[TCConfigBuddyLastText];
+				return;
+			}
+		}
+	});
+	
+	return result;
+}
+
+- (TCImage *)buddyLastAvatarForBuddyIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return nil;
+	
+	__block NSData *result = nil;
+	
+	dispatch_sync(_localQueue, ^{
+		NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		
+		for (NSDictionary *buddy in buddies)
+		{
+			if ([buddy[TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			{
+				result = buddy[TCConfigBuddyLastAvatar];
+				return;
+			}
+		}
+	});
+	
+	
+	if (result)
+	{
+		NSImage *image = [[NSImage alloc] initWithData:result];
+		
+		return [[TCImage alloc] initWithImage:image];
+	}
+	else
+		return nil;
+}
+
+
+#pragma mark Blocked
+
+- (NSArray *)blockedBuddies
+{
+	__block NSArray *result;
+	
+	dispatch_sync(_localQueue, ^{
+		result = [[_fcontent objectForKey:TCCONF_KEY_BLOCKED] copy];
+	});
+	
+	return result;
+}
+
+- (void)addBlockedBuddyWithIdentifier:(NSString *)identifier
+{
+	dispatch_barrier_sync(_localQueue, ^{
+		
+		// Add to cocoa version
+		NSMutableArray *list = [_fcontent objectForKey:TCCONF_KEY_BLOCKED];
+		
+		if (list && [list indexOfObject:identifier] != NSNotFound)
+			return;
+		
+		if (!list)
+		{
+			list = [[NSMutableArray alloc] init];
+			[_fcontent setObject:list forKey:TCCONF_KEY_BLOCKED];
+		}
+		
+		[list addObject:identifier];
+		
+		// Mark dirty.
+		[self _markDirty];
+	});
+}
+
+- (void)removeBlockedBuddyWithIdentifier:(NSString *)identifier
+{
+	dispatch_barrier_sync(_localQueue, ^{
+		
+		// Remove from Cocoa version.
+		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BLOCKED];
+		NSUInteger		i, cnt = [array count];
+		
+		for (i = 0; i < cnt; i++)
+		{
+			NSString *buddy = [array objectAtIndex:i];
+			
+			if ([buddy isEqualToString:identifier])
+			{
+				[array removeObjectAtIndex:i];
+				break;
+			}
+		}
+
+		// Mark dirty.
+		[self _markDirty];
+	});
+}
+
+
+#pragma mark Paths
 
 #pragma mark > Set
 
@@ -1428,11 +1376,7 @@
 }
 
 
-
-/*
-** TCConfigPlist - Strings
-*/
-#pragma mark - TCConfigPlist - Strings
+#pragma mark Strings
 
 - (NSString *)localizedString:(TCConfigStringItem)stringItem
 {
@@ -1446,11 +1390,7 @@
 }
 
 
-
-/*
-** TCConfigPlist - Synchronize
-*/
-#pragma mark - TCConfigPlist - Synchronize
+#pragma mark Synchronize
 
 - (void)synchronize
 {
@@ -1475,6 +1415,36 @@
 		_isClosed = YES;
 	});
 }
+
+
+
+/*
+** TCConfigPlist - TCConfigInterface
+*/
+#pragma mark - TCConfigPlist - TCConfigInterface
+
+- (TCConfigTitle)modeTitle
+{
+	__block NSNumber *value;
+ 
+	dispatch_barrier_sync(_localQueue, ^{
+		value = [_fcontent objectForKey:TCCONF_KEY_UI_TITLE];
+	});
+	
+	if (!value)
+		return TCConfigTitleIdentifier;
+	
+	return (TCConfigTitle)[value unsignedShortValue];
+}
+
+- (void)setModeTitle:(TCConfigTitle)mode
+{
+	dispatch_barrier_async(_localQueue, ^{
+		[_fcontent setObject:@(mode) forKey:TCCONF_KEY_UI_TITLE];
+		[self _markDirty];
+	});
+}
+
 
 
 /*

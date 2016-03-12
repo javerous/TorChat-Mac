@@ -132,7 +132,7 @@ static char gLocalQueueContext;
 @interface TCBuddy () <TCParserCommand, TCParserDelegate, SMSocketDelegate>
 {
 	// > Config
-	id <TCConfig>		_config;
+	id <TCConfigCore>		_config;
 	
 	// > Parser
 	TCParser			*_parser;
@@ -147,7 +147,7 @@ static char gLocalQueueContext;
 	
 	// > Property
 	NSString			*_alias;
-	NSString			*_address;
+	NSString			*_identifier;
 	NSString			*_notes;
 	NSString			*_random;
 	
@@ -248,7 +248,7 @@ static char gLocalQueueContext;
 	[self registerInfoDescriptors];
 }
 
-- (id)initWithConfiguration:(id <TCConfig>)configuration alias:(NSString *)alias address:(NSString *)address notes:(NSString *)notes
+- (id)initWithConfiguration:(id <TCConfigCore>)configuration identifier:(NSString *)identifier alias:(NSString *)alias notes:(NSString *)notes
 {
 	self = [super init];
 	
@@ -259,10 +259,10 @@ static char gLocalQueueContext;
 		
 		// Retain property
 		_alias = alias;
-		_address = address;
+		_identifier = identifier;
 		_notes = notes;
 		
-		TCDebugLog(@"Buddy (%@) - New", _address);
+		TCDebugLog(@"Buddy (%@) - New", _identifier);
 		
 		// Build queue
 		_localQueue = dispatch_queue_create("com.torchat.core.buddy.local", DISPATCH_QUEUE_SERIAL);
@@ -287,9 +287,9 @@ static char gLocalQueueContext;
 		_status = TCStatusOffline;
 		
 		// Init profiles
-		_profileName = [_config getBuddyLastProfileName:_address] ?: @"";
-		_profileText = [_config getBuddyLastProfileText:_address] ?: @"";
-		_profileAvatar = [_config getBuddyLastProfileAvatar:_address];
+		_profileName = [_config buddyLastNameForBuddyIdentifier:_identifier] ?: @"";
+		_profileText = [_config buddyLastTextForBuddyIdentifier:_identifier] ?: @"";
+		_profileAvatar = [_config buddyLastAvatarForBuddyIdentifier:_identifier];
 
 		if (!_profileAvatar)
 			_profileAvatar = [[TCImage alloc] initWithWidth:64 andHeight:64];
@@ -314,7 +314,7 @@ static char gLocalQueueContext;
 		
 		_random = [[NSString alloc] initWithCString:rnd encoding:NSASCIIStringEncoding];
 		
-		TCDebugLog(@"Buddy (%@) - Random: %s", _address, rnd);
+		TCDebugLog(@"Buddy (%@) - Random: %s", _identifier, rnd);
 	}
 	
 	return self;
@@ -347,7 +347,7 @@ static char gLocalQueueContext;
 		if (_blocked)
 			return;
 		
-		TCDebugLog(@"Buddy (%@) - Start", _address);
+		TCDebugLog(@"Buddy (%@) - Start", _identifier);
 		
 		// -- Make a connection to Tor proxy --
 		struct addrinfo	hints, *res, *res0;
@@ -533,7 +533,7 @@ static char gLocalQueueContext;
 	dispatch_async(_localQueue, ^{
 		
 		// Set the new name in config
-		[_config setBuddy:_address alias:name];
+		[_config setBuddyAlias:name forBuddyIdentifier:_identifier];
 		
 		// Change the name internaly
 		_alias = name;
@@ -562,7 +562,7 @@ static char gLocalQueueContext;
 	dispatch_async(_localQueue, ^{
 		
 		// Set the new name in config
-		[_config setBuddy:_address notes:notes];
+		[_config setBuddyNotes:notes forBuddyIdentifier:_identifier];
 		
 		// Change the name internaly
 		_notes = notes;
@@ -614,9 +614,9 @@ static char gLocalQueueContext;
 	return res;
 }
 
-- (NSString *)address
+- (NSString *)identifier
 {
-	return _address;
+	return _identifier;
 }
 
 - (NSString *)random
@@ -1156,7 +1156,7 @@ static char gLocalQueueContext;
 */
 #pragma mark - TCParserDelegate & TCParserCommand
 
-- (void)parser:(TCParser *)parser parsedPingWithAddress:(NSString *)address random:(NSString *)random
+- (void)parser:(TCParser *)parser parsedPingWithIdentifier:(NSString *)identifier random:(NSString *)random
 {
 	// not-implemented
 }
@@ -1239,7 +1239,7 @@ static char gLocalQueueContext;
 	_profileText = text;
 	
 	// Store profile name.
-	[_config setBuddy:_address lastProfileText:text];
+	[_config setBuddyLastText:text forBuddyIdentifier:_identifier];
 	
 	// Notify it
 	[self _notify:TCBuddyEventProfileText context:text];
@@ -1255,7 +1255,7 @@ static char gLocalQueueContext;
 	_profileName = name;
 	
 	// Store profile name.
-	[_config setBuddy:_address lastProfileName:name];
+	[_config setBuddyLastName:name forBuddyIdentifier:_identifier];
 	
 	// Notify it.
 	[self _notify:TCBuddyEventProfileName context:name];
@@ -1272,7 +1272,7 @@ static char gLocalQueueContext;
 	[_profileAvatar setBitmap:bitmap];
 	
 	// Store profile avatar.
-	[_config setBuddy:_address lastProfileAvatar:_profileAvatar];
+	[_config setBuddyLastAvatar:_profileAvatar forBuddyIdentifier:_identifier];
 	
 	// Notify it.
 	[self _notify:TCBuddyEventProfileAvatar context:_profileAvatar];
@@ -1329,7 +1329,7 @@ static char gLocalQueueContext;
 	NSString *sfilename_2 = [sfilename_1 stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
 	
 	// Get the download folder
-	NSString *downPath = [[_config pathForComponent:TCConfigPathComponentDownloads fullPath:YES] stringByAppendingPathComponent:_address];
+	NSString *downPath = [[_config pathForComponent:TCConfigPathComponentDownloads fullPath:YES] stringByAppendingPathComponent:_identifier];
 	
 	[[NSFileManager defaultManager] createDirectoryAtPath:downPath withIntermediateDirectories:YES attributes:nil error:nil];
 	
@@ -1556,7 +1556,7 @@ static char gLocalQueueContext;
 	
 	NSMutableArray *items = [[NSMutableArray alloc] init];
 	
-	[items addObject:[_config selfAddress]];
+	[items addObject:[_config selfIdentifier]];
 	[items addObject:_random];
 
 	[self _sendCommand:@"ping" array:items channel:TCBuddyChannelOut];
@@ -1910,7 +1910,7 @@ static char gLocalQueueContext;
 	size_t				datalen;
 	
 	// Get the target connexion informations
-	NSString	*host = [_address stringByAppendingString:@".onion"];
+	NSString	*host = [_identifier stringByAppendingString:@".onion"];
 	const char	*c_host = [host UTF8String];
 	
 	// Check data size

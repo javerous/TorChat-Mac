@@ -14,5 +14,5 @@
 /* Class = "NSButtonCell"; title = "Add"; ObjectID = "isc-2a-Req"; */
 "isc-2a-Req.title" = "Ajouter";
 
-/* Class = "NSTextFieldCell"; title = "Address"; ObjectID = "rvK-dY-7yO"; */
-"rvK-dY-7yO.title" = "Adresse";
+/* Class = "NSTextFieldCell"; title = "Identifier"; ObjectID = "rvK-dY-7yO"; */
+"rvK-dY-7yO.title" = "Identifiant";

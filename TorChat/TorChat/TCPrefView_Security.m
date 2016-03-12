@@ -94,7 +94,7 @@
 - (IBAction)doEncrypt:(id)sender
 {
 	__weak TCPrefView_Security	*weakSelf = self;
-	id <TCConfigEncryptable>	config = self.config;
+	id <TCConfigAppEncryptable>	config = self.config;
 	
 	// Activate encryption.
 	if (encryptCheckBox.state == NSOnState)
@@ -144,7 +144,7 @@
 - (IBAction)doChangePassword:(id)sender
 {
 	__weak TCPrefView_Security	*weakSelf = self;
-	id <TCConfigEncryptable>	config = self.config;
+	id <TCConfigAppEncryptable>	config = self.config;
 	
 	_passwordHandler = ^(NSString *password) {
 		

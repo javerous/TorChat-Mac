@@ -33,7 +33,7 @@
 	BOOL changes;
 }
 
-@property (strong, nonatomic) IBOutlet NSTextField	*imAddressField;
+@property (strong, nonatomic) IBOutlet NSTextField	*imIdentifierField;
 @property (strong, nonatomic) IBOutlet NSTextField	*imPortField;
 @property (strong, nonatomic) IBOutlet NSTextField	*torAddressField;
 @property (strong, nonatomic) IBOutlet NSTextField	*torPortField;
@@ -100,21 +100,21 @@
 	// Set mode
 	if (mode == TCConfigModeBasic)
 	{
-		[_imAddressField setEnabled:NO];
+		[_imIdentifierField setEnabled:NO];
 		[_imPortField setEnabled:NO];
 		[_torAddressField setEnabled:NO];
 		[_torPortField setEnabled:NO];
 	}
 	else if (mode == TCConfigModeAdvanced)
 	{
-		[_imAddressField setEnabled:YES];
+		[_imIdentifierField setEnabled:YES];
 		[_imPortField setEnabled:YES];
 		[_torAddressField setEnabled:YES];
 		[_torPortField setEnabled:YES];
 	}
 	
 	// Set value field
-	[_imAddressField setStringValue:[self.config selfAddress]];
+	[_imIdentifierField setStringValue:[self.config selfIdentifier]];
 	[_imPortField setStringValue:[@([self.config clientPort]) description]];
 	[_torAddressField setStringValue:[self.config torAddress]];
 	[_torPortField setStringValue:[@([self.config torPort]) description]];
@@ -125,7 +125,7 @@
 	if (changes && [self.config mode] == TCConfigModeAdvanced)
 	{
 		// Set config value.
-		[self.config setSelfAddress:[_imAddressField stringValue]];
+		[self.config setSelfIdentifier:[_imIdentifierField stringValue]];
 		[self.config setClientPort:(uint16_t)[[_imPortField stringValue] intValue]];
 		[self.config setTorAddress:[_torAddressField stringValue]];
 		[self.config setTorPort:(uint16_t)[[_torPortField stringValue] intValue]];

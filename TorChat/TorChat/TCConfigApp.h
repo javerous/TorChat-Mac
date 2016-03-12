@@ -1,5 +1,5 @@
 /*
- *  TCConfigInterface.h
+ *  TCConfigApp.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,7 +20,7 @@
  *
  */
 
-#import "TCConfig.h"
+#import "TCConfigCore.h"
 
 
 /*
@@ -30,18 +30,18 @@
 
 typedef enum
 {
-	TCConfigTitleAddress	= 0,
+	TCConfigTitleIdentifier	= 0,
 	TCConfigTitleName		= 1
 } TCConfigTitle;
 
 
 
 /*
-** TCConfigInterface
+** TCConfigApp
 */
-#pragma mark - TCConfigInterface
+#pragma mark - TCConfigApp
 
-@protocol TCConfigInterface <TCConfig>
+@protocol TCConfigApp <TCConfigCore>
 
 // -- Title --
 - (TCConfigTitle)modeTitle;
