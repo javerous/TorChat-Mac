@@ -22,7 +22,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "TCConfigEncryptable.h"
+#import "TCConfigAppEncryptable.h"
 
 
 /*
@@ -72,6 +72,6 @@
 - (TCBuddy *)selectedBuddy;
 
 // -- Running --
-- (void)startWithConfiguration:(id <TCConfigEncryptable>)configuration coreManager:(TCCoreManager *)coreMananager;
+- (void)startWithConfiguration:(id <TCConfigAppEncryptable>)configuration coreManager:(TCCoreManager *)coreMananager;
 - (void)stopWithCompletionHandler:(dispatch_block_t)handler;
 @end

@@ -30,7 +30,7 @@
 
 @implementation TCConfigurationCopy
 
-+ (BOOL)copyConfiguration:(id <TCConfigInterface>)source toConfiguration:(id <TCConfigInterface>)target
++ (BOOL)copyConfiguration:(id <TCConfigApp>)source toConfiguration:(id <TCConfigApp>)target
 {
 	if (!source || !target)
 		return NO;
@@ -40,7 +40,7 @@
 	target.torPort = source.torPort;
 	
 	// TorChat.
-	target.selfAddress = source.selfAddress;
+	target.selfIdentifier = source.selfIdentifier;
 	target.clientPort = source.clientPort;
 
 	// Mode.
@@ -56,28 +56,28 @@
 	
 	for (NSDictionary *buddy in buddies)
 	{
-		NSString *address = buddy[TCConfigBuddyAddress];
+		NSString *identifier = buddy[TCConfigBuddyIdentifier];
 		NSString *alias = buddy[TCConfigBuddyAlias];
 		NSString *notes = buddy[TCConfigBuddyNotes];
 		NSString *lastName = buddy[TCConfigBuddyLastName];
 		NSString *lastText = buddy[TCConfigBuddyLastText];
 		TCImage *lastAvatar = buddy[TCConfigBuddyLastAvatar];
 
-		if (!address)
+		if (!identifier)
 			continue;
 		
-		[target addBuddy:address alias:alias notes:notes];
+		[target addBuddyWithIdentifier:identifier alias:alias notes:notes];
 		
-		[target setBuddy:address lastProfileName:lastName];
-		[target setBuddy:address lastProfileText:lastText];
-		[target setBuddy:address lastProfileAvatar:lastAvatar];
+		[target setBuddyLastName:lastName forBuddyIdentifier:identifier];
+		[target setBuddyLastText:lastText forBuddyIdentifier:identifier];
+		[target setBuddyLastAvatar:lastAvatar forBuddyIdentifier:identifier];
 	}
 	
 	// Blocked.
 	NSArray *blocked = [source blockedBuddies];
 	
-	for (NSString *address in blocked)
-		[target addBlockedBuddy:address];
+	for (NSString *identifier in blocked)
+		[target addBlockedBuddyWithIdentifier:identifier];
 	
 	// Client.
 	NSString *version = [source clientVersion:TCConfigGetDefined];

@@ -37,7 +37,7 @@
 	IBOutlet NSTextField	*subPathField;
 	IBOutlet NSPathControl	*pathView;
 	
-	id <TCConfig>			_configuration;
+	id <TCConfigCore>			_configuration;
 	TCConfigPathComponent	_component;
 	
 	id _pathObserver;
@@ -50,7 +50,7 @@
 */
 #pragma mark - TCLocationViewController - Instance
 
-- (instancetype)initWithConfiguration:(id <TCConfig>)configuration component:(TCConfigPathComponent)component
+- (instancetype)initWithConfiguration:(id <TCConfigCore>)configuration component:(TCConfigPathComponent)component
 {
 	self = [super initWithNibName:@"LocationView" bundle:nil];
 	

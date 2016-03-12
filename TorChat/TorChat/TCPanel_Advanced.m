@@ -23,7 +23,7 @@
 #import "TCPanel_Advanced.h"
 
 #import "TCLogsManager.h"
-#import "TCConfigEncryptable.h"
+#import "TCConfigAppEncryptable.h"
 
 #import "TCLocationViewController.h"
 
@@ -46,12 +46,12 @@
 
 @interface TCPanel_Advanced ()
 {
-	id <TCConfigEncryptable> _currentConfig;
+	id <TCConfigAppEncryptable> _currentConfig;
 
 	TCLocationViewController *_torDownloadsLocation;
 }
 
-@property (strong, nonatomic)	IBOutlet NSTextField	*imAddressField;
+@property (strong, nonatomic)	IBOutlet NSTextField	*imIdentifierField;
 @property (strong, nonatomic)	IBOutlet NSTextField	*imInPortField;
 @property (strong, nonatomic)	IBOutlet NSView			*downloadLocationView;
 
@@ -107,7 +107,7 @@
 {
 	// Set up the config with the fields.
 	[_currentConfig setTorAddress:[_torAddressField stringValue]];
-	[_currentConfig setSelfAddress:[_imAddressField stringValue]];
+	[_currentConfig setSelfIdentifier:[_imIdentifierField stringValue]];
 	
 	[_currentConfig setTorPort:(uint16_t)[_torPortField intValue]];
 	[_currentConfig setClientPort:(uint16_t)[_imInPortField intValue]];

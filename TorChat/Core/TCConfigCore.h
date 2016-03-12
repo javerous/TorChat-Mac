@@ -1,5 +1,5 @@
 /*
- *  TCConfig.h
+ *  TCConfigCore.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -28,7 +28,8 @@
 */
 #pragma mark - Defines
 
-#define TCConfigBuddyAddress	@"address"
+// Buddy.
+#define TCConfigBuddyIdentifier	@"identifier"
 #define TCConfigBuddyAlias		@"alias"
 #define TCConfigBuddyNotes		@"notes"
 
@@ -77,13 +78,13 @@ typedef enum
 	TCConfigPathComponentReferal,		// Path used as referal.
 	TCConfigPathComponentTorBinary,		// Path to the tor binary (and its dependancies) directory.
 	TCConfigPathComponentTorData,		// Path to the tor data directory.
-	TCConfigPathComponentTorIdentity,	// Path to tor hidden service (buddy address)
+	TCConfigPathComponentTorIdentity,	// Path to tor hidden service (buddy identifier)
 	TCConfigPathComponentDownloads,		// Path to the downloads directory.
 } TCConfigPathComponent;
 
 typedef enum
 {
-	TCConfigPathTypeReferal,		// Path is relative to referal.
+	TCConfigPathTypeReferal,	// Path is relative to referal.
 	TCConfigPathTypeStandard,	// Path is relative to standard OS X directories in ~.
 	TCConfigPathTypeAbsolute,	// Path is absolute.
 } TCConfigPathType;
@@ -91,18 +92,18 @@ typedef enum
 
 
 /*
-** TCConfig
+** TCConfigCore
 */
-#pragma mark - TCConfig
+#pragma mark - TCConfigCore
 
-@protocol TCConfig <NSObject>
+@protocol TCConfigCore <NSObject>
 
 // -- Tor --
 @property NSString *torAddress;
 @property uint16_t torPort;
 
 // -- TorChat --
-@property NSString *selfAddress;
+@property NSString *selfIdentifier;
 @property uint16_t clientPort;
 
 // -- Mode --
@@ -113,34 +114,34 @@ typedef enum
 @property NSString	*profileText;
 @property TCImage	*profileAvatar;
 
-// -- Buddies --
-- (NSArray *)buddies; // Array of dictionary.
-- (void)addBuddy:(NSString *)address alias:(NSString *)alias notes:(NSString *)notes;
-- (void)removeBuddy:(NSString *)address;
-
-- (void)setBuddy:(NSString *)address alias:(NSString *)alias;
-- (void)setBuddy:(NSString *)address notes:(NSString *)notes;
-- (void)setBuddy:(NSString *)address lastProfileName:(NSString *)lastName;
-- (void)setBuddy:(NSString *)address lastProfileText:(NSString *)lastText;
-- (void)setBuddy:(NSString *)address lastProfileAvatar:(TCImage *)lastAvatar;
-
-- (NSString *)getBuddyAlias:(NSString *)address;
-- (NSString *)getBuddyNotes:(NSString *)address;
-- (NSString *)getBuddyLastProfileName:(NSString *)address;
-- (NSString *)getBuddyLastProfileText:(NSString *)address;
-- (TCImage *)getBuddyLastProfileAvatar:(NSString *)address;
-
-// -- Blocked --
-- (NSArray *)blockedBuddies;
-- (void)addBlockedBuddy:(NSString *)address;
-- (void)removeBlockedBuddy:(NSString *)address;
-
 // -- Client --
 - (NSString *)clientVersion:(TCConfigGet)get;
 - (void)setClientVersion:(NSString *)version;
 
 - (NSString *)clientName:(TCConfigGet)get;
 - (void)setClientName:(NSString *)name;
+
+// -- Buddies --
+- (NSArray *)buddies; // Array of dictionary.
+- (void)addBuddyWithIdentifier:(NSString *)identifier alias:(NSString *)alias notes:(NSString *)notes;
+- (void)removeBuddyWithIdentifier:(NSString *)identifier;
+
+- (void)setBuddyAlias:(NSString *)alias forBuddyIdentifier:(NSString *)identifier;
+- (void)setBuddyNotes:(NSString *)notes forBuddyIdentifier:(NSString *)identifier;
+- (void)setBuddyLastName:(NSString *)lastName forBuddyIdentifier:(NSString *)identifier;
+- (void)setBuddyLastText:(NSString *)lastText forBuddyIdentifier:(NSString *)identifier;
+- (void)setBuddyLastAvatar:(TCImage *)lastAvatar forBuddyIdentifier:(NSString *)identifier;
+
+- (NSString *)buddyAliasForBuddyIdentifier:(NSString *)identifier;
+- (NSString *)buddyNotesForBuddyIdentifier:(NSString *)identifier;
+- (NSString *)buddyLastNameForBuddyIdentifier:(NSString *)identifier;
+- (NSString *)buddyLastTextForBuddyIdentifier:(NSString *)identifier;
+- (TCImage *)buddyLastAvatarForBuddyIdentifier:(NSString *)identifier;
+
+// -- Blocked --
+- (NSArray *)blockedBuddies;
+- (void)addBlockedBuddyWithIdentifier:(NSString *)identifier;
+- (void)removeBlockedBuddyWithIdentifier:(NSString *)identifier;
 
 // -- Paths --
 - (void)setPathForComponent:(TCConfigPathComponent)component pathType:(TCConfigPathType)pathType path:(NSString *)path;
@@ -156,6 +157,7 @@ typedef enum
 // -- Synchronize --
 - (void)synchronize;
 
+// -- Life --
 - (void)close;
 
 @end

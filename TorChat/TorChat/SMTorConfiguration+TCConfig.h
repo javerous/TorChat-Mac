@@ -22,16 +22,16 @@
 
 @import SMTor;
 
-#import "TCConfig.h"
+#import "TCConfigCore.h"
 
 
 /*
-** SMTorConfiguration + TCConfig
+** SMTorConfiguration + TCConfigCore
 */
-#pragma mark - SMTorConfiguration + TCConfig
+#pragma mark - SMTorConfiguration + TCConfigCore
 
-@interface SMTorConfiguration (TCConfig)
+@interface SMTorConfiguration (TCConfigCore)
 
-- (instancetype)initWithTorChatConfiguration:(id <TCConfig>)config;
+- (instancetype)initWithTorChatConfiguration:(id <TCConfigCore>)config;
 
 @end

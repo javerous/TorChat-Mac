@@ -27,7 +27,7 @@
 
 // -- Core --
 #import "TCCoreManager.h"
-#import "TCConfig.h"
+#import "TCConfigCore.h"
 #import "TCBuddy.h"
 #import "TCImage.h"
 
@@ -63,7 +63,7 @@
 
 @interface TCBuddiesWindowController () <TCCoreManagerObserver, TCBuddyObserver, TCDropButtonDelegate, TCChatWindowControllerDelegate>
 {
-	id <TCConfigEncryptable>	_configuration;
+	id <TCConfigAppEncryptable>	_configuration;
 	TCCoreManager		*_control;
 	
 	dispatch_queue_t	_localQueue;
@@ -91,7 +91,7 @@
 
 @property (strong, nonatomic) IBOutlet NSWindow				*addWindow;
 @property (strong, nonatomic) IBOutlet NSTextField			*addNameField;
-@property (strong, nonatomic) IBOutlet NSTextField			*addAddressField;
+@property (strong, nonatomic) IBOutlet NSTextField			*addIdentifierField;
 @property (strong, nonatomic) IBOutlet NSTextView			*addNotesField;
 
 @property (strong, nonatomic) IBOutlet NSWindow				*profileWindow;
@@ -193,7 +193,7 @@
 */
 #pragma mark - TCBuddiesController - Running
 
-- (void)startWithConfiguration:(id <TCConfigEncryptable>)configuration coreManager:(TCCoreManager *)coreMananager
+- (void)startWithConfiguration:(id <TCConfigAppEncryptable>)configuration coreManager:(TCCoreManager *)coreMananager
 {
 	if (!configuration || !coreMananager)
 	{
@@ -320,7 +320,7 @@
 	if ([name length] > 0)
 		cellView = [tableView makeViewWithIdentifier:@"buddy_name" owner:self];
 	else
-		cellView = [tableView makeViewWithIdentifier:@"buddy_address" owner:self];
+		cellView = [tableView makeViewWithIdentifier:@"buddy_identifier" owner:self];
 	
 	[cellView setBuddy:buddy];
 	
@@ -464,7 +464,7 @@
 				});
 				
 				// Set the new avatar to the chat window.
-				[[TCChatWindowController sharedController] setLocalAvatar:final forIdentifier:[_configuration selfAddress]];
+				[[TCChatWindowController sharedController] setLocalAvatar:final forIdentifier:[_configuration selfIdentifier]];
 				
 				break;
 			}
@@ -492,7 +492,7 @@
 					
 					[_buddies addObject:buddy];
 					
-					[[TCChatWindowController sharedController] setLocalAvatar:[_imAvatar image] forIdentifier:[buddy address]];
+					[[TCChatWindowController sharedController] setLocalAvatar:[_imAvatar image] forIdentifier:[buddy identifier]];
 					
 					[self _reloadBuddy:nil];
 				});
@@ -545,7 +545,7 @@
 - (void)buddy:(TCBuddy *)aBuddy information:(SMInfo *)info
 {
 	// Add the info in the log manager.
-	[[TCLogsManager sharedManager] addBuddyLogWithAddress:[aBuddy address] name:[aBuddy finalName] info:info];
+	[[TCLogsManager sharedManager] addBuddyLogWithBuddyIdentifier:[aBuddy identifier] name:[aBuddy finalName] info:info];
 	
 	// Handle info.
 	dispatch_async(_localQueue, ^{
@@ -602,7 +602,7 @@
 							break;
 					}
 					
-					[[TCChatWindowController sharedController] receiveStatus:statusStr forIdentifier:[aBuddy address]];
+					[[TCChatWindowController sharedController] receiveStatus:statusStr forIdentifier:[aBuddy identifier]];
 					
 					// Reload buddies table.
 					dispatch_async(dispatch_get_main_queue(), ^{
@@ -626,7 +626,7 @@
 					});
 					
 					// Set the new avatar to the chat window.
-					[[TCChatWindowController sharedController] setRemoteAvatar:avatar forIdentifier:[aBuddy address]];
+					[[TCChatWindowController sharedController] setRemoteAvatar:avatar forIdentifier:[aBuddy identifier]];
 
 					break;
 				}
@@ -657,7 +657,7 @@
 					[self startChatForBuddy:aBuddy select:NO];
 					
 					// Add the message.
-					[chatController receiveMessage:info.context forIdentifier:[aBuddy address]];
+					[chatController receiveMessage:info.context forIdentifier:[aBuddy identifier]];
 					
 					break;
 				}
@@ -694,7 +694,7 @@
 						return;
 					
 					// Add the file transfert to the controller
-					[[TCFilesWindowController sharedController] startFileTransfert:[finfo uuid] withFilePath:[finfo filePath] buddyAddress:[aBuddy address] buddyName:[aBuddy finalName] transfertWay:tcfile_upload fileSize:[finfo fileSizeTotal]];
+					[[TCFilesWindowController sharedController] startFileTransfert:[finfo uuid] withFilePath:[finfo filePath] buddyIdentifier:[aBuddy identifier] buddyName:[aBuddy finalName] transfertWay:tcfile_upload fileSize:[finfo fileSizeTotal]];
 					
 					break;
 				}
@@ -746,7 +746,7 @@
 						return;
 					
 					// Add the file transfert to the controller
-					[[TCFilesWindowController sharedController] startFileTransfert:[finfo uuid] withFilePath:[finfo filePath] buddyAddress:[aBuddy address] buddyName:[aBuddy finalName] transfertWay:tcfile_download fileSize:[finfo fileSizeTotal]];
+					[[TCFilesWindowController sharedController] startFileTransfert:[finfo uuid] withFilePath:[finfo filePath] buddyIdentifier:[aBuddy identifier] buddyName:[aBuddy finalName] transfertWay:tcfile_download fileSize:[finfo fileSizeTotal]];
 					
 					break;
 				}
@@ -821,7 +821,7 @@
 						full = [[NSString alloc] initWithFormat:key, @"-"];
 					
 					// Add the error
-					[[TCChatWindowController sharedController] receiveError:full forIdentifier:[aBuddy address]];
+					[[TCChatWindowController sharedController] receiveError:full forIdentifier:[aBuddy identifier]];
 					
 					break;
 				}
@@ -838,7 +838,7 @@
 						full = [[NSString alloc] initWithFormat:key, @"-"];
 					
 					// Add the error
-					[[TCChatWindowController sharedController] receiveError:full forIdentifier:[aBuddy address]];
+					[[TCChatWindowController sharedController] receiveError:full forIdentifier:[aBuddy identifier]];
 					
 					break;
 				}
@@ -907,13 +907,13 @@
 {
 	NSDictionary	*info = [notice userInfo];
 	NSString		*uuid = [info objectForKey:@"uuid"];
-	NSString		*address = [info objectForKey:@"address"];
+	NSString		*identifier = [info objectForKey:@"identifier"];
 	tcfile_way		way = (tcfile_way)[[info objectForKey:@"way"] intValue];
 	
 	// Search the buddy associated with this transfert
 	for (TCBuddy *buddy in _buddies)
 	{
-		if ([[buddy address] isEqualToString:address])
+		if ([[buddy identifier] isEqualToString:identifier])
 		{
 			// Change the file status
 			[[TCFilesWindowController sharedController] setStatus:tcfile_status_cancel andTextStatus:NSLocalizedString(@"file_canceling", @"") forFileTransfert:uuid withWay:way];
@@ -999,7 +999,7 @@
 			break;
 			
 		case 1:
-			[_configuration setModeTitle:TCConfigTitleAddress];
+			[_configuration setModeTitle:TCConfigTitleIdentifier];
 			break;
 			
 		case 3:
@@ -1029,23 +1029,23 @@
 {
 	NSInteger	row = [_tableView selectedRow];
 	TCBuddy		*buddy;
-	NSString	*address;
+	NSString	*identifier;
 	
 	if (row < 0 || row >= [_buddies count])
 		return;
 	
-	// Get the buddy address.
+	// Get the buddy identifier.
 	buddy = [_buddies objectAtIndex:(NSUInteger)row];
-	address = [buddy address];
+	identifier = [buddy identifier];
 
 	// Remove the buddy from the controller.
-	[_control removeBuddy:address];
+	[_control removeBuddyWithIdentifier:identifier];
 }
 
 - (IBAction)doAdd:(id)sender
 {
 	[_addNameField setStringValue:@""];
-	[_addAddressField setStringValue:@""];
+	[_addIdentifierField setStringValue:@""];
 	[[[_addNotesField textStorage] mutableString] setString:@""];
 	
 	[_addNameField becomeFirstResponder];
@@ -1106,9 +1106,9 @@
 	buddy = [_buddies objectAtIndex:(NSUInteger)row];
 		
 	if ([buddy blocked])
-		[_control removeBlockedBuddy:[buddy address]];
+		[_control removeBlockedBuddyWithIdentifier:[buddy identifier]];
 	else
-		[_control addBlockedBuddy:[buddy address]];
+		[_control addBlockedBuddyWithIdentifier:[buddy identifier]];
 }
 
 - (IBAction)doEditProfile:(id)sender
@@ -1127,7 +1127,7 @@
 	NSString *notes = [[_addNotesField textStorage] mutableString];
 
 	// Add the buddy to the controller. Notification will add it on our interface.
-	[_control addBuddy:[_addNameField stringValue] address:[_addAddressField stringValue] comment:notes];
+	[_control addBuddyWithIdentifier:[_addIdentifierField stringValue] name:[_addNameField stringValue] comment:notes];
 	
 	[_addWindow orderOut:self];
 }
@@ -1219,7 +1219,7 @@
 		return;
 	
 	TCChatWindowController	*chatCtrl = [TCChatWindowController sharedController];
-	NSString				*address = [buddy address];
+	NSString				*identifier = [buddy identifier];
 	
 	// Start chat.
 	TCImage *tcImage = [buddy profileAvatar];
@@ -1228,11 +1228,11 @@
 	if (!image)
 		image = [NSImage imageNamed:NSImageNameUser];
 	
-	[chatCtrl startChatWithIdentifier:address name:[buddy finalName] localAvatar:[_imAvatar image] remoteAvatar:image context:buddy delegate:self];
+	[chatCtrl startChatWithIdentifier:identifier name:[buddy finalName] localAvatar:[_imAvatar image] remoteAvatar:image context:buddy delegate:self];
 		
 	// Select it.
 	if (select)
-		[chatCtrl selectChatWithIdentifier:address];
+		[chatCtrl selectChatWithIdentifier:identifier];
 }
 
 - (TCBuddy *)selectedBuddy
@@ -1275,9 +1275,9 @@
 		// Check the title to show
 		switch ([_configuration modeTitle])
 		{
-			case TCConfigTitleAddress:
+			case TCConfigTitleIdentifier:
 			{
-				content = [_configuration selfAddress];
+				content = [_configuration selfIdentifier];
 				
 				[[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:0]] setState:NSOffState];
 				[[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:1]] setState:NSOnState];

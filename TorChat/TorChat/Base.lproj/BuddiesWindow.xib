@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10089" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10115" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10089"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10115"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCBuddiesWindowController">
             <connections>
-                <outlet property="addAddressField" destination="73" id="93"/>
+                <outlet property="addIdentifierField" destination="73" id="zRo-ah-kyd"/>
                 <outlet property="addNameField" destination="69" id="92"/>
                 <outlet property="addNotesField" destination="172" id="247"/>
                 <outlet property="addWindow" destination="65" id="102"/>
@@ -80,8 +80,8 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="BUr-Hc-2iY">
-                                                            <rect key="frame" x="24" y="4" width="47" height="14"/>
-                                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Address" id="OT1-51-0xY">
+                                                            <rect key="frame" x="24" y="4" width="51" height="14"/>
+                                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Identifier" id="OT1-51-0xY">
                                                                 <font key="font" metaFont="smallSystem"/>
                                                                 <color key="textColor" white="0.5" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -117,19 +117,19 @@
                                                         <constraint firstItem="BUr-Hc-2iY" firstAttribute="top" secondItem="oq1-kh-KnK" secondAttribute="bottom" constant="3" id="v7i-6u-cdx"/>
                                                     </constraints>
                                                     <connections>
-                                                        <outlet property="addressField" destination="BUr-Hc-2iY" id="nPa-qw-P1n"/>
                                                         <outlet property="avatarView" destination="buD-Zm-EwP" id="4Tk-6t-jkD"/>
+                                                        <outlet property="identifierField" destination="BUr-Hc-2iY" id="5dh-1v-NPK"/>
                                                         <outlet property="statusView" destination="PzC-ov-ZPJ" id="xk5-7l-6qx"/>
                                                         <outlet property="textField" destination="oq1-kh-KnK" id="Am7-br-xIV"/>
                                                     </connections>
                                                 </tableCellView>
-                                                <tableCellView identifier="buddy_address" id="hsO-ra-HIR" customClass="TCBuddyCellView">
+                                                <tableCellView identifier="buddy_identifier" id="hsO-ra-HIR" customClass="TCBuddyCellView">
                                                     <rect key="frame" x="1" y="43" width="277" height="40"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="5xm-xg-tqe">
-                                                            <rect key="frame" x="24" y="13" width="47" height="14"/>
-                                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Address" id="yeE-ii-lkT">
+                                                            <rect key="frame" x="24" y="13" width="51" height="14"/>
+                                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Identifier" id="yeE-ii-lkT">
                                                                 <font key="font" metaFont="smallSystem"/>
                                                                 <color key="textColor" white="0.5" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -162,8 +162,8 @@
                                                         <constraint firstItem="fpY-ul-zMs" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="5xm-xg-tqe" secondAttribute="trailing" constant="8" symbolic="YES" id="z0F-vG-tPU"/>
                                                     </constraints>
                                                     <connections>
-                                                        <outlet property="addressField" destination="5xm-xg-tqe" id="MN3-qD-LMg"/>
                                                         <outlet property="avatarView" destination="fpY-ul-zMs" id="GuI-aW-xOd"/>
+                                                        <outlet property="identifierField" destination="5xm-xg-tqe" id="bLf-kv-qeg"/>
                                                         <outlet property="statusView" destination="EJd-Ky-znl" id="mTb-sP-rjr"/>
                                                     </connections>
                                                 </tableCellView>
@@ -225,7 +225,7 @@
                         <subviews>
                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="50">
                                 <rect key="frame" x="24" y="5" width="62" height="17"/>
-                                <popUpButtonCell key="cell" type="recessed" title="Offline" bezelStyle="recessed" imagePosition="left" alignment="center" controlSize="small" lineBreakMode="truncatingTail" borderStyle="border" tag="-3" imageScaling="proportionallyDown" inset="2" pullsDown="YES" selectedItem="53" id="51">
+                                <popUpButtonCell key="cell" type="recessed" title="Offline" bezelStyle="recessed" imagePosition="left" alignment="center" controlSize="small" lineBreakMode="truncatingTail" borderStyle="border" tag="-3" imageScaling="proportionallyDown" inset="2" pullsDown="YES" id="51">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
                                     <menu key="menu" title="OtherViews" id="52">
@@ -246,15 +246,15 @@
                                 </connections>
                             </popUpButton>
                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="207">
-                                <rect key="frame" x="24" y="23" width="92" height="17"/>
-                                <popUpButtonCell key="cell" type="recessed" title="&lt;&lt;Address&gt;&gt;" bezelStyle="recessed" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="border" tag="-1" imageScaling="proportionallyDown" inset="2" pullsDown="YES" arrowPosition="noArrow" selectedItem="210" id="208">
+                                <rect key="frame" x="24" y="23" width="96" height="17"/>
+                                <popUpButtonCell key="cell" type="recessed" title="&lt;&lt;Identifier&gt;&gt;" bezelStyle="recessed" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="border" tag="-1" imageScaling="proportionallyDown" inset="2" pullsDown="YES" arrowPosition="noArrow" id="208">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="cellTitle"/>
                                     <menu key="menu" title="OtherViews" id="209">
                                         <items>
-                                            <menuItem title="&lt;&lt;Address&gt;&gt;" state="on" tag="-1" hidden="YES" id="210"/>
+                                            <menuItem title="&lt;&lt;Identifier&gt;&gt;" state="on" tag="-1" hidden="YES" id="210"/>
                                             <menuItem title="View as Name" id="211"/>
-                                            <menuItem title="View as Address" tag="1" id="212"/>
+                                            <menuItem title="View as Identifier" tag="1" id="212"/>
                                             <menuItem isSeparatorItem="YES" id="213"/>
                                             <menuItem title="Edit Profile …" tag="3" id="214">
                                                 <modifierMask key="keyEquivalentModifierMask"/>
@@ -325,7 +325,7 @@
                 </constraints>
             </view>
         </window>
-        <window title="Add Buddy" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="65" userLabel="Window - Add Contact">
+        <window title="Add Identifier" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="65" userLabel="Window - Add Contact">
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="340" y="419" width="309" height="237"/>
@@ -344,8 +344,8 @@
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="71">
-                        <rect key="frame" x="25" y="166" width="61" height="17"/>
-                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Address: " usesSingleLineMode="YES" id="72">
+                        <rect key="frame" x="24" y="166" width="62" height="17"/>
+                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Identifier:" usesSingleLineMode="YES" id="72">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>

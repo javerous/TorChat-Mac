@@ -8,7 +8,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCPrefView_Network">
             <connections>
-                <outlet property="imAddressField" destination="9KL-LP-wRq" id="RbK-dG-6YH"/>
+                <outlet property="imIdentifierField" destination="9KL-LP-wRq" id="pLK-fc-Vep"/>
                 <outlet property="imPortField" destination="n9v-m5-SDF" id="dyL-qO-L7U"/>
                 <outlet property="torAddressField" destination="eFL-vX-f66" id="nLh-Bi-YC9"/>
                 <outlet property="torPortField" destination="wxv-gf-iWN" id="037-Ax-I8e"/>
@@ -27,15 +27,15 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="2jV-hW-0oB">
-                                <rect key="frame" x="11" y="47" width="124" height="17"/>
-                                <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="TorChat IM Address" usesSingleLineMode="YES" id="lNd-8Q-NIB">
+                                <rect key="frame" x="11" y="47" width="129" height="17"/>
+                                <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="TorChat IM Identifier" usesSingleLineMode="YES" id="lNd-8Q-NIB">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9KL-LP-wRq">
-                                <rect key="frame" x="141" y="44" width="215" height="22"/>
+                                <rect key="frame" x="146" y="44" width="210" height="22"/>
                                 <constraints>
                                     <constraint firstAttribute="width" priority="250" constant="10000" id="v7e-FM-RZN"/>
                                 </constraints>
@@ -49,7 +49,7 @@
                                 </connections>
                             </textField>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="m1X-8x-GIO">
-                                <rect key="frame" x="11" y="17" width="124" height="17"/>
+                                <rect key="frame" x="11" y="17" width="129" height="17"/>
                                 <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="TorChat In Port" usesSingleLineMode="YES" id="IvZ-fz-eXW">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -57,7 +57,7 @@
                                 </textFieldCell>
                             </textField>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="n9v-m5-SDF">
-                                <rect key="frame" x="141" y="14" width="80" height="22"/>
+                                <rect key="frame" x="146" y="14" width="80" height="22"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="80" id="xsf-Sv-DQu"/>
                                 </constraints>

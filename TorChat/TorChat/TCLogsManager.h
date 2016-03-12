@@ -80,8 +80,8 @@ typedef enum
 + (TCLogsManager *)sharedManager;
 
 // -- Logs --
-- (void)addBuddyLogWithAddress:(NSString *)address name:(NSString *)name kind:(TCLogKind)kind message:(NSString *)message, ...;
-- (void)addBuddyLogWithAddress:(NSString *)address name:(NSString *)name info:(SMInfo *)info;
+- (void)addBuddyLogWithBuddyIdentifier:(NSString *)identifier name:(NSString *)name kind:(TCLogKind)kind message:(NSString *)message, ...;
+- (void)addBuddyLogWithBuddyIdentifier:(NSString *)identifier name:(NSString *)name info:(SMInfo *)info;
 
 - (void)addGlobalLogWithKind:(TCLogKind)kind message:(NSString *)message, ...;
 - (void)addGlobalLogWithInfo:(SMInfo *)info;

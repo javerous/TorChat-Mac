@@ -31,7 +31,7 @@
 
 #import "TCDebugLog.h"
 
-#import "TCConfig.h"
+#import "TCConfigCore.h"
 #import "TCImage.h"
 
 #import "TCBuddy.h"
@@ -63,7 +63,7 @@
 	NSMutableArray			*_buddies;
 	
 	// > Config
-	id <TCConfig>			_config;
+	id <TCConfigCore>			_config;
 	
 	// > Clients
 	NSMutableArray			*_connections;
@@ -120,7 +120,7 @@
 	[self registerInfoDescriptors];
 }
 
-- (id)initWithConfiguration:(id <TCConfig>)config
+- (id)initWithConfiguration:(id <TCConfigCore>)config
 {
 	self = [super init];
 	
@@ -190,7 +190,7 @@
 			for (i = 0; i < cnt; i++)
 			{
 				NSDictionary	*item = sbuddies[i];
-				TCBuddy			*buddy = [[TCBuddy alloc] initWithConfiguration:_config alias:item[TCConfigBuddyAlias] address:item[TCConfigBuddyAddress] notes:item[TCConfigBuddyNotes]];
+				TCBuddy			*buddy = [[TCBuddy alloc] initWithConfiguration:_config identifier:item[TCConfigBuddyIdentifier] alias:item[TCConfigBuddyAlias] notes:item[TCConfigBuddyNotes]];
 								
 				// Check blocked status
 				[self _checkBlocked:buddy];
@@ -204,12 +204,12 @@
 			
 			// -- Check that we are on the buddy list --
 			BOOL		found = NO;
-			NSString	*selfAddress = [_config selfAddress];
+			NSString	*selfIdentifier = [_config selfIdentifier];
 			
 			
 			for (TCBuddy *buddy in _buddies)
 			{
-				if ([[buddy address] isEqualToString:selfAddress])
+				if ([[buddy identifier] isEqualToString:selfIdentifier])
 				{
 					found = true;
 					break;
@@ -217,7 +217,7 @@
 			}
 			
 			if (!found)
-				[self addBuddy:[_config localizedString:TCConfigStringItemMyselfBuddy] address:selfAddress];
+				[self addBuddyWithIdentifier:selfIdentifier name:[_config localizedString:TCConfigStringItemMyselfBuddy]];
 			
 			// -- Buddy are loaded --
 			_buddiesLoaded = true;
@@ -552,14 +552,14 @@
 */
 #pragma mark - TCCoreManager - Buddies
 
-- (void)addBuddy:(NSString *)name address:(NSString *)address
+- (void)addBuddyWithIdentifier:(NSString *)identifier name:(NSString *)name
 {
-	[self addBuddy:name address:address comment:@""];
+	[self addBuddyWithIdentifier:identifier name:name comment:@""];
 }
 
-- (void)addBuddy:(NSString *)name address:(NSString *)address comment:(NSString *)comment
+- (void)addBuddyWithIdentifier:(NSString *)identifier name:(NSString *)name comment:(NSString *)comment
 {
-	if (!address)
+	if (!identifier)
 		return;
 	
 	if (!name)
@@ -568,7 +568,7 @@
 	if (!comment)
 		comment = @"";
 	
-	TCBuddy *buddy = [[TCBuddy alloc] initWithConfiguration:_config alias:name address:address notes:comment];
+	TCBuddy *buddy = [[TCBuddy alloc] initWithConfiguration:_config identifier:identifier alias:name notes:comment];
 	
     dispatch_async(_localQueue, ^{
         
@@ -585,13 +585,13 @@
 		[buddy start];
 		
 		// Save to config.
-		[_config addBuddy:address alias:name notes:comment];
+		[_config addBuddyWithIdentifier:identifier alias:name notes:comment];
     });
 }
 
-- (void)removeBuddy:(NSString *)address
+- (void)removeBuddyWithIdentifier:(NSString *)identifier
 {
-	if (!address)
+	if (!identifier)
 		return;
 	
 	dispatch_async(_localQueue, ^{
@@ -603,7 +603,7 @@
 		{
 			TCBuddy *buddy = _buddies[i];
 			
-			if ([[buddy address] isEqualToString:address])
+			if ([[buddy identifier] isEqualToString:identifier])
 			{
 				// Stop and release.
 				[buddy stopWithCompletionHandler:nil];
@@ -611,7 +611,7 @@
 				[_buddies removeObjectAtIndex:i];
 				
 				// Save to config.
-				[_config removeBuddy:address];
+				[_config removeBuddyWithIdentifier:identifier];
 				
 				// Notify.
 				[self _notify:TCCoreEventBuddyRemove context:buddy];
@@ -622,9 +622,9 @@
 	});
 }
 
-- (TCBuddy *)buddyWithAddress:(NSString *)address
+- (TCBuddy *)buddyWithIdentifier:(NSString *)identifier
 {
-	if (!address)
+	if (!identifier)
 		return nil;
 	
     __block TCBuddy *result = NULL;
@@ -633,7 +633,7 @@
         
 		for (TCBuddy *buddy in _buddies)
 		{
-			if ([[buddy address] isEqualToString:address])
+			if ([[buddy identifier] isEqualToString:identifier])
 			{
 				result = buddy;
 				break;
@@ -673,13 +673,13 @@
 */
 #pragma mark - TCCoreManager - Blocked Buddies
 
-- (void)addBlockedBuddy:(NSString *)address
+- (void)addBlockedBuddyWithIdentifier:(NSString *)identifier
 {
 	// Add blocked buddy to configuration.
-	[_config addBlockedBuddy:address];
+	[_config addBlockedBuddyWithIdentifier:identifier];
 	
 	// Mark the buddy as blocked.
-	TCBuddy *buddy = [self buddyWithAddress:address];
+	TCBuddy *buddy = [self buddyWithIdentifier:identifier];
 	
 	if (buddy)
 	{
@@ -691,13 +691,13 @@
 	}
 }
 
-- (void)removeBlockedBuddy:(NSString *)address
+- (void)removeBlockedBuddyWithIdentifier:(NSString *)identifier
 {
 	// Remove blocked buddy from configuration.
-	[_config removeBlockedBuddy:address];
+	[_config removeBlockedBuddyWithIdentifier:identifier];
 	
 	// Mark the buddy as unblocked.
-	TCBuddy *buddy = [self buddyWithAddress:address];
+	TCBuddy *buddy = [self buddyWithIdentifier:identifier];
 	
 	if (buddy)
 	{
@@ -724,9 +724,9 @@
 	// Search
 	for (i = 0; i < cnt; i++)
 	{
-		NSString *address = blocked[i];
+		NSString *identifier = blocked[i];
 		
-		if ([address isEqualToString:[buddy address]])
+		if ([identifier isEqualToString:[buddy identifier]])
 		{
 			[buddy setBlocked:YES];
 			[buddy stopWithCompletionHandler:nil];
@@ -766,15 +766,15 @@
 */
 #pragma mark - TCCoreManager - TCConnectionDelegate
 
-- (void)connection:(TCConnection *)connection pingAddress:(NSString *)address withRandomToken:(NSString *)random
+- (void)connection:(TCConnection *)connection pingIdentifier:(NSString *)identifier withRandomToken:(NSString *)random
 {
-	TCBuddy *abuddy = [self buddyWithAddress:address];
+	TCBuddy *abuddy = [self buddyWithIdentifier:identifier];
 	
 	if ([abuddy blocked])
 		return;
 	
 	// Check for faked pings: we search all our already
-	// *connected* buddies and if there is one with the same address
+	// *connected* buddies and if there is one with the same identifier
 	// but another incoming connection then this one must be a fake.
 
 	if ([abuddy isPonged])
@@ -783,11 +783,11 @@
 		return;
 	}
 	
-	// if someone is pinging us with our own address and the
+	// if someone is pinging us with our own identifier and the
 	// random value is not from us, then someone is definitely
 	// trying to fake and we can close.
 	
-	if ([address isEqualToString:[_config selfAddress]] && abuddy && [[abuddy random] isEqualToString:random] == NO)
+	if ([identifier isEqualToString:[_config selfIdentifier]] && abuddy && [[abuddy random] isEqualToString:random] == NO)
 	{
 		[self _error:TCCoreErrorClientMasquerade fatal:YES];
 		return;
@@ -796,9 +796,9 @@
 	// if the buddy don't exist, add it on the buddy list
 	if (!abuddy)
 	{
-		[self addBuddy:[_config localizedString:TCConfigStringItemMyselfBuddy] address:address];
+		[self addBuddyWithIdentifier:identifier name:[_config localizedString:TCConfigStringItemMyselfBuddy]];
 		
-		abuddy = [self buddyWithAddress:address];
+		abuddy = [self buddyWithIdentifier:identifier];
 		
 		if (!abuddy)
 		{
@@ -812,7 +812,7 @@
 	[abuddy startHandshake:random status:[self status] avatar:[self profileAvatar] name:[self profileName] text:[self profileText]];
 }
 
-- (void)connection:(TCConnection *)connection pongWithSocket:(SMSocket *)sock andRandomToken:(NSString *)random
+- (void)connection:(TCConnection *)connection pongWithSocket:(SMSocket *)sock withRandomToken:(NSString *)random
 {
 	TCBuddy *buddy = [self buddyWithRandom:random];
 	
@@ -1037,7 +1037,7 @@
 						return @{
 							SMInfoNameKey : @"TCCoreEventBuddyNew",
 							SMInfoDynTextKey : ^ NSString *(TCBuddy *context) {
-								return [NSString stringWithFormat:NSLocalizedString(@"core_mng_event_new_buddy", @""), context.address];
+								return [NSString stringWithFormat:NSLocalizedString(@"core_mng_event_new_buddy", @""), context.identifier];
 							},
 							SMInfoLocalizableKey : @NO,
 						};
@@ -1048,7 +1048,7 @@
 						return @{
 							SMInfoNameKey : @"TCCoreEventBuddyRemove",
 							SMInfoDynTextKey : ^ NSString *(TCBuddy *context) {
-								return [NSString stringWithFormat:NSLocalizedString(@"core_mng_event_remove_buddy", @""), context.address];
+								return [NSString stringWithFormat:NSLocalizedString(@"core_mng_event_remove_buddy", @""), context.identifier];
 							},
 							SMInfoLocalizableKey : @NO,
 						};
@@ -1059,7 +1059,7 @@
 						return @{
 							SMInfoNameKey : @"TCCoreEventBuddyBlocked",
 							SMInfoDynTextKey : ^ NSString *(TCBuddy *context) {
-								return [NSString stringWithFormat:NSLocalizedString(@"core_mng_event_blocked_buddy", @""), context.address];
+								return [NSString stringWithFormat:NSLocalizedString(@"core_mng_event_blocked_buddy", @""), context.identifier];
 							},
 							SMInfoLocalizableKey : @NO,
 						};
@@ -1070,7 +1070,7 @@
 						return @{
 							SMInfoNameKey : @"TCCoreEventBuddyUnblocked",
 							SMInfoDynTextKey : ^ NSString *(TCBuddy *context) {
-								return [NSString stringWithFormat:NSLocalizedString(@"core_mng_event_unblock_buddy", @""), context.address];
+								return [NSString stringWithFormat:NSLocalizedString(@"core_mng_event_unblock_buddy", @""), context.identifier];
 							},
 							SMInfoLocalizableKey : @NO,
 						};

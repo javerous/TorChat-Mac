@@ -86,7 +86,7 @@
 	NSImage		*icon = [content objectForKey:TCFileIconKey];
 	NSString	*path = [content objectForKey:TCFileFilePathKey];
 	NSString	*buddyName = [content objectForKey:TCFileBuddyNameKey];
-	NSString	*buddyAddress = [content objectForKey:TCFileBuddyAddressKey];
+	NSString	*buddyIdentifier = [content objectForKey:TCFileBuddyIdentifierKey];
 	NSString	*txtStatus = [content objectForKey:TCFileStatusTextKey];
 	tcfile_way	way = (tcfile_way)[[content objectForKey:TCFileWayKey] intValue];
 	uint64_t	fileSize = [[content objectForKey:TCFileSizeKey] unsignedLongLongValue];
@@ -114,7 +114,7 @@
 	else if (way == tcfile_download)
 		directionText = NSLocalizedString(@"file_progress_from", @"");
 	
-	statusText = [NSString stringWithFormat:@"%@ %@ (%@) - %@ %@ %@", directionText, buddyName, buddyAddress, SMStringFromBytesAmount(fileCompletedSize), NSLocalizedString(@"file_progress_of", @""), SMStringFromBytesAmount(fileSize)];
+	statusText = [NSString stringWithFormat:@"%@ %@ (%@) - %@ %@ %@", directionText, buddyName, buddyIdentifier, SMStringFromBytesAmount(fileCompletedSize), NSLocalizedString(@"file_progress_of", @""), SMStringFromBytesAmount(fileSize)];
 
 	[_transferStatusField setTextColor:txtColor];
 	[_transferStatusField setStringValue:statusText];

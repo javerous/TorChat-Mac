@@ -40,23 +40,23 @@
 {
 	// -- Vars --
 	// > Running
-	BOOL						_running;
+	BOOL _running;
     
 	// > Socket
-	int							_sockd;
-	SMSocket					*_sock;
+	int			_sockd;
+	SMSocket	*_sock;
 	
 	// > Parser
-	TCParser					*_parser;
+	TCParser *_parser;
 
 	// > Queue
-	dispatch_queue_t			_localQueue;
+	dispatch_queue_t _localQueue;
 	
 	// > Delegate
-	dispatch_queue_t			_delegateQueue;
+	dispatch_queue_t				_delegateQueue;
 	__weak id <TCConnectionDelegate> _delegate;
 
-	NSString					*_last_ping_address;
+	NSString *_lastPingIdentifier;
 }
 
 // -- Helpers --
@@ -188,7 +188,7 @@
 */
 #pragma mark - TCConnection - TCParserDelegate & TCParserCommand
 
-- (void)parser:(TCParser *)parser parsedPingWithAddress:(NSString *)address random:(NSString *)random
+- (void)parser:(TCParser *)parser parsedPingWithIdentifier:(NSString *)identifier random:(NSString *)random
 {
 	// > localQueue <
 
@@ -196,13 +196,13 @@
 	[_sock scheduleOperation:SMSocketOperationLine withSize:1 andTag:0];
 	
 	// Little security check to detect mass pings with faked host names over the same connection.
-	if ([_last_ping_address length] != 0)
+	if ([_lastPingIdentifier length] != 0)
 	{
-		if ([address isEqualToString:_last_ping_address] == NO)
+		if ([identifier isEqualToString:_lastPingIdentifier] == NO)
 		{
 			// DEBUG
-			fprintf(stderr, "(1) Possible Attack: in-connection sent fake address '%s'\n", [address UTF8String]);
-			fprintf(stderr, "(1) Will disconnect incoming connection from fake '%s'\n", [address UTF8String]);
+			fprintf(stderr, "(1) Possible Attack: in-connection sent fake identifier '%s'\n", [identifier UTF8String]);
+			fprintf(stderr, "(1) Will disconnect incoming connection from fake '%s'\n", [identifier UTF8String]);
 			
 			// Notify
 			[self error:TCCoreErrorClientCmdPing fatal:YES];
@@ -211,7 +211,7 @@
 		}
 	}
 	else
-		_last_ping_address = address;
+		_lastPingIdentifier = identifier;
 	
 	
 	// Send info to delegate.
@@ -221,7 +221,7 @@
 		return;
 	
 	dispatch_async(_delegateQueue, ^{
-		[delegate connection:self pingAddress:address withRandomToken:random];
+		[delegate connection:self pingIdentifier:identifier withRandomToken:random];
 	});
 }
 
@@ -238,7 +238,7 @@
 	_sock = nil;
 	
 	dispatch_async(_delegateQueue, ^{
-		[delegate connection:self pongWithSocket:sock andRandomToken:random];
+		[delegate connection:self pongWithSocket:sock withRandomToken:random];
 	});
 }
 

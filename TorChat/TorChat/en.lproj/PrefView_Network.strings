@@ -26,5 +26,5 @@
 /* Class = "NSTextFieldCell"; title = "-"; ObjectID = "hGA-Cl-gxo"; */
 "hGA-Cl-gxo.title" = "-";
 
-/* Class = "NSTextFieldCell"; title = "TorChat IM Address"; ObjectID = "lNd-8Q-NIB"; */
-"lNd-8Q-NIB.title" = "TorChat IM Address";
+/* Class = "NSTextFieldCell"; title = "TorChat IM Identifier"; ObjectID = "lNd-8Q-NIB"; */
+"lNd-8Q-NIB.title" = "TorChat IM Identifier";

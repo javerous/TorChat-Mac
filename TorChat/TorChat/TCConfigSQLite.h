@@ -22,7 +22,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "TCConfigEncryptable.h"
+#import "TCConfigAppEncryptable.h"
 
 
 /*
@@ -41,7 +41,7 @@
 */
 #pragma mark - TCConfigSQLite
 
-@interface TCConfigSQLite : NSObject <TCConfigEncryptable>
+@interface TCConfigSQLite : NSObject <TCConfigAppEncryptable>
 
 // -- Instance --
 - (id)initWithFile:(NSString *)filepath password:(NSString *)password error:(NSError **)error;

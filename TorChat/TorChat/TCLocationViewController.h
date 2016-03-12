@@ -22,7 +22,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "TCConfig.h"
+#import "TCConfigApp.h"
 
 
 /*
@@ -32,7 +32,7 @@
 
 @interface TCLocationViewController : NSViewController
 
-- (instancetype)initWithConfiguration:(id <TCConfig>)configuration component:(TCConfigPathComponent)component;
+- (instancetype)initWithConfiguration:(id <TCConfigCore>)configuration component:(TCConfigPathComponent)component;
 
 - (void)addToView:(NSView *)view;
 

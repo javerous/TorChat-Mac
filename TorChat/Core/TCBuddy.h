@@ -22,7 +22,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "TCConfig.h"
+#import "TCConfigCore.h"
 
 
 /*
@@ -150,7 +150,7 @@ typedef enum
 @interface TCBuddy : NSObject
 
 // -- Instance --
-- (id)initWithConfiguration:(id <TCConfig>)configuration alias:(NSString *)alias address:(NSString *)address notes:(NSString *)notes;
+- (id)initWithConfiguration:(id <TCConfigCore>)configuration identifier:(NSString *)identifier alias:(NSString *)alias notes:(NSString *)notes;
 
 // -- Run --
 - (void)start;
@@ -172,7 +172,7 @@ typedef enum
 
 - (TCStatus)status;
 
-- (NSString *)address;
+- (NSString *)identifier;
 - (NSString *)random;
 
 // -- Files Info --

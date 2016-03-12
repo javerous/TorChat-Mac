@@ -163,14 +163,14 @@
     }
 	
 	// Parse command.
-	NSString *address = [[NSString alloc] initWithData:args[0] encoding:NSASCIIStringEncoding];
+	NSString *identifier = [[NSString alloc] initWithData:args[0] encoding:NSASCIIStringEncoding];
 	NSString *random = [[NSString alloc] initWithData:args[1] encoding:NSASCIIStringEncoding];
 	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
 	
-	if ([receiver respondsToSelector:@selector(parser:parsedPingWithAddress:random:)])
-		[receiver parser:self parsedPingWithAddress:address random:random];
+	if ([receiver respondsToSelector:@selector(parser:parsedPingWithIdentifier:random:)])
+		[receiver parser:self parsedPingWithIdentifier:identifier random:random];
 	else
 		[self parserError:TCParserErrorCmdPing withString:@"Ping: Not handled"];
 }

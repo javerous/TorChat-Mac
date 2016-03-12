@@ -85,7 +85,7 @@
 
 @property (strong, nonatomic) IBOutlet TCDragImageView		*avatarView;
 @property (strong, nonatomic) IBOutlet NSImageView			*statusView;
-@property (strong, nonatomic) IBOutlet NSTextField			*addressField;
+@property (strong, nonatomic) IBOutlet NSTextField			*identifierField;
 @property (strong, nonatomic) IBOutlet NSTextField			*aliasField;
 
 @property (strong, nonatomic) IBOutlet NSTextView			*notesField;
@@ -192,7 +192,7 @@
 			
 			if (ctrl.buddy == buddy)
 			{
-				[[TCLogsManager sharedManager] removeObserverForKey:ctrl.buddy.address];
+				[[TCLogsManager sharedManager] removeObserverForKey:ctrl.buddy.identifier];
 				
 				dispatch_async(dispatch_get_main_queue(), ^{
 					[ctrl.window orderOut:nil];
@@ -265,7 +265,7 @@
 		[_dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
 		
 		// Register for logs.
-		[[TCLogsManager sharedManager] addObserver:self forKey:_buddy.address];
+		[[TCLogsManager sharedManager] addObserver:self forKey:_buddy.identifier];
 		
 		// Register for informations.
 		[_buddy addObserver:self];
@@ -280,14 +280,14 @@
 	TCDebugLog(@"(%p) TCBuddyInfoWindowController dealloc", self);
 	
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	[[TCLogsManager sharedManager] removeObserverForKey:_buddy.address];
+	[[TCLogsManager sharedManager] removeObserverForKey:_buddy.identifier];
 	
 	self.window.delegate = nil;
 	_logTable.delegate = nil;
 	_logTable.dataSource = nil;
 	_views.delegate = nil;
 	
-	_addressField.delegate = nil;
+	_identifierField.delegate = nil;
 	_aliasField.delegate = nil;
 	_notesField.delegate = nil;
 }
@@ -315,10 +315,10 @@
 		image = [NSImage imageNamed:NSImageNameUser];
 	
 	[_avatarView setImage:image];
-	[_avatarView setName:_buddy.address];
+	[_avatarView setName:_buddy.identifier];
 
-	// Address.
-	[_addressField setStringValue:_buddy.address];
+	// Identifier.
+	[_identifierField setStringValue:_buddy.identifier];
 	
 	// Alias.
 	[_aliasField setStringValue:_buddy.alias];
@@ -387,7 +387,7 @@
 
 - (void)windowWillClose:(NSNotification *)notification
 {	
-	[[TCLogsManager sharedManager] removeObserverForKey:self.buddy.address];
+	[[TCLogsManager sharedManager] removeObserverForKey:self.buddy.identifier];
 	
 	[_windowsController closeInfoForBuddy:self.buddy];
 }

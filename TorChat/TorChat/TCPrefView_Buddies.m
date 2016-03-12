@@ -123,15 +123,13 @@
 
 - (IBAction)doAddBlockedOK:(id)sender
 {
-	NSString *address;
-	
 	if (!self.config)
 		return;
 	
-	address = [_addBlockedField stringValue];
+	NSString *identifier = [_addBlockedField stringValue];
 	
 	// Add on blocked list.
-	[self.core addBlockedBuddy:address];
+	[self.core addBlockedBuddyWithIdentifier:identifier];
 	
 	// Reload list.
 	[_tableView reloadData];
@@ -153,10 +151,10 @@
 	// Resolve indexes.
 	while (index != NSNotFound)
 	{
-		// Add to address to remove.
-		NSString *address = blocked[index];
+		// Add to identifiers to remove.
+		NSString *identifier = blocked[index];
 		
-		[removes addObject:address];
+		[removes addObject:identifier];
 		
 		// Next index.
 		index = [set indexGreaterThanIndex:index];
@@ -164,7 +162,7 @@
 	
 	// Remove from blocked list.
 	for (NSString *remove in removes)
-		[self.core removeBlockedBuddy:remove];
+		[self.core removeBlockedBuddyWithIdentifier:remove];
 	
 	// Reload list.
 	[_tableView reloadData];

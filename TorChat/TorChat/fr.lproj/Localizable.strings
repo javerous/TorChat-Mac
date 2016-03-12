@@ -172,6 +172,6 @@
 "core_mng_error_accept" = "Impossible d'accepter de nouveaux clients à cause d'une erreur système.";
 "core_mng_error_async" = "Impossible d'utiliser les E/S asynchrones sur un socket système.";
 "core_cnx_error_already_pinged" = "Un hôte distant a essayé de faire un ping sur un contact ayant déjà reçu un ping. Il a été tué.";
-"core_cnx_error_masquerade" = "Un hôte distant essaye de faire du camouflage avec notre adresse. Il a été tué.";
+"core_cnx_error_masquerade" = "Un hôte distant essaye de faire du camouflage avec notre identifiant. Il a été tué.";
 "core_cnx_error_add_buddy" = "Impossible d'ajouter un nouveau contact.";
 "core_cnx_error_pong" = "Un hôte distant essaye de faire un pong, mais le contact correspondant n'existe pas. Il a été tué.";

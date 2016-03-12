@@ -69,7 +69,7 @@ typedef enum
 @protocol TCParserCommand <NSObject>
 
 @optional
-- (void)parser:(TCParser *)parser parsedPingWithAddress:(NSString *)address random:(NSString *)random;
+- (void)parser:(TCParser *)parser parsedPingWithIdentifier:(NSString *)identifier random:(NSString *)random;
 - (void)parser:(TCParser *)parser parsedPongWithRandom:(NSString *)random;
 - (void)parser:(TCParser *)parser parsedStatus:(NSString *)status;
 - (void)parser:(TCParser *)parser parsedMessage:(NSString *)message;

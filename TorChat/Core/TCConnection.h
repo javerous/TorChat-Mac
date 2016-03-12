@@ -50,8 +50,8 @@
 
 @protocol TCConnectionDelegate <NSObject>
 
-- (void)connection:(TCConnection *)connection pingAddress:(NSString *)address withRandomToken:(NSString *)random;
-- (void)connection:(TCConnection *)connection pongWithSocket:(SMSocket *)socket andRandomToken:(NSString *)random;
+- (void)connection:(TCConnection *)connection pingIdentifier:(NSString *)identifier withRandomToken:(NSString *)random;
+- (void)connection:(TCConnection *)connection pongWithSocket:(SMSocket *)socket withRandomToken:(NSString *)random;
 
 - (void)connection:(TCConnection *)connection information:(SMInfo *)info;
 

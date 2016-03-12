@@ -22,7 +22,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "TCConfigInterface.h"
+#import "TCConfigApp.h"
 
 
 /*
@@ -32,6 +32,6 @@
 
 @interface TCConfigurationCopy : NSObject
 
-+ (BOOL)copyConfiguration:(id <TCConfigInterface>)source toConfiguration:(id <TCConfigInterface>)target;
++ (BOOL)copyConfiguration:(id <TCConfigApp>)source toConfiguration:(id <TCConfigApp>)target;
 
 @end

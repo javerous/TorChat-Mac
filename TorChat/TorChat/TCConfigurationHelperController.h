@@ -22,7 +22,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "TCConfigEncryptable.h"
+#import "TCConfigAppEncryptable.h"
 
 
 /*
@@ -36,7 +36,7 @@ typedef enum
 	TCConfigurationHelperCompletionTypeDone,		// configuration loaded, or nil if error
 } TCConfigurationHelperCompletionType;
 
-typedef void (^TCConfigurationHelperCompletionHandler)(TCConfigurationHelperCompletionType type, id <TCConfigEncryptable> configuration);
+typedef void (^TCConfigurationHelperCompletionHandler)(TCConfigurationHelperCompletionType type, id <TCConfigAppEncryptable> configuration);
 
 
 

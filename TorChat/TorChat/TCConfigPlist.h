@@ -20,7 +20,7 @@
  *
  */
 
-#import "TCConfigInterface.h"
+#import "TCConfigApp.h"
 
 
 
@@ -29,7 +29,7 @@
 */
 #pragma mark - TCConfigPlist
 
-@interface TCConfigPlist : NSObject <TCConfigInterface>
+@interface TCConfigPlist : NSObject <TCConfigApp>
 
 // -- Instance --
 - (id)initWithFile:(NSString *)filepath;
