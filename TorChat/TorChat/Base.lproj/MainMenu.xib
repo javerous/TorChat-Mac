@@ -390,13 +390,11 @@
         </menu>
         <customObject id="494" customClass="TorChatAppDelegate">
             <connections>
-                <outlet property="appQuitMenu" destination="136" id="113-aX-UZv"/>
                 <outlet property="buddyBlockMenu" destination="729" id="731"/>
                 <outlet property="buddyChatMenu" destination="712" id="723"/>
                 <outlet property="buddyDeleteMenu" destination="710" id="722"/>
                 <outlet property="buddyFileMenu" destination="713" id="724"/>
                 <outlet property="buddyShowMenu" destination="708" id="721"/>
-                <outlet property="quitMenu" destination="136" id="RWu-FV-pCB"/>
             </connections>
         </customObject>
         <customObject id="420" customClass="NSFontManager"/>
