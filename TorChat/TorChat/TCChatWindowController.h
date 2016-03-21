@@ -22,26 +22,16 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "TCConfigApp.h"
+
 
 /*
 ** Forward
 */
 #pragma mark - Forward
 
-@class TCChatWindowController;
-
-
-
-/*
-** TCChatWindowController - Delegate
-*/
-#pragma mark - TCChatWindowController - Delegate
-
-@protocol TCChatWindowControllerDelegate <NSObject>
-
-- (void)chatSendMessage:(NSString *)message identifier:(NSString *)identifier context:(id)context;
-
-@end
+@class TCCoreManager;
+@class TCBuddy;
 
 
 
@@ -53,19 +43,15 @@
 @interface TCChatWindowController : NSWindowController
 
 // -- Constructor --
-+ (TCChatWindowController *)sharedController;
++ (instancetype)sharedController;
+
+// -- Life --
+- (void)startWithConfiguration:(id <TCConfigApp>)configuration coreManager:(TCCoreManager *)coreMananager completionHandler:(dispatch_block_t)handler;
+- (void)stopWithCompletionHandler:(dispatch_block_t)handler;
 
 // -- Chat --
-- (void)startChatWithIdentifier:(NSString *)identifier name:(NSString *)name localAvatar:(NSImage *)lavatar remoteAvatar:(NSImage *)ravatar context:(id)context delegate:(id <TCChatWindowControllerDelegate>)delegate;
-- (void)selectChatWithIdentifier:(NSString *)identifier;
-- (void)stopChatWithIdentifier:(NSString *)identifier;
-
-// -- Content --
-- (void)receiveMessage:(NSString *)message forIdentifier:(NSString *)identifier;
-- (void)receiveError:(NSString *)error forIdentifier:(NSString *)identifier;
-- (void)receiveStatus:(NSString *)status forIdentifier:(NSString *)identifier;
-
-- (void)setLocalAvatar:(NSImage *)image forIdentifier:(NSString *)identifier;
-- (void)setRemoteAvatar:(NSImage *)image forIdentifier:(NSString *)identifier;
+- (void)openChatWithBuddy:(TCBuddy *)buddy;
+- (void)selectChatWithBuddy:(TCBuddy *)buddy;
+- (void)closeChatWithBuddy:(TCBuddy *)buddy;
 
 @end

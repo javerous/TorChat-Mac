@@ -47,9 +47,6 @@
 "bd_status_away" = "Away";
 "bd_status_xa" = "Extended Away";
 
-"bd_error_offline" = "Message can't be sent because the user is offline: \"%@\"";
-"bd_error_blocked" = "Message can't be sent because the user is blocked: \"%@\"";
-
 
 /* Buddy Info */
 "bdi_profile_name" = "Profile Name";
@@ -71,9 +68,9 @@
 "file_uploading" = "Uploading...";
 "file_downloading" = "Downloading...";
 "file_uploads" = "%u uploads";
-"one_upload" = "1 upload";
+"file_one_upload" = "1 upload";
 "file_downloads" = "%u downloads";
-"one_download" = "1 download";
+"file_one_download" = "1 download";
 "file_progress_of" = "of";
 "file_progress_from" = "From:";
 "file_progress_to" = "To:";
@@ -84,6 +81,12 @@
 "chat_want_close_info" = "You can't undo this action.";
 "chat_cancel" = "Cancel";
 "chat_close" = "Delete";
+
+"chat_error_send_title" = "This message couldn't be sent.";
+"chat_error_send_offline" = "This message couldn't be sent because the user was offline. Do you want to resend it ?";
+"chat_error_send_blocked" = "This message couldn't be sent because the user was blocked. Do you want to resend it ?";
+"chat_send_resend" = "Resend";
+"chat_send_cancel" = "Cancel";
 
 
 /* Logs */

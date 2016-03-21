@@ -1,3 +1,12 @@
-﻿
-/* Class = "NSWindow"; title = "Window"; ObjectID = "1"; */
-"1.title" = "Window";
+
+/* Class = "NSWindow"; title = "Messages"; ObjectID = "1"; */
+"1.title" = "Messages";
+
+/* Class = "NSTextFieldCell"; title = "<name>"; ObjectID = "MXQ-8k-AZY"; */
+"MXQ-8k-AZY.title" = "<name>";
+
+/* Class = "NSTextFieldCell"; title = "Label"; ObjectID = "kAG-P4-kR0"; */
+"kAG-P4-kR0.title" = "Label";
+
+/* Class = "NSTextFieldCell"; title = "<name>"; ObjectID = "poO-ML-o2C"; */
+"poO-ML-o2C.title" = "<name>";

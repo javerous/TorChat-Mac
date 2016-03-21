@@ -34,6 +34,8 @@
 @property (strong, nonatomic) IBOutlet NSTextField		*clientNameField;
 @property (strong, nonatomic) IBOutlet NSTextField		*clientVersionField;
 
+@property (strong, nonatomic) IBOutlet NSButton			*saveTranscriptCheckBox;
+
 @end
 
 
@@ -81,12 +83,16 @@
 	
 	[_clientNameField setStringValue:[self.config clientName:TCConfigGetDefined]];
 	[_clientVersionField setStringValue:[self.config clientVersion:TCConfigGetDefined]];
+	
+	[_saveTranscriptCheckBox setState:(self.config.saveTranscript ? NSOnState : NSOffState)];
 }
 
 - (void)panelDidDisappear
 {
 	[self.config setClientName:[_clientNameField stringValue]];
 	[self.config setClientVersion:[_clientVersionField stringValue]];
+	
+	[self.config setSaveTranscript:(_saveTranscriptCheckBox.state == NSOnState)];
 }
 
 @end

@@ -18,6 +18,7 @@
 		E80A357C1A67F5FA00896518 /* LocationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E80A357A1A67F5FA00896518 /* LocationView.xib */; };
 		E80A357F1A67F61800896518 /* TCLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E80A357E1A67F61800896518 /* TCLocationViewController.m */; };
 		E8127AA91854CB1100FEDA7F /* TCChatTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = E8127AA81854CB1100FEDA7F /* TCChatTextField.m */; };
+		E81D4E7D1C99DC4E00DD0925 /* TCChatMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = E81D4E7C1C99DC4E00DD0925 /* TCChatMessage.m */; };
 		E81FD9F811E7259B000614D5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81FD9F711E7259B000614D5 /* Cocoa.framework */; };
 		E81FD9FD11E7259B000614D5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E81FD9FB11E7259B000614D5 /* InfoPlist.strings */; };
 		E81FDA0211E7259C000614D5 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = E81FDA0011E7259C000614D5 /* MainMenu.xib */; };
@@ -136,6 +137,8 @@
 		E80A357E1A67F61800896518 /* TCLocationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCLocationViewController.m; sourceTree = "<group>"; };
 		E8127AA71854CB1100FEDA7F /* TCChatTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCChatTextField.h; sourceTree = "<group>"; };
 		E8127AA81854CB1100FEDA7F /* TCChatTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatTextField.m; sourceTree = "<group>"; };
+		E81D4E7B1C99DC4E00DD0925 /* TCChatMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCChatMessage.h; sourceTree = "<group>"; };
+		E81D4E7C1C99DC4E00DD0925 /* TCChatMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatMessage.m; sourceTree = "<group>"; };
 		E81FD9F411E7259B000614D5 /* TorChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TorChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E81FD9F711E7259B000614D5 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		E81FD9FC11E7259B000614D5 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -564,6 +567,8 @@
 				E8455D3C17A425F00046307B /* TCValue.m */,
 				E8CC776D18ED50C5003AB0BF /* TCDragImage.h */,
 				E8CC776E18ED50C5003AB0BF /* TCDragImage.m */,
+				E81D4E7B1C99DC4E00DD0925 /* TCChatMessage.h */,
+				E81D4E7C1C99DC4E00DD0925 /* TCChatMessage.m */,
 			);
 			name = Components;
 			sourceTree = "<group>";
@@ -1001,6 +1006,7 @@
 				E874146B12FAE0C200BD4862 /* TCDropButton.m in Sources */,
 				E8D08F321C92228400552DEA /* TCFileHelper.m in Sources */,
 				E88879FF1303EA9F00C7D60E /* TCDragImageView.m in Sources */,
+				E81D4E7D1C99DC4E00DD0925 /* TCChatMessage.m in Sources */,
 				E89E47111C8DA17C004A5D72 /* TCConfigurationCopy.m in Sources */,
 				E8643D761A66D9D300B8C55F /* TCPrefView.m in Sources */,
 				E8F15A7A130425A4000593E1 /* TCKeyedText.m in Sources */,

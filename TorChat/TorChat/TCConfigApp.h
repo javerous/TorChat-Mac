@@ -22,6 +22,8 @@
 
 #import "TCConfigCore.h"
 
+#import "TCChatMessage.h"
+
 
 /*
 ** Types
@@ -44,7 +46,19 @@ typedef enum
 @protocol TCConfigApp <TCConfigCore>
 
 // -- Title --
-- (TCConfigTitle)modeTitle;
-- (void)setModeTitle:(TCConfigTitle)mode;
+@property (assign, atomic) TCConfigTitle modeTitle;
+
+// -- Transcript --
+@property (assign, atomic) BOOL saveTranscript;
+
+- (void)addTranscriptForBuddyIdentifier:(NSString *)identifier message:(TCChatMessage *)message completionHandler:(void (^)(int64_t msgID))handler;
+
+- (void)transcriptBuddiesIdentifiersWithCompletionHandler:(void (^)(NSArray *buddiesIdentifiers))handler;
+- (void)transcriptMessagesForBuddyIdentifier:(NSString *)identifier beforeMessageID:(NSNumber *)msgId limit:(NSUInteger)limit completionHandler:(void (^)(NSArray *messages))handler;
+
+- (void)transcriptRemoveMessagesForBuddyIdentifier:(NSString *)identifier;
+- (void)transcriptRemoveMessageForID:(int64_t)msgID;
+
+- (int64_t)transcriptLastMessageIDForBuddyIdentifier:(NSString *)identifier;
 
 @end

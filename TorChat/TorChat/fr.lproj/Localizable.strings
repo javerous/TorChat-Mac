@@ -47,9 +47,6 @@
 "bd_status_away" = "Occupé";
 "bd_status_xa" = "Indisponible";
 
-"bd_error_offline" = "Le message ne peut pas être envoyé, car l'utilisateur est hors ligne: \"%@\"";
-"bd_error_blocked" = "Le message ne peut pas être envoyé, car l'utilisateur est bloqué: \"%@\"";
-
 
 /* Buddy Info */
 "bdi_profile_name" = "Nom de profil";
@@ -71,9 +68,9 @@
 "file_uploading" = "Envoi...";
 "file_downloading" = "Téléchargement...";
 "file_uploads" = "%u envois";
-"one_upload" = "1 envoi";
+"file_one_upload" = "1 envoi";
 "file_downloads" = "%u téléchargements";
-"one_download" = "1 téléchargement";
+"file_one_download" = "1 téléchargement";
 "file_progress_of" = "de";
 "file_progress_from" = "De:";
 "file_progress_to" = "À:";
@@ -84,6 +81,12 @@
 "chat_want_close_info" = "Impossible d’annuler cette opération.";
 "chat_cancel" = "Annuler";
 "chat_close" = "Supprimer";
+
+"chat_error_send_title" = "Ce message n'a pas pu être envoyé.";
+"chat_error_send_offline" = "Ce message n'a pas pu être envoyé parce que le contact était hors ligne. Voulez-vous le réenvoyer ?";
+"chat_error_send_blocked" = "Ce message n'a pas pu être envoyé parce que le contact était bloqué. Voulez-vous le réenvoyer ?";
+"chat_send_resend" = "Réenvoyer";
+"chat_send_cancel" = "Annuler";
 
 
 /* Logs */

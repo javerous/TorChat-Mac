@@ -66,12 +66,9 @@
 - (IBAction)doEditProfile:(id)sender;
 
 // -- Tools --
-- (void)buddyStatusChanged;
-- (void)startChatForBuddy:(TCBuddy *)buddy select:(BOOL)select;
-
 - (TCBuddy *)selectedBuddy;
 
 // -- Running --
-- (void)startWithConfiguration:(id <TCConfigAppEncryptable>)configuration coreManager:(TCCoreManager *)coreMananager;
+- (void)startWithConfiguration:(id <TCConfigAppEncryptable>)configuration coreManager:(TCCoreManager *)coreMananager completionHandler:(dispatch_block_t)handler;
 - (void)stopWithCompletionHandler:(dispatch_block_t)handler;
 @end

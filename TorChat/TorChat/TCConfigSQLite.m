@@ -63,6 +63,9 @@
 #define TCCONF_VALUE_PATH_TYPE_STANDARD		@"<standard>"
 #define TCCONF_VALUE_PATH_TYPE_ABSOLUTE		@"<absolute>"
 
+// Transcript.
+#define TCCONF_KEY_SAVE_TRANSCRIPT		@"save_transcript"
+
 
 
 /*
@@ -98,6 +101,13 @@
 	
 	sqlite3_stmt		*_stmtInsertPath;
 	sqlite3_stmt		*_stmtSelectPath;
+	
+	sqlite3_stmt		*_stmtInsertTranscript;
+	sqlite3_stmt		*_stmtSelectIdentifiersTranscript;
+	sqlite3_stmt		*_stmtSelectMsgTranscript;
+	sqlite3_stmt		*_stmtSelectLastIdTranscript;
+	sqlite3_stmt		*_stmtDeleteIdentifierTranscript;
+	sqlite3_stmt		*_stmtDeleteIdTranscript;
 }
 
 
@@ -331,6 +341,21 @@
 	// > Statements.
 	tc_sqlite3_prepare(_dtb, "INSERT INTO paths (component, type, path) VALUES (?, ?, ?)", &_stmtInsertPath);
 	tc_sqlite3_prepare(_dtb, "SELECT type, path FROM paths WHERE component=?", &_stmtSelectPath);
+	
+	// Create 'transcripts' table.
+	// > Table.
+	tc_sqlite3_exec(_dtb, "CREATE TABLE IF NOT EXISTS transcripts (id INTEGER PRIMARY KEY AUTOINCREMENT, buddy_id INTEGER NOT NULL, message TEXT NOT NULL, side INTEGER NOT NULL, timestamp REAL NOT NULL, error TEXT, FOREIGN KEY(buddy_id) REFERENCES buddies(id) ON DELETE CASCADE)");
+
+	// > Indexes.
+	tc_sqlite3_exec(_dtb, "CREATE INDEX IF NOT EXISTS transcripts_idx ON transcripts(buddy_id, id DESC)");
+	
+	// > Statements
+	tc_sqlite3_prepare(_dtb, "INSERT INTO transcripts (buddy_id, message, side, timestamp, error) VALUES (?, ?, ?, ?, ?)", &_stmtInsertTranscript);
+	tc_sqlite3_prepare(_dtb, "SELECT identifier, max(transcripts.id) AS mx FROM transcripts, buddies WHERE transcripts.buddy_id=buddies.id GROUP BY identifier ORDER by mx DESC", &_stmtSelectIdentifiersTranscript);
+	tc_sqlite3_prepare(_dtb, "SELECT id, message, side, timestamp, error FROM transcripts WHERE buddy_id=? AND id<? ORDER BY id DESC LIMIT ?", &_stmtSelectMsgTranscript);
+	tc_sqlite3_prepare(_dtb, "SELECT max(id) FROM transcripts WHERE buddy_id=?", &_stmtSelectLastIdTranscript);
+	tc_sqlite3_prepare(_dtb, "DELETE FROM transcripts WHERE buddy_id=?", &_stmtDeleteIdentifierTranscript);
+	tc_sqlite3_prepare(_dtb, "DELETE FROM transcripts WHERE id=?", &_stmtDeleteIdTranscript);
 	
 	return YES;
 }
@@ -1709,6 +1734,8 @@
 */
 #pragma mark - TCConfigSQLite - TCConfigInterface
 
+#pragma mark Title
+
 - (TCConfigTitle)modeTitle
 {
 	NSNumber *result = [self settingForKey:TCCONF_KEY_UI_TITLE];
@@ -1722,6 +1749,258 @@
 - (void)setModeTitle:(TCConfigTitle)mode
 {
 	[self setSetting:@(mode) forKey:TCCONF_KEY_UI_TITLE];
+}
+
+
+#pragma mark Transcript
+
+- (BOOL)saveTranscript
+{
+	return [[self settingForKey:TCCONF_KEY_SAVE_TRANSCRIPT] boolValue];
+}
+
+- (void)setSaveTranscript:(BOOL)saveTranscript
+{
+	[self setSetting:@(saveTranscript) forKey:TCCONF_KEY_SAVE_TRANSCRIPT];
+}
+
+- (void)addTranscriptForBuddyIdentifier:(NSString *)identifier message:(TCChatMessage *)message completionHandler:(void (^)(int64_t msgID))handler
+{
+	if (!handler)
+		handler = ^(int64_t msgID) { };
+	
+	if (!identifier || !message)
+	{
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ handler(-1); });
+		return;
+	}
+	
+	dispatch_async(_localQueue, ^{
+		
+		// Check database.
+		if (!_dtb)
+		{
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ handler(-1); });
+			return;
+		}
+		
+		// Search buddy.
+		sqlite3_int64 buddyID = [self _buddyIDForIdentifier:identifier];
+		
+		if (buddyID < 0)
+		{
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ handler(-1); });
+			return;
+		}
+		
+		// Bind.
+		sqlite3_bind_int64(_stmtInsertTranscript, 1, buddyID);
+		sqlite3_bind_text(_stmtInsertTranscript, 2, message.message.UTF8String, -1, SQLITE_TRANSIENT);
+		sqlite3_bind_int(_stmtInsertTranscript, 3, message.side);
+		sqlite3_bind_double(_stmtInsertTranscript, 4, message.timestamp);
+		
+		if (message.error)
+			sqlite3_bind_text(_stmtInsertTranscript, 5, message.error.UTF8String, -1, SQLITE_TRANSIENT);
+		else
+			sqlite3_bind_null(_stmtInsertTranscript, 5);
+
+		// Execute.
+		sqlite_int64 rowID = -1;
+		
+		if (sqlite3_step(_stmtInsertTranscript) == SQLITE_DONE)
+			rowID = sqlite3_last_insert_rowid(_dtb);
+			
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			handler(rowID);
+		});
+		
+		// Reset.
+		sqlite3_clear_bindings(_stmtInsertTranscript);
+		sqlite3_reset(_stmtInsertTranscript);
+	});
+}
+
+- (void)transcriptBuddiesIdentifiersWithCompletionHandler:(void (^)(NSArray *buddiesIdentifiers))handler
+{
+	if (!handler)
+		return;
+	
+	NSMutableArray *identifiers = [[NSMutableArray alloc] init];
+	
+	dispatch_async(_localQueue, ^{
+		
+		// Check database.
+		if (!_dtb)
+		{
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ handler(nil); });
+			return;
+		}
+
+		// Fetch result.
+		while (sqlite3_step(_stmtSelectIdentifiersTranscript) == SQLITE_ROW)
+		{
+			const char *identifier = (const char *)sqlite3_column_text(_stmtSelectIdentifiersTranscript, 0);
+			
+			if (!identifier)
+				continue;
+			
+			[identifiers addObject:@(identifier)];
+		}
+		
+		sqlite3_reset(_stmtSelectIdentifiersTranscript);
+		
+		// Give result.
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			handler(identifiers);
+		});
+	});
+}
+
+- (void)transcriptMessagesForBuddyIdentifier:(NSString *)identifier beforeMessageID:(NSNumber *)msgId limit:(NSUInteger)limit completionHandler:(void (^)(NSArray *messages))handler
+{
+	if (!identifier || !handler)
+		return;
+	
+	dispatch_async(_localQueue, ^{
+		
+		// Check database.
+		if (!_dtb)
+		{
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ handler(nil); });
+			return;
+		}
+		
+		// Search buddy.
+		sqlite3_int64 buddyID = [self _buddyIDForIdentifier:identifier];
+		
+		if (buddyID < 0)
+		{
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ handler(nil); });
+			return;
+		}
+		
+		// Bind.
+		sqlite3_bind_int64(_stmtSelectMsgTranscript, 1, buddyID);
+		
+		if (msgId)
+			sqlite3_bind_int64(_stmtSelectMsgTranscript, 2, [msgId longLongValue]);
+		else
+			sqlite3_bind_int64(_stmtSelectMsgTranscript, 2, LONG_MAX);
+
+		sqlite3_bind_int64(_stmtSelectMsgTranscript, 3, (sqlite3_int64)limit);
+
+		// Execute.
+		NSMutableArray *result = [[NSMutableArray alloc] init];
+
+		while (sqlite3_step(_stmtSelectMsgTranscript) == SQLITE_ROW)
+		{
+			// > Get content.
+			sqlite3_int64 msgID = sqlite3_column_int64(_stmtSelectMsgTranscript, 0);
+			const char	*message = (const char *)sqlite3_column_text(_stmtSelectMsgTranscript, 1);
+			int			side = sqlite3_column_int(_stmtSelectMsgTranscript, 2);
+			double		timestamp = sqlite3_column_double(_stmtSelectMsgTranscript, 3);
+			const char	*error = (const char *)sqlite3_column_text(_stmtSelectMsgTranscript, 4);
+
+			if (!message)
+				continue;
+			
+			// > Convert content.
+			TCChatMessage *item = [[TCChatMessage alloc] init];
+			
+			item.messageID = msgID;
+			item.message = @(message);
+			item.side = (TCChatMessageSide)side;
+			item.timestamp = timestamp;
+
+			if (error)
+				item.error = @(error);
+
+			// > Insert content (we insert at 0 to reverse order).
+			[result insertObject:item atIndex:0];
+		}
+		
+		// Reset.
+		sqlite3_clear_bindings(_stmtSelectMsgTranscript);
+		sqlite3_reset(_stmtSelectMsgTranscript);
+		
+		// Give result.
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			handler(result);
+		});
+	});
+}
+
+- (void)transcriptRemoveMessagesForBuddyIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return;
+	
+	dispatch_async(_localQueue, ^{
+		
+		// Check database.
+		if (!_dtb)
+			return;
+		
+		sqlite3_int64 buddyID = [self _buddyIDForIdentifier:identifier];
+
+		if (buddyID < 0)
+			return;
+
+		// Bind.
+		sqlite3_bind_int64(_stmtDeleteIdentifierTranscript, 1, buddyID);
+		
+		// Execute.
+		sqlite3_step(_stmtDeleteIdentifierTranscript);
+		
+		// Reset.
+		sqlite3_reset(_stmtDeleteIdentifierTranscript);
+	});
+}
+
+- (void)transcriptRemoveMessageForID:(int64_t)msgID
+{
+	dispatch_async(_localQueue, ^{
+		
+		if (!_dtb)
+			return;
+		
+		// Bind.
+		sqlite3_bind_int64(_stmtDeleteIdTranscript, 1, msgID);
+		
+		// Execute.
+		sqlite3_step(_stmtDeleteIdTranscript);
+		
+		// Reset.
+		sqlite3_reset(_stmtDeleteIdTranscript);
+	});
+}
+
+- (int64_t)transcriptLastMessageIDForBuddyIdentifier:(NSString *)identifier
+{
+	__block int64_t result = -1;
+	
+	dispatch_sync(_localQueue, ^{
+		
+		sqlite3_int64 buddyID = [self _buddyIDForIdentifier:identifier];
+		
+		if (buddyID < 0)
+			return;
+		
+		// Bind.
+		sqlite3_bind_int64(_stmtSelectLastIdTranscript, 1, buddyID);
+		
+		// Execute.
+		if (sqlite3_step(_stmtSelectLastIdTranscript) == SQLITE_ROW)
+		{
+			if (sqlite3_column_type(_stmtSelectLastIdTranscript, 0) == SQLITE_INTEGER)
+				result = sqlite3_column_int64(_stmtSelectLastIdTranscript, 0);
+		}
+		
+		// Reset.
+		sqlite3_reset(_stmtSelectLastIdTranscript);
+	});
+	
+	return result;
 }
 
 

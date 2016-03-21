@@ -20,27 +20,47 @@
  *
  */
 
+#import <objc/runtime.h>
+
 #import "TCChatWindowController.h"
 
+#import "TCMainController.h"
 #import "TCChatViewController.h"
+
+#import "TCCoreManager.h"
+#import "TCImage.h"
+
 #import "TCButton.h"
 #import "TCValue.h"
 
 #import "TCChatCellView.h"
 
 
-/*
-** Defines
-*/
-#pragma mark - Defines
 
-// -- Row info --
-#define TCChatViewKey		@"view"
-#define TCChatDelegateKey	@"delegate"
-#define TCChatContextKey	@"context"
-#define TCChatAvatarKey		@"avatar"
-#define TCChatNameKey		@"name"
-#define TCChatLastChatKey	@"last_chat"
+/*
+** TCBuddy (TCChatWindowController)
+*/
+#pragma mark - TCBuddy (TCChatWindowController)
+
+@interface TCBuddy (TCChatWindowController)
+
+@property (strong, nonatomic) NSString *lastMessage;
+
+@end
+
+@implementation TCBuddy (TCChatWindowController)
+
+- (void)setLastMessage:(NSString *)lastMessage
+{
+	objc_setAssociatedObject(self, @selector(lastMessage), lastMessage, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSString *)lastMessage
+{
+	return objc_getAssociatedObject(self, @selector(lastMessage));
+}
+
+@end
 
 
 
@@ -49,14 +69,19 @@
 */
 #pragma mark - TCChatWindowController - Private
 
-@interface TCChatWindowController () <TCChatViewDelegate>
-{	
-	NSMutableArray			*_identifiers;
-	NSMutableDictionary		*_identifiersContent;
+@interface TCChatWindowController () <TCCoreManagerObserver, TCBuddyObserver>
+{
+	dispatch_queue_t _localQueue;
 	
-	NSString				*_selectedIdentifier;
+	id <TCConfigApp>	_configuration;
+	TCCoreManager		*_core;
 	
-	NSView					*_currentView;
+	NSMutableArray	*_viewsCtrl;
+	NSView			*_currentView;
+
+	__weak TCBuddy *_selectedBuddy;
+	
+	NSMutableSet *_buddies;
 }
 
 @property (strong, nonatomic) IBOutlet NSSplitView		*splitView;
@@ -81,10 +106,10 @@
 */
 #pragma mark - TCChatWindowController - Instance
 
-+ (TCChatWindowController *)sharedController
++ (instancetype)sharedController
 {
+	static dispatch_once_t			onceToken;
 	static TCChatWindowController	*shr;
-	static dispatch_once_t	onceToken;
 	
 	dispatch_once(&onceToken, ^{
 		shr = [[TCChatWindowController alloc] init];
@@ -96,15 +121,100 @@
 - (id)init
 {
 	self = [super initWithWindowNibName:@"ChatWindow"];
-
+	
 	if (self)
 	{
+		// Queues.
+		_localQueue = dispatch_get_main_queue();
+		
 		// Containers
-		_identifiers = [[NSMutableArray alloc] init];
-		_identifiersContent = [[NSMutableDictionary alloc] init];
+		_viewsCtrl = [[NSMutableArray alloc] init];
+		_buddies = [[NSMutableSet alloc] init];
 	}
-
+	
 	return self;
+}
+
+
+
+/*
+** TCChatWindowController - Life
+*/
+#pragma mark - TCChatWindowController - Life
+
+- (void)startWithConfiguration:(id <TCConfigApp>)configuration coreManager:(TCCoreManager *)coreMananager completionHandler:(dispatch_block_t)handler
+{
+	dispatch_group_t group = dispatch_group_create();
+	
+	if (!handler)
+		handler = ^{ };
+	
+	dispatch_group_async(group, _localQueue, ^{
+		
+		// Hold parameters.
+		_configuration = configuration;
+		_core = coreMananager;
+		
+		// Observe.
+		[_core addObserver:self];
+		
+		// Get current buddies.
+		NSArray *buddies = [_core buddies];
+		
+		for (TCBuddy *buddy in buddies)
+		{
+			[_buddies addObject:buddy];
+			[buddy addObserver:self];
+		}
+		
+		// Load transcripted buddies.
+		dispatch_group_enter(group);
+		
+		[_configuration transcriptBuddiesIdentifiersWithCompletionHandler:^(NSArray *buddiesIdentifiers) {
+
+			dispatch_group_async(group, _localQueue, ^{
+
+				for (NSString *buddyIdentifier in buddiesIdentifiers)
+				{
+					TCBuddy *buddy = [coreMananager buddyWithIdentifier:buddyIdentifier];
+					
+					if (!buddy)
+						continue;
+					
+					[self _addChatWithBuddy:buddy autoselect:NO];
+				}
+			});
+			
+			dispatch_group_leave(group);
+		}];
+	});
+	
+	// Wait end.
+	dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), handler);
+}
+
+- (void)stopWithCompletionHandler:(dispatch_block_t)handler
+{
+	dispatch_group_t group = dispatch_group_create();
+	
+	if (!handler)
+		handler = ^{ };
+	
+	dispatch_group_async(group, _localQueue, ^{
+		
+		[_core removeObserver:self];
+		
+		for (TCBuddy *buddy in _buddies)
+			[buddy removeObserver:self];
+		
+		[_buddies removeAllObjects];
+		
+		_core = nil;
+		_configuration = nil;
+	});
+	
+	// Wait end.
+	dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), handler);
 }
 
 
@@ -116,6 +226,7 @@
 
 - (void)windowDidLoad
 {
+	// Configure window.
 	[self.window center];
 	[self setWindowFrameAutosaveName:@"ChatWindow"];
 }
@@ -131,26 +242,42 @@
 {
 	NSInteger index = [_userList rowForView:sender];
 	
-	if (index < 0 || index >= [_identifiers count])
-		return;
-
-	NSString *identifier = [_identifiers objectAtIndex:(NSUInteger)index];
-
-	// Validate the close if more than 0 message, as any close will delete the full conversation.
-	TCChatViewController *view = [[_identifiersContent objectForKey:identifier] objectForKey:TCChatViewKey];
-
-	if ([view messagesCount] > 0)
-	{
-		NSAlert *alert = [NSAlert alertWithMessageText:NSLocalizedString(@"chat_want_close", @"") defaultButton:NSLocalizedString(@"chat_close", @"") alternateButton:NSLocalizedString(@"chat_cancel", @"") otherButton:nil informativeTextWithFormat:NSLocalizedString(@"chat_want_close_info", @"")];
+	dispatch_async(_localQueue, ^{
 		
-		[alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
-			if (returnCode == NSFileHandlingPanelOKButton)
-				[[TCChatWindowController sharedController] stopChatWithIdentifier:identifier];
-		}];
-	}
-	else
-		[[TCChatWindowController sharedController] stopChatWithIdentifier:identifier];
+		if (index < 0 || index >= _viewsCtrl.count)
+			return;
 
+		// Get selected view.
+		id item = _viewsCtrl[(NSUInteger)index];
+		
+		if ([item isKindOfClass:[TCChatViewController class]] == NO)
+			return;
+		
+		// Validate the close if more than 0 message, as any close will delete the full conversation.
+		TCChatViewController	*viewCtrl = item;
+		TCBuddy					*buddy = viewCtrl.buddy;
+		
+		if (viewCtrl.messagesCount > 0)
+		{
+			NSAlert *alert = [[NSAlert alloc] init];
+			
+			alert.messageText = NSLocalizedString(@"chat_want_close", @"");
+			alert.informativeText = NSLocalizedString(@"chat_want_close_info", @"");
+			
+			[alert addButtonWithTitle:NSLocalizedString(@"chat_close", @"")];
+			[alert addButtonWithTitle:NSLocalizedString(@"chat_cancel", @"")];
+			
+			[alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
+				if (returnCode == NSAlertFirstButtonReturn)
+				{
+					[self closeChatWithBuddy:buddy];
+					[_configuration transcriptRemoveMessagesForBuddyIdentifier:buddy.identifier];
+				}
+			}];
+		}
+		else
+			[self closeChatWithBuddy:buddy];
+	});
 }
 
 
@@ -162,23 +289,30 @@
 
 - (void)windowDidBecomeMain:(NSNotification *)notification
 {
-	NSInteger index;
-	
 	// Clean the selected unread messages content
-	index = [_userList selectedRow];
+
+	NSInteger index = [_userList selectedRow];
 	
-	if (index >= 0 && index < [_identifiers count])
+	if (index < 0 || index >= _viewsCtrl.count)
+		return;
+	
+	id		item = _viewsCtrl[(NSUInteger)index];
+	TCBuddy	*buddy;
+	
+	// Get buddy.
+	if ([item isKindOfClass:[TCChatViewController class]])
 	{
-		NSString			*identifier;
-		NSMutableDictionary	*content;
+		TCChatViewController *viewCtrl = item;
 		
-		identifier = [_identifiers objectAtIndex:(NSUInteger)index];
-		content = [_identifiersContent objectForKey:identifier];
-		
-		// Clean unread
-		[content removeObjectForKey:TCChatLastChatKey];
-		[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
+		buddy = viewCtrl.buddy;
 	}
+	else
+		buddy = item;
+	
+	// Clean last message.
+	buddy.lastMessage = nil;
+	
+	[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 }
 
 
@@ -188,247 +322,107 @@
 */
 #pragma mark - TCChatWindowController - Chat
 
-- (void)startChatWithIdentifier:(NSString *)identifier name:(NSString *)name localAvatar:(NSImage *)lavatar remoteAvatar:(NSImage *)ravatar context:(id)context delegate:(id <TCChatWindowControllerDelegate>)delegate
+- (void)openChatWithBuddy:(TCBuddy *)buddy
 {
-	if (!identifier)
+	if (!buddy)
 		return;
-	
-	dispatch_async(dispatch_get_main_queue(), ^{
-		
-		NSMutableDictionary		*content = [_identifiersContent objectForKey:identifier];
-		TCValue					*pdelegate = nil;
-		TCChatViewController	*view;
-		
-		// No need to start a chat if already started.
-		if (content)
-			return;
-		
-		// > Set weak delegate.
-		if (delegate)
-			pdelegate = [TCValue valueWithWeakObject:delegate];
-		
-		content = [NSMutableDictionary dictionary];
-		
-		if (pdelegate)
-			[content setObject:pdelegate forKey:TCChatDelegateKey];
-		
-		// > Set context.
-		if (context)
-			[content setObject:context forKey:TCChatContextKey];
-		
-		// > Build chat view.
-		view = [TCChatViewController chatViewWithIdentifier:identifier name:name delegate:self];
-		
-		if (!view)
-			return;
-		
-		[content setObject:view forKey:TCChatViewKey];
-		
-		// > Hold name.
-		if (name)
-			[content setObject:name forKey:TCChatNameKey];
-		
-		// > Hold avatar.
-		[view setLocalAvatar:lavatar];
-		[view setRemoteAvatar:ravatar];
-		
-		if (ravatar)
-			[content setObject:ravatar forKey:TCChatAvatarKey];
-		
-		// Add identifier.
-		[_identifiersContent setObject:content forKey:identifier];
-		[_identifiers addObject:identifier];
-		
-		// Reload table.
-		NSString *selectedIdentifier = _selectedIdentifier;
-		
-		[_userList reloadData];
-		
-		// Select this chat if it's the first one.
-		if ([_identifiers count] == 1 || [self.window isVisible] == NO)
-			[self _selectChatWithIdentifier:identifier];
-		else
-			[self _selectChatWithIdentifier:selectedIdentifier];
+
+	dispatch_async(_localQueue, ^{
+
+		// Add chat.
+		[self _addChatWithBuddy:buddy autoselect:YES];
 		
 		// Show window.
 		[self showWindow:nil];
 	});
 }
 
-- (void)stopChatWithIdentifier:(NSString *)identifier
+- (void)_addChatWithBuddy:(TCBuddy *)buddy autoselect:(BOOL)autoselect
 {
-	dispatch_async(dispatch_get_main_queue(), ^{
+	// > localQueue <
+	
+	// Check that we don't already hold a view controller for this buddy.
+	if ([self _indexOfViewControllerForBuddy:buddy] != NSNotFound)
+		return;
+
+	// Add view.
+	[_viewsCtrl addObject:buddy];
+	
+	// Reload table.
+	[_userList reloadData];
+	
+	// Select this chat if it's the first one.
+	if (autoselect)
+	{
+		if (_viewsCtrl.count == 1 || [self.window isVisible] == NO)
+			[self _selectChatWithBuddy:buddy];
+		else
+			[self _selectChatWithBuddy:_selectedBuddy];
+	}
+}
+
+- (void)closeChatWithBuddy:(TCBuddy *)buddy
+{
+	dispatch_async(_localQueue, ^{
 		
-		if ([_identifiersContent objectForKey:identifier] == nil)
-			return;
-		
-		NSUInteger index = [_identifiers indexOfObject:identifier];
+		// Search view controller.
+		NSUInteger				index = [self _indexOfViewControllerForBuddy:buddy];
 		
 		if (index == NSNotFound)
 			return;
 		
-		// Remove item
-		[_identifiersContent removeObjectForKey:identifier];
-		[_identifiers removeObject:identifier];
+		// Get item.
+		TCChatViewController	*viewCtrl;
+		id						item = _viewsCtrl[index];
 		
-		// Reload table
-		NSString *selectedIdentifier = _selectedIdentifier;
+		if ([item isKindOfClass:[TCChatViewController class]] == NO)
+			return;
 		
+		viewCtrl = item;
+		
+		// Remove from view.
+		[_viewsCtrl removeObjectAtIndex:index];
+		
+		// Reload table.
 		[_userList reloadData];
 		
-		// Update selection
-		if ([selectedIdentifier isEqualToString:identifier])
+		// Update selection.
+		TCBuddy *selectedBuddy = _selectedBuddy;
+		
+		if (selectedBuddy == buddy)
 		{
 			NSUInteger nindex = index;
 			
-			if ([_identifiers count] == 0)
+			if ([_viewsCtrl count] == 0)
 			{
-				[self _loadChatView:nil];
+				[self _showChatViewController:nil];
 				
-				_selectedIdentifier = nil;
+				_selectedBuddy = nil;
 			}
 			else
 			{
-				if (nindex >= [_identifiers count])
-					nindex = [_identifiers count] - 1;
+				if (nindex >= _viewsCtrl.count)
+					nindex = _viewsCtrl.count - 1;
 				
-				[self _selectChatWithIdentifier:[_identifiers objectAtIndex:nindex]];
+				viewCtrl = _viewsCtrl[nindex];
+				
+				[self _selectChatWithBuddy:viewCtrl.buddy];
 			}
 		}
 		else
-			[self _selectChatWithIdentifier:selectedIdentifier];
+			[self _selectChatWithBuddy:selectedBuddy];
 	});
 }
 
-- (void)selectChatWithIdentifier:(NSString *)identifier
+- (void)selectChatWithBuddy:(TCBuddy *)buddy
 {
-	dispatch_async(dispatch_get_main_queue(), ^{
+	dispatch_async(_localQueue, ^{
 		
-		// Select the chat
-		[self _selectChatWithIdentifier:identifier];
+		// Select the chat.
+		[self _selectChatWithBuddy:buddy];
 		
-		// Show
+		// Show window.
 		[self showWindow:self];
-	});
-}
-
-
-
-/*
-** TCChatWindowController - Content
-*/
-#pragma mark - TCChatWindowController - Content
-
-- (void)receiveMessage:(NSString *)message forIdentifier:(NSString *)identifier
-{
-	if (!message)
-		return;
-	
-	dispatch_async(dispatch_get_main_queue(), ^{
-		
-		TCChatViewController	*view = [[_identifiersContent objectForKey:identifier] objectForKey:TCChatViewKey];
-		NSInteger				index = [_userList selectedRow];
-		BOOL					setUnread = NO;
-		
-		if (!view)
-			return;
-		
-		// Add message to view.
-		[view receiveMessage:message];
-		
-		// Show as unread if needed.
-		if (index >= 0 && index < [_identifiers count] && [[_identifiers objectAtIndex:(NSUInteger)index] isEqualToString:identifier] == NO)
-		{
-			setUnread = YES;
-		}
-		else if ([self.window isKeyWindow] == NO)
-		{
-			setUnread = YES;
-		}
-		
-		if (setUnread)
-		{
-			NSMutableDictionary	*content = [_identifiersContent objectForKey:identifier];
-			NSUInteger			cindex = [_identifiers indexOfObject:identifier];
-			
-			[content setObject:message forKey:TCChatLastChatKey];
-			
-			[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:cindex] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
-		}
-		
-		// Show window is not visible.
-		if ([self.window isVisible] == NO)
-		{
-			[self showWindow:nil];
-			
-			[self selectChatWithIdentifier:identifier];
-		}
-	});
-}
-
-- (void)receiveError:(NSString *)error forIdentifier:(NSString *)identifier
-{
-	dispatch_async(dispatch_get_main_queue(), ^{
-		
-		TCChatViewController *view = [[_identifiersContent objectForKey:identifier] objectForKey:TCChatViewKey];
-		
-		if (!view)
-			return;
-		
-		// Add error to view.
-		[view receiveError:error];
-	});
-}
-
-- (void)receiveStatus:(NSString *)status forIdentifier:(NSString *)identifier
-{
-	dispatch_async(dispatch_get_main_queue(), ^{
-		
-		TCChatViewController *view = [[_identifiersContent objectForKey:identifier] objectForKey:TCChatViewKey];
-		
-		if (!view)
-			return;
-		
-		// Add status to view.
-		[view receiveStatus:status];
-	});
-}
-
-- (void)setLocalAvatar:(NSImage *)image forIdentifier:(NSString *)identifier
-{
-	dispatch_async(dispatch_get_main_queue(), ^{
-		
-		TCChatViewController *view = [[_identifiersContent objectForKey:identifier] objectForKey:TCChatViewKey];
-		
-		if (!view)
-			return;
-		
-		// Update talk view.
-		[view setLocalAvatar:image];
-	});
-}
-
-- (void)setRemoteAvatar:(NSImage *)image forIdentifier:(NSString *)identifier
-{
-	dispatch_async(dispatch_get_main_queue(), ^{
-		
-		NSMutableDictionary		*content = [_identifiersContent objectForKey:identifier];
-		TCChatViewController	*view = [content objectForKey:TCChatViewKey];
-		
-		if (!content)
-			return;
-		
-		// Update talk view.
-		[view setRemoteAvatar:image];
-		
-		// Update user table.
-		[content setObject:image forKey:TCChatAvatarKey];
-		
-		// Reload row.
-		NSUInteger index = [_identifiers indexOfObject:identifier];
-
-		if (index != NSNotFound)
-			[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 	});
 }
 
@@ -441,17 +435,35 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
-	return (NSInteger)[_identifiers count];
+	return (NSInteger)_viewsCtrl.count;
 }
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)rowIndex
 {
-	NSString		*identifier = _identifiers[(NSUInteger)rowIndex];
-	NSDictionary	*content = _identifiersContent[identifier];
-	TCChatCellView	*cellView = nil;
+	// Get associated buddy.
+	
+	if (rowIndex >= _viewsCtrl.count)
+		return nil;
+	
+	// Get item.
+	id		item = _viewsCtrl[(NSUInteger)rowIndex];
+	TCBuddy *buddy;
+	
+	if ([item isKindOfClass:[TCChatViewController class]])
+	{
+		TCChatViewController *viewCtrl = item;
+		
+		buddy = viewCtrl.buddy;
+	}
+	else
+		buddy = item;
+	
 	
 	// Select the right view.
-	if (content[TCChatLastChatKey])
+	TCChatCellView	*cellView = nil;
+	NSString		*lastMessage = buddy.lastMessage;
+	
+	if (lastMessage)
 		cellView = [tableView makeViewWithIdentifier:@"chat_label" owner:self];
 	else
 		cellView = [tableView makeViewWithIdentifier:@"chat_no_label" owner:self];
@@ -459,14 +471,20 @@
 	// Build cell content.
 	NSMutableDictionary *rowContent = [[NSMutableDictionary alloc] init];
 	
-	if (content[TCChatAvatarKey])
-		rowContent[TCChatCellAvatarKey] = content[TCChatAvatarKey];
+	// > Avatar.
+	NSImage *avatar = [buddy.profileAvatar imageRepresentation];
 	
-	if (content[TCChatNameKey])
-		rowContent[TCChatCellNameKey] = content[TCChatNameKey];
+	if (avatar)
+		rowContent[TCChatCellAvatarKey] = avatar;
 	
-	if (content[TCChatLastChatKey])
-		rowContent[TCChatCellChatTextKey] = content[TCChatLastChatKey];
+	// > Name.
+	NSString *name = [buddy finalName];
+	
+	if (name)
+		rowContent[TCChatCellNameKey] = name;
+	
+	if (lastMessage)
+		rowContent[TCChatCellChatTextKey] = lastMessage;
 	
 	// > Set close button status.
 	NSPoint windowMouseLocation = [self.window mouseLocationOutsideOfEventStream];
@@ -487,38 +505,155 @@
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
-	NSInteger	index = [_userList selectedRow];
-	NSString	*identifier;
-	
-	if (index < 0 || index >= [_identifiers count])
+	NSInteger rowIndex = [_userList selectedRow];
+
+	// Get associated buddy.
+	if (index < 0 || rowIndex >= _viewsCtrl.count)
 		return;
 	
-	identifier = [_identifiers objectAtIndex:(NSUInteger)index];
+	id		item = _viewsCtrl[(NSUInteger)rowIndex];
+	TCBuddy *buddy;
 	
-	[self _selectChatWithIdentifier:identifier];
+	if ([item isKindOfClass:[TCChatViewController class]])
+	{
+		TCChatViewController *viewCtrl = item;
+		
+		buddy = viewCtrl.buddy;
+	}
+	else
+		buddy = item;
+
+	[self _selectChatWithBuddy:buddy];
 }
 
 
 
 /*
-** TCChatWindowController - TCChatView
+** TCChatWindowController - TCCoreManagerObserver
 */
-#pragma mark - TCChatWindowController - TCChatView
+#pragma mark - TCChatWindowController - TCCoreManagerObserver
 
-- (void)chat:(TCChatViewController *)chat sendMessage:(NSString *)message
+- (void)torchatManager:(TCCoreManager *)manager information:(SMInfo *)info
 {
-	dispatch_async(dispatch_get_main_queue(), ^{
-		
-		NSString	*identifier = chat.bidentifier;
-		TCValue		*vdelegate = [[_identifiersContent objectForKey:identifier] objectForKey:TCChatDelegateKey];
-		id			context = [[_identifiersContent objectForKey:identifier] objectForKey:TCChatContextKey];
-		id <TCChatWindowControllerDelegate>	delegate = [vdelegate object];
-		
-		if (!delegate)
-			return;
-		
-		[delegate chatSendMessage:message identifier:identifier context:context];
-	});
+	if (info.kind == SMInfoInfo)
+	{
+		switch (info.code)
+		{
+			case TCCoreEventProfileAvatar:
+			{
+				NSImage	*avatar = [(TCImage *)info.context imageRepresentation];
+				
+				if (!avatar)
+					avatar = [NSImage imageNamed:NSImageNameUser];
+				
+				dispatch_async(_localQueue, ^{
+					for (id item in _viewsCtrl)
+					{
+						if ([item isKindOfClass:[TCChatViewController class]])
+						{
+							TCChatViewController *viewCtrl = item;
+							
+							[viewCtrl setLocalAvatar:avatar];
+						}
+					}
+				});
+				
+				break;
+			}
+				
+			case TCCoreEventBuddyNew:
+			{
+				TCBuddy *buddy = (TCBuddy *)info.context;
+				
+				[buddy addObserver:self];
+				
+				dispatch_async(_localQueue, ^{
+					[_buddies addObject:buddy];
+				});
+
+				break;
+			}
+				
+			case TCCoreEventBuddyRemove:
+			{
+				TCBuddy *buddy = (TCBuddy *)info.context;
+				
+				[buddy removeObserver:self];
+				
+				dispatch_async(_localQueue, ^{
+					[_buddies removeObject:buddy];
+				});
+				
+				break;
+			}
+		}
+	}
+}
+
+
+
+/*
+** TCChatWindowController - TCBuddyObserver
+*/
+#pragma mark - TCChatWindowController - TCBuddyObserver
+
+- (void)buddy:(TCBuddy *)buddy information:(SMInfo *)info
+{
+	if (info.kind == SMInfoInfo)
+	{
+		switch (info.code)
+		{
+			case TCBuddyEventProfileAvatar:
+			{
+				TCImage *tcAvatar = (TCImage *)info.context;
+				NSImage *avatar = [tcAvatar imageRepresentation];
+				
+				if (!avatar)
+					return;
+				
+				// Update table view.
+				dispatch_async(_localQueue, ^{
+					[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
+				});
+				
+				break;
+			}
+				
+			case TCBuddyEventMessage:
+			{
+				NSString *message = info.context;
+				
+				if (!message)
+					break;
+				
+				// Start a chat UI.
+				[self openChatWithBuddy:buddy];
+				
+				// Show window is not visible.
+				if ([self.window isVisible] == NO)
+				{
+					[self showWindow:nil];
+					[self selectChatWithBuddy:buddy];
+				}
+				
+				// Show as unread if necessary.
+				dispatch_async(_localQueue, ^{
+
+					if (buddy != _selectedBuddy || [self.window isKeyWindow] == NO)
+					{
+						NSUInteger index = [self _indexOfViewControllerForBuddy:buddy];
+
+						buddy.lastMessage = message;
+						
+						if (index != NSNotFound)
+							[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
+					}
+				});
+				
+				break;
+			}
+		}
+	}
 }
 
 
@@ -528,14 +663,71 @@
 */
 #pragma mark - TCChatWindowController - Helpers
 
-- (void)_loadChatView:(TCChatViewController *)view
+- (void)_selectChatWithBuddy:(TCBuddy *)buddy
 {
-	// > Main Queue <
+	// > localQueue <
+	
+	if (!buddy)
+		return;
+	
+	if (_selectedBuddy == buddy)
+		return;
+	
+	// Search view.
+	NSUInteger				index = [self _indexOfViewControllerForBuddy:buddy];
+	TCChatViewController	*viewCtrl;
+
+	if (index == NSNotFound)
+		return;
+	
+	// Create view controler if necessayr.
+	id item = _viewsCtrl[index];
+	
+	if ([item isKindOfClass:[TCBuddy class]])
+	{
+		 // > Build chat view.
+		 viewCtrl = [TCChatViewController chatViewWithBuddy:buddy configuration:_configuration];
+		 
+		 if (!viewCtrl)
+			 return;
+		
+		[_viewsCtrl replaceObjectAtIndex:index withObject:viewCtrl];
+		
+		 // > Configure view controller.
+		 NSImage *localAvatar = [[_core profileAvatar] imageRepresentation];
+		 
+		 if (!localAvatar)
+			 localAvatar = [NSImage imageNamed:NSImageNameUser];
+		 
+		 [viewCtrl setLocalAvatar:localAvatar];
+	}
+	else
+		viewCtrl = item;
+	
+	// Hold selection.
+	_selectedBuddy = buddy;
+	
+	// Update selection.
+	if ([_userList selectedRow] != index)
+		[_userList selectRowIndexes:[NSIndexSet indexSetWithIndex:index] byExtendingSelection:NO];
+	
+	// Show view.
+	[self _showChatViewController:viewCtrl];
+	
+	// Clean unread.
+	buddy.lastMessage = nil;
+	
+	[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
+}
+
+- (void)_showChatViewController:(TCChatViewController *)viewCtrl
+{
+	// > localQueue <
 	
 	// Remove current view
 	[_currentView removeFromSuperview];
-
-	if (!view)
+	
+	if (!viewCtrl)
 		return;
 	
 	// Load window if not loaded (else _chatView can eventually be nil).
@@ -543,10 +735,10 @@
 	
 	// Add the new one
 	NSDictionary	*viewsDictionary;
-	NSView			*content = view.view;
+	NSView			*content = viewCtrl.view;
 	
 	[_chatView addSubview:content];
-		
+	
 	viewsDictionary = NSDictionaryOfVariableBindings(content);
 	
 	[_chatView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[content]|" options:0 metrics:nil views:viewsDictionary]];
@@ -554,42 +746,35 @@
 	
 	_currentView = content;
 	
-	[view makeFirstResponder];
+	[viewCtrl makeFirstResponder];
 }
 
-- (void)_selectChatWithIdentifier:(NSString *)identifier
+- (NSUInteger)_indexOfViewControllerForBuddy:(TCBuddy *)buddy
 {
-	// > Main Queue <
+	// > localQueue <
 	
-	if (!identifier)
-		return;
+	if (!buddy)
+		return NSNotFound;
 	
-	NSMutableDictionary	*content;
-	NSUInteger			index;
-	
-	content = [_identifiersContent objectForKey:identifier];
-	index = [_identifiers indexOfObject:identifier];
-	
-	if (!content || index == NSNotFound)
-		return;
-	
-	// Update selection
-	if ([_userList selectedRow] != index)
-		[_userList selectRowIndexes:[NSIndexSet indexSetWithIndex:index] byExtendingSelection:NO];
-	
-	// Check not already loaded
-	if ([identifier isEqualToString:_selectedIdentifier])
-		return;
-
-	// Hold selection
-	_selectedIdentifier = identifier;
-	
-	// Load view
-	[self _loadChatView:[content objectForKey:TCChatViewKey]];
-	
-	// Clean unread
-	[content removeObjectForKey:TCChatLastChatKey];
-	[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
+	return [_viewsCtrl indexOfObjectPassingTest:^BOOL(id _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+		
+		TCBuddy *tBuddy = nil;
+		
+		if ([obj isKindOfClass:[TCChatViewController class]])
+		{
+			TCChatViewController *tViewCtrl = obj;
+			
+			tBuddy = tViewCtrl.buddy;
+		}
+		else
+		{
+			tBuddy = obj;
+		}
+		
+		*stop = (tBuddy == buddy);
+		
+		return (tBuddy == buddy);
+	}];
 }
 
 @end
