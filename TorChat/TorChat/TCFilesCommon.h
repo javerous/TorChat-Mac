@@ -63,12 +63,3 @@ typedef enum
 #define TCFileIconKey			@"icon"
 #define TCFileSizeKey			@"size"
 #define TCFileCompletedKey		@"completed"
-
-
-
-/*
-** File Notify
-*/
-#pragma mark - File Dictionary Keys
-
-#define TCFileCancelNotification	@"TCFileCancelNotification"

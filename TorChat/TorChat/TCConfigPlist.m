@@ -1438,6 +1438,8 @@
 */
 #pragma mark - TCConfigPlist - TCConfigInterface
 
+#pragma mark Title
+
 - (TCConfigTitle)modeTitle
 {
 	__block NSNumber *value;
@@ -1458,6 +1460,56 @@
 		[_fcontent setObject:@(mode) forKey:TCCONF_KEY_UI_TITLE];
 		[self _markDirty];
 	});
+}
+
+
+#pragma mark Transcript
+- (BOOL)saveTranscript
+{
+	// Not implemented
+	return NO;
+}
+
+- (void)setSaveTranscript:(BOOL)saveTranscript
+{
+	// Not implemented.
+}
+
+- (void)addTranscriptForBuddyIdentifier:(NSString *)identifier message:(TCChatMessage *)message completionHandler:(void (^)(int64_t msgID))handler
+{
+	// Not implemented.
+	if (handler)
+		handler(-1);
+}
+
+- (void)transcriptBuddiesIdentifiersWithCompletionHandler:(void (^)(NSArray *buddiesIdentifiers))handler
+{
+	// Not implemented.
+	if (handler)
+		handler(nil);
+}
+
+- (void)transcriptMessagesForBuddyIdentifier:(NSString *)identifier beforeMessageID:(NSNumber *)msgId limit:(NSUInteger)limit completionHandler:(void (^)(NSArray *messages))handler
+{
+	// Not implemented.
+	if (handler)
+		handler(nil);
+}
+
+- (void)transcriptRemoveMessagesForBuddyIdentifier:(NSString *)identifier
+{
+	// Not implemented.
+}
+
+- (void)transcriptRemoveMessageForID:(int64_t)msgID
+{
+	// Not implemented.
+}
+
+- (int64_t)transcriptLastMessageIDForBuddyIdentifier:(NSString *)identifier
+{
+	// Not implemented.
+	return -1;
 }
 
 

@@ -23,6 +23,7 @@
 #import <Foundation/Foundation.h>
 
 
+
 /*
 ** TCChatTranscriptViewController
 */
@@ -30,15 +31,28 @@
 
 @interface TCChatTranscriptViewController : NSViewController
 
-- (void)appendLocalMessage:(NSString *)message;
-- (void)appendRemoteMessage:(NSString *)message;
+// -- Content --
+- (void)addMessages:(NSArray *)messages endOfTranscript:(BOOL)endOfTranscript;
+- (void)removeMessageID:(int64_t)msgID;
 
-- (void)appendError:(NSString *)error;
 - (void)appendStatus:(NSString *)status;
 
 - (void)setLocalAvatar:(NSImage *)image;
 - (void)setRemoteAvatar:(NSImage *)image;
 
-- (NSUInteger)messagesCount;
+// -- Helper --
+- (NSUInteger)messagesCountToFillHeight:(CGFloat)height;
+- (CGFloat)heightForMessagesCount:(NSUInteger)count;
+
+// -- Properties --
+// Message.
+@property (readonly) NSUInteger messagesCount;
+
+// View.
+@property (readonly, nonatomic) CGFloat scrollOffset; // should be fetched on main queue.
+
+// Handlers.
+@property (strong, atomic) void (^errorActionHandler)(TCChatTranscriptViewController *controller, int64_t messageID); // called on global queue.
+@property (strong, atomic) void (^transcriptScrollHandler)(TCChatTranscriptViewController *controller, CGFloat scrollOffset); // called on main queue.
 
 @end

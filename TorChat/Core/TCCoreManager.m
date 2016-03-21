@@ -59,11 +59,10 @@
 	int						_sock;
 	
 	// > Buddies
-	BOOL					_buddiesLoaded;
 	NSMutableArray			*_buddies;
 	
 	// > Config
-	id <TCConfigCore>			_config;
+	id <TCConfigCore>		_config;
 	
 	// > Clients
 	NSMutableArray			*_connections;
@@ -147,6 +146,45 @@
 		_connections = [[NSMutableArray alloc] init];
 		_buddies = [[NSMutableArray alloc] init];
 		_observers = [NSHashTable weakObjectsHashTable];
+		
+		// Load buddies.
+		// > Get saved buddies.
+		NSArray *configBuddies = [_config buddies];
+
+		[configBuddies enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull configBuddy, NSUInteger idx, BOOL * _Nonnull stop) {
+			
+			TCBuddy *buddy = [[TCBuddy alloc] initWithConfiguration:_config identifier:configBuddy[TCConfigBuddyIdentifier] alias:configBuddy[TCConfigBuddyAlias] notes:configBuddy[TCConfigBuddyNotes]];
+
+			// Check blocked status
+			[self _checkBlocked:buddy];
+			
+			// Add to list
+			[_buddies addObject:buddy];
+		}];
+		
+		// > Check we are on buddy list.
+		BOOL		found = NO;
+		NSString	*selfIdentifier = [_config selfIdentifier];
+		
+		for (TCBuddy *buddy in _buddies)
+		{
+			if ([[buddy identifier] isEqualToString:selfIdentifier])
+			{
+				found = true;
+				break;
+			}
+		}
+		
+		if (!found)
+		{
+			NSString	*name = [_config localizedString:TCConfigStringItemMyselfBuddy];
+			TCBuddy		*buddy = [[TCBuddy alloc] initWithConfiguration:_config identifier:selfIdentifier alias:name notes:@""];
+
+			[self _checkBlocked:buddy];
+			[_buddies addObject:buddy];
+
+			[_config addBuddyWithIdentifier:selfIdentifier alias:name notes:@""];
+		}
 	}
 	
 	return self;
@@ -178,50 +216,6 @@
 		
 		if (_running)
 			return;
-		
-		if (!_buddiesLoaded)
-		{
-			NSArray *sbuddies = [_config buddies];
-			size_t	i, cnt;
-			
-			//  -- Parse buddies --
-			cnt = [sbuddies count];
-			
-			for (i = 0; i < cnt; i++)
-			{
-				NSDictionary	*item = sbuddies[i];
-				TCBuddy			*buddy = [[TCBuddy alloc] initWithConfiguration:_config identifier:item[TCConfigBuddyIdentifier] alias:item[TCConfigBuddyAlias] notes:item[TCConfigBuddyNotes]];
-								
-				// Check blocked status
-				[self _checkBlocked:buddy];
-				
-				// Add to list
-				[_buddies addObject:buddy];
-				
-				// Notify
-				[self _notify:TCCoreEventBuddyNew context:buddy];
-			}
-			
-			// -- Check that we are on the buddy list --
-			BOOL		found = NO;
-			NSString	*selfIdentifier = [_config selfIdentifier];
-			
-			
-			for (TCBuddy *buddy in _buddies)
-			{
-				if ([[buddy identifier] isEqualToString:selfIdentifier])
-				{
-					found = true;
-					break;
-				}
-			}
-			
-			if (!found)
-				[self addBuddyWithIdentifier:selfIdentifier name:[_config localizedString:TCConfigStringItemMyselfBuddy]];
-			
-			// -- Buddy are loaded --
-			_buddiesLoaded = true;
-		}
 		
 		// -- Start command server --
 		struct sockaddr_in	my_addr;
@@ -315,7 +309,7 @@
 		dispatch_source_set_event_handler(_timer, ^{
 			
 			// Do nothing if not running
-			if (!_running || !_buddiesLoaded)
+			if (!_running)
 				return;
 			
 			// (Re)start buddy (start do nothing if already started)
@@ -407,22 +401,32 @@
 	// Give the status
 	dispatch_async(_localQueue, ^{
 		
-		// Notify
-		if (status != _mstatus)
-			[self _notify:TCCoreEventStatus context:@(status)];
-		
-		// Hold internal status
+		// Check & hold status.
+		if (status == _mstatus)
+			return;
+
 		_mstatus = status;
 		
-		// Run the controller if needed, else send status
-		if (!_running)
-			[self start];
+		if (status == TCStatusOffline)
+		{
+			// Stop the controller.
+			[self stopWithCompletionHandler:nil];
+		}
 		else
 		{
-			// Give this status to buddy list
-			for (TCBuddy *buddy in _buddies)
-				[buddy sendStatus:status];
+			// Run the controller if needed, else send status
+			if (!_running)
+				[self start];
+			else
+			{
+				// Give this status to buddy list
+				for (TCBuddy *buddy in _buddies)
+					[buddy sendStatus:status];
+			}
 		}
+		
+		// Notify
+		[self _notify:TCCoreEventStatus context:@(status)];
 	});
 }
 
@@ -551,6 +555,17 @@
 ** TCCoreManager - Buddies
 */
 #pragma mark - TCCoreManager - Buddies
+
+- (NSArray *)buddies
+{
+	__block NSArray *buddies;
+	
+	dispatch_sync(_localQueue, ^{
+		buddies = [_buddies copy];
+	});
+	
+	return buddies;
+}
 
 - (void)addBuddyWithIdentifier:(NSString *)identifier name:(NSString *)name
 {

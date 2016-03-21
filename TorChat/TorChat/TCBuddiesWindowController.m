@@ -38,7 +38,6 @@
 // > Controllers
 #import "TCBuddyInfoWindowsController.h"
 #import "TCChatWindowController.h"
-#import "TCFilesWindowController.h"
 
 // > Cells
 #import "TCBuddyCellView.h"
@@ -51,9 +50,6 @@
 // > Managers
 #import "TCLogsManager.h"
 
-// > Components
-#import "TCFilesCommon.h"
-
 
 
 /*
@@ -61,10 +57,10 @@
 */
 #pragma mark - TCBuddiesController - Private
 
-@interface TCBuddiesWindowController () <TCCoreManagerObserver, TCBuddyObserver, TCDropButtonDelegate, TCChatWindowControllerDelegate>
+@interface TCBuddiesWindowController () <TCCoreManagerObserver, TCBuddyObserver, TCDropButtonDelegate>
 {
 	id <TCConfigAppEncryptable>	_configuration;
-	TCCoreManager		*_control;
+	TCCoreManager		*_core;
 	
 	dispatch_queue_t	_localQueue;
 	dispatch_queue_t	_noticeQueue;
@@ -111,7 +107,7 @@
 - (IBAction)doProfileCancel:(id)sender;
 
 // -- Helpers --
-- (void)updateStatusUI:(int)status;
+- (void)updateStatusUI:(TCStatus)status;
 - (void)updateTitleUI;
 
 @end
@@ -155,9 +151,6 @@
 
 		// Build array of cocoa buddy
 		_buddies = [[NSMutableArray alloc] init];
-		
-		// Observe file events
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(fileCancel:) name:TCFileCancelNotification object:nil];
 	}
 	
 	return self;
@@ -193,16 +186,14 @@
 */
 #pragma mark - TCBuddiesController - Running
 
-- (void)startWithConfiguration:(id <TCConfigAppEncryptable>)configuration coreManager:(TCCoreManager *)coreMananager
+- (void)startWithConfiguration:(id <TCConfigAppEncryptable>)configuration coreManager:(TCCoreManager *)coreMananager completionHandler:(dispatch_block_t)handler
 {
-	if (!configuration || !coreMananager)
-	{
-		NSBeep();
-		[NSApp terminate:self];
-		return;
-	}
+	dispatch_group_t group = dispatch_group_create();
+
+	if (!handler)
+		handler = ^{ };
 	
-	dispatch_async(dispatch_get_main_queue(), ^{
+	dispatch_group_async(group, dispatch_get_main_queue(), ^{
 		
 		if (_running)
 			return;
@@ -214,7 +205,7 @@
 		
 		// Hold the config & core.
 		_configuration = configuration;
-		_control = coreMananager;
+		_core = coreMananager;
 		
 		// -- Init window content --
 		// > Show load indicator.
@@ -224,10 +215,10 @@
 		[self updateTitleUI];
 		
 		// > Init status
-		[self updateStatusUI:[_control status]];
+		[self updateStatusUI:[_core status]];
 		
 		// > Init avatar.
-		NSImage *avatar = [[_control profileAvatar] imageRepresentation];
+		NSImage *avatar = [[_core profileAvatar] imageRepresentation];
 		
 		if ([[avatar representations] count] > 0)
 			[_imAvatar setImage:avatar];
@@ -250,15 +241,26 @@
 		// Create windows info controller.
 		_infoWindowsController = [[TCBuddyInfoWindowsController alloc] initWithCoreManager:coreMananager];
 		
+		// Add ourself as observer.
+		[_core addObserver:self];
+		
+		// Add current buddies.
+		NSArray *buddies = [_core buddies];
+		
+		for (TCBuddy *buddy in buddies)
+		{
+			[buddy addObserver:self];
+			[_buddies addObject:buddy];
+		}
+		
+		[_tableView reloadData];
+		
 		// Show the window.
 		[self showWindow:nil];
-		
-		// Add ourself as observer.
-		[_control addObserver:self];
-		
-		// Start the controller.
-		[_control start];
 	});
+	
+	// Wait end.
+	dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), handler);
 }
 
 - (void)stopWithCompletionHandler:(dispatch_block_t)handler
@@ -281,10 +283,10 @@
 		[_tableView reloadData];
 		
 		// Clean controller.
-		if (_control)
+		if (_core)
 		{
-			[_control removeObserver:self];
-			_control = nil;
+			[_core removeObserver:self];
+			_core = nil;
 		}
 		
 		// Set status to offline.
@@ -359,7 +361,7 @@
 	buddy = [_buddies objectAtIndex:(NSUInteger)row];
 	
 	// Open a chat window.
-	[self startChatForBuddy:buddy select:YES];
+	[self startChatForBuddy:buddy];
 }
 
 
@@ -413,27 +415,15 @@
 
 - (void)torchatManager:(TCCoreManager *)manager information:(SMInfo *)info
 {
-	// Log the item
-	[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
-	
 	// Action information
 	if (info.kind == SMInfoInfo)
 	{
-		switch ((TCCoreEvent)info.code)
+		switch (info.code)
 		{
 			case TCCoreEventStarted:
 			{
 				dispatch_async(dispatch_get_main_queue(), ^{
 					[_indicator stopAnimation:self];
-				});
-				
-				break;
-			}
-				
-			case TCCoreEventStopped:
-			{
-				dispatch_async(dispatch_get_main_queue(), ^{
-					[self updateStatusUI:-2];
 				});
 				
 				break;
@@ -463,9 +453,6 @@
 					[_imAvatar setImage:final];
 				});
 				
-				// Set the new avatar to the chat window.
-				[[TCChatWindowController sharedController] setLocalAvatar:final forIdentifier:[_configuration selfIdentifier]];
-				
 				break;
 			}
 				
@@ -479,9 +466,6 @@
 				break;
 			}
 				
-			case TCCoreEventProfileText:
-				break;
-				
 			case TCCoreEventBuddyNew:
 			{
 				TCBuddy *buddy = (TCBuddy *)info.context;
@@ -489,11 +473,7 @@
 				[buddy addObserver:self];
 				
 				dispatch_async(dispatch_get_main_queue(), ^{
-					
 					[_buddies addObject:buddy];
-					
-					[[TCChatWindowController sharedController] setLocalAvatar:[_imAvatar image] forIdentifier:[buddy identifier]];
-					
 					[self _reloadBuddy:nil];
 				});
 				
@@ -526,11 +506,6 @@
 				
 				break;
 			}
-				
-			case TCCoreEventClientStarted:
-			case TCCoreEventClientStopped:
-			
-				break;
 		}
 	}
 }
@@ -544,23 +519,14 @@
 
 - (void)buddy:(TCBuddy *)aBuddy information:(SMInfo *)info
 {
-	// Add the info in the log manager.
-	[[TCLogsManager sharedManager] addBuddyLogWithBuddyIdentifier:[aBuddy identifier] name:[aBuddy finalName] info:info];
-	
 	// Handle info.
 	dispatch_async(_localQueue, ^{
 		
 		if (info.kind == SMInfoInfo)
 		{
 			// Actions
-			switch ((TCBuddyEvent)info.code)
+			switch (info.code)
 			{
-				case TCBuddyEventConnectedTor:
-					break;
-					
-				case TCBuddyEventConnectedBuddy:
-					break;
-					
 				case TCBuddyEventDisconnected:
 				{
 					// Rebuid buddy list.
@@ -574,36 +540,8 @@
 					break;
 				}
 					
-				case TCBuddyEventIdentified:
-					break;
-					
 				case TCBuddyEventStatus:
 				{
-					TCStatus	status = (TCStatus)[(NSNumber *)info.context intValue];
-					NSString	*statusStr = @"";
-					
-					// Send status to chat window.
-					switch (status)
-					{
-						case TCStatusOffline:
-							statusStr = NSLocalizedString(@"bd_status_offline", @"");
-							break;
-							
-						case TCStatusAvailable:
-							statusStr = NSLocalizedString(@"bd_status_available", @"");
-							break;
-							
-						case TCStatusAway:
-							statusStr = NSLocalizedString(@"bd_status_away", @"");
-							break;
-							
-						case TCStatusXA:
-							statusStr = NSLocalizedString(@"bd_status_xa", @"");
-							break;
-					}
-					
-					[[TCChatWindowController sharedController] receiveStatus:statusStr forIdentifier:[aBuddy identifier]];
-					
 					// Reload buddies table.
 					dispatch_async(dispatch_get_main_queue(), ^{
 						[self _reloadBuddy:aBuddy];
@@ -614,25 +552,13 @@
 					
 				case TCBuddyEventProfileAvatar:
 				{
-					TCImage *tcAvatar = (TCImage *)info.context;
-					NSImage *avatar = [tcAvatar imageRepresentation];
-					
-					if (!avatar)
-						return;
-					
 					// Reload table.
 					dispatch_async(dispatch_get_main_queue(), ^{
 						[self _reloadBuddy:aBuddy];
 					});
-					
-					// Set the new avatar to the chat window.
-					[[TCChatWindowController sharedController] setRemoteAvatar:avatar forIdentifier:[aBuddy identifier]];
 
 					break;
 				}
-					
-				case TCBuddyEventProfileText:
-					break;
 					
 				case TCBuddyEventProfileName:
 				{
@@ -648,20 +574,7 @@
 					
 					break;
 				}
-					
-				case TCBuddyEventMessage:
-				{
-					TCChatWindowController *chatController = [TCChatWindowController sharedController];
-					
-					// Start a chat UI.
-					[self startChatForBuddy:aBuddy select:NO];
-					
-					// Add the message.
-					[chatController receiveMessage:info.context forIdentifier:[aBuddy identifier]];
-					
-					break;
-				}
-					
+
 				case TCBuddyEventAlias:
 				{
 					NSString *alias =info.context;
@@ -676,187 +589,6 @@
 					
 					break;
 				}
-					
-				case TCBuddyEventNotes:
-					break;
-					
-				case TCBuddyEventVersion:
-					break;
-					
-				case TCBuddyEventClient:
-					break;
-					
-				case TCBuddyEventFileSendStart:
-				{
-					TCFileInfo *finfo = (TCFileInfo *)info.context;
-					
-					if (!finfo)
-						return;
-					
-					// Add the file transfert to the controller
-					[[TCFilesWindowController sharedController] startFileTransfert:[finfo uuid] withFilePath:[finfo filePath] buddyIdentifier:[aBuddy identifier] buddyName:[aBuddy finalName] transfertWay:tcfile_upload fileSize:[finfo fileSizeTotal]];
-					
-					break;
-				}
-					
-				case TCBuddyEventFileSendRunning:
-				{
-					TCFileInfo *finfo = (TCFileInfo *)info.context;
-					
-					if (!finfo)
-						return;
-					
-					// Update bytes received
-					[[TCFilesWindowController sharedController] setCompleted:[finfo fileSizeCompleted] forFileTransfert:[finfo uuid] withWay:tcfile_upload];
-					
-					break;
-				}
-					
-				case TCBuddyEventFileSendFinish:
-				{
-					TCFileInfo *finfo = (TCFileInfo *)info.context;
-					
-					if (!finfo)
-						return;
-					
-					// Update status
-					[[TCFilesWindowController sharedController] setStatus:tcfile_status_finish andTextStatus:NSLocalizedString(@"file_upload_done", @"") forFileTransfert:[finfo uuid] withWay:tcfile_upload];
-					
-					break;
-				}
-					
-				case TCBuddyEventFileSendStopped:
-				{
-					TCFileInfo *finfo = (TCFileInfo *)info.context;
-					
-					if (!finfo)
-						return;
-					
-					// Update status
-					[[TCFilesWindowController sharedController] setStatus:tcfile_status_stopped andTextStatus:NSLocalizedString(@"file_upload_stopped", @"") forFileTransfert:[finfo uuid] withWay:tcfile_upload];
-					
-					break;
-				}
-					
-				case TCBuddyEventFileReceiveStart:
-				{
-					TCFileInfo *finfo = (TCFileInfo *)info.context;
-					
-					if (!finfo)
-						return;
-					
-					// Add the file transfert to the controller
-					[[TCFilesWindowController sharedController] startFileTransfert:[finfo uuid] withFilePath:[finfo filePath] buddyIdentifier:[aBuddy identifier] buddyName:[aBuddy finalName] transfertWay:tcfile_download fileSize:[finfo fileSizeTotal]];
-					
-					break;
-				}
-					
-				case TCBuddyEventFileReceiveRunning:
-				{
-					TCFileInfo *finfo = (TCFileInfo *)info.context;
-					
-					if (!finfo)
-						return;
-					
-					// Update bytes received
-					[[TCFilesWindowController sharedController] setCompleted:[finfo fileSizeCompleted] forFileTransfert:[finfo uuid] withWay:tcfile_download];
-					
-					break;
-				}
-					
-				case TCBuddyEventFileReceiveFinish:
-				{
-					TCFileInfo *finfo = (TCFileInfo *)info.context;
-					
-					if (!finfo)
-						return;
-					
-					// Update status
-					[[TCFilesWindowController sharedController] setStatus:tcfile_status_finish andTextStatus:NSLocalizedString(@"file_download_done", @"") forFileTransfert:[finfo uuid] withWay:tcfile_download];
-					
-					break;
-				}
-					
-				case TCBuddyEventFileReceiveStopped:
-				{
-					TCFileInfo *finfo = (TCFileInfo *)info.context;
-					
-					if (!finfo)
-						return;
-					
-					// Update status
-					[[TCFilesWindowController sharedController] setStatus:tcfile_status_stopped andTextStatus:NSLocalizedString(@"file_download_stopped", @"") forFileTransfert:[finfo uuid] withWay:tcfile_download];
-					
-					break;
-				}
-			}
-		}
-		else if (info.kind == SMInfoError)
-		{
-			switch ((TCBuddyError)info.code)
-			{
-					
-				case TCBuddyErrorResolveTor:
-					break;
-					
-				case TCBuddyErrorConnectTor:
-					break;
-					
-				case TCBuddyErrorSocket:
-					break;
-					
-				case TCBuddyErrorSocks:
-				case TCBuddyErrorSocksRequest:
-					break;
-					
-				case TCBuddyErrorMessageOffline:
-				{
-					NSString	*key = NSLocalizedString(@"bd_error_offline", "");
-					NSString	*message = info.context;
-					NSString	*full;
-					
-					if (message)
-						full = [[NSString alloc] initWithFormat:key, message];
-					else
-						full = [[NSString alloc] initWithFormat:key, @"-"];
-					
-					// Add the error
-					[[TCChatWindowController sharedController] receiveError:full forIdentifier:[aBuddy identifier]];
-					
-					break;
-				}
-					
-				case TCBuddyErrorMessageBlocked:
-				{
-					NSString	*key = NSLocalizedString(@"bd_error_blocked", "");
-					NSString	*message = (NSString *)info.context;
-					NSString	*full;
-					
-					if (message)
-						full = [[NSString alloc] initWithFormat:key, message];
-					else
-						full = [[NSString alloc] initWithFormat:key, @"-"];
-					
-					// Add the error
-					[[TCChatWindowController sharedController] receiveError:full forIdentifier:[aBuddy identifier]];
-					
-					break;
-				}
-					
-				case TCBuddyErrorSendFile:
-					break;
-					
-				case TCBuddyErrorReceiveFile:
-					break;
-					
-				case TCBuddyErrorFileOffline:
-					break;
-					
-				case TCBuddyErrorFileBlocked:
-					break;
-					
-				case TCBuddyErrorParse:
-					break;
 			}
 		}
 	});
@@ -876,57 +608,7 @@
 	
 	TCImage *image = [[TCImage alloc] initWithImage:avatar];
 	
-	[_control setProfileAvatar:image];
-}
-
-
-
-/*
-** TCBuddiesController - TCDropButtonDelegate
-*/
-#pragma mark - TCBuddiesController - TCDropButtonDelegate
-
-- (void)chatSendMessage:(NSString *)message identifier:(NSString *)identifier context:(id)context
-{
-	TCBuddy *buddy = context;
-	
-	if (!buddy || !message)
-		return;
-	
-	[buddy sendMessage:message];
-}
-
-
-
-/*
-** TCBuddiesController - Notifications
-*/
-#pragma mark - TCBuddiesController - Notifications
-
-- (void)fileCancel:(NSNotification *)notice
-{
-	NSDictionary	*info = [notice userInfo];
-	NSString		*uuid = [info objectForKey:@"uuid"];
-	NSString		*identifier = [info objectForKey:@"identifier"];
-	tcfile_way		way = (tcfile_way)[[info objectForKey:@"way"] intValue];
-	
-	// Search the buddy associated with this transfert
-	for (TCBuddy *buddy in _buddies)
-	{
-		if ([[buddy identifier] isEqualToString:identifier])
-		{
-			// Change the file status
-			[[TCFilesWindowController sharedController] setStatus:tcfile_status_cancel andTextStatus:NSLocalizedString(@"file_canceling", @"") forFileTransfert:uuid withWay:way];
-			
-			// Canceling the transfert
-			if (way == tcfile_upload)
-				[buddy fileCancelOfUUID:uuid way:TCBuddyFileSend];
-			else if (way == tcfile_download)
-				[buddy fileCancelOfUUID:uuid way:TCBuddyFileReceive];
-			
-			return;
-		}
-	}
+	[_core setProfileAvatar:image];
 }
 
 
@@ -942,20 +624,19 @@
 	switch ([_imStatus selectedTag])
 	{
 		case 0:
-			[_control stopWithCompletionHandler:nil];
-			[self updateStatusUI:-2];
+			[_core setStatus:TCStatusOffline];
 			break;
 			
 		case 1:
-			[_control setStatus:TCStatusAvailable];
+			[_core setStatus:TCStatusAvailable];
 			break;
 			
 		case 2:
-			[_control setStatus:TCStatusAway];
+			[_core setStatus:TCStatusAway];
 			break;
 			
 		case 3:
-			[_control setStatus:TCStatusXA];
+			[_core setStatus:TCStatusXA];
 			break;
 	}
 }
@@ -1039,7 +720,7 @@
 	identifier = [buddy identifier];
 
 	// Remove the buddy from the controller.
-	[_control removeBuddyWithIdentifier:identifier];
+	[_core removeBuddyWithIdentifier:identifier];
 }
 
 - (IBAction)doAdd:(id)sender
@@ -1064,7 +745,7 @@
 
 	buddy = [_buddies objectAtIndex:(NSUInteger)row];
 	
-	[self startChatForBuddy:buddy select:YES];
+	[self startChatForBuddy:buddy];
 }
 
 - (IBAction)doSendFile:(id)sender
@@ -1106,15 +787,15 @@
 	buddy = [_buddies objectAtIndex:(NSUInteger)row];
 		
 	if ([buddy blocked])
-		[_control removeBlockedBuddyWithIdentifier:[buddy identifier]];
+		[_core removeBlockedBuddyWithIdentifier:[buddy identifier]];
 	else
-		[_control addBlockedBuddyWithIdentifier:[buddy identifier]];
+		[_core addBlockedBuddyWithIdentifier:[buddy identifier]];
 }
 
 - (IBAction)doEditProfile:(id)sender
 {
-	NSString *tname = [_control profileName];
-	NSString *ttext = [_control profileText];
+	NSString *tname = [_core profileName];
+	NSString *ttext = [_core profileText];
 	
 	[_profileName setStringValue:tname];
 	[[[_profileText textStorage] mutableString] setString:ttext];
@@ -1127,7 +808,7 @@
 	NSString *notes = [[_addNotesField textStorage] mutableString];
 
 	// Add the buddy to the controller. Notification will add it on our interface.
-	[_control addBuddyWithIdentifier:[_addIdentifierField stringValue] name:[_addNameField stringValue] comment:notes];
+	[_core addBuddyWithIdentifier:[_addIdentifierField stringValue] name:[_addNameField stringValue] comment:notes];
 	
 	[_addWindow orderOut:self];
 }
@@ -1145,12 +826,12 @@
 	// -- Hold name --
 	NSString *name = [_profileName stringValue];
 	
-	[_control setProfileName:name];
+	[_core setProfileName:name];
 	
 	// -- Hold text --
 	NSString *text = [[_profileText textStorage] mutableString];
 	
-	[_control setProfileText:text];
+	[_core setProfileText:text];
 }
 
 - (IBAction)doProfileCancel:(id)sender
@@ -1213,26 +894,15 @@
 	});
 }
 
-- (void)startChatForBuddy:(TCBuddy *)buddy select:(BOOL)select
+- (void)startChatForBuddy:(TCBuddy *)buddy
 {
 	if (!buddy)
 		return;
+
+	TCChatWindowController *chatCtrl = [TCChatWindowController sharedController];
 	
-	TCChatWindowController	*chatCtrl = [TCChatWindowController sharedController];
-	NSString				*identifier = [buddy identifier];
-	
-	// Start chat.
-	TCImage *tcImage = [buddy profileAvatar];
-	NSImage	*image = [tcImage imageRepresentation];
-	
-	if (!image)
-		image = [NSImage imageNamed:NSImageNameUser];
-	
-	[chatCtrl startChatWithIdentifier:identifier name:[buddy finalName] localAvatar:[_imAvatar image] remoteAvatar:image context:buddy delegate:self];
-		
-	// Select it.
-	if (select)
-		[chatCtrl selectChatWithIdentifier:identifier];
+	[chatCtrl openChatWithBuddy:buddy];
+	[chatCtrl selectChatWithBuddy:buddy];
 }
 
 - (TCBuddy *)selectedBuddy
@@ -1245,7 +915,7 @@
 	return [_buddies objectAtIndex:(NSUInteger)row];
 }
 
-- (void)updateStatusUI:(int)status
+- (void)updateStatusUI:(TCStatus)status
 {
 	// Unselect old item
 	for (NSMenuItem *item in [_imStatus itemArray])
@@ -1286,7 +956,7 @@
 				
 			case TCConfigTitleName:
 			{
-				content = [_control profileName];
+				content = [_core profileName];
 				
 				if ([content length] == 0)
 					content = @"-";

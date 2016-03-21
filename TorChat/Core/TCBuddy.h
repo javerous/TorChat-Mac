@@ -160,20 +160,23 @@ typedef enum
 - (BOOL)isPonged;
 - (void)keepAlive;
 
-// -- Accessors --
-- (NSString *)alias;
-- (void)setAlias:(NSString *)name;
+// -- Properties --
+@property (strong, atomic) NSString	*alias;
+@property (strong, atomic) NSString	*notes;
+@property (assign, atomic) BOOL		blocked;
 
-- (NSString *)notes;
-- (void)setNotes:(NSString *)notes;
+@property (assign, atomic, readonly) TCStatus	status;
 
-- (BOOL)blocked;
-- (void)setBlocked:(BOOL)blocked;
+@property (strong, atomic, readonly) NSString	*identifier;
+@property (strong, atomic, readonly) NSString	*random;
 
-- (TCStatus)status;
+@property (strong, atomic, readonly) NSString	*peerClient;
+@property (strong, atomic, readonly) NSString	*peerVersion;
 
-- (NSString *)identifier;
-- (NSString *)random;
+@property (strong, atomic, readonly) NSString	*profileText;
+@property (strong, atomic, readonly) TCImage	*profileAvatar;
+@property (strong, atomic, readonly) NSString	*profileName;
+@property (strong, atomic, readonly) NSString	*finalName; // Best name representation (alias / profile name)
 
 // -- Files Info --
 - (NSString *)fileNameForUUID:(NSString *)uuid andWay:(TCBuddyFileWay)way;
@@ -181,27 +184,20 @@ typedef enum
 - (BOOL)fileStatForUUID:(NSString *)uuid way:(TCBuddyFileWay)way done:(uint64_t *)done total:(uint64_t *)total;
 - (void)fileCancelOfUUID:(NSString *)uuid way:(TCBuddyFileWay)way;
 
+// -- Messages --
+- (NSArray *)popMessages;
+
 // -- Send Command --
 - (void)sendStatus:(TCStatus)status;
 - (void)sendAvatar:(TCImage *)avatar;
 - (void)sendProfileName:(NSString *)name;
 - (void)sendProfileText:(NSString *)text;
-- (void)sendMessage:(NSString *)message;
+- (void)sendMessage:(NSString *)message completionHanndler:(void (^)(SMInfo *info))handler;
 - (void)sendFile:(NSString *)filepath;
 
 // -- Action --
 - (void)startHandshake:(NSString *)remoteRandom status:(TCStatus)status avatar:(TCImage *)avatar name:(NSString *)name text:(NSString *)text;
 - (void)setInputConnection:(SMSocket *)sock;
-
-// -- Content --
-- (NSString *)peerClient;
-- (NSString *)peerVersion;
-
-- (NSString *)profileText;
-- (TCImage *)profileAvatar;
-- (NSString *)profileName;
-
-- (NSString *)finalName; // Best name representation (alias / profile name)
 
 // -- Observers --
 - (void)addObserver:(id <TCBuddyObserver>)observer;

@@ -26,6 +26,15 @@
 
 
 /*
+** Forward
+*/
+#pragma mark - Forward
+
+@class TCCoreManager;
+
+
+
+/*
 ** TCFilesWindowController
 */
 #pragma mark - TCFilesWindowController
@@ -33,12 +42,19 @@
 // == Class ==
 @interface TCFilesWindowController : NSWindowController
 
-// -- Constructor --
+// -- Instance --
 + (TCFilesWindowController *)sharedController;
 
+// -- Life --
+- (void)startWithCoreManager:(TCCoreManager *)coreMananager completionHandler:(dispatch_block_t)handler;
+- (void)stopWithCompletionHandler:(dispatch_block_t)handler;
+
+
 // -- Actions --
+/*
 - (void)startFileTransfert:(NSString *)uuid withFilePath:(NSString *)filePath buddyIdentifier:(NSString *)identifier buddyName:(NSString *)name transfertWay:(tcfile_way)way fileSize:(uint64_t)size;
 - (void)setStatus:(tcfile_status)status andTextStatus:(NSString *)txtStatus forFileTransfert:(NSString *)uuid withWay:(tcfile_way)way;
 - (void)setCompleted:(uint64_t)size forFileTransfert:(NSString *)uuid withWay:(tcfile_way)way;
+*/
 
 @end

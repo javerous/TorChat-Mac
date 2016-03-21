@@ -31,30 +31,37 @@
 #import "TCLogsManager.h"
 
 #import "TCBuddiesWindowController.h"
+#import "TCChatWindowController.h"
+#import "TCFilesWindowController.h"
+#import "TCConfigurationHelperController.h"
+
 #import "TCPanel_Welcome.h"
 #import "TCPanel_Security.h"
 #import "TCPanel_Mode.h"
 #import "TCPanel_Advanced.h"
 #import "TCPanel_Basic.h"
 
-#import "TCConfigurationHelperController.h"
-
 #import "TCCoreManager.h"
+#import "TCBuddy.h"
+
 #import "SMTorConfiguration+TCConfig.h"
 
 
 /*
-** TCMainController
+** TCMainController - Private
 */
-#pragma mark - TCMainController
+#pragma mark - TCMainController - Private
 
-@implementation TCMainController
+@interface TCMainController ()  <TCCoreManagerObserver, TCBuddyObserver>
 {
 	dispatch_queue_t	_localQueue;
 	SMOperationsQueue	*_opQueue;
-
+	
 	id <TCConfigAppEncryptable> _configuration;
 	SMTorManager				*_torManager;
+	
+	// Buddies.
+	NSMutableSet *_buddies;
 	
 	// Path monitor.
 	id	_torIdentityPathObserver;
@@ -63,6 +70,17 @@
 	
 	dispatch_source_t _torChangesTimer;
 }
+
+@end
+
+
+
+/*
+** TCMainController
+*/
+#pragma mark - TCMainController
+
+@implementation TCMainController
 
 
 /*
@@ -90,6 +108,8 @@
 	{
 		_localQueue = dispatch_queue_create("com.torchat.app.main-controller.local", DISPATCH_QUEUE_SERIAL);
 		_opQueue = [[SMOperationsQueue alloc] initStarted];
+		
+		_buddies = [[NSMutableSet alloc] init];
 	}
 	
 	return self;
@@ -400,20 +420,54 @@
 		ctrl(SMOperationsControlContinue);
 	}];
 	
-	// -- Launch torchat --
+	// -- Launch controllers --
 	[operationQueue scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
 		
 		// Create core manager.
 		_core = [[TCCoreManager alloc] initWithConfiguration:_configuration];
 		
-		// Start buddy controller.
-		[[TCBuddiesWindowController sharedController] startWithConfiguration:_configuration coreManager:_core];
+		// Observe core.
+		[_core addObserver:self];
 		
-		// Notify.
-		handler(_core);
+		// Handle current buddies.
+		NSArray *buddies = [_core buddies];
 		
-		// Continue.
-		ctrl(SMOperationsControlContinue);
+		for (TCBuddy *buddy in buddies)
+		{
+			[buddy addObserver:self];
+			[_buddies addObject:buddy];
+		};
+		
+		// Start controllers.
+		dispatch_group_t group = dispatch_group_create();
+		
+		// > Buddies.
+		dispatch_group_enter(group);
+		
+		[[TCBuddiesWindowController sharedController] startWithConfiguration:_configuration coreManager:_core completionHandler:^{
+			dispatch_group_leave(group);
+		}];
+		
+		// > Chat.
+		dispatch_group_enter(group);
+
+		[[TCChatWindowController sharedController] startWithConfiguration:_configuration coreManager:_core completionHandler:^{
+			dispatch_group_leave(group);
+		}];
+	
+		// > Files.
+		dispatch_group_enter(group);
+		
+		[[TCFilesWindowController sharedController] startWithCoreManager:_core completionHandler:^{
+			dispatch_group_leave(group);
+		}];
+		
+		// Wait.
+		dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			handler(_core);
+			[_core start];
+			ctrl(SMOperationsControlContinue);
+		});
 	}];
 }
 
@@ -442,13 +496,36 @@
 	
 	dispatch_group_t group = dispatch_group_create();
 	
-	// Stop buddies.
+	// Stop controlers.
+	// > Buddies.
 	dispatch_group_enter(group);
 	
 	[[TCBuddiesWindowController sharedController] stopWithCompletionHandler:^{
 		dispatch_group_leave(group);
 	}];
+	
+	// > Chat.
+	dispatch_group_enter(group);
 
+	[[TCChatWindowController sharedController] stopWithCompletionHandler:^{
+		dispatch_group_leave(group);
+	}];
+	
+	// > File.
+	dispatch_group_enter(group);
+
+	[[TCFilesWindowController sharedController] stopWithCompletionHandler:^{
+		dispatch_group_leave(group);
+	}];
+
+	// Unmonitor.
+	for (TCBuddy *buddy in _buddies)
+		[buddy removeObserver:self];
+	
+	[_buddies removeAllObjects];
+
+	[_core removeObserver:self];
+	
 	// Stop core.
 	if (_core)
 	{
@@ -484,6 +561,56 @@
 		// > Notify.
 		handler();
 	});
+}
+
+
+
+/*
+** TCMainController - TCCoreManagerObserver
+*/
+#pragma mark - TCMainController - TCCoreManagerObserver
+
+- (void)torchatManager:(TCCoreManager *)manager information:(SMInfo *)info
+{
+	// Log the item
+	[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
+	
+	// Handle buddy life.
+	if (info.kind == SMInfoInfo)
+	{
+		if (info.code == TCCoreEventBuddyNew)
+		{
+			TCBuddy *buddy = (TCBuddy *)info.context;
+
+			[buddy addObserver:self];
+			
+			dispatch_async(_localQueue, ^{
+				[_buddies addObject:buddy];
+			});
+		}
+		else if (info.code == TCCoreEventBuddyRemove)
+		{
+			TCBuddy *buddy = (TCBuddy *)info.context;
+			
+			[buddy removeObserver:self];
+			
+			dispatch_async(_localQueue, ^{
+				[_buddies removeObject:buddy];
+			});
+		}
+	}
+}
+
+
+
+/*
+** TCMainController - TCBuddyObserver
+*/
+#pragma mark - TCMainController - TCBuddyObserver
+
+- (void)buddy:(TCBuddy *)buddy information:(SMInfo *)info
+{
+	[[TCLogsManager sharedManager] addBuddyLogWithBuddyIdentifier:[buddy identifier] name:[buddy finalName] info:info];
 }
 
 

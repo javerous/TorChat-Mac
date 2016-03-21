@@ -99,9 +99,11 @@
 	if (!configPath)
 	{
 		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_build_path"];
-		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_error_build_path", @"")] runModal];
-		[[NSApplication sharedApplication] terminate:nil];
-		return nil;
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_error_build_path", @"")] runModal];
+			exit(0);
+		});
 	}
 	
 	// Build configuration file.
@@ -109,15 +111,25 @@
 	TCConfigSQLite	*config = nil;
 	
 	if (encryptCheckBox.state == NSOnState)
+	{
 		config = [[TCConfigSQLite alloc] initWithFile:configPath password:passwordField.stringValue error:&error];
+		
+		config.saveTranscript = YES;
+	}
 	else
+	{
 		config = [[TCConfigSQLite alloc] initWithFile:configPath password:nil error:&error];
+	}
 
 	if (!config)
 	{
 		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_build_path"];
-		[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_error_write_file", @"")] runModal];
-		[[NSApplication sharedApplication] terminate:nil];
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_error_write_file", @""), configPath] runModal];
+			exit(0);
+		});
+
 		return nil;
 	}
 	

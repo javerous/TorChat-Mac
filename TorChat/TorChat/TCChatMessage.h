@@ -1,5 +1,5 @@
 /*
- *  TCChatViewController.h
+ *  TCChatMessage.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -22,50 +22,33 @@
 
 #import <Foundation/Foundation.h>
 
-#import "TCConfigApp.h"
-
 
 /*
-** Forward
+** Types
 */
-#pragma mark - Forward
+#pragma mark - Types
 
-@class TCChatViewController;
-@class TCChatMessage;
-@class TCBuddy;
-
-
-/*
-** Defines
-*/
-#pragma mark - Defines
-
-#define TCChatViewMessageKey		@"message"
-#define TCChatViewRemoteKey			@"remote"
-#define TCChatViewTimestampKey		@"timestamp"
-#define TCChatViewErrorKey			@"error"
+typedef enum
+{
+	TCChatMessageSideLocal = 0,
+	TCChatMessageSideRemote = 1,
+} TCChatMessageSide;
 
 
 
 /*
-** TCChatViewController
+** TCChatMessage
 */
-#pragma mark - TCChatViewController
+#pragma mark - TCChatMessage
 
-@interface TCChatViewController : NSViewController
+@interface TCChatMessage : NSObject
 
-// -- Property --
-@property (weak, nonatomic, readonly) TCBuddy *buddy;
+@property (atomic) int64_t				messageID;
 
-// -- Instance --
-+ (TCChatViewController *)chatViewWithBuddy:(TCBuddy *)buddy configuration:(id <TCConfigApp>)config;
+@property (atomic) NSString				*message;
+@property (atomic) TCChatMessageSide	side;
+@property (atomic) NSTimeInterval		timestamp;
 
-// -- Content --
-- (void)setLocalAvatar:(NSImage *)image;
-
-- (NSUInteger)messagesCount;
-
-// -- Focus --
-- (void)makeFirstResponder;
+@property (atomic) NSString				*error;
 
 @end

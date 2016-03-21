@@ -135,20 +135,16 @@ typedef enum
 - (void)stopWithCompletionHandler:(dispatch_block_t)handler;
 
 // -- Status --
-- (void)setStatus:(TCStatus)status;
-- (TCStatus)status;
+@property (assign, atomic) TCStatus status;
 
 // -- Profile --
-- (void)setProfileAvatar:(TCImage *)avatar;
-- (TCImage *)profileAvatar;
-
-- (void)setProfileName:(NSString *)name;
-- (NSString *)profileName;
-
-- (void)setProfileText:(NSString *)text;
-- (NSString *)profileText;
+@property (strong, atomic) TCImage	*profileAvatar;
+@property (strong, atomic) NSString	*profileName;
+@property (strong, atomic) NSString	*profileText;
 
 // -- Buddies --
+@property (copy, atomic, readonly) NSArray *buddies;
+
 - (void)addBuddyWithIdentifier:(NSString *)identifier name:(NSString *)name;
 - (void)addBuddyWithIdentifier:(NSString *)identifier name:(NSString *)name comment:(NSString *)comment;
 - (void)removeBuddyWithIdentifier:(NSString *)identifier;

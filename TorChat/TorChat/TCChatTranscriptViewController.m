@@ -27,19 +27,23 @@
 #import "NSImage+TCExtension.h"
 #import "NSString+TCXMLExtension.h"
 
+#import "TCChatMessage.h"
+
 
 /*
 ** Defines
 */
 #pragma mark - Defines
 
-#define TCTemplateCSSSnippet			@"CSS-Snippet"
+#define TCTemplateCSSSnippet				@"CSS-Snippet"
 
-#define TCTemplateRemoteMessageSnippet	@"RemoteMessage-Snippet"
-#define TCTemplateLocalMessageSnippet	@"LocalMessage-Snippet"
+#define TCTemplateRemoteMessageSnippet		@"RemoteMessage-Snippet"
+#define TCTemplateLocalMessageSnippet		@"LocalMessage-Snippet"
+#define TCTemplateLocalMessageErrorSnippet	@"LocalMessageError-Snippet"
 
-#define TCTemplateErrorSnippet			@"Error-Snippet"
-#define TCTemplateStatusSnippet			@"Status-Snippet"
+#define TCTemplateStatusSnippet				@"Status-Snippet"
+
+#define TCTemplateMinHeight					@"Min-Height"
 
 
 
@@ -72,7 +76,7 @@ NSMutableDictionary	*gAvatarCache;
 */
 #pragma mark - TCChatTranscriptViewController - Private
 
-@interface TCChatTranscriptViewController () <WebUIDelegate, WebFrameLoadDelegate>
+@interface TCChatTranscriptViewController () <WebUIDelegate, WebFrameLoadDelegate, WebPolicyDelegate>
 {
 	WebView			*_webView;
 	NSDictionary	*_template;
@@ -86,6 +90,16 @@ NSMutableDictionary	*gAvatarCache;
 	NSMutableString	*_tmpBody;
 	
 	int32_t			_messagesCount;
+	
+	NSMutableIndexSet *_handledMessagesIDs;
+	
+	DOMHTMLElement	*_anchorElement;
+	CGFloat			_anchorOffset;
+	
+	BOOL			_stuckAtEnd;
+	
+	id <NSObject>	_frameChangeObserver;
+	id <NSObject>	_didScrollObserver;
 }
 
 @end
@@ -117,7 +131,10 @@ NSMutableDictionary	*gAvatarCache;
 		dispatch_once(&onceToken, ^{
 			[NSURLProtocol registerClass:[TCURLProtocolInternal class]];
 		});
-
+		
+		// Init flags.
+		_stuckAtEnd = YES;
+		
 		// Init identifier.
 		_localAvatarIdentifier = [self uuid];
 		_remoteAvatarIdentifier	= [self uuid];
@@ -125,6 +142,9 @@ NSMutableDictionary	*gAvatarCache;
 		[TCURLProtocolInternal setAvatar:[NSImage imageNamed:NSImageNameUser] forIdentifier:_localAvatarIdentifier];
 		[TCURLProtocolInternal setAvatar:[NSImage imageNamed:NSImageNameUser] forIdentifier:_remoteAvatarIdentifier];
 
+		// Containers.
+		_handledMessagesIDs = [[NSMutableIndexSet alloc] init];
+		
 		// Load template.
 		NSString	*path = [[NSBundle mainBundle] pathForResource:@"ChatTemplate" ofType:@"plist"];
 		NSData		*data = [NSData dataWithContentsOfFile:path];
@@ -142,8 +162,13 @@ NSMutableDictionary	*gAvatarCache;
 
 - (void)dealloc
 {
+	TCDebugLog(@"TCChatTranscriptViewController dealloc");
+	
     [TCURLProtocolInternal removeAvatarForIdentifier:_localAvatarIdentifier];
 	[TCURLProtocolInternal removeAvatarForIdentifier:_remoteAvatarIdentifier];
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:_frameChangeObserver];
+	[[NSNotificationCenter defaultCenter] removeObserver:_didScrollObserver];
 }
 
 
@@ -162,6 +187,8 @@ NSMutableDictionary	*gAvatarCache;
 	
 	[_webView setUIDelegate:self];
 	[_webView setFrameLoadDelegate:self];
+	[_webView setPolicyDelegate:self];
+	
 	[_webView setDrawsBackground:YES];
 
 	// Load empty HTML structure.
@@ -195,19 +222,47 @@ NSMutableDictionary	*gAvatarCache;
 	[scrollView setVerticalScrollElasticity:NSScrollElasticityAllowed];
     [scrollView setHorizontalScrollElasticity:NSScrollElasticityNone];
 		
-	// Stuck document at end.
+	// Stuck scroll position.
+	__weak TCChatTranscriptViewController *weakSelf = self;
+	
 	[documentView setPostsFrameChangedNotifications:YES];
 	
-	[[NSNotificationCenter defaultCenter] addObserverForName:NSViewFrameDidChangeNotification
-													  object:documentView
-													   queue:nil
-												  usingBlock:^(NSNotification *notification) {
-													 
-													  NSRect	docFrame = documentView.frame;
-													  NSPoint	docPoint = NSMakePoint(docFrame.origin.x, docFrame.origin.y + docFrame.size.height);
-													  													  
-													  [documentView scrollPoint:docPoint];
-												  }];
+	_frameChangeObserver = [[NSNotificationCenter defaultCenter] addObserverForName:NSViewFrameDidChangeNotification object:documentView queue:nil usingBlock:^(NSNotification *notification) {
+		
+		TCChatTranscriptViewController *strongSelf = weakSelf;
+		
+		if (!strongSelf)
+			return;
+		
+		NSRect	docFrame = documentView.frame;
+		NSRect	docVisibleFrame = scrollView.documentVisibleRect;
+
+		if (strongSelf->_stuckAtEnd)
+			[documentView scrollPoint:NSMakePoint(docFrame.origin.x, docFrame.size.height)];
+		else
+			[documentView scrollPoint:NSMakePoint(docFrame.origin.x, strongSelf->_anchorElement.offsetTop - (strongSelf->_anchorOffset + docVisibleFrame.size.height))];
+	}];
+	
+	_didScrollObserver = [[NSNotificationCenter defaultCenter] addObserverForName:NSScrollViewDidLiveScrollNotification object:scrollView queue:nil usingBlock:^(NSNotification *notification) {
+		
+		TCChatTranscriptViewController *strongSelf = weakSelf;
+		
+		if (!strongSelf)
+			return;
+		
+		// Compute stuck offset by using invisible html anchor position.
+		NSRect	docFrame = documentView.frame;
+		NSRect	docVisibleFrame = scrollView.documentVisibleRect;
+
+		strongSelf->_anchorOffset = strongSelf->_anchorElement.offsetTop - (docVisibleFrame.size.height + docVisibleFrame.origin.y);
+		strongSelf->_stuckAtEnd = ((docVisibleFrame.origin.y + docVisibleFrame.size.height) >= docFrame.size.height);
+		
+		// Notify.
+		void (^transcriptScrollHandler)(TCChatTranscriptViewController *controller, CGFloat scrollOffset) = strongSelf.transcriptScrollHandler;
+		
+		if (transcriptScrollHandler)
+			transcriptScrollHandler(strongSelf, docVisibleFrame.origin.y);
+	}];
 	
 	// Set pending content.
 	[[self _styleNode] setInnerHTML:_tmpStyle];
@@ -217,6 +272,56 @@ NSMutableDictionary	*gAvatarCache;
 
 	_tmpBody = nil;
 	_tmpStyle = nil;
+	
+	// Add invisible anchor node.
+	DOMDocument *document = [[_webView mainFrame] DOMDocument];
+	
+	_anchorElement = (DOMHTMLElement *)[document createElement:@"div"];
+
+	[document.body appendChild:_anchorElement];
+}
+
+- (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id<WebPolicyDecisionListener>)listener
+{
+	NSURL *url = request.URL;
+	
+	if ([url.scheme isEqualToString:@"tc-action"])
+	{
+		// Get type.
+		NSString *type = url.host;
+		
+		if ([type isEqualToString:@"error"])
+		{
+			// Get path.
+			NSString	*path = [url.path stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/"]];
+			NSArray		*components = [path componentsSeparatedByString:@"/"];
+			
+			if (components.count == 0)
+			{
+				[listener use];
+				return;
+			}
+
+			// Handle error action.
+			void (^errorActionHandler)(TCChatTranscriptViewController *controller, int64_t messageID) = self.errorActionHandler;
+			
+			if (errorActionHandler)
+			{
+				NSString	*msgIDStr = components[0];
+				int64_t		msgID = strtoll(msgIDStr.UTF8String, NULL, 10);
+				
+				dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+					errorActionHandler(self, msgID);
+				});
+			}
+			
+			// Ignore action.
+			[listener ignore];
+			return;
+		}
+	}
+	
+	[listener use];
 }
 
 
@@ -226,38 +331,78 @@ NSMutableDictionary	*gAvatarCache;
 */
 #pragma mark - TCChatTranscriptViewController - Content
 
-- (void)appendLocalMessage:(NSString *)message
+- (void)addMessages:(NSArray *)messages endOfTranscript:(BOOL)endOfTranscript
 {
-	NSString *snippet = _template[TCTemplateLocalMessageSnippet];
+	NSMutableArray *items = [[NSMutableArray alloc] init];
 	
-	message = [message stringByEscapingXMLEntities];
-	snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:message];
+	// Convert message.
+	[messages enumerateObjectsUsingBlock:^(TCChatMessage * _Nonnull msg, NSUInteger idx, BOOL * _Nonnull stop) {
+		
+		if (msg.messageID < 0)
+			return;
+		
+		// Prevent duplication.
+		if ([_handledMessagesIDs containsIndex:(NSUInteger)msg.messageID])
+			return;
+		
+		[_handledMessagesIDs addIndex:(NSUInteger)msg.messageID];
+		
+		// Convert message.
+		switch (msg.side)
+		{
+			case TCChatMessageSideLocal:
+			{
+				if (msg.error)
+				{
+					NSString *snippet = _template[TCTemplateLocalMessageErrorSnippet];
+					NSString *message = msg.message;
+					
+					message = [message stringByEscapingXMLEntities];
+					snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:message];
+					snippet = [snippet stringByReplacingOccurrencesOfString:@"[HREF-ERROR]" withString:[NSString stringWithFormat:@"tc-action://error/%llu", msg.messageID]];
+					
+					[items addObject:@{ @"id" : @(msg.messageID), @"html" : snippet }];
+				}
+				else
+				{
+					NSString *snippet = _template[TCTemplateLocalMessageSnippet];
+					NSString *message = msg.message;
+
+					message = [message stringByEscapingXMLEntities];
+					snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:message];
+					
+					[items addObject:@{ @"id" : @(msg.messageID), @"html" : snippet }];
+				}
+				
+				OSAtomicIncrement32(&_messagesCount);
+				
+				break;
+			}
+
+			case TCChatMessageSideRemote:
+			{
+				NSString *snippet = _template[TCTemplateRemoteMessageSnippet];
+				NSString *message = msg.message;
+
+				message = [message stringByEscapingXMLEntities];
+				snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:message];
+				
+				[items addObject:@{ @"html" : snippet }];
+				
+				OSAtomicIncrement32(&_messagesCount);
+				
+				break;
+			}
+		}
+	}];
 	
-	[self appendText:snippet];
-	
-	OSAtomicIncrement32(&_messagesCount);
+	// Add messages to transcript.
+	[self addItems:items endOfTranscript:endOfTranscript];
 }
 
-- (void)appendRemoteMessage:(NSString *)message
+- (void)removeMessageID:(int64_t)msgID
 {
-	NSString *snippet = _template[TCTemplateRemoteMessageSnippet];
-
-	message = [message stringByEscapingXMLEntities];
-	snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:message];
-	
-	[self appendText:snippet];
-	
-	OSAtomicIncrement32(&_messagesCount);
-}
-
-- (void)appendError:(NSString *)error
-{
-	NSString *snippet = _template[TCTemplateErrorSnippet];
-	
-	error = [error stringByEscapingXMLEntities];
-	snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:error];
-	
-	[self appendText:snippet];
+	[self removeItemID:msgID];
 }
 
 - (void)appendStatus:(NSString *)status
@@ -267,7 +412,7 @@ NSMutableDictionary	*gAvatarCache;
 	status = [status stringByEscapingXMLEntities];
 	snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:status];
 	
-	[self appendText:snippet];
+	[self addItems:@[ @{ @"html" : snippet } ] endOfTranscript:YES];
 }
 
 - (void)setLocalAvatar:(NSImage *)image
@@ -309,6 +454,14 @@ NSMutableDictionary	*gAvatarCache;
 	return (NSUInteger)OSAtomicAdd32(0, &_messagesCount);
 }
 
+- (CGFloat)scrollOffset
+{
+	NSView			*documentView = _webView.mainFrame.frameView.documentView;
+	NSScrollView	*scrollView = documentView.enclosingScrollView;
+	
+	return scrollView.documentVisibleRect.origin.y;
+}
+
 
 
 /*
@@ -316,12 +469,108 @@ NSMutableDictionary	*gAvatarCache;
 */
 #pragma mark - TCChatTranscriptViewController - Helpers
 
-- (void)appendText:(NSString *)text
+#pragma mark Computation
+
+- (NSUInteger)messagesCountToFillHeight:(CGFloat)height
+{
+	NSNumber *minHeight = _template[TCTemplateMinHeight];
+	
+	if (!minHeight)
+		return 0;
+	
+	return (NSUInteger)ceil(height / [minHeight doubleValue]);
+}
+
+- (CGFloat)heightForMessagesCount:(NSUInteger)count
+{
+	NSNumber *minHeight = _template[TCTemplateMinHeight];
+	
+	if (!minHeight)
+		return 0;
+	
+	return (CGFloat)count * [minHeight doubleValue];
+}
+
+
+
+#pragma mark Items
+
+- (void)addItems:(NSArray *)items endOfTranscript:(BOOL)endOfTranscript
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
-		[self _appendBodyTag:@"div" innerHTML:text];
+		
+		// Create a new node.
+		if (_isViewReady)
+		{
+			DOMDocument *document = [[_webView mainFrame] DOMDocument];
+			DOMNode		*firstChild = document.body.firstChild;
+			
+			for (NSDictionary *item in items)
+			{
+				NSString *html = item[@"html"];
+				NSNumber *divID = item[@"id"];
+				
+				DOMHTMLElement *newNode = (DOMHTMLElement *)[document createElement:@"div"];
+				
+				if (divID)
+					[newNode setAttribute:@"id" value:[NSString stringWithFormat:@"item_%lld", [divID longLongValue]]];
+				
+				[newNode setInnerHTML:html];
+				
+				if (endOfTranscript)
+					[document.body appendChild:newNode];
+				else
+					[document.body insertBefore:newNode refChild:firstChild];
+			}
+
+			[_webView setNeedsDisplay:YES];
+		}
+		else
+		{
+			NSMutableString *bunch = [[NSMutableString alloc] init];
+			
+			for (NSDictionary *item in items)
+			{
+				NSString *html = item[@"html"];
+				NSNumber *divID = item[@"id"];
+				
+				if (divID)
+					[bunch appendFormat:@"<div id=\"item_%lld\">%@</div>", [divID longLongValue], html];
+				else
+					[bunch appendFormat:@"<div>%@</div>", html];
+			}
+			
+			if (endOfTranscript)
+				[_tmpBody appendString:bunch];
+			else
+				[_tmpBody insertString:bunch atIndex:0];
+		}
 	});
 }
+
+- (void)removeItemID:(int64_t)itemID
+{
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		DOMDocument			*document = [[_webView mainFrame] DOMDocument];
+		NSString			*expression = [NSString stringWithFormat:@"/html/body/div[@id='item_%lld']", itemID];
+		DOMXPathExpression  *xPath = [document createExpression:expression resolver:nil];
+		DOMXPathResult		*result =  [xPath evaluate:document type:DOM_ANY_TYPE inResult:nil];
+		DOMNode				*node = [result iterateNext];
+		
+		if (!node || [node isKindOfClass:[DOMHTMLElement class]] == NO)
+			return;
+		
+		[document.body removeChild:node];
+		
+		[_webView setNeedsDisplay:YES];
+		
+		[_handledMessagesIDs removeIndex:(NSUInteger)itemID];
+	});
+}
+
+
+#pragma mark Style
 
 - (void)_reloadStyle
 {
@@ -329,18 +578,31 @@ NSMutableDictionary	*gAvatarCache;
 	
 	NSString *cssSnippet = _template[TCTemplateCSSSnippet];
 	
+	// 1x
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-RIGHT-BALLOON]" withString:@"tc-resource://balloon/right-balloon"];
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-LEFT-BALLOON]" withString:@"tc-resource://balloon/left-balloon"];
+	
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-REMOTE-AVATAR]" withString:[NSString stringWithFormat:@"tc-resource://avatar/%@", _remoteAvatarIdentifier]];
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-LOCAL-AVATAR]" withString:[NSString stringWithFormat:@"tc-resource://avatar/%@", _localAvatarIdentifier]];
+	
+	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-ERROR-BUTTON]" withString:@"tc-resource://error/button"];
 
+	
+	// 2x
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-RIGHT-BALLOON-2X]" withString:@"tc-resource://balloon/right-balloon-2x"];
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-LEFT-BALLOON-2X]" withString:@"tc-resource://balloon/left-balloon-2x"];
+	
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-REMOTE-AVATAR-2X]" withString:[NSString stringWithFormat:@"tc-resource://avatar/%@", _remoteAvatarIdentifier]];
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-LOCAL-AVATAR-2X]" withString:[NSString stringWithFormat:@"tc-resource://avatar/%@", _localAvatarIdentifier]];
 	
+	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-ERROR-BUTTON-2X]" withString:@"tc-resource://error/button-2x"];
+
+	
 	[self _setStyle:cssSnippet];
 }
+
+
+#pragma mark DOM
 
 - (void)_setStyle:(NSString *)style
 {
@@ -362,29 +624,6 @@ NSMutableDictionary	*gAvatarCache;
 	else
 	{
 		_tmpStyle = style;
-	}
-}
-
-- (void)_appendBodyTag:(NSString *)tagName innerHTML:(NSString *)innerHTML
-{
-	// > main queue <
-	
-	// Create a new node.
-	if (_isViewReady)
-	{
-		DOMDocument		*document = [[_webView mainFrame] DOMDocument];
-		DOMHTMLElement	*newNode = (DOMHTMLElement *)[document createElement:tagName];
-	
-		[newNode setInnerHTML:innerHTML];
-		[document.body appendChild:newNode];
-	
-		[_webView setNeedsDisplay:YES];
-	}
-	else
-	{
-		NSString *item = [NSString stringWithFormat:@"<%@>%@</%@>", tagName, innerHTML, tagName];
-		
-		[_tmpBody appendString:item];
 	}
 }
 
@@ -421,6 +660,9 @@ NSMutableDictionary	*gAvatarCache;
 
 	return document.body;
 }
+
+
+#pragma mark UUID
 
 - (NSString *)uuid
 {
@@ -515,6 +757,8 @@ NSMutableDictionary	*gAvatarCache;
 		[self handleAvatar];
 	else if ([host isEqualToString:@"balloon"])
 		[self handleBalloon];
+	else if ([host isEqualToString:@"error"])
+		[self handleError];
 	else
 		[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Unknown host" code:0 userInfo:@{}]];
 }
@@ -649,6 +893,93 @@ NSMutableDictionary	*gAvatarCache;
     [[self client] URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
     [[self client] URLProtocol:self didLoadData:data];
     [[self client] URLProtocolDidFinishLoading:self];
+}
+
+- (void)handleError
+{
+	// Get parameters.
+	NSURL		*url = self.request.URL;
+	NSArray		*parameters = url.pathComponents;
+	NSString	*name = nil;
+	
+	if ([parameters count] < 2)
+	{
+		[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Parameter error" code:0 userInfo:@{}]];
+		return;
+	}
+	
+	name = parameters[1];
+	
+	// Handle name.
+	NSSize	targetSize = NSZeroSize;
+	CGFloat	targetFontSize = 0;
+	
+	if ([name isEqualToString:@"button"])
+	{
+		targetSize = NSMakeSize(20, 20);
+		targetFontSize = 14;
+	}
+	else if ([name isEqualToString:@"button-2x"])
+	{
+		targetSize = NSMakeSize(40, 40);
+		targetFontSize = 28;
+	}
+	else
+	{
+		[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"unknow error request" code:404 userInfo:@{}]];
+		return;
+	}
+	
+	// Create image.
+	NSImage *image = [NSImage imageWithSize:NSMakeSize(targetSize.width, targetSize.height * 2.0) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
+		
+		// > Snippet to draw different versions.
+		void (^drawError)(NSColor *color, CGFloat position) = ^(NSColor *color, CGFloat yPosition) {
+		
+			NSDictionary *attributes = @{ NSFontAttributeName : [NSFont fontWithName:@"Georgia" size:targetFontSize], NSForegroundColorAttributeName : color };
+
+			// > Circle
+			NSRect			circleRect = NSInsetRect(NSMakeRect(0, yPosition, targetSize.width, targetSize.height), 1.0, 1.0);
+			NSBezierPath	*circle = [NSBezierPath bezierPathWithOvalInRect:circleRect];
+			
+			circle.lineWidth = 0.5;
+			
+			[color set];
+			[circle stroke];
+			
+			// > @"!"
+			NSString	*exclamStr = @"!";
+			NSSize		exclamSize = [exclamStr sizeWithAttributes:attributes];
+			NSPoint		point;
+
+			exclamSize.height -= exclamSize.height / 6.0;
+			
+			point.x = circleRect.origin.x + (circleRect.size.width - exclamSize.width) / 2.0;
+			point.y = circleRect.origin.y + (circleRect.size.height - exclamSize.height) / 2.0;
+			
+			[exclamStr drawAtPoint:point withAttributes:attributes];
+		};
+		
+		// Draw.
+		CGFloat hue = 1.0;
+		CGFloat saturation = 1.0;
+		CGFloat brightness = 1.0;
+
+		drawError([NSColor colorWithHue:hue saturation:saturation brightness:brightness alpha:1.0], targetSize.height);
+		drawError([NSColor colorWithHue:hue saturation:saturation brightness:brightness * 0.65 alpha:1.0], 0);
+
+		return YES;
+	}];
+	
+	NSData *data = [image TIFFRepresentation];
+	
+	// Build response.
+	NSURLResponse *response = [[NSURLResponse alloc] initWithURL:self.request.URL MIMEType:@"image/tiff" expectedContentLength:(NSInteger)[data length] textEncodingName:nil];
+	
+	// Send response + content.
+	[[self client] URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageAllowedInMemoryOnly];
+	[[self client] URLProtocol:self didLoadData:data];
+	[[self client] URLProtocolDidFinishLoading:self];
 }
 
 @end

@@ -1,5 +1,5 @@
 /*
- *  TorChat_Prefix.pch
+ *  TCChatMessage.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,12 +20,8 @@
  *
  */
 
-//
-// Prefix header for all source files of the 'TorChat' target in the 'TorChat' project
-//
+#import "TCChatMessage.h"
 
-#ifdef __OBJC__
-	#import <Cocoa/Cocoa.h>
-#endif
+@implementation TCChatMessage
 
-#import "TCDebugLog.h"
+@end

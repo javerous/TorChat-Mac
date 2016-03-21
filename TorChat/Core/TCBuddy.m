@@ -177,6 +177,9 @@ static char gLocalQueueContext;
 	NSMutableDictionary	*_freceive;
 	NSMutableDictionary	*_fsend;
 	
+	// > Messages
+	NSMutableArray		*_messages;
+	
 	// > Observers
 	NSHashTable			*_observers;
 	dispatch_queue_t	_externalQueue;
@@ -276,6 +279,8 @@ static char gLocalQueueContext;
 		
 		_bufferedCommands = [[NSMutableArray alloc] init];
 		
+		_messages = [[NSMutableArray alloc] init];
+
 		_observers = [NSHashTable weakObjectsHashTable];
 		
 		// Create parser.
@@ -510,9 +515,9 @@ static char gLocalQueueContext;
 
 
 /*
-** TCBuddy - Accessors
+** TCBuddy - Properties
 */
-#pragma mark - Accessors
+#pragma mark - Properties
 
 - (NSString *)alias
 {
@@ -622,6 +627,77 @@ static char gLocalQueueContext;
 - (NSString *)random
 {
 	return _random;
+}
+
+
+- (NSString *)peerClient
+{
+	__block NSString * result = NULL;
+	
+	dispatch_sync(_localQueue, ^{
+		result = _peerClient;
+	});
+	
+	return result;
+}
+
+- (NSString *)peerVersion
+{
+	__block NSString * result = NULL;
+	
+	dispatch_sync(_localQueue, ^{
+		result = _peerVersion;
+	});
+	
+	return result;
+}
+
+- (NSString *)profileText
+{
+	__block NSString * result = NULL;
+	
+	dispatch_sync(_localQueue, ^{
+		result = _profileText;
+	});
+	
+	return result;
+}
+
+- (TCImage *)profileAvatar
+{
+	__block id result = NULL;
+	
+	dispatch_sync(_localQueue, ^{
+		result = _profileAvatar;
+	});
+	
+	return result;
+}
+
+- (NSString *)profileName
+{
+	__block NSString * result = NULL;
+	
+	dispatch_sync(_localQueue, ^{
+		result = _profileName;
+	});
+	
+	return result;
+}
+
+- (NSString *)finalName
+{
+	__block NSString *result = NULL;
+	
+	dispatch_sync(_localQueue, ^{
+		
+		if ([_alias length] > 0)
+			result = _alias;
+		else
+			result = _profileName;
+	});
+	
+	return result;
 }
 
 
@@ -785,6 +861,25 @@ static char gLocalQueueContext;
 
 
 /*
+** TCBuddy - Messages
+*/
+#pragma mark - Messages
+
+- (NSArray *)popMessages
+{
+	__block NSArray *result = nil;
+	
+	dispatch_sync(_localQueue, ^{
+		result = _messages;
+		_messages = [[NSMutableArray alloc] init];
+	});
+	
+	return result;
+}
+
+
+
+/*
 ** TCBuddy - Send Command
 */
 #pragma mark - Send Command
@@ -835,23 +930,30 @@ static char gLocalQueueContext;
 	});
 }
 
-- (void)sendMessage:(NSString *)message
+- (void)sendMessage:(NSString *)message completionHanndler:(void (^)(SMInfo *info))handler
 {
 	if (!message)
 		return;
 		
 	dispatch_async(_localQueue, ^{
 		
-		if (!_blocked)
+		SMInfo *err = nil;
+		
+		if (_blocked)
+			err = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:TCBuddyErrorMessageBlocked context:message];
+		else
 		{
 			// Send Message only if we sent pong and we are ponged
 			if (_pongSent && _ponged)
 				[self _sendCommand:@"message" string:message channel:TCBuddyChannelOut];
 			else
-				[self _error:TCBuddyErrorMessageOffline context:message fatal:NO];
+				err = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:TCBuddyErrorMessageOffline context:message];
 		}
-		else
-			[self _error:TCBuddyErrorMessageBlocked context:message fatal:NO];
+		
+		// Notify user.
+		dispatch_async(_externalQueue, ^{
+			handler(err);
+		});
 	});
 }
 
@@ -966,83 +1068,6 @@ static char gLocalQueueContext;
 				[self _notify:TCBuddyEventIdentified];
 		}
 	});
-}
-
-
-
-/*
-** TCBuddy - Content
-*/
-#pragma mark - Content
-
-- (NSString *)peerClient
-{
-	__block NSString * result = NULL;
-	
-	dispatch_sync(_localQueue, ^{
-		result = _peerClient;
-	});
-	
-	return result;
-}
-
-- (NSString *)peerVersion
-{
-	__block NSString * result = NULL;
-	
-	dispatch_sync(_localQueue, ^{
-		result = _peerVersion;
-	});
-	
-	return result;
-}
-
-- (NSString *)profileText
-{
-	__block NSString * result = NULL;
-	
-	dispatch_sync(_localQueue, ^{
-		result = _profileText;
-	});
-	
-	return result;
-}
-
-- (TCImage *)profileAvatar
-{
-	__block id result = NULL;
-	
-	dispatch_sync(_localQueue, ^{
-		result = _profileAvatar;
-	});
-	
-	return result;
-}
-
-- (NSString *)profileName
-{
-	__block NSString * result = NULL;
-	
-	dispatch_sync(_localQueue, ^{
-		result = _profileName;
-	});
-	
-	return result;
-}
-
-- (NSString *)finalName
-{
-	__block NSString *result = NULL;
-	
-	dispatch_sync(_localQueue, ^{
-		
-		if ([_alias length] > 0)
-			result = _alias;
-		else
-			result = _profileName;
-	});
-	
-	return result;
 }
 
 
@@ -1197,6 +1222,9 @@ static char gLocalQueueContext;
 
 	if (_blocked)
 		return;
+	
+	if (message)
+		[_messages addObject:message];
 	
 	// Notify it
 	[self _notify:TCBuddyEventMessage context:message];
