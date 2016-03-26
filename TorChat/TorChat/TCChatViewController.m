@@ -102,8 +102,6 @@
 		_transcriptTopMsgID = [_configuration transcriptLastMessageIDForBuddyIdentifier:buddy.identifier];
 		_tmpMsgID = -2;
 		
-		NSLog(@"%@ -> %lld", buddy.identifier, _transcriptTopMsgID);
-		
 		// Create trasncript controller.
 		_chatTranscript = [[TCChatTranscriptViewController alloc] init];
 		

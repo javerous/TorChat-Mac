@@ -221,7 +221,7 @@
 		return;
 	
 	dispatch_async(_delegateQueue, ^{
-		[delegate connection:self pingIdentifier:identifier withRandomToken:random];
+		[delegate connection:self receivedPingWithBuddyIdentifier:identifier randomToken:random];
 	});
 }
 
@@ -238,7 +238,7 @@
 	_sock = nil;
 	
 	dispatch_async(_delegateQueue, ^{
-		[delegate connection:self pongWithSocket:sock withRandomToken:random];
+		[delegate connection:self receivedPongOnSocket:sock randomToken:random];
 	});
 }
 
