@@ -20,6 +20,8 @@
  *
  */
 
+@import SMFoundation;
+
 #include <netdb.h>
 #include <pwd.h>
 
@@ -27,11 +29,11 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-@import SMFoundation;
-
 #include <arpa/inet.h>
 
 #import "TCBuddy.h"
+
+#import "TCCoreManager.h"
 
 #import "TCDebugLog.h"
 
@@ -131,8 +133,11 @@ static char gLocalQueueContext;
 
 @interface TCBuddy () <TCParserCommand, TCParserDelegate, SMSocketDelegate>
 {
+	// > Core.
+	__weak TCCoreManager *_coreManager;
+	
 	// > Config
-	id <TCConfigCore>		_config;
+	id <TCConfigCore>	_config;
 	
 	// > Parser
 	TCParser			*_parser;
@@ -141,7 +146,9 @@ static char gLocalQueueContext;
 	int					_socksstate;
 	BOOL				_running;
 	BOOL				_ponged;
-	BOOL				_pongSent;
+	
+	NSString			*_pingRandom;
+	BOOL				_pingHandled;
 	
 	BOOL				_blocked;
 	
@@ -157,12 +164,12 @@ static char gLocalQueueContext;
 	// > Dispatch
 	dispatch_queue_t	_localQueue;
 	
+	dispatch_source_t	_pendingConnectTimer;
+	dispatch_source_t	_keepAliveTimer;
+	
 	// > Socket
 	SMSocket			*_inSocket;
 	SMSocket			*_outSocket;
-	
-	// > Command
-	NSMutableArray		*_bufferedCommands;
 	
 	// > Profile
 	TCImage				*_profileAvatar;
@@ -184,50 +191,6 @@ static char gLocalQueueContext;
 	NSHashTable			*_observers;
 	dispatch_queue_t	_externalQueue;
 }
-
-// -- Send Low Command --
-- (void)_sendPing;
-- (void)_sendPong:(NSString *)random;
-- (void)_sendVersion;
-- (void)_sendClient;
-- (void)_sendProfileName:(NSString *)name;
-- (void)_sendProfileText:(NSString *)text;
-- (void)_sendAvatar:(TCImage *)avatar;
-- (void)_sendAddMe;
-- (void)_sendRemoveMe;
-- (void)_sendStatus:(TCStatus)status;
-- (void)_sendMessage:(NSString *)message;
-- (void)_sendFileName:(TCFileSend *)file;
-- (void)_sendFileData:(TCFileSend *)file;
-- (void)_sendFileDataOk:(NSString *)uuid start:(uint64_t)start;
-- (void)_sendFileDataError:(NSString *)uuid start:(uint64_t)start;
-- (void)_sendFileStopSending:(NSString *)uuid;
-- (void)_sendFileStopReceiving:(NSString *)uuid;
-
-// -- Send Command Data --
-- (BOOL)_sendCommand:(NSString *)command channel:(TCBuddyChannel)channel; // TCBuddyChannelOut
-- (BOOL)_sendCommand:(NSString *)command array:(NSArray *)data channel:(TCBuddyChannel)channel; // = TCBuddyChannelOut);
-- (BOOL)_sendCommand:(NSString *)command data:(NSData *)data channel:(TCBuddyChannel)channel; // = TCBuddyChannelOut);
-- (BOOL)_sendCommand:(NSString *)command string:(NSString *)data channel:(TCBuddyChannel)channel; // = TCBuddyChannelOut);
-- (BOOL)_sendData:(NSData *)data channel:(TCBuddyChannel)channel; // = TCBuddyChannelOut);
-
-// -- Network Helper --
-- (void)_startSocks;
-- (void)_connectedSocks;
-- (void)_runPendingWrite;
-- (void)_runPendingFileWrite;
-
-// -- Helper --
-- (void)_error:(TCBuddyError)code fatal:(BOOL)fatal;
-- (void)_error:(TCBuddyError)code context:(id)ctx fatal:(BOOL)fatal;
-- (void)_error:(TCBuddyError)code info:(SMInfo *)subInfo fatal:(BOOL)fatal;
-
-- (void)_notify:(TCBuddyEvent)notice;
-- (void)_notify:(TCBuddyEvent)notice context:(id)ctx;
-
-- (void)_sendEvent:(SMInfo *)info;
-
-- (NSNumber *)_status;
 
 @end
 
@@ -251,16 +214,19 @@ static char gLocalQueueContext;
 	[self registerInfoDescriptors];
 }
 
-- (id)initWithConfiguration:(id <TCConfigCore>)configuration identifier:(NSString *)identifier alias:(NSString *)alias notes:(NSString *)notes
+- (id)initWithCoreManager:(TCCoreManager *)core configuration:(id <TCConfigCore>)configuration identifier:(NSString *)identifier alias:(NSString *)alias notes:(NSString *)notes
 {
 	self = [super init];
 	
 	if (self)
 	{
-		// Retain config
+		if (!core || !configuration)
+			return nil;
+		
+		// Hold parameters.
+		_coreManager = core;
 		_config = configuration;
 		
-		// Retain property
 		_alias = alias;
 		_identifier = identifier;
 		_notes = notes;
@@ -276,8 +242,6 @@ static char gLocalQueueContext;
 		// Create containers.
 		_fsend = [[NSMutableDictionary alloc] init];
 		_freceive = [[NSMutableDictionary alloc] init];
-		
-		_bufferedCommands = [[NSMutableArray alloc] init];
 		
 		_messages = [[NSMutableArray alloc] init];
 
@@ -346,103 +310,56 @@ static char gLocalQueueContext;
 {
 	dispatch_async(_localQueue, ^{
 		
-		if (_running)
-			return;
-		
-		if (_blocked)
+		if (_running || _blocked)
 			return;
 		
 		TCDebugLog(@"Buddy (%@) - Start", _identifier);
 		
-		// -- Make a connection to Tor proxy --
-		struct addrinfo	hints, *res, *res0;
-		int				error;
-		int				s;
-		char			sport[50];
-		
-		memset(&hints, 0, sizeof(hints));
-		
-		snprintf(sport, sizeof(sport), "%i", [_config torPort]);
-		
-		// Configure the resolver
-		hints.ai_family = PF_UNSPEC;
-		hints.ai_socktype = SOCK_STREAM;
-		
-		// Try to resolve and connect to the given address
-		error = getaddrinfo([[_config torAddress] UTF8String], sport, &hints, &res0);
-		
-		if (error)
-		{
-			[self _error:TCBuddyErrorResolveTor fatal:YES];
-			return;
-		}
-		
-		s = -1;
-		
-		for (res = res0; res; res = res->ai_next)
-		{
-			if ((s = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0)
-				continue;
-			
-			if (connect(s, res->ai_addr, res->ai_addrlen) < 0)
-			{
-				close(s);
-				s = -1;
-				
-				continue;
-			}
-			
-			break;
-		}
-		
-		freeaddrinfo(res0);
-		
-		if (s < 0)
-		{
-			[self _error:TCBuddyErrorConnectTor fatal:YES];
-
-			return;
-		}
-		
-		// Build a socket with this descriptor
-		_outSocket = [[SMSocket alloc] initWithSocket:s];
-		
-		// Set ourself as delegate
-		_outSocket.delegate = self;
-		
-		// Start SOCKS protocol
-		[self _startSocks];
-		
-		// Set as running
 		_running = YES;
-		
-		// Say that we are connected
-		[self _notify:TCBuddyEventConnectedTor];
+
+		[self _startConnection];
 	});
 }
 
 - (void)stopWithCompletionHandler:(dispatch_block_t)handler
 {
+	dispatch_group_t group = dispatch_group_create();
+	
 	if (!handler)
 		handler = ^{ };
 	
-	dispatch_async(_localQueue, ^{
-		
-		if (_running)
+	dispatch_group_async(group, _localQueue, ^{
+		[self _stopChannel:TCBuddyChannelIn terminal:YES];
+	});
+	
+	dispatch_group_notify(group, _externalQueue, handler);
+}
+
+- (void)_stopChannel:(TCBuddyChannel)channel terminal:(BOOL)terminal
+{
+	// > localQueue <
+	if (!_running)
+		return;
+	
+	switch (channel)
+	{
+		case TCBuddyChannelIn:
 		{
 			TCStatus lstatus;
 			
-			// Realease out socket
-			if (_outSocket)
+			// Stop pending connection.
+			if (_pendingConnectTimer)
 			{
-				[_outSocket stop];
-				_outSocket = nil;
+				dispatch_source_cancel(_pendingConnectTimer);
+				_pendingConnectTimer = nil;
 			}
 			
-			// Realease in socket
+			// Stop in socket.
 			if (_inSocket)
 			{
+				[_inSocket setDelegate:nil];
 				[_inSocket stop];
+				
 				_inSocket = nil;
 			}
 			
@@ -453,24 +370,77 @@ static char gLocalQueueContext;
 			[_fsend removeAllObjects];
 			
 			// Reset status
-			lstatus = _status;
+			lstatus = [self _status];
 			_status = TCStatusOffline;
 			
 			_socksstate = socks_nostate;
-			_ponged = false;
-			_pongSent = false;
-			_running = false;
+			_ponged = NO;
+			_pingRandom = nil;
+			_pingHandled = NO;
 			
 			// Notify
-			if (lstatus != TCStatusOffline)
-				[self _notify:TCBuddyEventStatus context:[self _status]];
+			if (lstatus != [self _status])
+				[self _notify:TCBuddyEventStatus context:@([self _status])];
 			
 			[self _notify:TCBuddyEventDisconnected];
+			
+			// no break : stopping channel in imply stopping channel out.
+		}
+			
+		case TCBuddyChannelOut:
+		{
+			// Stopping channel out once ponged imply stopping channel in & out.
+			if (_ponged)
+			{
+				[self _stopChannel:TCBuddyChannelIn terminal:terminal];
+				return;
+			}
+			
+			// Stop out socket.
+			if (_outSocket)
+			{
+				[_outSocket setDelegate:nil];
+				[_outSocket stop];
+				
+				_outSocket = nil;
+			}
+			
+			// Reset socks stat.
+			_socksstate = socks_nostate;
+		}
+	}
+	
+	// Stop keep-alive timer.
+	if (_keepAliveTimer)
+	{
+		dispatch_source_cancel(_keepAliveTimer);
+		_keepAliveTimer = nil;
+	}
+	
+	// Handle terminal stop.
+	if (terminal)
+	{
+		_running = NO;
+	}
+	else
+	{
+		// Reschedule.
+		if (_pendingConnectTimer)
+		{
+			dispatch_source_cancel(_pendingConnectTimer);
+			_pendingConnectTimer = nil;
 		}
 		
-		// Notify end.
-		dispatch_async(_externalQueue, handler);
-	});
+		_pendingConnectTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _localQueue);
+		
+		dispatch_source_set_timer(_pendingConnectTimer, dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), DISPATCH_TIME_FOREVER, 1 * NSEC_PER_SEC);
+		
+		dispatch_source_set_event_handler(_pendingConnectTimer, ^{
+			[self _startConnection];
+		});
+		
+		dispatch_resume(_pendingConnectTimer);
+	}
 }
 
 - (BOOL)isRunning
@@ -493,23 +463,6 @@ static char gLocalQueueContext;
 	});
 	
 	return result;
-}
-
-- (void)keepAlive
-{
-	dispatch_async(_localQueue, ^{
-		
-		if (_blocked)
-			return;
-		
-		if (!_running)
-			[self start];
-		else
-		{
-			if (_pongSent && _ponged)
-				[self _sendStatus:_cstatus];
-		}
-	});
 }
 
 
@@ -610,7 +563,7 @@ static char gLocalQueueContext;
 	
 	dispatch_sync(_localQueue, ^{
 		
-		if (_pongSent && _ponged)
+		if (_ponged)
 			res = _status;
 		else
 			res = TCStatusOffline;
@@ -889,7 +842,7 @@ static char gLocalQueueContext;
 	dispatch_async(_localQueue, ^{
 		
 		// Send status only if we are ponged
-		if (_pongSent && !_blocked)
+		if (_ponged && !_blocked)
 			[self _sendStatus:status];
 	});
 }
@@ -901,7 +854,7 @@ static char gLocalQueueContext;
 	
 	dispatch_async(_localQueue, ^{
 		
-		if (_pongSent && _ponged && !_blocked)
+		if (_ponged && !_blocked)
 			[self _sendAvatar:avatar];
 	});
 }
@@ -913,7 +866,7 @@ static char gLocalQueueContext;
 	
 	dispatch_async(_localQueue, ^{
 		
-		if (_pongSent && _ponged && !_blocked)
+		if (_ponged && !_blocked)
 			[self _sendProfileName:name];
 	});
 }
@@ -925,7 +878,7 @@ static char gLocalQueueContext;
 		
 	dispatch_async(_localQueue, ^{
 		
-		if (_pongSent && _ponged && !_blocked)
+		if (_ponged && !_blocked)
 			[self _sendProfileText:text];
 	});
 }
@@ -944,7 +897,7 @@ static char gLocalQueueContext;
 		else
 		{
 			// Send Message only if we sent pong and we are ponged
-			if (_pongSent && _ponged)
+			if (_ponged)
 				[self _sendCommand:@"message" string:message channel:TCBuddyChannelOut];
 			else
 				err = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:TCBuddyErrorMessageOffline context:message];
@@ -965,7 +918,7 @@ static char gLocalQueueContext;
 	dispatch_async(_localQueue, ^{
 		
 		// Send file only if we sent pong and we are ponged
-		if (_pongSent && _ponged)
+		if (_ponged)
 		{
 			if (!_blocked)
 			{
@@ -976,7 +929,7 @@ static char gLocalQueueContext;
 				
 				if (!file)
 				{
-					[self _error:TCBuddyErrorSendFile context:filepath fatal:NO];
+					[self _error:TCBuddyErrorSendFile context:filepath];
 					return;
 				}
 				
@@ -995,12 +948,12 @@ static char gLocalQueueContext;
 				[self _sendFileData:file];
 			}
 			else
-			[self _error:TCBuddyErrorFileBlocked context:filepath fatal:NO];
+				[self _error:TCBuddyErrorFileBlocked context:filepath];
 
 		}
 		else
 		{
-			[self _error:TCBuddyErrorFileOffline context:filepath fatal:NO];
+			[self _error:TCBuddyErrorFileOffline context:filepath];
 		}
 	});
 }
@@ -1012,9 +965,9 @@ static char gLocalQueueContext;
 */
 #pragma mark - Action
 
-- (void)startHandshake:(NSString *)remoteRandom status:(TCStatus)status avatar:(TCImage *)avatar name:(NSString *)name text:(NSString *)text
+- (void)handlePingWithRandomToken:(NSString *)remoteRandom
 {
-	if (!remoteRandom || !name || !text)
+	if (!remoteRandom)
 		return;
 		
 	dispatch_async(_localQueue, ^{
@@ -1022,20 +975,13 @@ static char gLocalQueueContext;
 		if (_blocked)
 			return;
 		
-		[self _sendPong:remoteRandom];
-		[self _sendClient];
-		[self _sendVersion];
-		[self _sendProfileName:name];
-		[self _sendProfileText:text];
-		[self _sendAvatar:avatar];
-		[self _sendAddMe];
-		[self _sendStatus:status];
+		_pingRandom = remoteRandom;
 		
-		_pongSent = YES;
+		[self _handlePendingPing];
 	});
 }
 
-- (void)setInputConnection:(SMSocket *)sock
+- (void)handlePongWithSocket:(SMSocket *)sock
 {
 	if (!sock)
 		return;
@@ -1064,8 +1010,7 @@ static char gLocalQueueContext;
 			[_inSocket setGlobalOperation:SMSocketOperationLine withSize:0 andTag:0];
 			
 			// Notify that we are ready
-			if (_ponged && _pongSent)
-				[self _notify:TCBuddyEventIdentified];
+			[self _notify:TCBuddyEventIdentified];
 		}
 	});
 }
@@ -1123,10 +1068,10 @@ static char gLocalQueueContext;
 					
 					[_outSocket setGlobalOperation:SMSocketOperationLine withSize:0 andTag:0];
 					
-					// Notify
+					// Notify connected.
 					[self _notify:TCBuddyEventConnectedBuddy];
 					
-					// We are connected, do things
+					// Proxy connected. Interract with remote.
 					[self _connectedSocks];
 					
 					break;
@@ -1135,11 +1080,11 @@ static char gLocalQueueContext;
 				case 91:
 				case 92:
 				case 93:
-					[self _error:TCBuddyErrorSocks context:@(thisrep->result) fatal:YES];
+					[self _error:TCBuddyErrorSocks context:@(thisrep->result) info:nil channel:TCBuddyChannelOut];
 					break;
-
+				
 				default:
-					[self _error:TCBuddyErrorSocks fatal:YES];
+					[self _error:TCBuddyErrorSocks context:nil info:nil channel:TCBuddyChannelOut];
 					break;
 			}
 		}
@@ -1162,9 +1107,10 @@ static char gLocalQueueContext;
 - (void)socket:(SMSocket *)socket error:(SMInfo *)error
 {
 	dispatch_async(_localQueue, ^{
-		
-		// Fallback error
-		[self _error:TCBuddyErrorSocket info:error fatal:YES];
+		if (socket == _inSocket)
+			[self _error:TCBuddyErrorSocket context:nil info:error channel:TCBuddyChannelIn];
+		else if (socket == _outSocket)
+			[self _error:TCBuddyErrorSocket context:nil info:error channel:TCBuddyChannelOut];
 	});
 }
 
@@ -1207,12 +1153,11 @@ static char gLocalQueueContext;
 	else if ([status isEqualToString:@"xa"])
 		nstatus = TCStatusXA;
 	
+	// Notify that status changed.
 	if (nstatus != _status)
 	{
 		_status = nstatus;
-		
-		// Notify that status changed
-		[self _notify:TCBuddyEventStatus context:[self _status]];
+		[self _notify:TCBuddyEventStatus context:@([self _status])];
 	}
 }
 
@@ -1374,7 +1319,7 @@ static char gLocalQueueContext;
 	
 	if (!file)
 	{
-		[self _error:TCBuddyErrorReceiveFile fatal:NO];
+		[self _error:TCBuddyErrorReceiveFile];
 		return;
 	}
 	
@@ -1567,7 +1512,7 @@ static char gLocalQueueContext;
 	// Don't get parse error on blocked buddy (prevent spam, etc.)
 	SMInfo *info = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:error context:information];
 		
-	[self _error:TCBuddyErrorParse info:info fatal:NO];
+	[self _error:TCBuddyErrorParse info:info];
 }
 
 
@@ -1862,6 +1807,9 @@ static char gLocalQueueContext;
 	if (!command)
 		return NO;
 	
+	if (_socksstate != socks_finish)
+		return NO;
+	
 	// -- Build the command line --
 	NSMutableData *part = [[NSMutableData alloc] init];
 	
@@ -1881,18 +1829,8 @@ static char gLocalQueueContext;
 	// Add end line.
 	[part appendBytes:"\n" length:1];
 	
-	// -- Buffer or send the command --
-	if (_socksstate != socks_finish)
-	{
-		[_bufferedCommands addObject:part];
-		
-		if (!_running)
-			[self start];
-	}
-	else
-	{
-		[self _sendData:part channel:channel];
-	}
+	// Send the command.
+	[self _sendData:part channel:channel];
 	
 	return YES;
 }
@@ -1928,67 +1866,137 @@ static char gLocalQueueContext;
 */
 #pragma mark - Network Helper
 
-- (void)_startSocks
+- (void)_startConnection
 {
 	// > localQueue <
 	
+	if (_running == NO)
+		return;
+	
+	// Make a connection to Tor proxy.
+	struct addrinfo	hints, *res, *res0;
+	int				error;
+	int				s = -1;
+	char			sport[50];
+	
+	memset(&hints, 0, sizeof(hints));
+	
+	snprintf(sport, sizeof(sport), "%i", [_config torPort]);
+	
+	// > Configure the resolver
+	hints.ai_family = PF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	
+	// > Try to resolve and connect to the given address
+	error = getaddrinfo([[_config torAddress] UTF8String], sport, &hints, &res0);
+	
+	if (error)
+	{
+		[self _error:TCBuddyErrorResolveTor context:nil info:nil channel:TCBuddyChannelOut];
+		return;
+	}
+	
+	for (res = res0; res; res = res->ai_next)
+	{
+		if ((s = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0)
+			continue;
+		
+		if (connect(s, res->ai_addr, res->ai_addrlen) < 0)
+		{
+			close(s);
+			s = -1;
+			
+			continue;
+		}
+		
+		break;
+	}
+	
+	freeaddrinfo(res0);
+	
+	if (s < 0)
+	{
+		[self _error:TCBuddyErrorConnectTor context:nil info:nil channel:TCBuddyChannelOut];
+		return;
+	}
+	
+	// > Build a socket with this descriptor
+	_outSocket = [[SMSocket alloc] initWithSocket:s];
+	
+	// > Set ourself as delegate
+	_outSocket.delegate = self;
+	
+	// Send SOCKS 4a request.
 	const char			*user = "torchat";
 	struct sockreq		*thisreq;
 	char				*buffer;
 	size_t				datalen;
 	
-	// Get the target connexion informations
+	// > Get the target connexion informations
 	NSString	*host = [_identifier stringByAppendingString:@".onion"];
 	const char	*c_host = [host UTF8String];
 	
-	// Check data size
+	// > Check data size
 	datalen = sizeof(struct sockreq) + strlen(user) + 1;
 	datalen += strlen(c_host) + 1;
 	
 	buffer = (char *)malloc(datalen);
 	thisreq = (struct sockreq *)buffer;
 	
-	// Create the request
+	// > Create the request
 	thisreq->version = 4;
 	thisreq->command = 1;
 	thisreq->dstport = htons(TORCHAT_PORT);
 	thisreq->dstip = htonl(0x00000042); // Socks v4a
 	
-	// Copy the username
+	// > Copy the username
 	strcpy((char *)thisreq + sizeof(struct sockreq), user);
 	
-	// Socks v4a : set the host name if we cant resolve it
+	// > Socks v4a : set the host name if we cant resolve it
 	char *pos = (char *)thisreq + sizeof(struct sockreq);
 	
 	pos += strlen(user) + 1;
 	strcpy(pos, c_host);
 	
-	// Set the next input operation
+	// > Set the next input operation
 	[_outSocket scheduleOperation:SMSocketOperationData withSize:sizeof(struct sockrep) andTag:socks_v4_reply];
 	
-	// Send the request
+	// > Send the request
 	if ([self _sendBytes:buffer length:datalen channel:TCBuddyChannelOut])
 		_socksstate = socks_running;
 	else
-		[self _error:TCBuddyErrorSocksRequest fatal:true];
+		[self _error:TCBuddyErrorSocksRequest context:nil info:nil channel:TCBuddyChannelOut];
 	
 	free(buffer);
+	
+	// Notify.
+	[self _notify:TCBuddyEventConnectedTor];
 }
 
 - (void)_connectedSocks
 {
 	// > localQueue <
 	
-	// -- Send ping --
+	// Send ping.
 	[self _sendPing];
 	
-	// -- Send buffered commands --
-	for (NSData *command in _bufferedCommands)
-	{
-		[self _sendData:command channel:TCBuddyChannelOut];
-	}
+	// Handle received ping, if we received one.
+	[self _handlePendingPing];
+
+	// Install keep-alive.
+	if (_keepAliveTimer)
+		dispatch_source_cancel(_keepAliveTimer);
+
+	_keepAliveTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _localQueue);
+
+	dispatch_source_set_timer(_keepAliveTimer, DISPATCH_TIME_NOW, 120 * NSEC_PER_SEC, 12 * NSEC_PER_SEC);
 	
-	[_bufferedCommands removeAllObjects];
+	dispatch_source_set_event_handler(_keepAliveTimer, ^{
+		if (_blocked == NO && _running && _ponged)
+			[self _sendStatus:_cstatus];
+	});
+	
+	dispatch_resume(_keepAliveTimer);
 }
 
 - (void)_runPendingWrite
@@ -2016,49 +2024,75 @@ static char gLocalQueueContext;
 }
 
 
+- (void)_handlePendingPing
+{
+	// > localQueue <
+	
+	if (_pingRandom == nil || _pingHandled || _socksstate != socks_finish)
+		return;
+	
+	TCCoreManager *coreManager = _coreManager;
+	
+	if (!coreManager)
+		return;
+	
+	_pingHandled = YES;
+
+	[self _sendPong:_pingRandom];
+	[self _sendClient];
+	[self _sendVersion];
+	[self _sendProfileName:[coreManager profileName]];
+	[self _sendProfileText:[coreManager profileText]];
+	[self _sendAvatar:[coreManager profileAvatar]];
+	[self _sendAddMe];
+	[self _sendStatus:[coreManager status]];
+}
+
+
 
 /*
 ** TCBuddy - Helpers
 */
 #pragma mark - Helpers
 
-- (void)_error:(TCBuddyError)code fatal:(BOOL)fatal
+- (void)_error:(TCBuddyError)code context:(id)context info:(SMInfo *)info channel:(TCBuddyChannel)channel
+{
+	// > localQueue <
+
+	// Notify error.
+	SMInfo *err = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:code context:context info:info];
+	
+	[self _sendEvent:err];
+	
+	// Stop the channel.
+	[self _stopChannel:channel terminal:NO];
+}
+
+- (void)_error:(TCBuddyError)code
 {
 	// > localQueue <
 	
 	SMInfo *err = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:code];
 	
 	[self _sendEvent:err];
-	
-	// Fatal -> stop
-	if (fatal)
-		[self stopWithCompletionHandler:nil];
 }
 
-- (void)_error:(TCBuddyError)code context:(id)ctx fatal:(BOOL)fatal
+- (void)_error:(TCBuddyError)code context:(id)ctx
 {
 	// > localQueue <
 	
 	SMInfo *err = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:code context:ctx];
 
 	[self _sendEvent:err];
-	
-	// Fatal -> stop
-	if (fatal)
-		[self stopWithCompletionHandler:nil];
 }
 
-- (void)_error:(TCBuddyError)code info:(SMInfo *)subInfo fatal:(BOOL)fatal
+- (void)_error:(TCBuddyError)code info:(SMInfo *)subInfo
 {
 	// > localQueue <
 	
 	SMInfo *err = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:code info:subInfo];
 	
 	[self _sendEvent:err];
-	
-	// Fatal -> stop
-	if (fatal)
-		[self stopWithCompletionHandler:nil];
 }
 
 - (void)_notify:(TCBuddyEvent)notice
@@ -2094,18 +2128,18 @@ static char gLocalQueueContext;
 	}
 }
 
-- (NSNumber *)_status
+- (TCStatus)_status
 {
 	// > localQueue <
 	
 	TCStatus res;
 	
-	if (_pongSent && _ponged)
+	if (_ponged)
 		res = _status;
 	else
 		res = TCStatusOffline;
 	
-	return @(res);
+	return res;
 }
 
 

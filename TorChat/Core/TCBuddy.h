@@ -39,10 +39,12 @@
 */
 #pragma mark - Forward
 
+@class TCCoreManager;
 @class TCBuddy;
+@class TCImage;
+
 @class SMSocket;
 @class SMInfo;
-@class TCImage;
 
 
 
@@ -150,7 +152,7 @@ typedef enum
 @interface TCBuddy : NSObject
 
 // -- Instance --
-- (id)initWithConfiguration:(id <TCConfigCore>)configuration identifier:(NSString *)identifier alias:(NSString *)alias notes:(NSString *)notes;
+- (id)initWithCoreManager:(TCCoreManager *)core configuration:(id <TCConfigCore>)configuration identifier:(NSString *)identifier alias:(NSString *)alias notes:(NSString *)notes;
 
 // -- Run --
 - (void)start;
@@ -158,7 +160,6 @@ typedef enum
 
 - (BOOL)isRunning;
 - (BOOL)isPonged;
-- (void)keepAlive;
 
 // -- Properties --
 @property (strong, atomic) NSString	*alias;
@@ -196,8 +197,8 @@ typedef enum
 - (void)sendFile:(NSString *)filepath;
 
 // -- Action --
-- (void)startHandshake:(NSString *)remoteRandom status:(TCStatus)status avatar:(TCImage *)avatar name:(NSString *)name text:(NSString *)text;
-- (void)setInputConnection:(SMSocket *)sock;
+- (void)handlePingWithRandomToken:(NSString *)remoteRandom;
+- (void)handlePongWithSocket:(SMSocket *)sock;
 
 // -- Observers --
 - (void)addObserver:(id <TCBuddyObserver>)observer;

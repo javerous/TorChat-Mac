@@ -50,9 +50,6 @@
 	// > Main Queue
 	dispatch_queue_t		_localQueue;
 	
-	// > Timer
-	dispatch_source_t		_timer;
-	
 	// > Accept Socket
 	dispatch_queue_t		_socketQueue;
 	dispatch_source_t		_socketAccept;
@@ -153,7 +150,7 @@
 
 		[configBuddies enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull configBuddy, NSUInteger idx, BOOL * _Nonnull stop) {
 			
-			TCBuddy *buddy = [[TCBuddy alloc] initWithConfiguration:_config identifier:configBuddy[TCConfigBuddyIdentifier] alias:configBuddy[TCConfigBuddyAlias] notes:configBuddy[TCConfigBuddyNotes]];
+			TCBuddy *buddy = [[TCBuddy alloc] initWithCoreManager:self configuration:_config identifier:configBuddy[TCConfigBuddyIdentifier] alias:configBuddy[TCConfigBuddyAlias] notes:configBuddy[TCConfigBuddyNotes]];
 
 			// Check blocked status
 			[self _checkBlocked:buddy];
@@ -178,7 +175,7 @@
 		if (!found)
 		{
 			NSString	*name = [_config localizedString:TCConfigStringItemMyselfBuddy];
-			TCBuddy		*buddy = [[TCBuddy alloc] initWithConfiguration:_config identifier:selfIdentifier alias:name notes:@""];
+			TCBuddy		*buddy = [[TCBuddy alloc] initWithCoreManager:self configuration:_config identifier:selfIdentifier alias:name notes:@""];
 
 			[self _checkBlocked:buddy];
 			[_buddies addObject:buddy];
@@ -213,182 +210,174 @@
 - (void)start
 {
 	dispatch_async(_localQueue, ^{
+		[self _start];
+	});
+}
+
+- (void)_start
+{
+	// > localQueue <
+	
+	if (_running)
+		return;
+	
+	// -- Start command server --
+	struct sockaddr_in	my_addr;
+	int					yes = 1;
+	
+	// > Configure the port and address
+	my_addr.sin_family = AF_INET;
+	my_addr.sin_port = htons([_config clientPort]);
+	my_addr.sin_addr.s_addr = INADDR_ANY;
+	memset(&(my_addr.sin_zero), '\0', 8);
+	
+	// > Instanciate the listening socket
+	if ((_sock = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+	{
+		[self _error:TCCoreErrorSocketCreate fatal:YES];
+		return;
+	}
+	
+	// > Reuse the port
+	if (setsockopt(_sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
+	{
+		[self _error:TCCoreErrorSocketOption fatal:YES];
+		return;
+	}
+	
+	// > Bind the socket to the configuration perviously set
+	if (bind(_sock, (struct sockaddr *)&my_addr, sizeof(struct sockaddr)) == -1)
+	{
+		[self _error:TCCoreErrorSocketBind fatal:YES];
+		return;
+	}
+	
+	// > Set the socket as a listening socket
+	if (listen(_sock, 10) == -1)
+	{
+		[self _error:TCCoreErrorSocketListen fatal:YES];
+		return;
+	}
+	
+	// > Build a source
+	_socketAccept = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, (uintptr_t)_sock, 0, _socketQueue);
+	
+	// > Set the read handler
+	dispatch_source_set_event_handler(_socketAccept, ^{
 		
-		if (_running)
-			return;
+		unsigned int		sin_size = sizeof(struct sockaddr);
+		struct sockaddr_in	their_addr;
+		int					csock;
 		
-		// -- Start command server --
-		struct sockaddr_in	my_addr;
-		int					yes = 1;
+		csock = accept(_sock, (struct sockaddr *)&their_addr, &sin_size);
 		
-		// > Configure the port and address
-		my_addr.sin_family = AF_INET;
-		my_addr.sin_port = htons([_config clientPort]);
-		my_addr.sin_addr.s_addr = INADDR_ANY;
-		memset(&(my_addr.sin_zero), '\0', 8);
-		
-		// > Instanciate the listening socket
-		if ((_sock = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+		if (csock == -1)
 		{
-			[self _error:TCCoreErrorSocketCreate fatal:YES];
-			return;
+			dispatch_async(_localQueue, ^{
+				[self _error:TCCoreErrorServAccept fatal:NO];
+			});
 		}
-		
-		// > Reuse the port
-		if (setsockopt(_sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
+		else
 		{
-			[self _error:TCCoreErrorSocketOption fatal:YES];
-			return;
-		}
-		
-		// > Bind the socket to the configuration perviously set
-		if (bind(_sock, (struct sockaddr *)&my_addr, sizeof(struct sockaddr)) == -1)
-		{
-			[self _error:TCCoreErrorSocketBind fatal:YES];
-			return;
-		}
-		
-		// > Set the socket as a listening socket
-		if (listen(_sock, 10) == -1)
-		{
-			[self _error:TCCoreErrorSocketListen fatal:YES];
-			return;
-		}
-		
-		// > Build a source
-		_socketAccept = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, (uintptr_t)_sock, 0, _socketQueue);
-		
-		// > Set the read handler
-		dispatch_source_set_event_handler(_socketAccept, ^{
-			
-			unsigned int		sin_size = sizeof(struct sockaddr);
-			struct sockaddr_in	their_addr;
-			int					csock;
-			
-			csock = accept(_sock, (struct sockaddr *)&their_addr, &sin_size);
-			
-			if (csock == -1)
+			// Make the client async
+			if (!doAsyncSocket(csock))
 			{
 				dispatch_async(_localQueue, ^{
-					[self _error:TCCoreErrorServAccept fatal:YES];
+					[self _error:TCCoreErrorServAcceptAsync fatal:NO];
 				});
-			}
-			else
-			{
-				// Make the client async
-				if (!doAsyncSocket(csock))
-				{
-					dispatch_async(_localQueue, ^{
-						[self _error:TCCoreErrorServAcceptAsync fatal:YES];
-					});
-					
-					return;
-				}
 				
-				// Add it later
-				dispatch_async(_socketQueue, ^{
-					[self _addConnectionSocket:csock];
-				});
-			}
-		});
-		
-		// > Set the cancel handler
-		dispatch_source_set_cancel_handler(_socketAccept, ^{
-			close(_sock);
-			_sock = -1;
-		});
-		
-		dispatch_resume(_socketAccept);
-		
-		
-		// -- Build a timer to keep alive buddies (start or sendStatus) --
-		_timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _localQueue);
-		
-		// Each 120s
-		dispatch_source_set_timer(_timer, DISPATCH_TIME_NOW, 120000000000L, 0);
-		dispatch_source_set_event_handler(_timer, ^{
-			
-			// Do nothing if not running
-			if (!_running)
 				return;
+			}
 			
-			// (Re)start buddy (start do nothing if already started)
-			for (TCBuddy *buddy in _buddies)
-				[buddy keepAlive];
-			
-		});
-		dispatch_resume(_timer);
-		
-		// -- Start buddies --
-		for (TCBuddy *buddy in _buddies)
-			[buddy start];
-		
-		// Give the status
-		[self setStatus:_mstatus];
-		
-		// Notify
-		[self _notify:TCCoreEventStarted];
-		
-		// We are running !
-		_running = YES;
+			// Add it later
+			dispatch_async(_socketQueue, ^{
+				[self _addConnectionSocket:csock];
+			});
+		}
 	});
+	
+	// > Set the cancel handler
+	dispatch_source_set_cancel_handler(_socketAccept, ^{
+		close(_sock);
+		_sock = -1;
+	});
+	
+	dispatch_resume(_socketAccept);
+	
+	// -- Start buddies --
+	for (TCBuddy *buddy in _buddies)
+		[buddy start];
+	
+	// Give the status
+	[self setStatus:_mstatus];
+	
+	// Notify
+	[self _notify:TCCoreEventStarted];
+	
+	// We are running
+	_running = YES;
 }
 
 - (void)stopWithCompletionHandler:(dispatch_block_t)handler
 {
-	dispatch_group_t group = dispatch_group_create();
+	dispatch_async(_localQueue, ^{
+		[self _stopWithCompletionHandler:handler];
+	});
+}
 
+- (void)_stopWithCompletionHandler:(dispatch_block_t)handler
+{
+	// > localQueue <
+	
 	if (!handler)
 		handler = ^{ };
 	
-	// Stop.
-	dispatch_group_async(group, _localQueue, ^{
-		
-		// Check if we are running.
-		if (!_running)
-			return;
-		
-		// Cancel the socket.
-		dispatch_source_cancel(_socketAccept);
-		
-		// Cancel the timer.
-		if (_timer)
-			dispatch_source_cancel(_timer);
-		
-		_socketAccept = nil;
-		
-		// Stop & release clients.
-		for (TCConnection *connection in _connections)
-		{
-			dispatch_group_enter(group);
-			
-			[connection stopWithCompletionHandler:^{
-				dispatch_group_leave(group);
-			}];
-		}
-		
-		[_connections removeAllObjects];
-		
-		// Stop buddies.
-		for (TCBuddy *buddy in _buddies)
-		{
-			dispatch_group_enter(group);
-
-			[buddy stopWithCompletionHandler:^{
-				dispatch_group_leave(group);
-			}];
-		}
-		
-		// Notify.
-		[self _notify:TCCoreEventStopped];
-		
-		_running = false;
-	});
+	// Check if we are running.
+	if (!_running)
+	{
+		handler();
+		return;
+	}
 	
-	// Wait for end.
+	dispatch_group_t group = dispatch_group_create();
+
+	// Cancel the socket.
+	if (_socketAccept)
+	{
+		dispatch_source_cancel(_socketAccept);
+		_socketAccept = nil;
+	}
+	
+	// Stop & release clients.
+	for (TCConnection *connection in _connections)
+	{
+		dispatch_group_enter(group);
+		
+		[connection stopWithCompletionHandler:^{
+			dispatch_group_leave(group);
+		}];
+	}
+	
+	[_connections removeAllObjects];
+	
+	// Stop buddies.
+	for (TCBuddy *buddy in _buddies)
+	{
+		dispatch_group_enter(group);
+		
+		[buddy stopWithCompletionHandler:^{
+			dispatch_group_leave(group);
+		}];
+	}
+	
+	// Notify.
+	[self _notify:TCCoreEventStopped];
+	
+	_running = false;
+	
+	// Wait end.
 	dispatch_group_notify(group, _externalQueue, handler);
 }
-
 
 
 /*
@@ -410,13 +399,13 @@
 		if (status == TCStatusOffline)
 		{
 			// Stop the controller.
-			[self stopWithCompletionHandler:nil];
+			[self _stopWithCompletionHandler:nil];
 		}
 		else
 		{
 			// Run the controller if needed, else send status
 			if (!_running)
-				[self start];
+				[self _start];
 			else
 			{
 				// Give this status to buddy list
@@ -583,7 +572,7 @@
 	if (!comment)
 		comment = @"";
 	
-	TCBuddy *buddy = [[TCBuddy alloc] initWithConfiguration:_config identifier:identifier alias:name notes:comment];
+	TCBuddy *buddy = [[TCBuddy alloc] initWithCoreManager:self configuration:_config identifier:identifier alias:name notes:comment];
 	
     dispatch_async(_localQueue, ^{
         
@@ -597,7 +586,8 @@
 		[self _notify:TCCoreEventBuddyNew context:buddy];
 		
         // Start it.
-		[buddy start];
+		if (_running)
+			[buddy start];
 		
 		// Save to config.
 		[_config addBuddyWithIdentifier:identifier alias:name notes:comment];
@@ -781,12 +771,15 @@
 */
 #pragma mark - TCCoreManager - TCConnectionDelegate
 
-- (void)connection:(TCConnection *)connection pingIdentifier:(NSString *)identifier withRandomToken:(NSString *)random
+- (void)connection:(TCConnection *)connection receivedPingWithBuddyIdentifier:(NSString *)identifier randomToken:(NSString *)random
 {
 	TCBuddy *abuddy = [self buddyWithIdentifier:identifier];
 	
 	if ([abuddy blocked])
+	{
+		[self removeConnection:connection];
 		return;
+	}
 	
 	// Check for faked pings: we search all our already
 	// *connected* buddies and if there is one with the same identifier
@@ -794,7 +787,8 @@
 
 	if ([abuddy isPonged])
 	{
-		[self _error:TCCoreErrorClientAlreadyPinged fatal:YES];
+		[self _error:TCCoreErrorClientAlreadyPinged fatal:NO];
+		[self removeConnection:connection];
 		return;
 	}
 	
@@ -804,30 +798,32 @@
 	
 	if ([identifier isEqualToString:[_config selfIdentifier]] && abuddy && [[abuddy random] isEqualToString:random] == NO)
 	{
-		[self _error:TCCoreErrorClientMasquerade fatal:YES];
+		[self _error:TCCoreErrorClientMasquerade fatal:NO];
+		[self removeConnection:connection];
 		return;
 	}
 	
 	// if the buddy don't exist, add it on the buddy list
 	if (!abuddy)
 	{
-		[self addBuddyWithIdentifier:identifier name:[_config localizedString:TCConfigStringItemMyselfBuddy]];
+		[self addBuddyWithIdentifier:identifier name:nil];
 		
 		abuddy = [self buddyWithIdentifier:identifier];
 		
 		if (!abuddy)
 		{
-			[self _error:TCCoreErrorClientAddBuddy fatal:YES];
+			[self _error:TCCoreErrorClientAddBuddy fatal:NO];
+			[self removeConnection:connection];
 			return;
 		}
 	}
 		
 	// ping messages must be answered with pong messages
 	// the pong must contain the same random string as the ping.
-	[abuddy startHandshake:random status:[self status] avatar:[self profileAvatar] name:[self profileName] text:[self profileText]];
+	[abuddy handlePingWithRandomToken:random];
 }
 
-- (void)connection:(TCConnection *)connection pongWithSocket:(SMSocket *)sock withRandomToken:(NSString *)random
+- (void)connection:(TCConnection *)connection receivedPongOnSocket:(SMSocket *)sock randomToken:(NSString *)random
 {
 	TCBuddy *buddy = [self buddyWithRandom:random];
 	
@@ -845,11 +841,11 @@
 		else
 		{
 			// Give the baby to buddy
-			[buddy setInputConnection:sock];
+			[buddy handlePongWithSocket:sock];
 		}
 	}
 	else
-		[self _error:TCCoreErrorClientCmdPong fatal:YES];
+		[self _error:TCCoreErrorClientCmdPong fatal:NO];
 	
 	// We don't need the connection at this time: simply remove it.
 	[self removeConnection:connection];
@@ -913,7 +909,7 @@
 	[self _sendEvent:err];
 		
 	if (fatal)
-		[self stopWithCompletionHandler:nil];
+		[self _stopWithCompletionHandler:nil];
 }
 
 - (void)_error:(TCCoreError)code context:(id)ctx fatal:(BOOL)fatal
@@ -925,7 +921,7 @@
 	[self _sendEvent:err];
 	
 	if (fatal)
-		[self stopWithCompletionHandler:nil];
+		[self _stopWithCompletionHandler:nil];
 }
 
 - (void)_notify:(TCCoreEvent)notice
