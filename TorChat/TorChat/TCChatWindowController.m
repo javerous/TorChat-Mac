@@ -328,28 +328,29 @@
 		return;
 
 	dispatch_async(_localQueue, ^{
-
-		// Add chat.
-		[self _addChatWithBuddy:buddy autoselect:YES];
-		
-		// Show window.
-		[self showWindow:nil];
+		[self _openChatWithBuddy:buddy];
 	});
+}
+
+- (void)_openChatWithBuddy:(TCBuddy *)buddy
+{
+	// Add chat.
+	[self _addChatWithBuddy:buddy autoselect:YES];
+	
+	// Show window.
+	[self showWindow:nil];
 }
 
 - (void)_addChatWithBuddy:(TCBuddy *)buddy autoselect:(BOOL)autoselect
 {
 	// > localQueue <
 	
-	// Check that we don't already hold a view controller for this buddy.
-	if ([self _indexOfViewControllerForBuddy:buddy] != NSNotFound)
-		return;
-
-	// Add view.
-	[_viewsCtrl addObject:buddy];
-	
-	// Reload table.
-	[_userList reloadData];
+	// Add view if necessary.
+	if ([self _indexOfViewControllerForBuddy:buddy] == NSNotFound)
+	{
+		[_viewsCtrl addObject:buddy];
+		[_userList reloadData];
+	}
 	
 	// Select this chat if it's the first one.
 	if (autoselect)
@@ -626,19 +627,19 @@
 				if (!message)
 					break;
 				
-				// Start a chat UI.
-				[self openChatWithBuddy:buddy];
-				
-				// Show window is not visible.
-				if ([self.window isVisible] == NO)
-				{
-					[self showWindow:nil];
-					[self selectChatWithBuddy:buddy];
-				}
-				
-				// Show as unread if necessary.
 				dispatch_async(_localQueue, ^{
+					
+					// Start a chat UI.
+					[self _openChatWithBuddy:buddy];
 
+					// Show window is not visible.
+					if ([self.window isVisible] == NO)
+					{
+						[self showWindow:nil];
+						[self selectChatWithBuddy:buddy];
+					}
+
+					// Show as unread if necessary.
 					if (buddy != _selectedBuddy || [self.window isKeyWindow] == NO)
 					{
 						NSUInteger index = [self _indexOfViewControllerForBuddy:buddy];
