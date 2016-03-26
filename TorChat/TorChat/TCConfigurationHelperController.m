@@ -234,7 +234,10 @@
 	TCConfigSQLite	*configSqlite;
  
 	if (encryptCheckBox.state == NSOnState)
+	{
 		configSqlite = [[TCConfigSQLite alloc] initWithFile:_path password:passwordField.stringValue error:&error];
+		configSqlite.saveTranscript = YES;
+	}
 	else
 		configSqlite = [[TCConfigSQLite alloc] initWithFile:_path password:nil error:&error];
 	
