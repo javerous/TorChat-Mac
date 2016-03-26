@@ -338,14 +338,14 @@ NSMutableDictionary	*gAvatarCache;
 	// Convert message.
 	[messages enumerateObjectsUsingBlock:^(TCChatMessage * _Nonnull msg, NSUInteger idx, BOOL * _Nonnull stop) {
 		
-		if (msg.messageID < 0)
-			return;
-		
 		// Prevent duplication.
-		if ([_handledMessagesIDs containsIndex:(NSUInteger)msg.messageID])
-			return;
-		
-		[_handledMessagesIDs addIndex:(NSUInteger)msg.messageID];
+		if (msg.messageID >= 0)
+		{
+			if ([_handledMessagesIDs containsIndex:(NSUInteger)msg.messageID])
+				return;
+
+			[_handledMessagesIDs addIndex:(NSUInteger)msg.messageID];
+		}
 		
 		// Convert message.
 		switch (msg.side)
@@ -359,7 +359,7 @@ NSMutableDictionary	*gAvatarCache;
 					
 					message = [message stringByEscapingXMLEntities];
 					snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:message];
-					snippet = [snippet stringByReplacingOccurrencesOfString:@"[HREF-ERROR]" withString:[NSString stringWithFormat:@"tc-action://error/%llu", msg.messageID]];
+					snippet = [snippet stringByReplacingOccurrencesOfString:@"[HREF-ERROR]" withString:[NSString stringWithFormat:@"tc-action://error/%lld", msg.messageID]];
 					
 					[items addObject:@{ @"id" : @(msg.messageID), @"html" : snippet }];
 				}
@@ -522,7 +522,7 @@ NSMutableDictionary	*gAvatarCache;
 				else
 					[document.body insertBefore:newNode refChild:firstChild];
 			}
-
+			
 			[_webView setNeedsDisplay:YES];
 		}
 		else

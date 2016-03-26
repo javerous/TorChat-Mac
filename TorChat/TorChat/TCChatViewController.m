@@ -333,22 +333,25 @@
 				msg.error = @"chat_error_send_blocked";
 		}
 		
-		// Handle send result.
-		if (_configuration.saveTranscript)
-		{
-			[_configuration addTranscriptForBuddyIdentifier:buddy.identifier message:msg completionHandler:^(int64_t msgID) {
-				msg.messageID = msgID;
-				[chatTranscript addMessages:@[ msg ] endOfTranscript:YES];
-			}];
-		}
-		else
-		{
-			int64_t msgID = OSAtomicDecrement64(&_tmpMsgID);
+		// Snippet to handle message.
+		void (^handleMessageWithID)(int64_t msgID) = ^(int64_t msgID) {
 			
 			msg.messageID = msgID;
-			
 			[chatTranscript addMessages:@[ msg ] endOfTranscript:YES];
-		}
+
+			if (msg.error)
+			{
+				dispatch_async(dispatch_get_main_queue(), ^{
+					_erroredMessages[@(msgID)] = msg;
+				});
+			}
+		};
+		
+		// Handle message.
+		if (_configuration.saveTranscript)
+			[_configuration addTranscriptForBuddyIdentifier:buddy.identifier message:msg completionHandler:handleMessageWithID];
+		else
+			handleMessageWithID(OSAtomicDecrement64(&_tmpMsgID));
 	}];
 }
 

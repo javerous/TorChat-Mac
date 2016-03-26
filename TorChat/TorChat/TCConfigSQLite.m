@@ -925,7 +925,14 @@
 			}
 			
 			if (key && value)
-				currentEntry[@(key)] = value;
+			{
+				NSString *okey = @(key);
+				
+				if ([okey isEqualToString:TCConfigBuddyLastAvatar])
+					;
+				else
+					currentEntry[okey] = value;
+			}
 		}
 		
 		sqlite3_reset(_stmtSelectBuddyAll);
