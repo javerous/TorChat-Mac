@@ -148,9 +148,11 @@
 		// > Get saved buddies.
 		NSArray *configBuddies = [_config buddies];
 
-		[configBuddies enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull configBuddy, NSUInteger idx, BOOL * _Nonnull stop) {
+		[configBuddies enumerateObjectsUsingBlock:^(NSString * _Nonnull buddyIdentifier, NSUInteger idx, BOOL * _Nonnull stop) {
 			
-			TCBuddy *buddy = [[TCBuddy alloc] initWithCoreManager:self configuration:_config identifier:configBuddy[TCConfigBuddyIdentifier] alias:configBuddy[TCConfigBuddyAlias] notes:configBuddy[TCConfigBuddyNotes]];
+			NSString	*alias = [_config buddyAliasForBuddyIdentifier:buddyIdentifier];
+			NSString	*notes = [_config buddyNotesForBuddyIdentifier:buddyIdentifier];
+			TCBuddy		*buddy = [[TCBuddy alloc] initWithCoreManager:self configuration:_config identifier:buddyIdentifier alias:alias notes:notes];
 
 			// Check blocked status
 			[self _checkBlocked:buddy];
