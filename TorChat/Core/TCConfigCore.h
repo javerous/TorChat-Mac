@@ -106,7 +106,7 @@ typedef enum
 - (void)setClientName:(NSString *)name;
 
 // -- Buddies --
-- (NSArray *)buddies; // Array of buddy identifier.
+- (NSArray *)buddiesIdentifiers; // Array of buddy identifier.
 - (void)addBuddyWithIdentifier:(NSString *)identifier alias:(NSString *)alias notes:(NSString *)notes;
 - (void)removeBuddyWithIdentifier:(NSString *)identifier;
 

@@ -123,9 +123,9 @@
 
 
 /*
-** TCBuddiesController - Constructor & Destuctor
+** TCBuddiesController - Instance
 */
-#pragma mark - TCBuddiesController - Constructor & Destuctor
+#pragma mark - TCBuddiesController - Instance
 
 + (TCBuddiesWindowController *)sharedController
 {
@@ -529,24 +529,13 @@
 			{
 				case TCBuddyEventDisconnected:
 				{
-					// Rebuid buddy list.
-					[self buddyStatusChanged];
-					
-					// Reload buddies table.
-					dispatch_async(dispatch_get_main_queue(), ^{
-						[self _reloadBuddy:aBuddy];
-					});
-					
+					[self reloadBuddies];
 					break;
 				}
 					
 				case TCBuddyEventStatus:
 				{
-					// Reload buddies table.
-					dispatch_async(dispatch_get_main_queue(), ^{
-						[self _reloadBuddy:aBuddy];
-					});
-
+					[self reloadBuddies];
 					break;
 				}
 					
@@ -562,31 +551,13 @@
 					
 				case TCBuddyEventProfileName:
 				{
-					NSString *name = info.context;
-					
-					if (!name)
-						return;
-					
-					// Reload table.
-					dispatch_async(dispatch_get_main_queue(), ^{
-						[self _reloadBuddy:aBuddy];
-					});
-					
+					[self reloadBuddies];
 					break;
 				}
 
 				case TCBuddyEventAlias:
 				{
-					NSString *alias =info.context;
-					
-					if (!alias)
-						return;
-					
-					// Reload table.
-					dispatch_async(dispatch_get_main_queue(), ^{
-						[self _reloadBuddy:aBuddy];
-					});
-					
+					[self reloadBuddies];
 					break;
 				}
 			}
@@ -847,11 +818,11 @@
 */
 #pragma mark - TCBuddiesController - Tools
 
-- (void)buddyStatusChanged
+- (void)reloadBuddies
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
 
-		// Sort buddies by status
+		// Sort buddies by status.
 		NSUInteger		i, cnt = [_buddies count];
 		NSMutableArray	*temp_off = [[NSMutableArray alloc] initWithCapacity:cnt];
 		NSMutableArray	*temp_av = [[NSMutableArray alloc] initWithCapacity:cnt];
@@ -882,6 +853,17 @@
 			}
 		}
 		
+		// Subsort by names.
+		NSComparisonResult (^sortBuddy)(id _Nonnull, id  _Nonnull) = ^NSComparisonResult(TCBuddy * _Nonnull buddy1, TCBuddy *  _Nonnull buddy2) {
+			return [[buddy1 finalName] compare:[buddy2 finalName]];
+		};
+		
+		[temp_av sortUsingComparator:sortBuddy];
+		[temp_aw sortUsingComparator:sortBuddy];
+		[temp_xa sortUsingComparator:sortBuddy];
+		[temp_off sortUsingComparator:sortBuddy];
+
+		// Recompose array.
 		[_buddies removeAllObjects];
 		
 		[_buddies addObjectsFromArray:temp_av];

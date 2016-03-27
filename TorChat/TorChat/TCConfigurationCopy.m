@@ -52,9 +52,9 @@
 	target.profileAvatar = source.profileAvatar;
 	
 	// Buddies.
-	NSArray *buddies = [source buddies];
+	NSArray *buddiesIdentifiers = [source buddiesIdentifiers];
 	
-	for (NSString *buddyIdentifier in buddies)
+	for (NSString *buddyIdentifier in buddiesIdentifiers)
 	{
 		NSString *alias = [source buddyAliasForBuddyIdentifier:buddyIdentifier];
 		NSString *notes = [source buddyNotesForBuddyIdentifier:buddyIdentifier];
