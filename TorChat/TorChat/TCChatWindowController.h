@@ -50,8 +50,8 @@
 - (void)stopWithCompletionHandler:(dispatch_block_t)handler;
 
 // -- Chat --
-- (void)openChatWithBuddy:(TCBuddy *)buddy;
-- (void)selectChatWithBuddy:(TCBuddy *)buddy;
+- (void)openChatWithBuddy:(TCBuddy *)buddy select:(BOOL)select;
+//- (void)selectChatWithBuddy:(TCBuddy *)buddy;
 - (void)closeChatWithBuddy:(TCBuddy *)buddy;
 
 @end

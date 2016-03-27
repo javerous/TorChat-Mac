@@ -899,10 +899,7 @@
 	if (!buddy)
 		return;
 
-	TCChatWindowController *chatCtrl = [TCChatWindowController sharedController];
-	
-	[chatCtrl openChatWithBuddy:buddy];
-	[chatCtrl selectChatWithBuddy:buddy];
+	[[TCChatWindowController sharedController] openChatWithBuddy:buddy select:YES];
 }
 
 - (TCBuddy *)selectedBuddy
