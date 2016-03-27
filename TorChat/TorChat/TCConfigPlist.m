@@ -40,11 +40,18 @@
 
 
 // -- Config Keys --
-// > Compatibility.
-#define TCConfigBuddyPlistIdentifier @"address"
-
 // > Config
 #define TCCONF_KEY_VERSION			@"version"
+
+// > Buddy.
+#define TCConfigBuddyIdentifier		@"address"
+
+#define TCConfigBuddyAlias			@"alias"
+#define TCConfigBuddyNotes			@"notes"
+
+#define TCConfigBuddyLastName		@"lname"
+#define TCConfigBuddyLastText		@"ltext"
+#define TCConfigBuddyLastAvatar		@"lavatar"
 
 // > General
 #define TCCONF_KEY_TOR_ADDRESS		@"tor_address"
@@ -579,16 +586,10 @@
 		
 		for (NSDictionary *buddy in buddies)
 		{
-			NSMutableDictionary *mbuddy = [buddy mutableCopy];
-			NSString			*identifier = mbuddy[TCConfigBuddyPlistIdentifier];
+			NSString *identifier = buddy[TCConfigBuddyIdentifier];
 			
 			if (identifier)
-			{
-				[mbuddy removeObjectForKey:TCConfigBuddyPlistIdentifier];
-				[mbuddy setObject:identifier forKey:TCConfigBuddyIdentifier];
-			}
-			
-			[result addObject:mbuddy];
+				[result addObject:identifier];
 		}
 	});
 	
@@ -620,7 +621,7 @@
 		// Create buddy entry.
 		NSMutableDictionary *buddy = [[NSMutableDictionary alloc] init];
 		
-		[buddy setObject:identifier forKey:TCConfigBuddyPlistIdentifier];
+		[buddy setObject:identifier forKey:TCConfigBuddyIdentifier];
 		[buddy setObject:alias forKey:TCConfigBuddyAlias];
 		[buddy setObject:notes forKey:TCConfigBuddyNotes];
 		[buddy setObject:@"" forKey:TCConfigBuddyLastName];
@@ -644,7 +645,7 @@
 		{
 			NSDictionary *buddy = [array objectAtIndex:i];
 			
-			if ([[buddy objectForKey:TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			if ([[buddy objectForKey:TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
 				[array removeObjectAtIndex:i];
 				break;
@@ -674,7 +675,7 @@
 		{
 			NSMutableDictionary *buddy = [array objectAtIndex:i];
 			
-			if ([[buddy objectForKey:TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			if ([[buddy objectForKey:TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
 				[buddy setObject:alias forKey:TCConfigBuddyAlias];
 				break;
@@ -704,7 +705,7 @@
 		{
 			NSMutableDictionary *buddy = [array objectAtIndex:i];
 			
-			if ([[buddy objectForKey:TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			if ([[buddy objectForKey:TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
 				[buddy setObject:notes forKey:TCConfigBuddyNotes];
 				break;
@@ -734,7 +735,7 @@
 		{
 			NSMutableDictionary *buddy = [array objectAtIndex:i];
 			
-			if ([[buddy objectForKey:TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			if ([[buddy objectForKey:TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
 				[buddy setObject:lastName forKey:TCConfigBuddyLastName];
 				break;
@@ -764,7 +765,7 @@
 		{
 			NSMutableDictionary *buddy = [array objectAtIndex:i];
 			
-			if ([[buddy objectForKey:TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			if ([[buddy objectForKey:TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
 				[buddy setObject:lastText forKey:TCConfigBuddyLastText];
 				break;
@@ -804,7 +805,7 @@
 		{
 			NSMutableDictionary *buddy = [array objectAtIndex:i];
 			
-			if ([[buddy objectForKey:TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			if ([[buddy objectForKey:TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
 				[buddy setObject:pngData forKey:TCConfigBuddyLastAvatar];
 				break;
@@ -829,7 +830,7 @@
 		
 		for (NSDictionary *buddy in buddies)
 		{
-			if ([buddy[TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			if ([buddy[TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
 				result = buddy[TCConfigBuddyAlias];
 				return;
@@ -853,7 +854,7 @@
 		
 		for (NSDictionary *buddy in buddies)
 		{
-			if ([buddy[TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			if ([buddy[TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
 				result = buddy[TCConfigBuddyNotes];
 				return;
@@ -877,7 +878,7 @@
 		
 		for (NSDictionary *buddy in buddies)
 		{
-			if ([buddy[TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			if ([buddy[TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
 				result = buddy[TCConfigBuddyLastName];
 				return;
@@ -901,7 +902,7 @@
 		
 		for (NSDictionary *buddy in buddies)
 		{
-			if ([buddy[TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			if ([buddy[TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
 				result = buddy[TCConfigBuddyLastText];
 				return;
@@ -924,7 +925,7 @@
 		
 		for (NSDictionary *buddy in buddies)
 		{
-			if ([buddy[TCConfigBuddyPlistIdentifier] isEqualToString:identifier])
+			if ([buddy[TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
 				result = buddy[TCConfigBuddyLastAvatar];
 				return;

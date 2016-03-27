@@ -36,6 +36,15 @@
 */
 #pragma mark - Defines
 
+// Buddy.
+#define TCConfigBuddyAlias		@"alias"
+#define TCConfigBuddyNotes		@"notes"
+
+#define TCConfigBuddyLastName	@"lname"
+#define TCConfigBuddyLastText	@"ltext"
+#define TCConfigBuddyLastAvatar	@"lavatar"
+
+// General
 #define TCCONF_KEY_TOR_ADDRESS		@"tor_address"
 #define TCCONF_KEY_TOR_PORT			@"tor_socks_port"
 
@@ -91,7 +100,7 @@
 	sqlite3_stmt		*_stmtInsertBuddy;
 	sqlite3_stmt		*_stmtInsertBuddyProperty;
 	sqlite3_stmt		*_stmtSelectBuddyID;
-	sqlite3_stmt		*_stmtSelectBuddyAll;
+	sqlite3_stmt		*_stmtSelectBuddyIdentifiers;
 	sqlite3_stmt		*_stmtSelectBuddyProperty;
 	sqlite3_stmt		*_stmtDeleteBuddy;
 	
@@ -314,7 +323,7 @@
 	tc_sqlite3_prepare(_dtb, "INSERT INTO buddies (identifier) VALUES (?)", &_stmtInsertBuddy);
 	tc_sqlite3_prepare(_dtb, "INSERT INTO buddies_properties (buddy_id, key, value) VALUES (?, ?, ?)", &_stmtInsertBuddyProperty);
 	tc_sqlite3_prepare(_dtb, "SELECT id FROM buddies WHERE identifier=? LIMIT 1", &_stmtSelectBuddyID);
-	tc_sqlite3_prepare(_dtb, "SELECT identifier, key, value FROM buddies LEFT OUTER JOIN buddies_properties ON buddies.id=buddies_properties.buddy_id", &_stmtSelectBuddyAll);
+	tc_sqlite3_prepare(_dtb, "SELECT identifier FROM buddies", &_stmtSelectBuddyIdentifiers);
 	tc_sqlite3_prepare(_dtb, "SELECT value FROM buddies_properties WHERE buddy_id=? AND key=? LIMIT 1", &_stmtSelectBuddyProperty);
 	tc_sqlite3_prepare(_dtb, "DELETE FROM buddies WHERE identifier=? LIMIT 1", &_stmtDeleteBuddy);
 	
@@ -374,7 +383,7 @@
 	tc_sqlite3_finalize(_stmtInsertBuddy);
 	tc_sqlite3_finalize(_stmtInsertBuddyProperty);
 	tc_sqlite3_finalize(_stmtSelectBuddyID);
-	tc_sqlite3_finalize(_stmtSelectBuddyAll);
+	tc_sqlite3_finalize(_stmtSelectBuddyIdentifiers);
 	tc_sqlite3_finalize(_stmtSelectBuddyProperty);
 	tc_sqlite3_finalize(_stmtDeleteBuddy);
 	
@@ -901,41 +910,18 @@
 		
 		if (!_dtb)
 			return;
-		
-		NSString			*currentIdentifier = nil;
-		NSMutableDictionary	*currentEntry = nil;
 
-		while (sqlite3_step(_stmtSelectBuddyAll) == SQLITE_ROW)
+		while (sqlite3_step(_stmtSelectBuddyIdentifiers) == SQLITE_ROW)
 		{
-			const char	*identifier = (const char *)sqlite3_column_text(_stmtSelectBuddyAll, 0);
-			const char	*key = (const char *)sqlite3_column_text(_stmtSelectBuddyAll, 1);
-			id			value = [self _sqliteValueForStatement:_stmtSelectBuddyAll column:2];
+			const char *identifier = (const char *)sqlite3_column_text(_stmtSelectBuddyIdentifiers, 0);
 			
 			if (!identifier)
 				continue;
 			
-			if ([currentIdentifier isEqualToString:@(identifier)] == NO)
-			{
-				currentEntry = [[NSMutableDictionary alloc] init];
-				currentIdentifier = @(identifier);
-				
-				currentEntry[TCConfigBuddyIdentifier] = currentIdentifier;
-				
-				[result addObject:currentEntry];
-			}
-			
-			if (key && value)
-			{
-				NSString *okey = @(key);
-				
-				if ([okey isEqualToString:TCConfigBuddyLastAvatar])
-					;
-				else
-					currentEntry[okey] = value;
-			}
+			[result addObject:@(identifier)];
 		}
 		
-		sqlite3_reset(_stmtSelectBuddyAll);
+		sqlite3_reset(_stmtSelectBuddyIdentifiers);
 	});
 	
 	return result;

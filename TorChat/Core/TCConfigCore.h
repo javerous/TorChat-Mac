@@ -24,22 +24,6 @@
 
 
 /*
-** Defines
-*/
-#pragma mark - Defines
-
-// Buddy.
-#define TCConfigBuddyIdentifier	@"identifier"
-#define TCConfigBuddyAlias		@"alias"
-#define TCConfigBuddyNotes		@"notes"
-
-#define TCConfigBuddyLastName	@"lname"
-#define TCConfigBuddyLastText	@"ltext"
-#define TCConfigBuddyLastAvatar	@"lavatar"
-
-
-
-/*
 ** Forward
 */
 #pragma mark - Forward
@@ -122,7 +106,7 @@ typedef enum
 - (void)setClientName:(NSString *)name;
 
 // -- Buddies --
-- (NSArray *)buddies; // Array of dictionary.
+- (NSArray *)buddies; // Array of buddy identifier.
 - (void)addBuddyWithIdentifier:(NSString *)identifier alias:(NSString *)alias notes:(NSString *)notes;
 - (void)removeBuddyWithIdentifier:(NSString *)identifier;
 

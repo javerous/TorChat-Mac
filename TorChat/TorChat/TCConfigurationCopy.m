@@ -54,23 +54,19 @@
 	// Buddies.
 	NSArray *buddies = [source buddies];
 	
-	for (NSDictionary *buddy in buddies)
+	for (NSString *buddyIdentifier in buddies)
 	{
-		NSString *identifier = buddy[TCConfigBuddyIdentifier];
-		NSString *alias = buddy[TCConfigBuddyAlias];
-		NSString *notes = buddy[TCConfigBuddyNotes];
-		NSString *lastName = buddy[TCConfigBuddyLastName];
-		NSString *lastText = buddy[TCConfigBuddyLastText];
-		TCImage *lastAvatar = buddy[TCConfigBuddyLastAvatar];
+		NSString *alias = [source buddyAliasForBuddyIdentifier:buddyIdentifier];
+		NSString *notes = [source buddyNotesForBuddyIdentifier:buddyIdentifier];
+		NSString *lastName = [source buddyLastNameForBuddyIdentifier:buddyIdentifier];
+		NSString *lastText = [source buddyLastTextForBuddyIdentifier:buddyIdentifier];
+		TCImage *lastAvatar = [source buddyLastAvatarForBuddyIdentifier:buddyIdentifier];
 
-		if (!identifier)
-			continue;
+		[target addBuddyWithIdentifier:buddyIdentifier alias:alias notes:notes];
 		
-		[target addBuddyWithIdentifier:identifier alias:alias notes:notes];
-		
-		[target setBuddyLastName:lastName forBuddyIdentifier:identifier];
-		[target setBuddyLastText:lastText forBuddyIdentifier:identifier];
-		[target setBuddyLastAvatar:lastAvatar forBuddyIdentifier:identifier];
+		[target setBuddyLastName:lastName forBuddyIdentifier:buddyIdentifier];
+		[target setBuddyLastText:lastText forBuddyIdentifier:buddyIdentifier];
+		[target setBuddyLastAvatar:lastAvatar forBuddyIdentifier:buddyIdentifier];
 	}
 	
 	// Blocked.
