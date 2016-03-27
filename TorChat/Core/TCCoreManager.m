@@ -691,6 +691,7 @@
 	if (buddy)
 	{
 		[buddy setBlocked:YES];
+		[buddy stopWithCompletionHandler:nil];
 	
 		dispatch_async(_localQueue, ^{
 			[self _notify:TCCoreEventBuddyBlocked context:buddy];
@@ -709,6 +710,7 @@
 	if (buddy)
 	{
 		[buddy setBlocked:NO];
+		[buddy start];
 		
 		dispatch_async(_localQueue, ^{
 			[self _notify:TCCoreEventBuddyUnblocked context:buddy];
