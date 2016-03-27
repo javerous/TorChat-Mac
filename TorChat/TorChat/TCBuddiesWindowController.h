@@ -53,7 +53,7 @@
 
 @interface TCBuddiesWindowController : NSWindowController
 
-// -- Singleton --
+// -- Instance --
 + (TCBuddiesWindowController *)sharedController;
 
 // -- IBAction --

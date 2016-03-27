@@ -146,7 +146,7 @@
 		
 		// Load buddies.
 		// > Get saved buddies.
-		NSArray *configBuddies = [_config buddies];
+		NSArray *configBuddies = [_config buddiesIdentifiers];
 
 		[configBuddies enumerateObjectsUsingBlock:^(NSString * _Nonnull buddyIdentifier, NSUInteger idx, BOOL * _Nonnull stop) {
 			

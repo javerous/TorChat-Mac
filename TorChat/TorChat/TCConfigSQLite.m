@@ -902,7 +902,7 @@
 
 #pragma mark Buddies
 
-- (NSArray *)buddies
+- (NSArray *)buddiesIdentifiers
 {
 	NSMutableArray *result = [[NSMutableArray alloc] init];
 	
