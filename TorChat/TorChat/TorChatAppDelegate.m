@@ -157,7 +157,7 @@
 
 - (IBAction)showMessages:(id)sender
 {
-	[[TCChatWindowController sharedController] showWindow:sender];
+	[[TCChatWindowController sharedController] openChatWithBuddy:nil select:YES];
 }
 
 

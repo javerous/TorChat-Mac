@@ -181,7 +181,7 @@
 					if (!buddy)
 						continue;
 					
-					[self _addChatWithBuddy:buddy autoselect:NO];
+					[self _addChatWithBuddy:buddy select:NO];
 				}
 			});
 			
@@ -322,26 +322,45 @@
 */
 #pragma mark - TCChatWindowController - Chat
 
-- (void)openChatWithBuddy:(TCBuddy *)buddy
+- (void)openChatWithBuddy:(TCBuddy *)abuddy select:(BOOL)select
 {
-	if (!buddy)
-		return;
-
 	dispatch_async(_localQueue, ^{
-		[self _openChatWithBuddy:buddy];
+		
+		TCBuddy *buddy = abuddy;
+		
+		if (!buddy && _viewsCtrl.count > 0)
+		{
+			id item = _viewsCtrl[0];
+			
+			if ([item isKindOfClass:[TCChatViewController class]])
+			{
+				TCChatViewController *viewCtrl = item;
+				
+				buddy = viewCtrl.buddy;
+			}
+			else
+				buddy = item;
+		}
+		
+		if (!buddy)
+			return;
+		
+		[self _openChatWithBuddy:buddy select:select];
 	});
 }
 
-- (void)_openChatWithBuddy:(TCBuddy *)buddy
+- (void)_openChatWithBuddy:(TCBuddy *)buddy select:(BOOL)select
 {
-	// Add chat.
-	[self _addChatWithBuddy:buddy autoselect:YES];
+	// > localQueue <
 	
 	// Show window.
 	[self showWindow:nil];
+	
+	// Add chat.
+	[self _addChatWithBuddy:buddy select:select];
 }
 
-- (void)_addChatWithBuddy:(TCBuddy *)buddy autoselect:(BOOL)autoselect
+- (void)_addChatWithBuddy:(TCBuddy *)buddy select:(BOOL)select
 {
 	// > localQueue <
 	
@@ -353,13 +372,8 @@
 	}
 	
 	// Select this chat if it's the first one.
-	if (autoselect)
-	{
-		if (_viewsCtrl.count == 1 || [self.window isVisible] == NO)
-			[self _selectChatWithBuddy:buddy];
-		else
-			[self _selectChatWithBuddy:_selectedBuddy];
-	}
+	if (select)
+		[self _selectChatWithBuddy:buddy];
 }
 
 - (void)closeChatWithBuddy:(TCBuddy *)buddy
@@ -367,7 +381,7 @@
 	dispatch_async(_localQueue, ^{
 		
 		// Search view controller.
-		NSUInteger				index = [self _indexOfViewControllerForBuddy:buddy];
+		NSUInteger index = [self _indexOfViewControllerForBuddy:buddy];
 		
 		if (index == NSNotFound)
 			return;
@@ -412,18 +426,6 @@
 		}
 		else
 			[self _selectChatWithBuddy:selectedBuddy];
-	});
-}
-
-- (void)selectChatWithBuddy:(TCBuddy *)buddy
-{
-	dispatch_async(_localQueue, ^{
-		
-		// Select the chat.
-		[self _selectChatWithBuddy:buddy];
-		
-		// Show window.
-		[self showWindow:self];
 	});
 }
 
@@ -630,15 +632,8 @@
 				dispatch_async(_localQueue, ^{
 					
 					// Start a chat UI.
-					[self _openChatWithBuddy:buddy];
-
-					// Show window is not visible.
-					if ([self.window isVisible] == NO)
-					{
-						[self showWindow:nil];
-						[self selectChatWithBuddy:buddy];
-					}
-
+					[self _openChatWithBuddy:buddy select:(self.window.isVisible == NO)];
+					
 					// Show as unread if necessary.
 					if (buddy != _selectedBuddy || [self.window isKeyWindow] == NO)
 					{
