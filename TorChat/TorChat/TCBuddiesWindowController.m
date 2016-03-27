@@ -497,13 +497,7 @@
 			case TCCoreEventBuddyBlocked:
 			case TCCoreEventBuddyUnblocked:
 			{
-				TCBuddy *buddy = info.context;
-				
-				// Reload table.
-				dispatch_async(dispatch_get_main_queue(), ^{
-					[self _reloadBuddy:buddy];
-				});
-				
+				[self reloadBuddies];
 				break;
 			}
 		}
@@ -824,6 +818,7 @@
 
 		// Sort buddies by status.
 		NSUInteger		i, cnt = [_buddies count];
+		NSMutableArray	*temp_block = [[NSMutableArray alloc] initWithCapacity:cnt];
 		NSMutableArray	*temp_off = [[NSMutableArray alloc] initWithCapacity:cnt];
 		NSMutableArray	*temp_av = [[NSMutableArray alloc] initWithCapacity:cnt];
 		NSMutableArray	*temp_aw = [[NSMutableArray alloc] initWithCapacity:cnt];
@@ -833,23 +828,28 @@
 		{
 			TCBuddy *buddy = [_buddies objectAtIndex:i];
 			
-			switch ([buddy status])
+			if ([buddy blocked])
+				[temp_block addObject:buddy];
+			else
 			{
-				case TCStatusOffline:
-					[temp_off addObject:buddy];
-					break;
-					
-				case TCStatusAvailable:
-					[temp_av addObject:buddy];
-					break;
-					
-				case TCStatusAway:
-					[temp_aw addObject:buddy];
-					break;
-					
-				case TCStatusXA:
-					[temp_xa addObject:buddy];
-					break;
+				switch ([buddy status])
+				{
+					case TCStatusOffline:
+						[temp_off addObject:buddy];
+						break;
+						
+					case TCStatusAvailable:
+						[temp_av addObject:buddy];
+						break;
+						
+					case TCStatusAway:
+						[temp_aw addObject:buddy];
+						break;
+						
+					case TCStatusXA:
+						[temp_xa addObject:buddy];
+						break;
+				}
 			}
 		}
 		
@@ -862,6 +862,7 @@
 		[temp_aw sortUsingComparator:sortBuddy];
 		[temp_xa sortUsingComparator:sortBuddy];
 		[temp_off sortUsingComparator:sortBuddy];
+		[temp_block sortUsingComparator:sortBuddy];
 
 		// Recompose array.
 		[_buddies removeAllObjects];
@@ -870,7 +871,8 @@
 		[_buddies addObjectsFromArray:temp_aw];
 		[_buddies addObjectsFromArray:temp_xa];
 		[_buddies addObjectsFromArray:temp_off];
-		
+		[_buddies addObjectsFromArray:temp_block];
+
 		// Reload table
 		[self _reloadBuddy:nil];
 	});

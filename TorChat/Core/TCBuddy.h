@@ -76,7 +76,6 @@ typedef enum
 	TCBuddyEventNotes,				// context: NSString (<notes>)
 	TCBuddyEventVersion,			// context: NSString (<version>)
 	TCBuddyEventClient,				// context: NSString (<client_name>)
-	//TCBuddyEventBlocked,			// context: NSNumber (BOOL)
 	
 	TCBuddyEventFileSendStart,		// context: TCFileInfo
 	TCBuddyEventFileSendRunning,	// context: TCFileInfo
