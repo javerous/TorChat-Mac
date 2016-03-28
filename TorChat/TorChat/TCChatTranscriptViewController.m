@@ -28,6 +28,7 @@
 #import "NSString+TCXMLExtension.h"
 
 #import "TCChatMessage.h"
+#import "TCChatStatus.h"
 
 
 /*
@@ -91,8 +92,6 @@ NSMutableDictionary	*gAvatarCache;
 	
 	int32_t			_messagesCount;
 	
-	NSMutableIndexSet *_handledMessagesIDs;
-	
 	DOMHTMLElement	*_anchorElement;
 	CGFloat			_anchorOffset;
 	
@@ -141,9 +140,6 @@ NSMutableDictionary	*gAvatarCache;
 		
 		[TCURLProtocolInternal setAvatar:[NSImage imageNamed:NSImageNameUser] forIdentifier:_localAvatarIdentifier];
 		[TCURLProtocolInternal setAvatar:[NSImage imageNamed:NSImageNameUser] forIdentifier:_remoteAvatarIdentifier];
-
-		// Containers.
-		_handledMessagesIDs = [[NSMutableIndexSet alloc] init];
 		
 		// Load template.
 		NSString	*path = [[NSBundle mainBundle] pathForResource:@"ChatTemplate" ofType:@"plist"];
@@ -331,88 +327,87 @@ NSMutableDictionary	*gAvatarCache;
 */
 #pragma mark - TCChatTranscriptViewController - Content
 
-- (void)addMessages:(NSArray *)messages endOfTranscript:(BOOL)endOfTranscript
+- (void)addItems:(NSArray *)items endOfTranscript:(BOOL)endOfTranscript
 {
-	NSMutableArray *items = [[NSMutableArray alloc] init];
-	
-	// Convert message.
-	[messages enumerateObjectsUsingBlock:^(TCChatMessage * _Nonnull msg, NSUInteger idx, BOOL * _Nonnull stop) {
+	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		// Prevent duplication.
-		if (msg.messageID >= 0)
-		{
-			if ([_handledMessagesIDs containsIndex:(NSUInteger)msg.messageID])
-				return;
-
-			[_handledMessagesIDs addIndex:(NSUInteger)msg.messageID];
-		}
+		NSMutableArray *result = [[NSMutableArray alloc] init];
 		
-		// Convert message.
-		switch (msg.side)
-		{
-			case TCChatMessageSideLocal:
+		[items enumerateObjectsUsingBlock:^(id _Nonnull item, NSUInteger idx, BOOL * _Nonnull stop) {
+			
+			if ([item isKindOfClass:[TCChatMessage class]])
 			{
-				if (msg.error)
-				{
-					NSString *snippet = _template[TCTemplateLocalMessageErrorSnippet];
-					NSString *message = msg.message;
-					
-					message = [message stringByEscapingXMLEntities];
-					snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:message];
-					snippet = [snippet stringByReplacingOccurrencesOfString:@"[HREF-ERROR]" withString:[NSString stringWithFormat:@"tc-action://error/%lld", msg.messageID]];
-					
-					[items addObject:@{ @"id" : @(msg.messageID), @"html" : snippet }];
-				}
-				else
-				{
-					NSString *snippet = _template[TCTemplateLocalMessageSnippet];
-					NSString *message = msg.message;
-
-					message = [message stringByEscapingXMLEntities];
-					snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:message];
-					
-					[items addObject:@{ @"id" : @(msg.messageID), @"html" : snippet }];
-				}
+				TCChatMessage *msg = item;
 				
-				OSAtomicIncrement32(&_messagesCount);
-				
-				break;
+				switch (msg.side)
+				{
+					case TCChatMessageSideLocal:
+					{
+						if (msg.error)
+						{
+							NSString *snippet = _template[TCTemplateLocalMessageErrorSnippet];
+							NSString *message = msg.message;
+							
+							message = [message stringByEscapingXMLEntities];
+							snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:message];
+							snippet = [snippet stringByReplacingOccurrencesOfString:@"[HREF-ERROR]" withString:[NSString stringWithFormat:@"tc-action://error/%lld", msg.messageID]];
+							
+							[result addObject:@{ @"id" : @(msg.messageID), @"html" : snippet }];
+						}
+						else
+						{
+							NSString *snippet = _template[TCTemplateLocalMessageSnippet];
+							NSString *message = msg.message;
+							
+							message = [message stringByEscapingXMLEntities];
+							snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:message];
+							
+							[result addObject:@{ @"id" : @(msg.messageID), @"html" : snippet }];
+						}
+						
+						OSAtomicIncrement32(&_messagesCount);
+						
+						break;
+					}
+						
+					case TCChatMessageSideRemote:
+					{
+						NSString *snippet = _template[TCTemplateRemoteMessageSnippet];
+						NSString *message = msg.message;
+						
+						message = [message stringByEscapingXMLEntities];
+						snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:message];
+						
+						[result addObject:@{ @"html" : snippet }];
+						
+						OSAtomicIncrement32(&_messagesCount);
+						
+						break;
+					}
+				}
 			}
-
-			case TCChatMessageSideRemote:
+			else if ([item isKindOfClass:[TCChatStatus class]])
 			{
-				NSString *snippet = _template[TCTemplateRemoteMessageSnippet];
-				NSString *message = msg.message;
-
-				message = [message stringByEscapingXMLEntities];
-				snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:message];
+				TCChatStatus *stat = item;
 				
-				[items addObject:@{ @"html" : snippet }];
+				NSString	*snippet = _template[TCTemplateStatusSnippet];
+				NSString	*status = stat.status;
 				
-				OSAtomicIncrement32(&_messagesCount);
+				status = [status stringByEscapingXMLEntities];
+				snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:status];
 				
-				break;
+				[result addObject:@{ @"html" : snippet }];
 			}
-		}
-	}];
-	
-	// Add messages to transcript.
-	[self addItems:items endOfTranscript:endOfTranscript];
+		}];
+		
+		// Add items.
+		[self _addItems:result endOfTranscript:endOfTranscript];
+	});
 }
 
 - (void)removeMessageID:(int64_t)msgID
 {
 	[self removeItemID:msgID];
-}
-
-- (void)appendStatus:(NSString *)status
-{
-	NSString *snippet = _template[TCTemplateStatusSnippet];
-	
-	status = [status stringByEscapingXMLEntities];
-	snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:status];
-	
-	[self addItems:@[ @{ @"html" : snippet } ] endOfTranscript:YES];
 }
 
 - (void)setLocalAvatar:(NSImage *)image
@@ -471,7 +466,7 @@ NSMutableDictionary	*gAvatarCache;
 
 #pragma mark Computation
 
-- (NSUInteger)messagesCountToFillHeight:(CGFloat)height
+- (NSUInteger)maxMessagesCountToFillHeight:(CGFloat)height
 {
 	NSNumber *minHeight = _template[TCTemplateMinHeight];
 	
@@ -481,7 +476,7 @@ NSMutableDictionary	*gAvatarCache;
 	return (NSUInteger)ceil(height / [minHeight doubleValue]);
 }
 
-- (CGFloat)heightForMessagesCount:(NSUInteger)count
+- (CGFloat)maxHeightForMessagesCount:(NSUInteger)count
 {
 	NSNumber *minHeight = _template[TCTemplateMinHeight];
 	
@@ -495,57 +490,56 @@ NSMutableDictionary	*gAvatarCache;
 
 #pragma mark Items
 
-- (void)addItems:(NSArray *)items endOfTranscript:(BOOL)endOfTranscript
+- (void)_addItems:(NSArray *)items endOfTranscript:(BOOL)endOfTranscript
 {
-	dispatch_async(dispatch_get_main_queue(), ^{
+	// > main queue <
+	
+	// Create a new node.
+	if (_isViewReady)
+	{
+		DOMDocument *document = [[_webView mainFrame] DOMDocument];
+		DOMNode		*firstChild = document.body.firstChild;
 		
-		// Create a new node.
-		if (_isViewReady)
+		for (NSDictionary *item in items)
 		{
-			DOMDocument *document = [[_webView mainFrame] DOMDocument];
-			DOMNode		*firstChild = document.body.firstChild;
+			NSString *html = item[@"html"];
+			NSNumber *divID = item[@"id"];
 			
-			for (NSDictionary *item in items)
-			{
-				NSString *html = item[@"html"];
-				NSNumber *divID = item[@"id"];
-				
-				DOMHTMLElement *newNode = (DOMHTMLElement *)[document createElement:@"div"];
-				
-				if (divID)
-					[newNode setAttribute:@"id" value:[NSString stringWithFormat:@"item_%lld", [divID longLongValue]]];
-				
-				[newNode setInnerHTML:html];
-				
-				if (endOfTranscript)
-					[document.body appendChild:newNode];
-				else
-					[document.body insertBefore:newNode refChild:firstChild];
-			}
+			DOMHTMLElement *newNode = (DOMHTMLElement *)[document createElement:@"div"];
 			
-			[_webView setNeedsDisplay:YES];
-		}
-		else
-		{
-			NSMutableString *bunch = [[NSMutableString alloc] init];
+			if (divID)
+				[newNode setAttribute:@"id" value:[NSString stringWithFormat:@"item_%lld", [divID longLongValue]]];
 			
-			for (NSDictionary *item in items)
-			{
-				NSString *html = item[@"html"];
-				NSNumber *divID = item[@"id"];
-				
-				if (divID)
-					[bunch appendFormat:@"<div id=\"item_%lld\">%@</div>", [divID longLongValue], html];
-				else
-					[bunch appendFormat:@"<div>%@</div>", html];
-			}
+			[newNode setInnerHTML:html];
 			
 			if (endOfTranscript)
-				[_tmpBody appendString:bunch];
+				[document.body appendChild:newNode];
 			else
-				[_tmpBody insertString:bunch atIndex:0];
+				[document.body insertBefore:newNode refChild:firstChild];
 		}
-	});
+		
+		[_webView setNeedsDisplay:YES];
+	}
+	else
+	{
+		NSMutableString *bunch = [[NSMutableString alloc] init];
+		
+		for (NSDictionary *item in items)
+		{
+			NSString *html = item[@"html"];
+			NSNumber *divID = item[@"id"];
+			
+			if (divID)
+				[bunch appendFormat:@"<div id=\"item_%lld\">%@</div>", [divID longLongValue], html];
+			else
+				[bunch appendFormat:@"<div>%@</div>", html];
+		}
+		
+		if (endOfTranscript)
+			[_tmpBody appendString:bunch];
+		else
+			[_tmpBody insertString:bunch atIndex:0];
+	}
 }
 
 - (void)removeItemID:(int64_t)itemID
@@ -564,8 +558,6 @@ NSMutableDictionary	*gAvatarCache;
 		[document.body removeChild:node];
 		
 		[_webView setNeedsDisplay:YES];
-		
-		[_handledMessagesIDs removeIndex:(NSUInteger)itemID];
 	});
 }
 

@@ -1,5 +1,5 @@
 /*
- *  TCChatWindowController.h
+ *  TCChatStatus.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,37 +20,18 @@
  *
  */
 
-#import <Cocoa/Cocoa.h>
-
-#import "TCConfigApp.h"
+#import <Foundation/Foundation.h>
 
 
 /*
-** Forward
+** TCChatStatus
 */
-#pragma mark - Forward
+#pragma mark - TCChatStatus
 
-@class TCCoreManager;
-@class TCBuddy;
+@interface TCChatStatus : NSObject
 
+- (instancetype)initWithStatus:(NSString *)status;
 
-
-/*
-** TCChatWindowController
-*/
-#pragma mark - TCChatWindowController
-
-@interface TCChatWindowController : NSWindowController
-
-// -- Constructor --
-+ (instancetype)sharedController;
-
-// -- Life --
-- (void)startWithConfiguration:(id <TCConfigApp>)configuration coreManager:(TCCoreManager *)coreMananager completionHandler:(dispatch_block_t)handler;
-- (void)stopWithCompletionHandler:(dispatch_block_t)handler;
-
-// -- Chat --
-- (void)openChatWithBuddy:(TCBuddy *)buddy select:(BOOL)select;
-- (void)closeChatWithBuddy:(TCBuddy *)buddy;
+@property (atomic) NSString *status;
 
 @end

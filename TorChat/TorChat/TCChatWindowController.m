@@ -328,18 +328,23 @@
 		
 		TCBuddy *buddy = abuddy;
 		
-		if (!buddy && _viewsCtrl.count > 0)
+		if (!buddy)
 		{
-			id item = _viewsCtrl[0];
-			
-			if ([item isKindOfClass:[TCChatViewController class]])
+			if (_selectedBuddy)
+				buddy = _selectedBuddy;
+			else if (_viewsCtrl.count > 0)
 			{
-				TCChatViewController *viewCtrl = item;
+				id item = _viewsCtrl[0];
 				
-				buddy = viewCtrl.buddy;
+				if ([item isKindOfClass:[TCChatViewController class]])
+				{
+					TCChatViewController *viewCtrl = item;
+					
+					buddy = viewCtrl.buddy;
+				}
+				else
+					buddy = item;
 			}
-			else
-				buddy = item;
 		}
 		
 		if (!buddy)

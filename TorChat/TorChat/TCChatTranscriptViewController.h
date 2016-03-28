@@ -32,17 +32,15 @@
 @interface TCChatTranscriptViewController : NSViewController
 
 // -- Content --
-- (void)addMessages:(NSArray *)messages endOfTranscript:(BOOL)endOfTranscript;
+- (void)addItems:(NSArray *)items endOfTranscript:(BOOL)endOfTranscript; // items: array of TCChatMessage and / or TCChatStatus
 - (void)removeMessageID:(int64_t)msgID;
-
-- (void)appendStatus:(NSString *)status;
 
 - (void)setLocalAvatar:(NSImage *)image;
 - (void)setRemoteAvatar:(NSImage *)image;
 
 // -- Helper --
-- (NSUInteger)messagesCountToFillHeight:(CGFloat)height;
-- (CGFloat)heightForMessagesCount:(NSUInteger)count;
+- (NSUInteger)maxMessagesCountToFillHeight:(CGFloat)height;
+- (CGFloat)maxHeightForMessagesCount:(NSUInteger)count;
 
 // -- Properties --
 // Message.

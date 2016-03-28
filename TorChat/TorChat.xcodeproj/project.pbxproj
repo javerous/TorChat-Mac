@@ -17,6 +17,7 @@
 		E809B1E71859F186001664E1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E809B1E61859F186001664E1 /* Images.xcassets */; };
 		E80A357C1A67F5FA00896518 /* LocationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E80A357A1A67F5FA00896518 /* LocationView.xib */; };
 		E80A357F1A67F61800896518 /* TCLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E80A357E1A67F61800896518 /* TCLocationViewController.m */; };
+		E80E0A3B1CA9A370001E64F9 /* TCChatStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = E80E0A3A1CA9A370001E64F9 /* TCChatStatus.m */; };
 		E8127AA91854CB1100FEDA7F /* TCChatTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = E8127AA81854CB1100FEDA7F /* TCChatTextField.m */; };
 		E81D4E7D1C99DC4E00DD0925 /* TCChatMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = E81D4E7C1C99DC4E00DD0925 /* TCChatMessage.m */; };
 		E81FD9F811E7259B000614D5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81FD9F711E7259B000614D5 /* Cocoa.framework */; };
@@ -135,6 +136,8 @@
 		E80A357B1A67F5FA00896518 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LocationView.xib; sourceTree = "<group>"; };
 		E80A357D1A67F61800896518 /* TCLocationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCLocationViewController.h; sourceTree = "<group>"; };
 		E80A357E1A67F61800896518 /* TCLocationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCLocationViewController.m; sourceTree = "<group>"; };
+		E80E0A391CA9A370001E64F9 /* TCChatStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCChatStatus.h; sourceTree = "<group>"; };
+		E80E0A3A1CA9A370001E64F9 /* TCChatStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatStatus.m; sourceTree = "<group>"; };
 		E8127AA71854CB1100FEDA7F /* TCChatTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCChatTextField.h; sourceTree = "<group>"; };
 		E8127AA81854CB1100FEDA7F /* TCChatTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatTextField.m; sourceTree = "<group>"; };
 		E81D4E7B1C99DC4E00DD0925 /* TCChatMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCChatMessage.h; sourceTree = "<group>"; };
@@ -348,6 +351,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E80E0A381CA9A356001E64F9 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				E81D4E7B1C99DC4E00DD0925 /* TCChatMessage.h */,
+				E81D4E7C1C99DC4E00DD0925 /* TCChatMessage.m */,
+				E80E0A391CA9A370001E64F9 /* TCChatStatus.h */,
+				E80E0A3A1CA9A370001E64F9 /* TCChatStatus.m */,
+			);
+			name = Chat;
+			sourceTree = "<group>";
+		};
 		E81FD9E511E7259B000614D5 = {
 			isa = PBXGroup;
 			children = (
@@ -563,12 +577,11 @@
 			isa = PBXGroup;
 			children = (
 				E89E470E1C8D96AB004A5D72 /* Configuration */,
+				E80E0A381CA9A356001E64F9 /* Chat */,
 				E8455D3B17A425F00046307B /* TCValue.h */,
 				E8455D3C17A425F00046307B /* TCValue.m */,
 				E8CC776D18ED50C5003AB0BF /* TCDragImage.h */,
 				E8CC776E18ED50C5003AB0BF /* TCDragImage.m */,
-				E81D4E7B1C99DC4E00DD0925 /* TCChatMessage.h */,
-				E81D4E7C1C99DC4E00DD0925 /* TCChatMessage.m */,
 			);
 			name = Components;
 			sourceTree = "<group>";
@@ -996,6 +1009,7 @@
 				E84CBD3A1C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.m in Sources */,
 				E8742543199B682F002A34DD /* NSString+TCPathExtension.m in Sources */,
 				E809B1481859C5BC001664E1 /* NSImage+TCExtension.m in Sources */,
+				E80E0A3B1CA9A370001E64F9 /* TCChatStatus.m in Sources */,
 				E8742546199B6A61002A34DD /* NSString+TCXMLExtension.m in Sources */,
 				E89E47021C8D904D004A5D72 /* SMCryptoFile.c in Sources */,
 				E82B7D8F125A115400B7BA8A /* TCMainController.m in Sources */,

@@ -29,6 +29,7 @@
 #import "TCThreePartImageView.h"
 
 #import "TCChatMessage.h"
+#import "TCChatStatus.h"
 
 #import "TCImage.h"
 #import "TCBuddy.h"
@@ -51,6 +52,11 @@
 	
 	int64_t		_transcriptTopMsgID;
 	int64_t		_tmpMsgID;
+	
+	NSDateFormatter *_timestampFormater;
+	
+	NSNumber	*_topMessageTimestamp;
+	NSNumber	*_bottomMessageTimestamp;
 }
 
 // -- Properties --
@@ -98,9 +104,11 @@
 		_buddy = buddy;
 		_configuration = config;
 		
-		// Init IDs.
-		_transcriptTopMsgID = [_configuration transcriptLastMessageIDForBuddyIdentifier:buddy.identifier];
-		_tmpMsgID = -2;
+		// Init date formatter.
+		_timestampFormater = [[NSDateFormatter alloc] init];
+		
+		_timestampFormater.dateStyle = NSDateFormatterMediumStyle;
+		_timestampFormater.timeStyle = NSDateFormatterMediumStyle;
 		
 		// Create trasncript controller.
 		_chatTranscript = [[TCChatTranscriptViewController alloc] init];
@@ -108,11 +116,25 @@
 		// Containers.
 		_erroredMessages = [[NSMutableDictionary alloc] init];
 		
+		// Init IDs.
+		_transcriptTopMsgID = [_configuration transcriptLastMessageIDForBuddyIdentifier:buddy.identifier];
+		
+		if (_transcriptTopMsgID == -1)
+		{
+			NSString *timestampString = [_timestampFormater stringFromDate:[NSDate date]];
+			
+			[_chatTranscript addItems:@[ [[TCChatStatus alloc] initWithStatus:timestampString] ] endOfTranscript:NO];
+		}
+		else
+			_transcriptTopMsgID += 1;
+		
+		_tmpMsgID = -2;
+		
 		// Observe buddy change.
 		[buddy addObserver:self];
 		
 		// Add pending messages.
-		[self handleMessages:[buddy popMessages]];
+		[self handleRemoteMessages:[buddy popMessages]];
 	}
 
 	return self;
@@ -199,20 +221,20 @@
 					[controller removeMessageID:messageID];
 
 					// > Resent message.
-					[strongSelf sendMessage:message];
+					[strongSelf handleLocalMessage:message];
 				}
 			}];
 		});
 	};
 	
 	_chatTranscript.transcriptScrollHandler = ^(TCChatTranscriptViewController *controller, CGFloat scrollOffset) {
-		[weakSelf _fetchTranscript];
+		[weakSelf _fetchSavedTranscript];
 	};
 }
 
 - (void)viewDidLayout
 {
-	[self _fetchTranscript];
+	[self _fetchSavedTranscript];
 }
 
 - (void)makeFirstResponder
@@ -233,7 +255,7 @@
 
 	_userField.stringValue = @"";
 
-	[self sendMessage:message];
+	[self handleLocalMessage:message];
 }
 
 
@@ -264,38 +286,38 @@
 				
 			case TCBuddyEventStatus:
 			{
-				TCStatus	status = (TCStatus)[(NSNumber *)info.context intValue];
-				NSString	*statusStr = @"";
+				TCStatus		status = (TCStatus)[(NSNumber *)info.context intValue];
+				TCChatStatus	*chatStatus = [[TCChatStatus alloc] initWithStatus:@""];
 				
 				// Render status.
 				switch (status)
 				{
 					case TCStatusOffline:
-						statusStr = NSLocalizedString(@"bd_status_offline", @"");
+						chatStatus.status = NSLocalizedString(@"bd_status_offline", @"");
 						break;
 						
 					case TCStatusAvailable:
-						statusStr = NSLocalizedString(@"bd_status_available", @"");
+						chatStatus.status = NSLocalizedString(@"bd_status_available", @"");
 						break;
 						
 					case TCStatusAway:
-						statusStr = NSLocalizedString(@"bd_status_away", @"");
+						chatStatus.status = NSLocalizedString(@"bd_status_away", @"");
 						break;
 						
 					case TCStatusXA:
-						statusStr = NSLocalizedString(@"bd_status_xa", @"");
+						chatStatus.status = NSLocalizedString(@"bd_status_xa", @"");
 						break;
 				}
 				
 				// Show status change.
-				[_chatTranscript appendStatus:statusStr];
+				[_chatTranscript addItems:@[ chatStatus ] endOfTranscript:YES];
 				
 				break;
 			}
 				
 			case TCBuddyEventMessage:
 			{
-				[self handleMessages:[buddy popMessages]];
+				[self handleRemoteMessages:[buddy popMessages]];
 				break;
 			}
 		}
@@ -308,52 +330,6 @@
 ** TCChatViewController - Content
 */
 #pragma mark - TCChatViewController - Content
-
-- (void)sendMessage:(NSString *)message
-{
-	// Create local message.
-	TCChatMessage *msg = [[TCChatMessage alloc] init];
-
-	msg.message = message;
-	msg.timestamp = [NSDate timeIntervalSinceReferenceDate];
-	msg.side = TCChatMessageSideLocal;
-	
-	// Send message.
-	TCChatTranscriptViewController	*chatTranscript = _chatTranscript;
-	TCBuddy							*buddy = _buddy;
-	
-	[buddy sendMessage:message completionHanndler:^(SMInfo *info) {
-		
-		// Set send error.
-		if (info.kind == SMInfoError)
-		{
-			if (info.code == TCBuddyErrorMessageOffline)
-				msg.error = @"chat_error_send_offline";
-			else if (info.code == TCBuddyErrorMessageBlocked)
-				msg.error = @"chat_error_send_blocked";
-		}
-		
-		// Snippet to handle message.
-		void (^handleMessageWithID)(int64_t msgID) = ^(int64_t msgID) {
-			
-			msg.messageID = msgID;
-			[chatTranscript addMessages:@[ msg ] endOfTranscript:YES];
-
-			if (msg.error)
-			{
-				dispatch_async(dispatch_get_main_queue(), ^{
-					_erroredMessages[@(msgID)] = msg;
-				});
-			}
-		};
-		
-		// Handle message.
-		if (_configuration.saveTranscript)
-			[_configuration addTranscriptForBuddyIdentifier:buddy.identifier message:msg completionHandler:handleMessageWithID];
-		else
-			handleMessageWithID(OSAtomicDecrement64(&_tmpMsgID));
-	}];
-}
 
 - (void)setLocalAvatar:(NSImage *)image
 {
@@ -372,82 +348,52 @@
 */
 #pragma mark - TCChatViewController - Helpers
 
-- (void)_fetchTranscript
+- (void)handleLocalMessage:(NSString *)message
 {
-	// > main queue <
+	// Create local message.
+	TCChatMessage *msg = [[TCChatMessage alloc] init];
+
+	msg.message = message;
+	msg.timestamp = [NSDate timeIntervalSinceReferenceDate];
+	msg.side = TCChatMessageSideLocal;
 	
-	if (_transcriptTopMsgID == -1)
-		return;
+	// Send message.
+	TCBuddy *buddy = _buddy;
 	
-	// Handle requests.
-	if (_isFetchingTranscript)
-	{
-		_pendingFetchTranscript = YES;
-		return;
-	}
-	
-	// Check if we need to fetch messages.
-	NSUInteger currentMsgCount = [_chatTranscript messagesCount];
-	NSUInteger fillMsgCount = [_chatTranscript messagesCountToFillHeight:_transcriptView.frame.size.height];
-	NSUInteger fetchLimit = 0;
-	
-	fillMsgCount += 5;
-	
-	if (currentMsgCount < fillMsgCount)
-	{
-		fetchLimit = (fillMsgCount - currentMsgCount);
-		fetchLimit += 5;
-	}
-	else
-	{
-		CGFloat scrollOffset = _chatTranscript.scrollOffset;
+	[buddy sendMessage:message completionHanndler:^(SMInfo *info) {
 		
-		if (scrollOffset >= [_chatTranscript heightForMessagesCount:5])
-			return;
-		
-		fetchLimit = 10;
-	}
-	
-	_isFetchingTranscript = YES;
-	
-	// Fetch messages.
-	[_configuration transcriptMessagesForBuddyIdentifier:_buddy.identifier beforeMessageID:@(_transcriptTopMsgID + 1) limit:fetchLimit completionHandler:^(NSArray *messages) {
-		
-		if (messages.count == 0)
+		// Set send error.
+		if (info.kind == SMInfoError)
 		{
-			_transcriptTopMsgID = -1;
-			return;
+			if (info.code == TCBuddyErrorMessageOffline)
+				msg.error = @"chat_error_send_offline";
+			else if (info.code == TCBuddyErrorMessageBlocked)
+				msg.error = @"chat_error_send_blocked";
 		}
 		
-		dispatch_async(dispatch_get_main_queue(), ^{
+		// Snippet to handle message.
+		void (^handleMessageWithID)(int64_t msgID) = ^(int64_t msgID) {
 			
-			// > Handle messages.
-			for (TCChatMessage *msg in messages)
-			{
-				if (msg.messageID < _transcriptTopMsgID)
-					_transcriptTopMsgID = msg.messageID;
+			msg.messageID = msgID;
+			
+			dispatch_async(dispatch_get_main_queue(), ^{
+				
+				[self _handleMessages:@[ msg ] endOfTranscript:YES];
 				
 				if (msg.error)
-					_erroredMessages[@(msg.messageID)] = msg;
-			}
-			
-			// > Unset fetching lock.
-			_isFetchingTranscript = NO;
-			
-			// > Re-fetch if pending.
-			if (_pendingFetchTranscript)
-			{
-				_pendingFetchTranscript = NO;
-				[self _fetchTranscript];
-			}
-		});
+					_erroredMessages[@(msgID)] = msg;
+			});
+		};
 		
-		// > Add to transcript view.
-		[_chatTranscript addMessages:messages endOfTranscript:NO];
+		// Handle message.
+		if (_configuration.saveTranscript)
+			[_configuration addTranscriptForBuddyIdentifier:buddy.identifier message:msg completionHandler:handleMessageWithID];
+		else
+			handleMessageWithID(OSAtomicDecrement64(&_tmpMsgID));
 	}];
 }
 
-- (void)handleMessages:(NSArray *)messages
+- (void)handleRemoteMessages:(NSArray *)messages
 {
 	TCBuddy *buddy = _buddy;
 	
@@ -457,34 +403,30 @@
 	// Save messages.
 	if (_configuration.saveTranscript)
 	{
-		NSMutableArray *outMessages = [[NSMutableArray alloc] init];
+		dispatch_group_t	group = dispatch_group_create();
+		NSMutableArray		*outMessages = [[NSMutableArray alloc] init];
 		
-		void (^handleMessage)(id sblock, NSUInteger index) = ^(id sblock, NSUInteger index) {
+		for (NSString *message in messages)
+		{
+			TCChatMessage *msg = [[TCChatMessage alloc] init];
 			
-			void (^sHandleMessage)(id sblock, NSUInteger index) = sblock;
+			msg.message = message;
+			msg.side = TCChatMessageSideRemote;
+			msg.timestamp = [NSDate timeIntervalSinceReferenceDate];
 			
-			if (index >= messages.count)
-			{
-				[_chatTranscript addMessages:outMessages endOfTranscript:YES];
-			}
-			else
-			{
-				TCChatMessage *msg = [[TCChatMessage alloc] init];
-				
-				msg.message = messages[index];
-				msg.side = TCChatMessageSideRemote;
-				msg.timestamp = [NSDate timeIntervalSinceReferenceDate];
-				
-				[_configuration addTranscriptForBuddyIdentifier:buddy.identifier message:msg completionHandler:^(int64_t msgID) {
-					msg.messageID = msgID;
-					[outMessages addObject:msg];
-					sHandleMessage(sHandleMessage, index + 1);
-				}];
-			}
-		};
+			[outMessages addObject:msg];
+
+			dispatch_group_enter(group);
+			
+			[_configuration addTranscriptForBuddyIdentifier:buddy.identifier message:msg completionHandler:^(int64_t msgID) {
+				msg.messageID = msgID;
+				dispatch_group_leave(group);
+			}];
+		}
 		
-		// Convert & save messages.
-		handleMessage(handleMessage, 0);
+		dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+			[self _handleMessages:outMessages endOfTranscript:YES];
+		});
 	}
 	else
 	{
@@ -502,8 +444,172 @@
 			[outMessages addObject:msg];
 		}
 		
-		[_chatTranscript addMessages:outMessages endOfTranscript:YES];
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self _handleMessages:outMessages endOfTranscript:YES];
+		});
 	}
+}
+
+- (void)_handleMessages:(NSArray *)messages endOfTranscript:(BOOL)endOfTranscript
+{
+	// > main queue <
+	
+#define TCMessageDeltaTimestamp (15.0 * 60.0) // 15 minutes
+	
+	if (messages.count == 0)
+		return;
+	
+	NSMutableArray *result = [[NSMutableArray alloc] init];
+	
+	// > Snippet to add timestamp.
+	void (^insertTimestamp)(NSTimeInterval timestamp, NSUInteger index) = ^(NSTimeInterval timestamp, NSUInteger index) {
+		
+		NSDate			*date = [NSDate dateWithTimeIntervalSinceReferenceDate:timestamp];
+		TCChatStatus	*status = [[TCChatStatus alloc] initWithStatus:[_timestampFormater stringFromDate:date]];
+		
+		if (index == NSNotFound)
+			[result addObject:status];
+		else
+			[result insertObject:status atIndex:index];
+	};
+	
+	
+	// > List messages.
+	__block NSNumber *lastTimestamp = nil;
+	
+	[messages enumerateObjectsUsingBlock:^(TCChatMessage * _Nonnull msg, NSUInteger idx, BOOL * _Nonnull stop) {
+		
+		// >> Add timestamp if necessary.
+		if (lastTimestamp)
+		{
+			if (msg.timestamp - [lastTimestamp doubleValue] >= TCMessageDeltaTimestamp)
+				insertTimestamp(msg.timestamp, NSNotFound);
+		}
+		
+		lastTimestamp = @(msg.timestamp);
+		
+		// >> Add message.
+		[result addObject:msg];
+	}];
+	
+	// > Handle top & bottom join timestamp.
+	TCChatMessage *firstMsg = [messages firstObject];
+	TCChatMessage *lastMsg = [messages lastObject];
+	
+	if (endOfTranscript == YES)
+	{
+		if (_bottomMessageTimestamp)
+		{
+			if (firstMsg.timestamp - [_bottomMessageTimestamp doubleValue] >= TCMessageDeltaTimestamp)
+				insertTimestamp(firstMsg.timestamp, 0);
+		}
+		
+		_bottomMessageTimestamp = @(lastMsg.timestamp);
+		
+		if (!_topMessageTimestamp)
+			_topMessageTimestamp = @(firstMsg.timestamp);
+	}
+	else
+	{
+		if (_topMessageTimestamp)
+		{
+			if ([_topMessageTimestamp doubleValue] - lastMsg.timestamp >= TCMessageDeltaTimestamp)
+				insertTimestamp([_topMessageTimestamp doubleValue], NSNotFound);
+		}
+		
+		_topMessageTimestamp = @(firstMsg.timestamp);
+		
+		if (!_bottomMessageTimestamp)
+			_bottomMessageTimestamp = @(lastMsg.timestamp);
+	}
+	
+	
+	// Show messages & timestamp.
+	[_chatTranscript addItems:result endOfTranscript:endOfTranscript];
+}
+
+- (void)_fetchSavedTranscript
+{
+	// > main queue <
+	
+	if (_transcriptTopMsgID == -1)
+		return;
+	
+	// Handle requests.
+	if (_isFetchingTranscript)
+	{
+		_pendingFetchTranscript = YES;
+		return;
+	}
+	
+	// Check if we need to fetch messages.
+	NSUInteger currentMsgCount = [_chatTranscript messagesCount];
+	NSUInteger fillMsgCount = [_chatTranscript maxMessagesCountToFillHeight:_transcriptView.frame.size.height];
+	NSUInteger fetchLimit = 0;
+	
+	fillMsgCount += 5;
+	
+	if (currentMsgCount < fillMsgCount)
+	{
+		fetchLimit = (fillMsgCount - currentMsgCount);
+		fetchLimit += 5;
+	}
+	else
+	{
+		CGFloat scrollOffset = _chatTranscript.scrollOffset;
+		
+		if (scrollOffset >= [_chatTranscript maxHeightForMessagesCount:5])
+			return;
+		
+		fetchLimit = 10;
+	}
+	
+	_isFetchingTranscript = YES;
+	
+	// Fetch messages.
+	[_configuration transcriptMessagesForBuddyIdentifier:_buddy.identifier beforeMessageID:@(_transcriptTopMsgID) limit:fetchLimit completionHandler:^(NSArray *messages) {
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			
+			if (messages.count == 0)
+			{
+				if (_topMessageTimestamp)
+				{
+					NSDate		*timestamp = [NSDate dateWithTimeIntervalSinceReferenceDate:[_topMessageTimestamp doubleValue]];
+					NSString	*timestampString = [_timestampFormater stringFromDate:timestamp];
+					
+					[_chatTranscript addItems:@[ [[TCChatStatus alloc] initWithStatus:timestampString] ] endOfTranscript:NO];
+				}
+				
+				_transcriptTopMsgID = -1;
+				
+				return;
+			}
+			
+			// > Handle messages.
+			for (TCChatMessage *msg in messages)
+			{
+				if (msg.messageID < _transcriptTopMsgID)
+					_transcriptTopMsgID = msg.messageID;
+				
+				if (msg.error)
+					_erroredMessages[@(msg.messageID)] = msg;
+			}
+			
+			// > Add to transcript view.
+			[self _handleMessages:messages endOfTranscript:NO];
+
+			// > Unset fetching lock.
+			_isFetchingTranscript = NO;
+			
+			// > Re-fetch if pending.
+			if (_pendingFetchTranscript)
+			{
+				_pendingFetchTranscript = NO;
+				[self _fetchSavedTranscript];
+			}
+		});
+	}];
 }
 
 @end
