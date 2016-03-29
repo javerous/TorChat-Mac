@@ -281,7 +281,7 @@
 	});
 }
 
-- (uint16_t)clientPort
+- (uint16_t)selfPort
 {
 	__block NSNumber *value;
  
@@ -295,10 +295,10 @@
 		return 11009;
 }
 
-- (void)setClientPort:(uint16_t)port
+- (void)setSelfPort:(uint16_t)selfPort
 {
 	dispatch_barrier_async(_localQueue, ^{
-		[_fcontent setObject:@(port) forKey:TCCONF_KEY_IM_PORT];
+		[_fcontent setObject:@(selfPort) forKey:TCCONF_KEY_IM_PORT];
 		[self _markDirty];
 	});
 }

@@ -41,7 +41,7 @@
 	
 	// TorChat.
 	target.selfIdentifier = source.selfIdentifier;
-	target.clientPort = source.clientPort;
+	target.selfPort = source.selfPort;
 
 	// Mode.
 	target.mode = source.mode;

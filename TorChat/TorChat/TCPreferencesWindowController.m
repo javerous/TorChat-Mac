@@ -43,7 +43,7 @@
 @property (strong, nonatomic) id <TCConfigAppEncryptable>	config;
 @property (strong, nonatomic) TCCoreManager				*core;
 
-@property (strong, nonatomic) void (^reloadConfig)(id <TCConfigAppEncryptable>);
+@property (strong, nonatomic) void (^reloadConfig)(dispatch_block_t doneHandler);
 
 @end
 
@@ -166,14 +166,16 @@
 	
 	viewCtrl.config = config;
 	viewCtrl.core = core;
-	viewCtrl.reloadConfig = ^(id <TCConfigAppEncryptable> rConfig) {
-
-		// XXX lock everything to prevent user to change something while re-starting.
+	viewCtrl.reloadConfig = ^(dispatch_block_t doneHandler) {
 		
 		// Restart main controller.
-		[[TCMainController sharedController] startWithConfiguration:rConfig completionHandler:^(TCCoreManager *aCore) {
+		[[TCMainController sharedController] startWithConfiguration:config completionHandler:^(TCCoreManager *aCore) {
 			dispatch_async(dispatch_get_main_queue(), ^{
+				
 				weakViewCtrl.core = aCore;
+				
+				if (doneHandler)
+					doneHandler();
 			});
 		}];
 	};

@@ -106,11 +106,11 @@
 - (id)panelContent
 {
 	// Set up the config with the fields.
-	[_currentConfig setTorAddress:[_torAddressField stringValue]];
-	[_currentConfig setSelfIdentifier:[_imIdentifierField stringValue]];
+	_currentConfig.torAddress = _torAddressField.stringValue;
+	_currentConfig.selfIdentifier = _imIdentifierField.stringValue;
 	
-	[_currentConfig setTorPort:(uint16_t)[_torPortField intValue]];
-	[_currentConfig setClientPort:(uint16_t)[_imInPortField intValue]];
+	_currentConfig.torPort = (uint16_t)_torPortField.intValue;
+	_currentConfig.selfPort = (uint16_t)_imInPortField.intValue;
 	
 	// Return the config.
 	return _currentConfig;

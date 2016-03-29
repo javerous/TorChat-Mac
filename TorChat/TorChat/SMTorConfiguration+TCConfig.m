@@ -46,7 +46,7 @@
 		self.hiddenServiceRemotePort = 11009;
 		
 		self.hiddenServiceLocalHost = @"127.0.0.1";
-		self.hiddenServiceLocalPort = config.clientPort;
+		self.hiddenServiceLocalPort = config.selfPort;
 		
 		// Path.
 		self.binaryPath = [config pathForComponent:TCConfigPathComponentTorBinary fullPath:YES];

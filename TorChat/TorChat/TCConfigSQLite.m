@@ -37,43 +37,43 @@
 #pragma mark - Defines
 
 // Buddy.
-#define TCConfigBuddyAlias		@"alias"
-#define TCConfigBuddyNotes		@"notes"
+#define TCConfigBuddyAliasKey		@"alias"
+#define TCConfigBuddyNotesKey		@"notes"
 
-#define TCConfigBuddyLastName	@"lname"
-#define TCConfigBuddyLastText	@"ltext"
-#define TCConfigBuddyLastAvatar	@"lavatar"
+#define TCConfigBuddyLastNameKey	@"lname"
+#define TCConfigBuddyLastTextKey	@"ltext"
+#define TCConfigBuddyLastAvatarKey	@"lavatar"
 
 // General
-#define TCCONF_KEY_TOR_ADDRESS		@"tor_address"
-#define TCCONF_KEY_TOR_PORT			@"tor_socks_port"
+#define TCConfigTorSocksAddressKey	@"tor_socks_address"
+#define TCConfigTorSocksPortKey		@"tor_socks_port"
 
-#define TCCONF_KEY_IM_IDENTIFIER	@"im_identifier"
-#define TCCONF_KEY_IM_PORT			@"im_in_port"
+#define TCConfigSelfIdentifierKey	@"self_identifier"
+#define TCConfigSelfPortKey			@"self_port"
 
-#define TCCONF_KEY_MODE				@"mode"
+#define TCConfigTorModeKey			@"tor_mode"
 
-#define TCCONF_KEY_PROFILE_NAME		@"profile_name"
-#define TCCONF_KEY_PROFILE_TEXT		@"profile_text"
-#define TCCONF_KEY_PROFILE_AVATAR	@"profile_avatar"
+#define TCConfigPofileNameKey		@"profile_name"
+#define TCConfigPofileTextKey		@"profile_text"
+#define TCConfigPofileAvatarKey		@"profile_avatar"
 
-#define TCCONF_KEY_UI_TITLE			@"title"
+#define TCConfigUITitleKey			@"ui_title"
 
-#define TCCONF_KEY_CLIENT_VERSION	@"client_version"
-#define TCCONF_KEY_CLIENT_NAME		@"client_name"
+#define TCConfigClientVersionKey	@"client_version"
+#define TCConfigClientNameKey		@"client_name"
 
 // Paths
-#define TCCONF_KEY_PATH_TOR_BIN				@"tor_bin"
-#define TCCONF_KEY_PATH_TOR_DATA			@"tor_data"
-#define TCCONF_KEY_PATH_TOR_IDENTITY		@"tor_identity"
-#define TCCONF_KEY_PATH_DOWNLOADS			@"downloads"
+#define TCConfigPathTorBinKey		@"tor_bin"
+#define TCConfigPathTorDataKey		@"tor_data"
+#define TCConfigPathTorIdentityKey	@"tor_identity"
+#define TCConfigPathDownloadsKey	@"downloads"
 
-#define TCCONF_VALUE_PATH_TYPE_REFERAL		@"<referal>"
-#define TCCONF_VALUE_PATH_TYPE_STANDARD		@"<standard>"
-#define TCCONF_VALUE_PATH_TYPE_ABSOLUTE		@"<absolute>"
+#define TCConfigPathTypeReferalKey	@"<referal>"
+#define TCConfigPathTypeStandardKey	@"<standard>"
+#define TCConfigPathTypeAbsoluteKey	@"<absolute>"
 
 // Transcript.
-#define TCCONF_KEY_SAVE_TRANSCRIPT		@"save_transcript"
+#define TCConfigTranscriptSaveKey	@"transcript_save"
 
 
 
@@ -643,7 +643,7 @@
 
 - (NSString *)torAddress
 {
-	NSString *result = [self settingForKey:TCCONF_KEY_TOR_ADDRESS];
+	NSString *result = [self settingForKey:TCConfigTorSocksAddressKey];
 	
 	if (result)
 		return result;
@@ -653,12 +653,12 @@
 
 - (void)setTorAddress:(NSString *)address
 {
-	[self setSetting:address forKey:TCCONF_KEY_TOR_ADDRESS];
+	[self setSetting:address forKey:TCConfigTorSocksAddressKey];
 }
 
 - (uint16_t)torPort
 {
-	NSNumber *result = [self settingForKey:TCCONF_KEY_TOR_PORT];
+	NSNumber *result = [self settingForKey:TCConfigTorSocksPortKey];
 
 	if (result)
 		return [result unsignedShortValue];
@@ -668,7 +668,7 @@
 
 - (void)setTorPort:(uint16_t)port
 {
-	[self setSetting:@(port) forKey:TCCONF_KEY_TOR_PORT];
+	[self setSetting:@(port) forKey:TCConfigTorSocksPortKey];
 }
 
 
@@ -676,7 +676,7 @@
 
 - (NSString *)selfIdentifier
 {
-	NSString *result = [self settingForKey:TCCONF_KEY_IM_IDENTIFIER];
+	NSString *result = [self settingForKey:TCConfigSelfIdentifierKey];
 	
 	if (result)
 		return result;
@@ -686,12 +686,12 @@
 
 - (void)setSelfIdentifier:(NSString *)identifier
 {
-	[self setSetting:identifier forKey:TCCONF_KEY_IM_IDENTIFIER];
+	[self setSetting:identifier forKey:TCConfigSelfIdentifierKey];
 }
 
-- (uint16_t)clientPort
+- (uint16_t)selfPort
 {
-	NSNumber *result = [self settingForKey:TCCONF_KEY_IM_PORT];
+	NSNumber *result = [self settingForKey:TCConfigSelfPortKey];
 	
 	if (result)
 		return [result unsignedShortValue];
@@ -699,9 +699,9 @@
 	return 11009;
 }
 
-- (void)setClientPort:(uint16_t)port
+- (void)setSelfPort:(uint16_t)selfPort
 {
-	[self setSetting:@(port) forKey:TCCONF_KEY_IM_PORT];
+	[self setSetting:@(selfPort) forKey:TCConfigSelfPortKey];
 }
 
 
@@ -709,7 +709,7 @@
 
 - (TCConfigMode)mode
 {
-	NSNumber *result = [self settingForKey:TCCONF_KEY_MODE];
+	NSNumber *result = [self settingForKey:TCConfigTorModeKey];
 	
 	if (result)
 	{
@@ -728,7 +728,7 @@
 
 - (void)setMode:(TCConfigMode)mode
 {
-	[self setSetting:@(mode) forKey:TCCONF_KEY_MODE];
+	[self setSetting:@(mode) forKey:TCConfigTorModeKey];
 }
 
 
@@ -736,7 +736,7 @@
 
 - (NSString *)profileName
 {
-	NSString *result = [self settingForKey:TCCONF_KEY_PROFILE_NAME];
+	NSString *result = [self settingForKey:TCConfigPofileNameKey];
 	
 	if (result)
 		return result;
@@ -746,12 +746,12 @@
 
 - (void)setProfileName:(NSString *)name
 {
-	[self setSetting:name forKey:TCCONF_KEY_PROFILE_NAME];
+	[self setSetting:name forKey:TCConfigPofileNameKey];
 }
 
 - (NSString *)profileText
 {
-	NSString *result = [self settingForKey:TCCONF_KEY_PROFILE_TEXT];
+	NSString *result = [self settingForKey:TCConfigPofileTextKey];
 	
 	if (result)
 		return result;
@@ -761,12 +761,12 @@
 
 - (void)setProfileText:(NSString *)text
 {
-	[self setSetting:text forKey:TCCONF_KEY_PROFILE_TEXT];
+	[self setSetting:text forKey:TCConfigPofileTextKey];
 }
 
 - (TCImage *)profileAvatar
 {
-	NSData *result = [self settingForKey:TCCONF_KEY_PROFILE_AVATAR];
+	NSData *result = [self settingForKey:TCConfigPofileAvatarKey];
 	
 	if (result)
 	{
@@ -801,11 +801,11 @@
 			return;
 		
 		// Save.
-		[self setSetting:pngData forKey:TCCONF_KEY_PROFILE_AVATAR];
+		[self setSetting:pngData forKey:TCConfigPofileAvatarKey];
 	}
 	else
 	{
-		[self setSetting:nil forKey:TCCONF_KEY_PROFILE_AVATAR];
+		[self setSetting:nil forKey:TCConfigPofileAvatarKey];
 	}
 }
 
@@ -828,7 +828,7 @@
 			
 		case TCConfigGetDefined:
 		{
-			NSString *value = [self settingForKey:TCCONF_KEY_CLIENT_VERSION];
+			NSString *value = [self settingForKey:TCConfigClientVersionKey];
 			
 			if (value)
 				return value;
@@ -855,7 +855,7 @@
 	if (!version)
 		return;
 	
-	[self setSetting:version forKey:TCCONF_KEY_CLIENT_VERSION];
+	[self setSetting:version forKey:TCConfigClientVersionKey];
 }
 
 - (NSString *)clientName:(TCConfigGet)get
@@ -869,7 +869,7 @@
 			
 		case TCConfigGetDefined:
 		{
-			NSString *value = [self settingForKey:TCCONF_KEY_CLIENT_NAME];
+			NSString *value = [self settingForKey:TCConfigClientNameKey];
 			
 			if (value)
 				return value;
@@ -896,7 +896,7 @@
 	if (!name)
 		return;
 	
-	[self setSetting:name forKey:TCCONF_KEY_CLIENT_NAME];
+	[self setSetting:name forKey:TCConfigClientNameKey];
 }
 
 
@@ -958,8 +958,8 @@
 		{
 			sqlite3_int64 buddyID = sqlite3_last_insert_rowid(_dtb);
 			
-			[self _setBuddyProperty:buddyID key:TCConfigBuddyAlias value:alias];
-			[self _setBuddyProperty:buddyID key:TCConfigBuddyNotes value:notes];
+			[self _setBuddyProperty:buddyID key:TCConfigBuddyAliasKey value:alias];
+			[self _setBuddyProperty:buddyID key:TCConfigBuddyNotesKey value:notes];
 		}
 	});
 }
@@ -1000,7 +1000,7 @@
 		if (buddyID < 0)
 			return;
 		
-		[self _setBuddyProperty:buddyID key:TCConfigBuddyAlias value:alias];
+		[self _setBuddyProperty:buddyID key:TCConfigBuddyAliasKey value:alias];
 	});
 }
 
@@ -1019,7 +1019,7 @@
 		if (buddyID < 0)
 			return;
 		
-		[self _setBuddyProperty:buddyID key:TCConfigBuddyNotes value:notes];
+		[self _setBuddyProperty:buddyID key:TCConfigBuddyNotesKey value:notes];
 	});
 }
 
@@ -1038,7 +1038,7 @@
 		if (buddyID < 0)
 			return;
 		
-		[self _setBuddyProperty:buddyID key:TCConfigBuddyLastName value:lastName];
+		[self _setBuddyProperty:buddyID key:TCConfigBuddyLastNameKey value:lastName];
 	});
 }
 
@@ -1057,7 +1057,7 @@
 		if (buddyID < 0)
 			return;
 		
-		[self _setBuddyProperty:buddyID key:TCConfigBuddyLastText value:lastText];
+		[self _setBuddyProperty:buddyID key:TCConfigBuddyLastTextKey value:lastText];
 	});
 }
 
@@ -1087,7 +1087,7 @@
 			return;
 		
 		// Save
-		[self _setBuddyProperty:buddyID key:TCConfigBuddyLastAvatar value:pngData];
+		[self _setBuddyProperty:buddyID key:TCConfigBuddyLastAvatarKey value:pngData];
 	});
 }
 
@@ -1105,7 +1105,7 @@
 		if (buddyID < 0)
 			return;
 		
-		result = [self _getBuddyProperty:buddyID key:TCConfigBuddyAlias];
+		result = [self _getBuddyProperty:buddyID key:TCConfigBuddyAliasKey];
 	});
 	
 	return result;
@@ -1125,7 +1125,7 @@
 		if (buddyID < 0)
 			return;
 		
-		result = [self _getBuddyProperty:buddyID key:TCConfigBuddyNotes];
+		result = [self _getBuddyProperty:buddyID key:TCConfigBuddyNotesKey];
 	});
 	
 	return result;
@@ -1145,7 +1145,7 @@
 		if (buddyID < 0)
 			return;
 		
-		result = [self _getBuddyProperty:buddyID key:TCConfigBuddyLastName];
+		result = [self _getBuddyProperty:buddyID key:TCConfigBuddyLastNameKey];
 	});
 	
 	return result;
@@ -1165,7 +1165,7 @@
 		if (buddyID < 0)
 			return;
 		
-		result = [self _getBuddyProperty:buddyID key:TCConfigBuddyLastText];
+		result = [self _getBuddyProperty:buddyID key:TCConfigBuddyLastTextKey];
 	});
 	
 	return result;
@@ -1185,7 +1185,7 @@
 		if (buddyID < 0)
 			return;
 		
-		NSData	*data = [self _getBuddyProperty:buddyID key:TCConfigBuddyLastAvatar];
+		NSData	*data = [self _getBuddyProperty:buddyID key:TCConfigBuddyLastAvatarKey];
 		NSImage *image = [[NSImage alloc] initWithData:data];
 		
 		result = [[TCImage alloc] initWithImage:image];
@@ -1551,11 +1551,11 @@
 
 - (TCConfigPathType)pathTypeForPathTypeName:(NSString *)pathTypeName
 {
-	if ([pathTypeName isEqualToString:TCCONF_VALUE_PATH_TYPE_REFERAL])
+	if ([pathTypeName isEqualToString:TCConfigPathTypeReferalKey])
 		return TCConfigPathTypeReferal;
-	else if ([pathTypeName isEqualToString:TCCONF_VALUE_PATH_TYPE_STANDARD])
+	else if ([pathTypeName isEqualToString:TCConfigPathTypeStandardKey])
 		return TCConfigPathTypeStandard;
-	else if ([pathTypeName isEqualToString:TCCONF_VALUE_PATH_TYPE_ABSOLUTE])
+	else if ([pathTypeName isEqualToString:TCConfigPathTypeAbsoluteKey])
 		return TCConfigPathTypeAbsolute;
 	
 	return TCConfigPathTypeReferal;
@@ -1566,13 +1566,13 @@
 	switch (pathType)
 	{
 		case TCConfigPathTypeReferal:
-			return TCCONF_VALUE_PATH_TYPE_REFERAL;
+			return TCConfigPathTypeReferalKey;
 			
 		case TCConfigPathTypeStandard:
-			return TCCONF_VALUE_PATH_TYPE_STANDARD;
+			return TCConfigPathTypeStandardKey;
 			
 		case TCConfigPathTypeAbsolute:
-			return TCCONF_VALUE_PATH_TYPE_ABSOLUTE;
+			return TCConfigPathTypeAbsoluteKey;
 	}
 	
 	return nil;
@@ -1589,16 +1589,16 @@
 			return nil;
 			
 		case TCConfigPathComponentTorBinary:
-			return TCCONF_KEY_PATH_TOR_BIN;
+			return TCConfigPathTorBinKey;
 			
 		case TCConfigPathComponentTorData:
-			return TCCONF_KEY_PATH_TOR_DATA;
+			return TCConfigPathTorDataKey;
 			
 		case TCConfigPathComponentTorIdentity:
-			return TCCONF_KEY_PATH_TOR_IDENTITY;
+			return TCConfigPathTorIdentityKey;
 			
 		case TCConfigPathComponentDownloads:
-			return TCCONF_KEY_PATH_DOWNLOADS;
+			return TCConfigPathDownloadsKey;
 	}
 	
 	return nil;
@@ -1731,7 +1731,7 @@
 
 - (TCConfigTitle)modeTitle
 {
-	NSNumber *result = [self settingForKey:TCCONF_KEY_UI_TITLE];
+	NSNumber *result = [self settingForKey:TCConfigUITitleKey];
 	
 	if (!result)
 		return TCConfigTitleIdentifier;
@@ -1741,7 +1741,7 @@
 
 - (void)setModeTitle:(TCConfigTitle)mode
 {
-	[self setSetting:@(mode) forKey:TCCONF_KEY_UI_TITLE];
+	[self setSetting:@(mode) forKey:TCConfigUITitleKey];
 }
 
 
@@ -1749,12 +1749,12 @@
 
 - (BOOL)saveTranscript
 {
-	return [[self settingForKey:TCCONF_KEY_SAVE_TRANSCRIPT] boolValue];
+	return [[self settingForKey:TCConfigTranscriptSaveKey] boolValue];
 }
 
 - (void)setSaveTranscript:(BOOL)saveTranscript
 {
-	[self setSetting:@(saveTranscript) forKey:TCCONF_KEY_SAVE_TRANSCRIPT];
+	[self setSetting:@(saveTranscript) forKey:TCConfigTranscriptSaveKey];
 }
 
 - (void)addTranscriptForBuddyIdentifier:(NSString *)identifier message:(TCChatMessage *)message completionHandler:(void (^)(int64_t msgID))handler

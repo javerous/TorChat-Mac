@@ -132,7 +132,7 @@
 	// Set default configuration.
 	_currentConfig.torAddress = @"localhost";
 	_currentConfig.torPort = 60600;
-	_currentConfig.clientPort = 60601;
+	_currentConfig.selfPort = 60601;
 	
 	// Create tor configuration.
 	SMTorConfiguration *torConfig = [[SMTorConfiguration alloc] initWithTorChatConfiguration:_currentConfig];

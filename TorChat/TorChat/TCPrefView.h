@@ -50,6 +50,6 @@
 - (void)panelDidDisappear;	// can be subclassed.
 
 // Tools.
-- (void)reloadConfig:(id <TCConfigAppEncryptable>)config;
+- (void)reloadConfigurationWithCompletionHandler:(dispatch_block_t)handler;
 
 @end

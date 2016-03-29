@@ -33,6 +33,9 @@
 	BOOL changes;
 }
 
+
+@property (strong, nonatomic) IBOutlet NSPopUpButton *modePopup;
+
 @property (strong, nonatomic) IBOutlet NSTextField	*imIdentifierField;
 @property (strong, nonatomic) IBOutlet NSTextField	*imPortField;
 @property (strong, nonatomic) IBOutlet NSTextField	*torAddressField;
@@ -87,52 +90,103 @@
 
 - (void)panelDidAppear
 {
-	TCConfigMode mode;
-	
-	if (!self.config)
-		return;
-	
 	// Load view.
 	[self view];
 	
-	mode = [self.config mode];
-	
-	// Set mode
-	if (mode == TCConfigModeBundled)
-	{
-		[_imIdentifierField setEnabled:NO];
-		[_imPortField setEnabled:NO];
-		[_torAddressField setEnabled:NO];
-		[_torPortField setEnabled:NO];
-	}
-	else if (mode == TCConfigModeCustom)
-	{
-		[_imIdentifierField setEnabled:YES];
-		[_imPortField setEnabled:YES];
-		[_torAddressField setEnabled:YES];
-		[_torPortField setEnabled:YES];
-	}
-	
-	// Set value field
-	[_imIdentifierField setStringValue:[self.config selfIdentifier]];
-	[_imPortField setStringValue:[@([self.config clientPort]) description]];
-	[_torAddressField setStringValue:[self.config torAddress]];
-	[_torPortField setStringValue:[@([self.config torPort]) description]];
+	// Load configuration.
+	[self _reloadConfiguration];
 }
 
 - (void)panelDidDisappear
 {
-	if (changes && [self.config mode] == TCConfigModeCustom)
+	if (changes && self.config.mode == TCConfigModeCustom)
 	{
 		// Set config value.
-		[self.config setSelfIdentifier:[_imIdentifierField stringValue]];
-		[self.config setClientPort:(uint16_t)[[_imPortField stringValue] intValue]];
-		[self.config setTorAddress:[_torAddressField stringValue]];
-		[self.config setTorPort:(uint16_t)[[_torPortField stringValue] intValue]];
+		self.config.selfIdentifier = _imIdentifierField.stringValue;
+		self.config.selfPort = (uint16_t)_imPortField.intValue;
+		self.config.torAddress = _torAddressField.stringValue;
+		self.config.torPort = (uint16_t)_torPortField.intValue;
 		
 		// Reload config.
-		[self reloadConfig:self.config];
+		[self reloadConfigurationWithCompletionHandler:nil];
 	}
+}
+
+
+
+/*
+** TCPrefView_Network - IBAction
+*/
+#pragma mark - TCPrefView_Network - IBAction
+
+- (IBAction)doChangeMode:(id)sender
+{
+	NSInteger index = _modePopup.indexOfSelectedItem;
+	
+	if (index == 0 && self.config.mode == TCConfigModeCustom) // bundled.
+	{
+		self.config.mode = TCConfigModeBundled;
+		
+		self.config.selfPort = 60601;
+		self.config.torAddress = @"localhost";
+		self.config.torPort = 60600;
+		
+		[self reloadConfigurationWithCompletionHandler:^{
+			[self _reloadConfiguration];
+		}];
+		
+		[self _reloadConfiguration];
+	}
+	else if (index == 1 && self.config.mode == TCConfigModeBundled) // custom.
+	{
+		self.config.mode = TCConfigModeCustom;
+		
+		[self reloadConfigurationWithCompletionHandler:^{
+			[self _reloadConfiguration];
+		}];
+		
+		[self _reloadConfiguration];
+	}
+}
+
+
+
+/*
+** TCPrefView_Network - Helper
+*/
+#pragma mark - TCPrefView_Network - Helper
+
+- (void)_reloadConfiguration
+{
+	// > main queue <
+	
+	TCConfigMode mode = [self.config mode];
+	
+	// Set mode.
+	if (mode == TCConfigModeBundled)
+	{
+		[_modePopup selectItemAtIndex:0];
+		
+		_imIdentifierField.enabled = NO;
+		_imPortField.enabled = NO;
+		_torAddressField.enabled = NO;
+		_torPortField.enabled = NO;
+	}
+	else if (mode == TCConfigModeCustom)
+	{
+		[_modePopup selectItemAtIndex:1];
+		
+		_imIdentifierField.enabled = YES;
+		_imPortField.enabled = YES;
+		_torAddressField.enabled = YES;
+		_torPortField.enabled = YES;
+	}
+	
+	// Set value field.
+	_imIdentifierField.stringValue = self.config.selfIdentifier;
+	_imPortField. stringValue = [@(self.config.selfPort) description];
+	_torAddressField.stringValue = self.config.torAddress;
+	_torPortField.stringValue = [@(self.config.torPort) description];
 }
 
 @end

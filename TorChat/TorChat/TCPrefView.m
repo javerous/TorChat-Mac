@@ -30,7 +30,7 @@
 
 @interface TCPrefView ()
 
-@property (strong, nonatomic) void (^reloadConfig)(id <TCConfigAppEncryptable>);
+@property (strong, nonatomic) void (^reloadConfig)(dispatch_block_t doneHandler);
 
 @property (strong, nonatomic) id <TCConfigAppEncryptable>	config;
 @property (strong, nonatomic) TCCoreManager				*core;
@@ -62,10 +62,10 @@
 	// Must be redefined
 }
 
-- (void)reloadConfig:(id <TCConfigAppEncryptable>)config
+- (void)reloadConfigurationWithCompletionHandler:(dispatch_block_t)handler
 {
 	if (_reloadConfig)
-		_reloadConfig(config);
+		_reloadConfig(handler);
 }
 
 @end
