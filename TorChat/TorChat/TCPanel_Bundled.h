@@ -1,5 +1,5 @@
 /*
- *  TCPanel_Basic.h
+ *  TCPanel_Bundled.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -26,10 +26,10 @@
 
 
 /*
-** TCPanel_Basic
+** TCPanel_Bundled
 */
-#pragma mark - TCPanel_Basic
+#pragma mark - TCPanel_Bundled
 
-@interface TCPanel_Basic : NSViewController <SMAssistantPanel>
+@interface TCPanel_Bundled : NSViewController <SMAssistantPanel>
 
 @end

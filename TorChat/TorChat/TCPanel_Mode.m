@@ -96,9 +96,9 @@
 - (id)panelContent
 {
 	if ([modeMatrix selectedTag] == 1)
-		[_currentConfig setMode:TCConfigModeBasic];
+		[_currentConfig setMode:TCConfigModeBundled];
 	else
-		[_currentConfig setMode:TCConfigModeAdvanced];
+		[_currentConfig setMode:TCConfigModeCustom];
 	
 	return _currentConfig;
 }
@@ -108,7 +108,7 @@
 	_currentConfig = self.panelPreviousContent;
 	
 	[self.panelProxy setIsLastPanel:NO];
-	[self.panelProxy setNextPanelID:@"ac_basic"];
+	[self.panelProxy setNextPanelID:@"ac_bundled"];
 }
 
 
@@ -123,9 +123,9 @@
 	NSInteger tag = [modeMatrix selectedTag];
 	
 	if (tag == 1)
-		[self.panelProxy setNextPanelID:@"ac_basic"];
+		[self.panelProxy setNextPanelID:@"ac_bundled"];
 	else if (tag == 2)
-		[self.panelProxy setNextPanelID:@"ac_advanced"];
+		[self.panelProxy setNextPanelID:@"ac_custom"];
 	else
 		[self.panelProxy setNextPanelID:nil];
 }

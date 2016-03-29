@@ -318,15 +318,15 @@
 	{
 		int mode = [value unsignedShortValue];
 		
-		if (mode == TCConfigModeAdvanced)
-			return TCConfigModeAdvanced;
-		else if (mode == TCConfigModeBasic)
-			return TCConfigModeBasic;
+		if (mode == TCConfigModeCustom)
+			return TCConfigModeCustom;
+		else if (mode == TCConfigModeBundled)
+			return TCConfigModeBundled;
 		
-		return TCConfigModeAdvanced;
+		return TCConfigModeCustom;
 	}
 	else
-		return TCConfigModeAdvanced;
+		return TCConfigModeCustom;
 }
 
 - (void)setMode:(TCConfigMode)mode

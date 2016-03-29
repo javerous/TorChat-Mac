@@ -38,8 +38,8 @@
 #import "TCPanel_Welcome.h"
 #import "TCPanel_Security.h"
 #import "TCPanel_Mode.h"
-#import "TCPanel_Advanced.h"
-#import "TCPanel_Basic.h"
+#import "TCPanel_Custom.h"
+#import "TCPanel_Bundled.h"
 
 #import "TCCoreManager.h"
 #import "TCBuddy.h"
@@ -204,7 +204,7 @@
 			}
 			
 			// Show assistant.
-			NSArray *panels = @[ [TCPanel_Welcome class], [TCPanel_Security class], [TCPanel_Mode class], [TCPanel_Advanced class], [TCPanel_Basic class] ];
+			NSArray *panels = @[ [TCPanel_Welcome class], [TCPanel_Security class], [TCPanel_Mode class], [TCPanel_Custom class], [TCPanel_Bundled class] ];
 			
 			[SMAssistantController startAssistantWithPanels:panels completionHandler:^(SMAssistantCompletionType assCompType, id context) {
 				
@@ -319,8 +319,8 @@
 		
 		_configuration = configuration;
 		
-		// Start tor only in basic mode.
-		if ([_configuration mode] != TCConfigModeBasic)
+		// Start tor only in bundled mode.
+		if ([_configuration mode] != TCConfigModeBundled)
 		{
 			ctrl(SMOperationsControlContinue);
 			return;

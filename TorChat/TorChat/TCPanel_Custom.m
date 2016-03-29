@@ -1,5 +1,5 @@
 /*
- *  TCPanel_Advanced.m
+ *  TCPanel_Custom.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,7 +20,7 @@
  *
  */
 
-#import "TCPanel_Advanced.h"
+#import "TCPanel_Custom.h"
 
 #import "TCLogsManager.h"
 #import "TCConfigAppEncryptable.h"
@@ -40,11 +40,11 @@
 
 
 /*
-** TCPanel_Advanced - Private
+** TCPanel_Custom - Private
 */
-#pragma mark - TCPanel_Advanced - Private
+#pragma mark - TCPanel_Custom - Private
 
-@interface TCPanel_Advanced ()
+@interface TCPanel_Custom ()
 {
 	id <TCConfigAppEncryptable> _currentConfig;
 
@@ -63,39 +63,39 @@
 
 
 /*
-** TCPanel_Advanced
+** TCPanel_Custom
 */
-#pragma mark - TCPanel_Advanced
+#pragma mark - TCPanel_Custom
 
-@implementation TCPanel_Advanced
+@implementation TCPanel_Custom
 
 @synthesize panelProxy;
 @synthesize panelPreviousContent;
 
 - (void)dealloc
 {
-    TCDebugLog(@"TCPanel_Advanced dealloc");
+    TCDebugLog(@"TCPanel_Custom dealloc");
 }
 
 
 /*
-** TCPanel_Advanced - SMAssistantPanel
+** TCPanel_Custom - SMAssistantPanel
 */
-#pragma mark - TCPanel_Advanced - SMAssistantPanel
+#pragma mark - TCPanel_Custom - SMAssistantPanel
 
 + (id <SMAssistantPanel>)panelInstance
 {
-	return [[TCPanel_Advanced alloc] initWithNibName:@"AssistantPanel_Advanced" bundle:nil];
+	return [[TCPanel_Custom alloc] initWithNibName:@"AssistantPanel_Custom" bundle:nil];
 }
 
 + (NSString *)panelIdentifier
 {
-	return @"ac_advanced";
+	return @"ac_custom";
 }
 
 + (NSString *)panelTitle
 {
-	return NSLocalizedString(@"ac_title_advanced", @"");
+	return NSLocalizedString(@"ac_title_custom", @"");
 }
 
 - (NSView *)panelView
@@ -123,7 +123,7 @@
 	// Configure assistant.
 	[self.panelProxy setIsLastPanel:YES];
 	
-	[_currentConfig setMode:TCConfigModeAdvanced];
+	[_currentConfig setMode:TCConfigModeCustom];
 	
 	// Add view to configure download path.
 	_torDownloadsLocation = [[TCLocationViewController alloc] initWithConfiguration:_currentConfig component:TCConfigPathComponentDownloads];

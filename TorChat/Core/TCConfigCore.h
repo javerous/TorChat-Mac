@@ -46,8 +46,8 @@ typedef enum
 
 typedef enum
 {
-	TCConfigModeAdvanced,
-	TCConfigModeBasic
+	TCConfigModeCustom,
+	TCConfigModeBundled
 } TCConfigMode;
 
 // -- Localization --

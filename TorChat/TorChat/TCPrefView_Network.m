@@ -98,14 +98,14 @@
 	mode = [self.config mode];
 	
 	// Set mode
-	if (mode == TCConfigModeBasic)
+	if (mode == TCConfigModeBundled)
 	{
 		[_imIdentifierField setEnabled:NO];
 		[_imPortField setEnabled:NO];
 		[_torAddressField setEnabled:NO];
 		[_torPortField setEnabled:NO];
 	}
-	else if (mode == TCConfigModeAdvanced)
+	else if (mode == TCConfigModeCustom)
 	{
 		[_imIdentifierField setEnabled:YES];
 		[_imPortField setEnabled:YES];
@@ -122,7 +122,7 @@
 
 - (void)panelDidDisappear
 {
-	if (changes && [self.config mode] == TCConfigModeAdvanced)
+	if (changes && [self.config mode] == TCConfigModeCustom)
 	{
 		// Set config value.
 		[self.config setSelfIdentifier:[_imIdentifierField stringValue]];

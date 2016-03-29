@@ -1,5 +1,5 @@
 /*
- *  TCPanel_Basic.m
+ *  TCPanel_Bundled.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -23,7 +23,7 @@
 @import SMFoundation;
 @import SMTor;
 
-#import "TCPanel_Basic.h"
+#import "TCPanel_Bundled.h"
 
 #import "TCLogsManager.h"
 #import "TCConfigAppEncryptable.h"
@@ -44,11 +44,11 @@
 
 
 /*
-** TCPanel_Basic - Private
+** TCPanel_Bundled - Private
 */
-#pragma mark - TCPanel_Basic - Private
+#pragma mark - TCPanel_Bundled - Private
 
-@interface TCPanel_Basic ()
+@interface TCPanel_Bundled ()
 {
 	id <TCConfigAppEncryptable> _currentConfig;
 	SMTorManager *_tor;
@@ -65,46 +65,46 @@
 
 
 /*
-** TCPanel_Basic
+** TCPanel_Bundled
 */
-#pragma mark - TCPanel_Basic
+#pragma mark - TCPanel_Bundled
 
-@implementation TCPanel_Basic
+@implementation TCPanel_Bundled
 
 @synthesize panelProxy;
 @synthesize panelPreviousContent;
 
 
 /*
-** TCPanel_Basic - Instance
+** TCPanel_Bundled - Instance
 */
-#pragma mark - TCPanel_Basic - Instance
+#pragma mark - TCPanel_Bundled - Instance
 
 - (void)dealloc
 {
-	TCDebugLog(@"TCPanel_Basic dealloc");
+	TCDebugLog(@"TCPanel_Bundled dealloc");
 }
 
 
 
 /*
-** TCPanel_Basic - SMAssistantPanel
+** TCPanel_Bundled - SMAssistantPanel
 */
-#pragma mark - TCPanel_Basic - SMAssistantPanel
+#pragma mark - TCPanel_Bundled - SMAssistantPanel
 
 + (id <SMAssistantPanel>)panelInstance
 {
-	return [[TCPanel_Basic alloc] initWithNibName:@"AssistantPanel_Basic" bundle:nil];
+	return [[TCPanel_Bundled alloc] initWithNibName:@"AssistantPanel_Bundled" bundle:nil];
 }
 
 + (NSString *)panelIdentifier
 {
-	return @"ac_basic";
+	return @"ac_bundled";
 }
 
 + (NSString *)panelTitle
 {
-	return NSLocalizedString(@"ac_title_basic", @"");
+	return NSLocalizedString(@"ac_title_bundled", @"");
 }
 
 - (NSView *)panelView

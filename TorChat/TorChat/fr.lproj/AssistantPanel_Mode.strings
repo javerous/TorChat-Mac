@@ -1,15 +1,15 @@
 
-/* Class = "NSTextFieldCell"; title = "Use basic mode to use TorChat with a pre-configured tor, or use advanced mode to use an existing running tor with a TorChat service configured."; ObjectID = "MdA-og-otk"; */
-"MdA-og-otk.title" = "Sélectionnez le mode basique pour utiliser TorChat avec une instance de tor préconfiguré, ou sélectionnez le mode avancé pour utiliser une instance de tor déjà configuré avec un service TorChat.";
+/* Class = "NSTextFieldCell"; title = "Select \"bundled Tor binary\" to use TorChat with a pre-configured and pre-included Tor binary, or select \"custom Tor instance\" to use your own Tor instance with a TorChat service configured."; ObjectID = "MdA-og-otk"; */
+"MdA-og-otk.title" = "Sélectionnez \"binaire Tor préinclus\" pour utiliser TocChat avec un binaire Tor préconfiguré et préinclus, ou sélectionnez \"instance Tor personnelle\" pour utiliser votre propre instance Tor avec un service TorChat configuré.";
 
-/* Class = "NSButtonCell"; title = "Basic Mode"; ObjectID = "bXA-QU-WSD"; */
-"bXA-QU-WSD.title" = "Mode basique";
+/* Class = "NSButtonCell"; title = "Bundled Tor binary"; ObjectID = "bXA-QU-WSD"; */
+"bXA-QU-WSD.title" = "Binaire Tor préinclus";
 
-/* Class = "NSTextFieldCell"; title = "Please specify the mode to use"; ObjectID = "orc-zu-V4h"; */
-"orc-zu-V4h.title" = "Sélectionnez le mode à utiliser";
+/* Class = "NSTextFieldCell"; title = "Please select the Tor mode to use"; ObjectID = "orc-zu-V4h"; */
+"orc-zu-V4h.title" = "Sélectionnez le mode Tor à utiliser";
 
-/* Class = "NSButtonCell"; title = "Advanced Mode"; ObjectID = "te8-ma-4hL"; */
-"te8-ma-4hL.title" = "Mode avancé";
+/* Class = "NSButtonCell"; title = "Custom Tor instance"; ObjectID = "te8-ma-4hL"; */
+"te8-ma-4hL.title" = "Instance Tor personnelle";
 
 /* Class = "NSButtonCell"; title = "Radio"; ObjectID = "zae-RN-vxA"; */
 "zae-RN-vxA.title" = "Radio";

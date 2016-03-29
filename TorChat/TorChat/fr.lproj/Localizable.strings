@@ -26,8 +26,8 @@
 "ac_title_welcome" = "Configurer TorChat pour Mac";
 "ac_title_security" = "Réglage de sécurité";
 "ac_title_mode" = "Choisissez un mode";
-"ac_title_advanced" = "Configurer le mode avancé";
-"ac_title_basic" = "Configurer le mode basic";
+"ac_title_custom" = "Configurer le mode personnalisé";
+"ac_title_bundled" = "Configurer le mode basic";
 
 "ac_error_build_path" = "Impossible de créer le chemin d'accès du fichier de configuration suite à une erreur système.";
 "ac_error_write_file" = "Impossible de créer un fichier de configuration (%@). Vérifiez les droits d'écriture sur votre dossier TorChat.";
