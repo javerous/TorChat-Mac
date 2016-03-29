@@ -26,8 +26,8 @@
 "ac_title_welcome" = "Configure TorChat for Mac";
 "ac_title_security" = "Security settings";
 "ac_title_mode" = "Select a mode";
-"ac_title_advanced" = "Setup the advanced mode";
-"ac_title_basic" = "Setup the basic mode";
+"ac_title_custom" = "Setup the custom mode";
+"ac_title_bundled" = "Setup the bundled mode";
 
 "ac_error_build_path" = "Can't build the configuration path because of a system error";
 "ac_error_write_file" = "Can't build a configuration file (%@). Please check write access on your TorChat folder.";

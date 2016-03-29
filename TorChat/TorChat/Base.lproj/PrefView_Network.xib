@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10115" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10115"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
         <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
@@ -18,10 +18,10 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <view translatesAutoresizingMaskIntoConstraints="NO" id="ta5-FT-idY" userLabel="Network">
-            <rect key="frame" x="0.0" y="0.0" width="410" height="220"/>
+            <rect key="frame" x="0.0" y="0.0" width="410" height="265"/>
             <subviews>
                 <box autoresizesSubviews="NO" title="TorChat" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="A4U-kf-1ju">
-                    <rect key="frame" x="17" y="108" width="376" height="92"/>
+                    <rect key="frame" x="17" y="112" width="376" height="92"/>
                     <view key="contentView" id="tFd-Aj-6To">
                         <rect key="frame" x="1" y="1" width="374" height="76"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -82,6 +82,7 @@
                         <constraint firstItem="n9v-m5-SDF" firstAttribute="leading" secondItem="m1X-8x-GIO" secondAttribute="trailing" constant="8" symbolic="YES" id="EDs-rH-e5t"/>
                         <constraint firstAttribute="trailing" secondItem="9KL-LP-wRq" secondAttribute="trailing" constant="16" id="W0O-gY-66N"/>
                         <constraint firstItem="2jV-hW-0oB" firstAttribute="centerY" secondItem="9KL-LP-wRq" secondAttribute="centerY" constant="-0.5" id="ZLw-DD-fbb"/>
+                        <constraint firstAttribute="height" constant="88" id="a3K-4p-636"/>
                         <constraint firstItem="2jV-hW-0oB" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="A4U-kf-1ju" secondAttribute="leading" constant="11" id="j4c-fo-rdy"/>
                         <constraint firstItem="m1X-8x-GIO" firstAttribute="leading" secondItem="A4U-kf-1ju" secondAttribute="leading" constant="11" id="pSb-N2-uM0"/>
                         <constraint firstItem="n9v-m5-SDF" firstAttribute="top" secondItem="9KL-LP-wRq" secondAttribute="bottom" constant="8" id="tSp-jM-DKt"/>
@@ -92,13 +93,13 @@
                     <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
                 <box autoresizesSubviews="NO" title="Tor" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="GTq-S2-pwB">
-                    <rect key="frame" x="17" y="13" width="376" height="91"/>
+                    <rect key="frame" x="17" y="16" width="376" height="92"/>
                     <view key="contentView" id="8ea-pM-CQj">
-                        <rect key="frame" x="1" y="1" width="374" height="75"/>
+                        <rect key="frame" x="1" y="1" width="374" height="76"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0nW-gC-87P">
-                                <rect key="frame" x="11" y="16" width="101" height="17"/>
+                                <rect key="frame" x="11" y="17" width="101" height="17"/>
                                 <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Tor Port SOCKS" usesSingleLineMode="YES" id="Nx3-Ts-rea">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -106,7 +107,7 @@
                                 </textFieldCell>
                             </textField>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sLC-d4-YEX">
-                                <rect key="frame" x="35" y="46" width="77" height="17"/>
+                                <rect key="frame" x="35" y="47" width="77" height="17"/>
                                 <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Tor Address" usesSingleLineMode="YES" id="0dS-RH-K0k">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -114,7 +115,7 @@
                                 </textFieldCell>
                             </textField>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wxv-gf-iWN">
-                                <rect key="frame" x="118" y="14" width="80" height="22"/>
+                                <rect key="frame" x="118" y="15" width="80" height="22"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="80" id="HPD-Kk-hAX"/>
                                 </constraints>
@@ -128,7 +129,7 @@
                                 </connections>
                             </textField>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="eFL-vX-f66">
-                                <rect key="frame" x="118" y="43" width="238" height="22"/>
+                                <rect key="frame" x="118" y="44" width="238" height="22"/>
                                 <constraints>
                                     <constraint firstAttribute="width" priority="250" constant="10000" id="Mfp-ap-LaA"/>
                                 </constraints>
@@ -153,6 +154,7 @@
                         <constraint firstAttribute="trailing" secondItem="eFL-vX-f66" secondAttribute="trailing" constant="16" id="DmY-Ib-9ft"/>
                         <constraint firstItem="wxv-gf-iWN" firstAttribute="centerY" secondItem="0nW-gC-87P" secondAttribute="centerY" constant="-0.5" id="RmT-EB-fUf"/>
                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="wxv-gf-iWN" secondAttribute="trailing" constant="11" id="cWW-kj-quE"/>
+                        <constraint firstAttribute="height" constant="88" id="cew-qh-6UZ"/>
                         <constraint firstItem="wxv-gf-iWN" firstAttribute="top" secondItem="eFL-vX-f66" secondAttribute="bottom" constant="7" id="geq-Ln-aeY"/>
                         <constraint firstItem="sLC-d4-YEX" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="GTq-S2-pwB" secondAttribute="leading" constant="11" id="iZ0-bn-q72"/>
                         <constraint firstItem="0nW-gC-87P" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="GTq-S2-pwB" secondAttribute="leading" constant="11" id="nmf-Wl-EbQ"/>
@@ -161,18 +163,46 @@
                     <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                     <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bdK-yS-Gq3">
+                    <rect key="frame" x="18" y="226" width="39" height="17"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Mode" id="O9e-Yb-W4b">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="F3R-o7-O1A">
+                    <rect key="frame" x="61" y="221" width="162" height="26"/>
+                    <popUpButtonCell key="cell" type="push" title="Bundled Tor binary" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="txI-NC-DG8" id="5SG-e8-w0F">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="menu"/>
+                        <menu key="menu" id="464-A0-vt6">
+                            <items>
+                                <menuItem title="Bundled Tor binary" state="on" id="txI-NC-DG8">
+                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                </menuItem>
+                                <menuItem title="Custom Tor instance" id="fWc-nx-2nN"/>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                </popUpButton>
             </subviews>
             <constraints>
                 <constraint firstAttribute="width" constant="410" id="6oB-cA-pke"/>
                 <constraint firstAttribute="trailing" secondItem="GTq-S2-pwB" secondAttribute="trailing" constant="20" symbolic="YES" id="6xS-Yy-DQF"/>
+                <constraint firstItem="bdK-yS-Gq3" firstAttribute="leading" secondItem="ta5-FT-idY" secondAttribute="leading" constant="20" symbolic="YES" id="A06-dl-5AS"/>
+                <constraint firstItem="A4U-kf-1ju" firstAttribute="top" secondItem="F3R-o7-O1A" secondAttribute="bottom" constant="20" id="Ewn-Ou-D0n"/>
                 <constraint firstAttribute="trailing" secondItem="A4U-kf-1ju" secondAttribute="trailing" constant="20" symbolic="YES" id="HUx-1b-p83"/>
-                <constraint firstItem="A4U-kf-1ju" firstAttribute="top" secondItem="ta5-FT-idY" secondAttribute="top" constant="20" symbolic="YES" id="Oah-1L-1ug"/>
-                <constraint firstAttribute="bottom" secondItem="GTq-S2-pwB" secondAttribute="bottom" constant="17" id="ZnF-cX-iwB"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="F3R-o7-O1A" secondAttribute="trailing" constant="20" symbolic="YES" id="JSK-gf-Jyq"/>
+                <constraint firstItem="F3R-o7-O1A" firstAttribute="leading" secondItem="bdK-yS-Gq3" secondAttribute="trailing" constant="8" symbolic="YES" id="RbO-CL-d15"/>
                 <constraint firstItem="GTq-S2-pwB" firstAttribute="top" secondItem="A4U-kf-1ju" secondAttribute="bottom" constant="8" symbolic="YES" id="m6C-b9-LS3"/>
                 <constraint firstItem="A4U-kf-1ju" firstAttribute="leading" secondItem="ta5-FT-idY" secondAttribute="leading" constant="20" symbolic="YES" id="mwe-sm-9mZ"/>
-                <constraint firstAttribute="height" constant="220" id="qDY-hM-XNP"/>
+                <constraint firstItem="F3R-o7-O1A" firstAttribute="top" secondItem="ta5-FT-idY" secondAttribute="top" constant="20" symbolic="YES" id="r3k-yE-Wfd"/>
                 <constraint firstItem="GTq-S2-pwB" firstAttribute="leading" secondItem="ta5-FT-idY" secondAttribute="leading" constant="20" symbolic="YES" id="tLi-cd-5LZ"/>
+                <constraint firstItem="F3R-o7-O1A" firstAttribute="centerY" secondItem="bdK-yS-Gq3" secondAttribute="centerY" id="wHb-9d-2Ug"/>
+                <constraint firstAttribute="bottom" secondItem="GTq-S2-pwB" secondAttribute="bottom" constant="20" symbolic="YES" id="y0m-P3-Ngk"/>
             </constraints>
+            <point key="canvasLocation" x="464" y="194.5"/>
         </view>
     </objects>
 </document>

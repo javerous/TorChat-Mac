@@ -1,5 +1,5 @@
 /*
- *  TCPanel_Advanced.h
+ *  TCPanel_Custom.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -26,10 +26,10 @@
 
 
 /*
-** TCPanel_Advanced
+** TCPanel_Custom
 */
-#pragma mark - TCPanel_Advanced
+#pragma mark - TCPanel_Custom
 
-@interface TCPanel_Advanced : NSViewController <SMAssistantPanel>
+@interface TCPanel_Custom : NSViewController <SMAssistantPanel>
 
 @end
