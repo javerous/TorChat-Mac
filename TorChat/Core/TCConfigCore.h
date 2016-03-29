@@ -88,7 +88,7 @@ typedef enum
 
 // -- TorChat --
 @property NSString *selfIdentifier;
-@property uint16_t clientPort;
+@property uint16_t selfPort;
 
 // -- Mode --
 @property TCConfigMode mode;

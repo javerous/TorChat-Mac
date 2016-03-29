@@ -10,6 +10,7 @@
             <connections>
                 <outlet property="imIdentifierField" destination="9KL-LP-wRq" id="pLK-fc-Vep"/>
                 <outlet property="imPortField" destination="n9v-m5-SDF" id="dyL-qO-L7U"/>
+                <outlet property="modePopup" destination="F3R-o7-O1A" id="nHF-v1-1S0"/>
                 <outlet property="torAddressField" destination="eFL-vX-f66" id="nLh-Bi-YC9"/>
                 <outlet property="torPortField" destination="wxv-gf-iWN" id="037-Ax-I8e"/>
                 <outlet property="view" destination="ta5-FT-idY" id="g1t-fp-aez"/>
@@ -185,6 +186,9 @@
                             </items>
                         </menu>
                     </popUpButtonCell>
+                    <connections>
+                        <action selector="doChangeMode:" target="-2" id="pjv-v3-9ma"/>
+                    </connections>
                 </popUpButton>
             </subviews>
             <constraints>

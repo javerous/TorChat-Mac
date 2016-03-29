@@ -229,7 +229,7 @@
 	
 	// > Configure the port and address
 	my_addr.sin_family = AF_INET;
-	my_addr.sin_port = htons([_config clientPort]);
+	my_addr.sin_port = htons(_config.selfPort);
 	my_addr.sin_addr.s_addr = INADDR_ANY;
 	memset(&(my_addr.sin_zero), '\0', 8);
 	
