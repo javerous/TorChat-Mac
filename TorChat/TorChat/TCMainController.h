@@ -41,7 +41,7 @@
 
 @interface TCMainController : NSObject
 
-// -- Singleton --
+// -- Instance --
 + (TCMainController *)sharedController;
 
 // -- Life --
@@ -53,5 +53,7 @@
 // -- Properties --
 @property (strong, readonly, nonatomic) id <TCConfigAppEncryptable>	configuration;
 @property (strong, readonly, nonatomic) TCCoreManager				*core;
+
+@property (assign, readonly, nonatomic) BOOL isStarting;
 
 @end

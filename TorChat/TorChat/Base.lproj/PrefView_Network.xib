@@ -45,9 +45,6 @@
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
-                                <connections>
-                                    <outlet property="delegate" destination="-2" id="1w9-jk-aEV"/>
-                                </connections>
                             </textField>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="m1X-8x-GIO">
                                 <rect key="frame" x="11" y="17" width="129" height="17"/>
@@ -63,13 +60,14 @@
                                     <constraint firstAttribute="width" constant="80" id="xsf-Sv-DQu"/>
                                 </constraints>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="11009" drawsBackground="YES" id="dN8-Yz-9b1">
+                                    <numberFormatter key="formatter" formatterBehavior="default10_4" localizesFormat="NO" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" id="ik0-lO-iu7">
+                                        <real key="minimum" value="1"/>
+                                        <real key="maximum" value="65235"/>
+                                    </numberFormatter>
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
-                                <connections>
-                                    <outlet property="delegate" destination="-2" id="nDT-Ji-hcB"/>
-                                </connections>
                             </textField>
                         </subviews>
                         <constraints>
@@ -121,13 +119,14 @@
                                     <constraint firstAttribute="width" constant="80" id="HPD-Kk-hAX"/>
                                 </constraints>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="9050" drawsBackground="YES" id="ING-QQ-79i">
+                                    <numberFormatter key="formatter" formatterBehavior="default10_4" localizesFormat="NO" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" id="lKH-En-T3r">
+                                        <real key="minimum" value="1"/>
+                                        <real key="maximum" value="65235"/>
+                                    </numberFormatter>
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
-                                <connections>
-                                    <outlet property="delegate" destination="-2" id="RMF-w0-fzE"/>
-                                </connections>
                             </textField>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="eFL-vX-f66">
                                 <rect key="frame" x="118" y="44" width="238" height="22"/>
@@ -139,9 +138,6 @@
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
-                                <connections>
-                                    <outlet property="delegate" destination="-2" id="gFS-1s-F5k"/>
-                                </connections>
                             </textField>
                         </subviews>
                         <constraints>

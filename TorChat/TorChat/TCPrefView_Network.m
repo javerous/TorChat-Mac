@@ -30,7 +30,10 @@
 
 @interface TCPrefView_Network ()
 {
-	BOOL changes;
+	NSString *_customIMIdentifier;
+	NSNumber *_customIMPort;
+	NSString *_customTorAddress;
+	NSNumber *_customTorPort;
 }
 
 
@@ -72,18 +75,6 @@
 
 
 /*
-** TCPrefView_Network - TextField Delegate
-*/
-#pragma mark - TCPrefView_Network - TextField Delegate
-
-- (void)controlTextDidChange:(NSNotification *)aNotification
-{
-	changes = YES;
-}
-
-
-
-/*
 ** TCPrefView_Network - TCPrefView
 */
 #pragma mark - TCPrefView_Network - TCPrefView
@@ -95,12 +86,32 @@
 	
 	// Load configuration.
 	[self _reloadConfiguration];
+	
+	_customIMIdentifier = self.config.selfIdentifier;
+	_customIMPort = @(self.config.selfPort);
+	_customTorAddress = self.config.torAddress;
+	_customTorPort = @(self.config.torPort);
 }
 
 - (void)panelDidDisappear
 {
-	if (changes && self.config.mode == TCConfigModeCustom)
+	BOOL changes = NO;
+	
+	changes = changes || ((_modePopup.indexOfSelectedItem == 0 && self.config.mode != TCConfigModeBundled) || (_modePopup.indexOfSelectedItem == 1 && self.config.mode != TCConfigModeCustom));
+	changes = changes || ([self.config.selfIdentifier isEqualToString:_imIdentifierField.stringValue] == NO);
+	changes = changes || (self.config.selfPort != (uint16_t)_imPortField.intValue);
+	changes = changes || ([self.config.torAddress isEqualToString:_torAddressField.stringValue] == NO);
+	changes = changes || (self.config.torPort != (uint16_t)_torPortField.intValue);
+
+	if (changes)
 	{
+		// Set config mode.
+		if (_modePopup.indexOfSelectedItem == 0)
+			self.config.mode = TCConfigModeBundled;
+		else if (_modePopup.indexOfSelectedItem == 1)
+			self.config.mode = TCConfigModeCustom;
+
+		
 		// Set config value.
 		self.config.selfIdentifier = _imIdentifierField.stringValue;
 		self.config.selfPort = (uint16_t)_imPortField.intValue;
@@ -108,7 +119,13 @@
 		self.config.torPort = (uint16_t)_torPortField.intValue;
 		
 		// Reload config.
-		[self reloadConfigurationWithCompletionHandler:nil];
+		__weak TCPrefView_Network *weakSelf = self;
+		
+		[self reloadConfigurationWithCompletionHandler:^{
+			dispatch_async(dispatch_get_main_queue(), ^{
+				[weakSelf _reloadConfiguration];
+			});
+		}];
 	}
 }
 
@@ -123,29 +140,34 @@
 {
 	NSInteger index = _modePopup.indexOfSelectedItem;
 	
-	if (index == 0 && self.config.mode == TCConfigModeCustom) // bundled.
+	if (index == 0)
 	{
-		self.config.mode = TCConfigModeBundled;
+		_customIMIdentifier = _imIdentifierField.stringValue;
+		_customIMPort = @(_imPortField.intValue);
+		_customTorAddress = _torAddressField.stringValue;
+		_customTorPort = @(_torPortField.intValue);
 		
-		self.config.selfPort = 60601;
-		self.config.torAddress = @"localhost";
-		self.config.torPort = 60600;
+		_imIdentifierField.stringValue = self.config.selfIdentifier;
+		_imPortField. stringValue = @"60601";
+		_torAddressField.stringValue =  @"localhost";
+		_torPortField.stringValue = @"60600";
 		
-		[self reloadConfigurationWithCompletionHandler:^{
-			[self _reloadConfiguration];
-		}];
-		
-		[self _reloadConfiguration];
+		_imIdentifierField.enabled = NO;
+		_imPortField.enabled = NO;
+		_torAddressField.enabled = NO;
+		_torPortField.enabled = NO;
 	}
-	else if (index == 1 && self.config.mode == TCConfigModeBundled) // custom.
-	{
-		self.config.mode = TCConfigModeCustom;
+	else if (index == 1)
+	{		
+		_imIdentifierField.stringValue = _customIMIdentifier;
+		_imPortField. stringValue = [_customIMPort description];
+		_torAddressField.stringValue =  _customTorAddress;
+		_torPortField.stringValue = [_customTorPort description];
 		
-		[self reloadConfigurationWithCompletionHandler:^{
-			[self _reloadConfiguration];
-		}];
-		
-		[self _reloadConfiguration];
+		_imIdentifierField.enabled = YES;
+		_imPortField.enabled = YES;
+		_torAddressField.enabled = YES;
+		_torPortField.enabled = YES;
 	}
 }
 

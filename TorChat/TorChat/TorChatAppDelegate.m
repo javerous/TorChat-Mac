@@ -39,9 +39,8 @@
 */
 #pragma mark - TorChatAppDelegate - Private
 
-@interface TorChatAppDelegate () <TCCoreManagerObserver>
+@interface TorChatAppDelegate ()
 {
-	BOOL _loaded;
 	BOOL _quitting;
 }
 
@@ -98,12 +97,6 @@
 			[[NSApplication sharedApplication] terminate:nil];
 			return;
 		}
-		
-		[core addObserver:self];
-		
-		dispatch_async(dispatch_get_main_queue(), ^{
-			_loaded = YES;
-		});
 	}];
 }
 
@@ -207,41 +200,29 @@
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
-	if (_loaded == NO)
+	if ([[TCMainController sharedController] isStarting])
 		return NO;
 	else
 	{
+		if (menuItem == _buddyBlockMenu)
+		{
+			TCBuddy *buddy = [[TCBuddiesWindowController sharedController] selectedBuddy];
+			
+			if (!buddy)
+				return NO;
+			
+			if ([buddy blocked])
+				[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_unblock_buddy", @"")];
+			else
+				[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_block_buddy", @"")];
+			
+			return YES;
+		}
+		
 		if (menuItem.action == @selector(doQuit:))
 			return (_quitting == NO);
 
 		return YES;
-	}
-}
-
-
-
-/*
-** TorChatAppDelegate - TCCoreManagerObserver
-*/
-#pragma mark - TCCoreManagerObserver
-
-- (void)torchatManager:(TCCoreManager *)manager information:(SMInfo *)info
-{
-	if (info.kind == SMInfoInfo && (info.code == TCCoreEventBuddyBlocked || info.code == TCCoreEventBuddyUnblocked))
-	{
-		dispatch_async(dispatch_get_main_queue(), ^{
-
-			TCBuddy		*buddy = info.context;
-			NSString	*selected = [[[TCBuddiesWindowController sharedController] selectedBuddy] identifier];
-			
-			if ([buddy.identifier isEqualToString:selected])
-			{
-				if (info.code == TCCoreEventBuddyBlocked)
-					[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_unblock_buddy", @"")];
-				else
-					[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_block_buddy", @"")];
-			}
-		});
 	}
 }
 
