@@ -16,7 +16,7 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9lL-lH-N5e">
+        <customView translatesAutoresizingMaskIntoConstraints="NO" id="9lL-lH-N5e">
             <rect key="frame" x="0.0" y="0.0" width="277" height="42"/>
             <subviews>
                 <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Nlk-4b-E9h">
