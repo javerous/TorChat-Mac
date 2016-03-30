@@ -56,6 +56,8 @@
 
 @interface TCPreferencesWindowController ()
 {
+	IBOutlet NSView *_loadingView;
+	
 	TCPrefView	*_currentCtrl;
 }
 
@@ -161,6 +163,7 @@
 	
 	[_currentCtrl panelDidDisappear];
 	
+	
 	// Load new view config.
 	__weak TCPrefView *weakViewCtrl = viewCtrl;
 	
@@ -168,7 +171,15 @@
 	viewCtrl.core = core;
 	viewCtrl.reloadConfig = ^(dispatch_block_t doneHandler) {
 		
-		// XXX lock preferences interface.
+		// Lock UI.
+		__block BOOL isVisible;
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			isVisible = self.window.isVisible;
+			
+			if (isVisible)
+				[self _lockForLoading];
+		});
 		
 		// Restart main controller.
 		[[TCMainController sharedController] startWithConfiguration:config completionHandler:^(TCCoreManager *aCore) {
@@ -185,6 +196,9 @@
 				
 				if (doneHandler)
 					doneHandler();
+				
+				if (isVisible)
+					[self _unloadForLoading];
 			});
 		}];
 	};
@@ -204,7 +218,7 @@
 	
 	rect.origin.y += (previous - rect.size.height);
 	
-	// Load view/
+	// Load view.
 	if (animated)
 	{
 		[NSAnimationContext beginGrouping];
@@ -225,6 +239,36 @@
 	
 	// Hold the current controller.
 	_currentCtrl = viewCtrl;
+}
+
+- (void)_lockForLoading
+{
+	// > main queue <
+
+	// Add load view.
+	if (_loadingView.superview == nil)
+	{
+		NSDictionary	*viewsDictionary;
+		NSView			*view = _loadingView;
+		
+		[self.window.contentView addSubview:view];
+		
+		viewsDictionary = NSDictionaryOfVariableBindings(view);
+		
+		[self.window.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view]|" options:0 metrics:nil views:viewsDictionary]];
+		[self.window.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[view]|" options:0 metrics:nil views:viewsDictionary]];
+	}
+}
+
+- (void)_unloadForLoading
+{
+	// > main queue <
+	
+	// Remove subview.
+	if (_loadingView.superview != nil)
+	{
+		[_loadingView removeFromSuperview];
+	}
 }
 
 
