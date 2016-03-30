@@ -168,8 +168,17 @@
 	viewCtrl.core = core;
 	viewCtrl.reloadConfig = ^(dispatch_block_t doneHandler) {
 		
+		// XXX lock preferences interface.
+		
 		// Restart main controller.
 		[[TCMainController sharedController] startWithConfiguration:config completionHandler:^(TCCoreManager *aCore) {
+
+			if (!aCore)
+			{
+				[[NSApplication sharedApplication] terminate:nil];
+				return;
+			}
+			
 			dispatch_async(dispatch_get_main_queue(), ^{
 				
 				weakViewCtrl.core = aCore;

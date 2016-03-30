@@ -71,6 +71,8 @@
 	dispatch_source_t _torChangesTimer;
 }
 
+@property (assign, nonatomic) BOOL isStarting;
+
 @end
 
 
@@ -263,10 +265,13 @@
 		
 		// -- Finish --
 		operations.finishHandler = ^(BOOL canceled) {
+			self.isStarting = NO;
 			opCtrl(SMOperationsControlContinue);
 			handler(configuration, core);
 		};
 		
+		// Start.
+		self.isStarting = YES;
 		[operations start];
 	}];
 }
@@ -278,7 +283,7 @@
 	
 	[_opQueue scheduleBlock:^(SMOperationsControl  _Nonnull opCtrl) {
 		
-		SMOperationsQueue *operations = [[SMOperationsQueue alloc] initStarted];
+		SMOperationsQueue *operations = [[SMOperationsQueue alloc] init];
 		
 		// -- Stop if necessary --
 		[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
@@ -288,13 +293,25 @@
 		}];
 		
 		// -- Start with configuration --
+		__block TCCoreManager *core = nil;
+
 		[operations scheduleBlock:^(SMOperationsControl ctrl) {
-			[self _startWithConfiguration:configuration completionHandler:^(TCCoreManager *core) {
+			[self _startWithConfiguration:configuration completionHandler:^(TCCoreManager *aCore) {
+				core = aCore;
 				ctrl(SMOperationsControlContinue);
-				opCtrl(SMOperationsControlContinue);
-				handler(core);
 			}];
 		}];
+		
+		// -- Finish --
+		operations.finishHandler = ^(BOOL canceled) {
+			self.isStarting = NO;
+			opCtrl(SMOperationsControlContinue);
+			handler(core);
+		};
+		
+		// Start.
+		self.isStarting = YES;
+		[operations start];
 	}];
 }
 
@@ -306,8 +323,6 @@
 	SMOperationsQueue *operationQueue = [[SMOperationsQueue alloc] initStarted];
 	
 	// -- Start Tor if necessary --
-	__block BOOL torAvailable = NO;
-	
 	[operationQueue scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
 		
 		if (!configuration)
@@ -363,7 +378,6 @@
 					}
 					else if (startInfo.code == SMTorManagerEventStartDone)
 					{
-						torAvailable = YES;
 						ctrl(SMOperationsControlContinue);
 					}
 					break;
@@ -372,12 +386,16 @@
 				case SMInfoWarning:
 				{
 					if (startInfo.code == SMTorManagerWarningStartCanceled)
+					{
+						_torManager = nil;
 						ctrl(SMOperationsControlContinue);
+					}
 					break;
 				}
 					
 				case SMInfoError:
 				{
+					_torManager = nil;
 					ctrl(SMOperationsControlContinue);
 					break;
 				}
@@ -391,7 +409,7 @@
 	// -- Update Tor if necessary --
 	[operationQueue scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
 		
-		if (torAvailable == NO)
+		if (_torManager == nil)
 		{
 			ctrl(SMOperationsControlContinue);
 			return;
@@ -422,6 +440,13 @@
 	
 	// -- Launch controllers --
 	[operationQueue scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
+		
+		if (_torManager == nil && [_configuration mode] == TCConfigModeBundled)
+		{
+			handler(nil);
+			ctrl(SMOperationsControlContinue);
+			return;
+		}
 		
 		// Create core manager.
 		_core = [[TCCoreManager alloc] initWithConfiguration:_configuration];

@@ -272,6 +272,9 @@
 		if (!_running)
 			return;
 		
+		// Close the window.
+		[self close];
+		
 		// Clean buddies.
 		for (TCBuddy *buddy in _buddies)
 		{
