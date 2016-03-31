@@ -21,16 +21,16 @@
             <rect key="frame" x="0.0" y="0.0" width="420" height="327"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField verticalHuggingPriority="750" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wrj-Cp-BS7">
-                    <rect key="frame" x="18" y="290" width="365" height="17"/>
-                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Please specify the security to use for your configuration file" id="orc-zu-V4h">
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wrj-Cp-BS7">
+                    <rect key="frame" x="18" y="290" width="323" height="17"/>
+                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Specify the security to use for your configuration file" id="orc-zu-V4h">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nQc-qs-6PX">
-                    <rect key="frame" x="18" y="254" width="341" height="28"/>
+                    <rect key="frame" x="18" y="254" width="384" height="28"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="If you activate encryption, your configuration file will be entirely encrypted with AES-XTS 256 bits." id="MdA-og-otk">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -114,7 +114,7 @@
                 <constraint firstAttribute="trailing" secondItem="srX-24-dkT" secondAttribute="trailing" constant="20" symbolic="YES" id="drA-46-aMu"/>
                 <constraint firstItem="xiM-hi-roa" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="WOH-cU-5NS" secondAttribute="leading" constant="25" id="faJ-Ne-0Dm"/>
                 <constraint firstItem="WOH-cU-5NS" firstAttribute="leading" secondItem="nQc-qs-6PX" secondAttribute="leading" id="gwu-Yv-5NV"/>
-                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="nQc-qs-6PX" secondAttribute="trailing" constant="20" symbolic="YES" id="lc9-5a-9zK"/>
+                <constraint firstAttribute="trailing" secondItem="nQc-qs-6PX" secondAttribute="trailing" constant="20" symbolic="YES" id="lc9-5a-9zK"/>
                 <constraint firstItem="WOH-cU-5NS" firstAttribute="top" secondItem="nQc-qs-6PX" secondAttribute="bottom" constant="33" id="qwG-S4-080"/>
                 <constraint firstItem="srX-24-dkT" firstAttribute="leading" secondItem="7jJ-Xf-Rgj" secondAttribute="trailing" constant="8" id="tWu-H2-0zG"/>
             </constraints>

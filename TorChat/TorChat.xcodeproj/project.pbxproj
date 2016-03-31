@@ -683,8 +683,8 @@
 			isa = PBXGroup;
 			children = (
 				E878983817B05BC800DB7709 /* AssistantPanel_Welcome.xib */,
-				E878984517B05C0B00DB7709 /* AssistantPanel_Mode.xib */,
 				E8CCEF171C9087B000B2D9A8 /* AssistantPanel_Security.xib */,
+				E878984517B05C0B00DB7709 /* AssistantPanel_Mode.xib */,
 				E878984317B05C0B00DB7709 /* AssistantPanel_Bundled.xib */,
 				E878984117B05C0B00DB7709 /* AssistantPanel_Custom.xib */,
 			);

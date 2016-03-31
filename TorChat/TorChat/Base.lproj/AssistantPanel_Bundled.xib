@@ -36,8 +36,8 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="eh9-dQ-ju9">
-                    <rect key="frame" x="18" y="290" width="213" height="17"/>
-                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Please specify your setting bellow." usesSingleLineMode="YES" id="qpy-aS-rWl">
+                    <rect key="frame" x="18" y="290" width="171" height="17"/>
+                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Specify your setting bellow." usesSingleLineMode="YES" id="qpy-aS-rWl">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
