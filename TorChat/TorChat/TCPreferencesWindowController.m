@@ -56,17 +56,12 @@
 
 @interface TCPreferencesWindowController ()
 {
-	IBOutlet NSView *_loadingView;
+	
+	IBOutlet NSWindow				*_loadingWindow;
+	IBOutlet NSProgressIndicator	*_loadingIndicator;
 	
 	TCPrefView	*_currentCtrl;
 }
-
-
-// -- IBAction --
-- (IBAction)doToolbarItem:(id)sender;
-
-// -- Helpers --
-- (void)loadViewIdentifier:(NSString *)identifier animated:(BOOL)animated;
 
 @end
 
@@ -108,6 +103,13 @@
     return self;
 }
 
+
+
+/*
+** TCPreferencesWindowController - NSWindow
+*/
+#pragma mark - TCPreferencesWindowController - NSWindow
+
 - (void)windowDidLoad
 {
 	// Select the view.
@@ -117,10 +119,42 @@
 		identifier = @"general";
 	
 	[self loadViewIdentifier:identifier animated:NO];
-
+	
 	// Place Window.
 	[self.window center];
 	[self.window setFrameAutosaveName:@"PreferencesWindow"];
+}
+
+- (void)windowWillClose:(NSNotification *)notification
+{
+	id <TCConfigAppEncryptable> config = [[TCMainController sharedController] configuration];
+	TCCoreManager				*core = [[TCMainController sharedController] core];
+	
+	_currentCtrl.config = config;
+	_currentCtrl.core = core;
+	
+	[_currentCtrl panelDidDisappear];
+}
+
+- (void)windowDidResize:(NSNotification *)notification
+{
+	if (_loadingWindow.isVisible)
+		[_loadingWindow setFrame:self.window.frame display:YES];
+}
+
+
+
+/*
+** TCPreferencesWindowController - IBAction
+*/
+#pragma mark - TCPreferencesWindowController - IBAction
+
+- (IBAction)doToolbarItem:(id)sender
+{
+	NSToolbarItem	*item = sender;
+	NSString		*identifier = [item itemIdentifier];
+	
+	[self loadViewIdentifier:identifier animated:YES];
 }
 
 
@@ -198,7 +232,7 @@
 					doneHandler();
 				
 				if (isVisible)
-					[self _unloadForLoading];
+					[self _unlockForLoading];
 			});
 		}];
 	};
@@ -245,63 +279,19 @@
 {
 	// > main queue <
 
-	// Add load view.
-	if (_loadingView.superview == nil)
-	{
-		NSDictionary	*viewsDictionary;
-		NSView			*view = _loadingView;
-		
-		[self.window.contentView addSubview:view];
-		
-		viewsDictionary = NSDictionaryOfVariableBindings(view);
-		
-		[self.window.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view]|" options:0 metrics:nil views:viewsDictionary]];
-		[self.window.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[view]|" options:0 metrics:nil views:viewsDictionary]];
-	}
+	[_loadingWindow setFrame:self.window.frame display:NO];
+	[_loadingWindow setBackgroundColor:[NSColor colorWithWhite:1.0 alpha:0.5]];
+	[_loadingIndicator startAnimation:nil];
+	
+	[self.window addChildWindow:_loadingWindow ordered:NSWindowAbove];
 }
 
-- (void)_unloadForLoading
+- (void)_unlockForLoading
 {
 	// > main queue <
 	
-	// Remove subview.
-	if (_loadingView.superview != nil)
-	{
-		[_loadingView removeFromSuperview];
-	}
-}
-
-
-
-/*
-** TCPreferencesWindowController - IBAction
-*/
-#pragma mark - TCPreferencesWindowController - IBAction
-
-- (IBAction)doToolbarItem:(id)sender
-{
-	NSToolbarItem	*item = sender;
-	NSString		*identifier = [item itemIdentifier];
-	
-	[self loadViewIdentifier:identifier animated:YES];
-}
-
-
-
-/*
-** TCPreferencesWindowController - NSWindow
-*/
-#pragma mark - TCPreferencesWindowController - NSWindow
-
-- (void)windowWillClose:(NSNotification *)notification
-{
-	id <TCConfigAppEncryptable> config = [[TCMainController sharedController] configuration];
-	TCCoreManager				*core = [[TCMainController sharedController] core];
-	
-	_currentCtrl.config = config;
-	_currentCtrl.core = core;
-	
-	[_currentCtrl panelDidDisappear];
+	[self.window removeChildWindow:_loadingWindow];
+	[_loadingWindow close];
 }
 
 @end

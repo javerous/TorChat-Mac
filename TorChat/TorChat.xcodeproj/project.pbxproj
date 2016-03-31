@@ -23,7 +23,6 @@
 		E81FD9F811E7259B000614D5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81FD9F711E7259B000614D5 /* Cocoa.framework */; };
 		E81FD9FD11E7259B000614D5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E81FD9FB11E7259B000614D5 /* InfoPlist.strings */; };
 		E81FDA0211E7259C000614D5 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = E81FDA0011E7259C000614D5 /* MainMenu.xib */; };
-		E825A0821CAC98E70040CB61 /* TCPreferencesLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = E825A0811CAC98E70040CB61 /* TCPreferencesLoadingView.m */; };
 		E826208E1C90391500DC6806 /* SQLiteConfigurationConvertWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E82620901C90391500DC6806 /* SQLiteConfigurationConvertWindow.xib */; };
 		E82B7D7A125A08A800B7BA8A /* TCPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = E82B7D79125A08A800B7BA8A /* TCPreferencesWindowController.m */; };
 		E82B7D7D125A098000B7BA8A /* PreferencesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E82B7D7B125A098000B7BA8A /* PreferencesWindow.xib */; };
@@ -146,8 +145,6 @@
 		E81FD9F411E7259B000614D5 /* TorChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TorChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E81FD9F711E7259B000614D5 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		E81FD9FC11E7259B000614D5 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		E825A0801CAC98E70040CB61 /* TCPreferencesLoadingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCPreferencesLoadingView.h; sourceTree = "<group>"; };
-		E825A0811CAC98E70040CB61 /* TCPreferencesLoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCPreferencesLoadingView.m; sourceTree = "<group>"; };
 		E826208F1C90391500DC6806 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/SQLiteConfigurationConvertWindow.xib; sourceTree = "<group>"; };
 		E82620951C90394600DC6806 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/SQLiteConfigurationConvertWindow.strings; sourceTree = "<group>"; };
 		E82B7D72125A074600B7BA8A /* TCPreferencesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCPreferencesWindowController.h; sourceTree = "<group>"; };
@@ -504,8 +501,6 @@
 			children = (
 				E82B7D72125A074600B7BA8A /* TCPreferencesWindowController.h */,
 				E82B7D79125A08A800B7BA8A /* TCPreferencesWindowController.m */,
-				E825A0801CAC98E70040CB61 /* TCPreferencesLoadingView.h */,
-				E825A0811CAC98E70040CB61 /* TCPreferencesLoadingView.m */,
 				E8643D6E1A66D97800B8C55F /* Views */,
 				E870BD8C17A84A0A00DFA076 /* Resources */,
 			);
@@ -996,7 +991,6 @@
 				E80E0A3B1CA9A370001E64F9 /* TCChatStatus.m in Sources */,
 				E8742546199B6A61002A34DD /* NSString+TCXMLExtension.m in Sources */,
 				E89E47021C8D904D004A5D72 /* SMCryptoFile.c in Sources */,
-				E825A0821CAC98E70040CB61 /* TCPreferencesLoadingView.m in Sources */,
 				E82B7D8F125A115400B7BA8A /* TCMainController.m in Sources */,
 				E8A2CC49185CC2AF00624448 /* TCThreePartImageView.m in Sources */,
 				E8C1EFF312F7169400E24C42 /* TCImage.m in Sources */,
