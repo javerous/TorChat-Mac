@@ -202,15 +202,22 @@
 	
 	dispatch_group_async(group, _localQueue, ^{
 		
+		// Close.
+		[self close];
+		
+		// Remove observers.
 		[_core removeObserver:self];
 		
 		for (TCBuddy *buddy in _buddies)
 			[buddy removeObserver:self];
 		
-		[_buddies removeAllObjects];
-		
+		// Unreference.
 		_core = nil;
 		_configuration = nil;
+		
+		// Clean containers.
+		[_buddies removeAllObjects];
+		[_viewsCtrl removeAllObjects];
 	});
 	
 	// Wait end.
