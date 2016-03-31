@@ -79,14 +79,6 @@
                     <constraint firstItem="8O9-hH-3BI" firstAttribute="centerX" secondItem="4OK-xX-luZ" secondAttribute="centerX" id="ASh-y4-0tm"/>
                     <constraint firstItem="8O9-hH-3BI" firstAttribute="centerY" secondItem="4OK-xX-luZ" secondAttribute="centerY" id="FmB-ZY-MzJ"/>
                 </constraints>
-                <backgroundFilters>
-                    <ciFilter name="CIGaussianBlur">
-                        <configuration>
-                            <null key="inputImage"/>
-                            <real key="inputRadius" value="10"/>
-                        </configuration>
-                    </ciFilter>
-                </backgroundFilters>
             </view>
         </window>
     </objects>
