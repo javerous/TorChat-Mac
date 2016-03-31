@@ -131,4 +131,18 @@
 	[_torDownloadsLocation addToView:_downloadLocationView];
 }
 
+- (void)canceled
+{
+	NSString *referalPath = [_currentConfig pathForComponent:TCConfigPathComponentReferal fullPath:YES];
+	
+	[_currentConfig close];
+	
+	if (referalPath)
+	{
+		NSString *confPath = [referalPath stringByAppendingPathComponent:@"torchat.conf"];
+		
+		[[NSFileManager defaultManager] removeItemAtPath:confPath error:nil];
+	}
+}
+
 @end
