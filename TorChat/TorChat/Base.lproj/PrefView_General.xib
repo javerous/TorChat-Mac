@@ -81,15 +81,15 @@
                     <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                     <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
-                <box title="Transcript" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="K20-FW-pk3">
+                <box title="Transcripts" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="K20-FW-pk3">
                     <rect key="frame" x="17" y="16" width="376" height="70"/>
                     <view key="contentView" id="S18-0A-4xq">
                         <rect key="frame" x="1" y="1" width="374" height="54"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button verticalHuggingPriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="vOC-Yo-IEm">
-                                <rect key="frame" x="18" y="18" width="114" height="18"/>
-                                <buttonCell key="cell" type="check" title="Save transcript" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="hJZ-F5-GDn">
+                                <rect key="frame" x="18" y="18" width="120" height="18"/>
+                                <buttonCell key="cell" type="check" title="Save transcripts" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="hJZ-F5-GDn">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>

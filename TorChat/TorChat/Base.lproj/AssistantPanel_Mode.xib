@@ -18,9 +18,9 @@
             <rect key="frame" x="0.0" y="0.0" width="420" height="327"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField verticalHuggingPriority="750" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wrj-Cp-BS7">
-                    <rect key="frame" x="18" y="290" width="210" height="17"/>
-                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Please select the Tor mode to use" id="orc-zu-V4h">
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wrj-Cp-BS7">
+                    <rect key="frame" x="18" y="290" width="168" height="17"/>
+                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Select the Tor mode to use" id="orc-zu-V4h">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>

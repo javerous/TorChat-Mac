@@ -8,8 +8,8 @@
 /* Class = "NSButtonCell"; title = "Encrypt configuration file"; ObjectID = "ex6-hW-wuO"; */
 "ex6-hW-wuO.title" = "Chiffrer le fichier de configuration";
 
-/* Class = "NSTextFieldCell"; title = "Please specify the security to use for your configuration file"; ObjectID = "orc-zu-V4h"; */
-"orc-zu-V4h.title" = "Merci de spécifier la sécurité à utiliser pour votre fichier de configuration";
+/* Class = "NSTextFieldCell"; title = "Specify the security to use for your configuration file"; ObjectID = "orc-zu-V4h"; */
+"orc-zu-V4h.title" = "Spécifiez la sécurité à utiliser pour votre fichier de configuration";
 
 /* Class = "NSTextFieldCell"; title = "Verify"; ObjectID = "w6q-S2-5N1"; */
 "w6q-S2-5N1.title" = "Vérification";
