@@ -1539,7 +1539,7 @@
 	if (data)
 	{
 		// > Parse.
-		content = [NSPropertyListSerialization propertyListFromData:data mutabilityOption:NSPropertyListMutableContainersAndLeaves format:nil errorDescription:nil];
+		content = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListMutableContainersAndLeaves format:nil error:nil];
 		
 		if ([content isKindOfClass:[NSDictionary class]] == NO)
 			return nil;

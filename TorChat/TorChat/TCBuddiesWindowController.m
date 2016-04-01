@@ -619,9 +619,9 @@
 	[openDlg setCanChooseDirectories:NO];
 	[openDlg setCanCreateDirectories:NO];
 	[openDlg setAllowsMultipleSelection:NO];
-	[openDlg setAllowedFileTypes:[NSImage imageFileTypes]];
+	[openDlg setAllowedFileTypes:[NSImage imageTypes]];
 	
-	if ([openDlg runModal] == NSOKButton)
+	if ([openDlg runModal] == NSModalResponseOK)
 	{
 		NSArray	*urls = [openDlg URLs];
 		NSImage *avatar = [[NSImage alloc] initWithContentsOfURL:[urls objectAtIndex:0]];
@@ -735,7 +735,7 @@
 	[openDlg setCanCreateDirectories:NO];
 	[openDlg setAllowsMultipleSelection:YES];
 	
-	if ([openDlg runModal] == NSOKButton)
+	if ([openDlg runModal] == NSModalResponseOK)
 	{
 		NSArray *urls = [openDlg URLs];
 
@@ -768,7 +768,7 @@
 	[_profileName setStringValue:tname];
 	[[[_profileText textStorage] mutableString] setString:ttext];
 	
-	[NSApp beginSheet:_profileWindow modalForWindow:self.window modalDelegate:nil didEndSelector:NULL contextInfo:NULL];
+	[self.window beginSheet:_profileWindow completionHandler:nil];
 }
 
 - (IBAction)doAddOk:(id)sender
@@ -788,7 +788,7 @@
 
 - (IBAction)doProfileOk:(id)sender
 {
-	[NSApp endSheet:_profileWindow];
+	[self.window endSheet:_profileWindow];
 	[_profileWindow orderOut:self];
 	
 	// -- Hold name --
@@ -804,7 +804,7 @@
 
 - (IBAction)doProfileCancel:(id)sender
 {
-	[NSApp endSheet:_profileWindow];
+	[self.window endSheet:_profileWindow];
 	[_profileWindow orderOut:self];
 }
 

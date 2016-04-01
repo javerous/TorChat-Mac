@@ -2056,7 +2056,7 @@
 			
 			result = SMSQLiteCryptoVFSChangePassword(_dtb, newPassword.UTF8String, &smError);
 			
-			if (result == NO)
+			if (result == NO && error)
 				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSMCryptoFileErrorKey : @(smError) }];
 			
 			return result;
@@ -2093,7 +2093,8 @@
 			
 			if (sres != SQLITE_OK)
 			{
-				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres), TCConfigSMCryptoFileErrorKey : @(SMSQLiteCryptoVFSLastFileCryptoError()) }];
+				if (error)
+					*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres), TCConfigSMCryptoFileErrorKey : @(SMSQLiteCryptoVFSLastFileCryptoError()) }];
 				goto errDec;
 			}
 			
@@ -2104,7 +2105,8 @@
 			
 			if (sres != SQLITE_OK)
 			{
-				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres) }];
+				if (error)
+					*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres) }];
 				goto errDec;
 			}
 			
@@ -2116,7 +2118,8 @@
 			
 			if (!backup)
 			{
-				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ NSLocalizedDescriptionKey : @"can't create backup object" }];
+				if (error)
+					*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ NSLocalizedDescriptionKey : @"can't create backup object" }];
 				goto errDec;
 			}
 			
@@ -2125,7 +2128,8 @@
 			
 			if (sres != SQLITE_DONE)
 			{
-				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres) }];
+				if (error)
+					*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres) }];
 				goto errDec;
 			}
 			
@@ -2255,7 +2259,8 @@
 			
 			if (sres != SQLITE_OK)
 			{
-				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres) }];
+				if (error)
+					*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres) }];
 				goto errEnc;
 			}
 			
@@ -2272,7 +2277,8 @@
 			
 			if (sres != SQLITE_OK)
 			{
-				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres), TCConfigSMCryptoFileErrorKey : @(SMSQLiteCryptoVFSLastFileCryptoError()) }];
+				if (error)
+					*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres), TCConfigSMCryptoFileErrorKey : @(SMSQLiteCryptoVFSLastFileCryptoError()) }];
 				goto errEnc;
 			}
 			
@@ -2283,7 +2289,8 @@
 			
 			if (!backup)
 			{
-				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ NSLocalizedDescriptionKey : @"can't create backup object" }];
+				if (error)
+					*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ NSLocalizedDescriptionKey : @"can't create backup object" }];
 				goto errEnc;
 			}
 			
@@ -2292,7 +2299,8 @@
 			
 			if (sres != SQLITE_DONE)
 			{
-				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres) }];
+				if (error)
+					*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres) }];
 				goto errEnc;
 			}
 			
