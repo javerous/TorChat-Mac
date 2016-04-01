@@ -293,10 +293,10 @@ static char gLocalQueueContext;
 {
 	TCDebugLog(@"TCBuddy dealloc");
 	
-	// Clean out connections
+	[_outSocket setDelegate:nil];
 	[_outSocket stop];
-
-	// Clean in connexions
+	
+	[_inSocket setDelegate:nil];
 	[_inSocket stop];
 }
 
@@ -338,22 +338,29 @@ static char gLocalQueueContext;
 - (void)_stopChannel:(TCBuddyChannel)channel terminal:(BOOL)terminal
 {
 	// > localQueue <
+	
 	if (!_running)
 		return;
 	
+	// Stop keep-alive timer.
+	if (_keepAliveTimer)
+	{
+		dispatch_source_cancel(_keepAliveTimer);
+		_keepAliveTimer = nil;
+	}
+	
+	// Stop pending timer.
+	if (_pendingConnectTimer)
+	{
+		dispatch_source_cancel(_pendingConnectTimer);
+		_pendingConnectTimer = nil;
+	}
+	
+	// Stop channel.
 	switch (channel)
 	{
 		case TCBuddyChannelIn:
 		{
-			TCStatus lstatus;
-			
-			// Stop pending connection.
-			if (_pendingConnectTimer)
-			{
-				dispatch_source_cancel(_pendingConnectTimer);
-				_pendingConnectTimer = nil;
-			}
-			
 			// Stop in socket.
 			if (_inSocket)
 			{
@@ -363,16 +370,25 @@ static char gLocalQueueContext;
 				_inSocket = nil;
 			}
 			
-			// Clean receive session
+			// Stop out socket (stopping in imply stopping out).
+			if (_outSocket)
+			{
+				[_outSocket setDelegate:nil];
+				[_outSocket stop];
+				
+				_outSocket = nil;
+			}
+			
+			// Clean receive session.
 			[_freceive removeAllObjects];
 			
-			// Clean send session
+			// Clean send session.
 			[_fsend removeAllObjects];
 			
-			// Reset status
-			lstatus = [self _status];
-			_status = TCStatusOffline;
+			// Reset status & flags.
+			TCStatus lstatus = [self _status];
 			
+			_status = TCStatusOffline;
 			_socksstate = socks_nostate;
 			_ponged = NO;
 			_pingRandom = nil;
@@ -384,12 +400,11 @@ static char gLocalQueueContext;
 			
 			[self _notify:TCBuddyEventDisconnected];
 			
-			// no break : stopping channel in imply stopping channel out.
+			break;
 		}
 			
 		case TCBuddyChannelOut:
 		{
-			// Stopping channel out once ponged imply stopping channel in & out.
 			if (_ponged)
 			{
 				[self _stopChannel:TCBuddyChannelIn terminal:terminal];
@@ -407,14 +422,9 @@ static char gLocalQueueContext;
 			
 			// Reset socks stat.
 			_socksstate = socks_nostate;
+			
+			break;
 		}
-	}
-	
-	// Stop keep-alive timer.
-	if (_keepAliveTimer)
-	{
-		dispatch_source_cancel(_keepAliveTimer);
-		_keepAliveTimer = nil;
 	}
 	
 	// Handle terminal stop.
@@ -425,12 +435,6 @@ static char gLocalQueueContext;
 	else
 	{
 		// Reschedule.
-		if (_pendingConnectTimer)
-		{
-			dispatch_source_cancel(_pendingConnectTimer);
-			_pendingConnectTimer = nil;
-		}
-		
 		_pendingConnectTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _localQueue);
 		
 		dispatch_source_set_timer(_pendingConnectTimer, dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), DISPATCH_TIME_FOREVER, 1 * NSEC_PER_SEC);
