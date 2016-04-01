@@ -296,27 +296,14 @@
 
 - (void)windowDidBecomeMain:(NSNotification *)notification
 {
-	// Clean the selected unread messages content
-
 	NSInteger index = [_userList selectedRow];
 	
 	if (index < 0 || index >= _viewsCtrl.count)
 		return;
 	
-	id		item = _viewsCtrl[(NSUInteger)index];
-	TCBuddy	*buddy;
-	
-	// Get buddy.
-	if ([item isKindOfClass:[TCChatViewController class]])
-	{
-		TCChatViewController *viewCtrl = item;
-		
-		buddy = viewCtrl.buddy;
-	}
-	else
-		buddy = item;
-	
 	// Clean last message.
+	TCBuddy	*buddy = [self _buddyAtIndex:(NSUInteger)index];
+
 	buddy.lastMessage = nil;
 	
 	[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
@@ -340,18 +327,7 @@
 			if (_selectedBuddy)
 				buddy = _selectedBuddy;
 			else if (_viewsCtrl.count > 0)
-			{
-				id item = _viewsCtrl[0];
-				
-				if ([item isKindOfClass:[TCChatViewController class]])
-				{
-					TCChatViewController *viewCtrl = item;
-					
-					buddy = viewCtrl.buddy;
-				}
-				else
-					buddy = item;
-			}
+				buddy = [self _buddyAtIndex:0];
 		}
 		
 		if (!buddy)
@@ -398,19 +374,8 @@
 		if (index == NSNotFound)
 			return;
 		
-		// Get item.
-		TCChatViewController	*viewCtrl;
-		id						item = _viewsCtrl[index];
-		
-		if ([item isKindOfClass:[TCChatViewController class]] == NO)
-			return;
-		
-		viewCtrl = item;
-		
 		// Remove from view.
 		[_viewsCtrl removeObjectAtIndex:index];
-		
-		// Reload table.
 		[_userList reloadData];
 		
 		// Update selection.
@@ -431,9 +396,7 @@
 				if (nindex >= _viewsCtrl.count)
 					nindex = _viewsCtrl.count - 1;
 				
-				viewCtrl = _viewsCtrl[nindex];
-				
-				[self _selectChatWithBuddy:viewCtrl.buddy];
+				[self _selectChatWithBuddy:[self _buddyAtIndex:nindex]];
 			}
 		}
 		else
@@ -461,18 +424,7 @@
 		return nil;
 	
 	// Get item.
-	id		item = _viewsCtrl[(NSUInteger)rowIndex];
-	TCBuddy *buddy;
-	
-	if ([item isKindOfClass:[TCChatViewController class]])
-	{
-		TCChatViewController *viewCtrl = item;
-		
-		buddy = viewCtrl.buddy;
-	}
-	else
-		buddy = item;
-	
+	TCBuddy *buddy = [self _buddyAtIndex:(NSUInteger)rowIndex];
 	
 	// Select the right view.
 	TCChatCellView	*cellView = nil;
@@ -522,23 +474,10 @@
 {
 	NSInteger rowIndex = [_userList selectedRow];
 
-	// Get associated buddy.
-	if (index < 0 || rowIndex >= _viewsCtrl.count)
+	if (rowIndex < 0 || rowIndex >= _viewsCtrl.count)
 		return;
-	
-	id		item = _viewsCtrl[(NSUInteger)rowIndex];
-	TCBuddy *buddy;
-	
-	if ([item isKindOfClass:[TCChatViewController class]])
-	{
-		TCChatViewController *viewCtrl = item;
-		
-		buddy = viewCtrl.buddy;
-	}
-	else
-		buddy = item;
 
-	[self _selectChatWithBuddy:buddy];
+	[self _selectChatWithBuddy:[self _buddyAtIndex:(NSUInteger)rowIndex]];
 }
 
 
@@ -766,23 +705,33 @@
 	
 	return [_viewsCtrl indexOfObjectPassingTest:^BOOL(id _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
 		
-		TCBuddy *tBuddy = nil;
-		
-		if ([obj isKindOfClass:[TCChatViewController class]])
-		{
-			TCChatViewController *tViewCtrl = obj;
-			
-			tBuddy = tViewCtrl.buddy;
-		}
-		else
-		{
-			tBuddy = obj;
-		}
+		TCBuddy *tBuddy = [self _buddyAtIndex:idx];
 		
 		*stop = (tBuddy == buddy);
 		
 		return (tBuddy == buddy);
 	}];
+}
+
+- (TCBuddy *)_buddyAtIndex:(NSUInteger)index
+{
+	// > localQueue <
+
+	if (index >= [_viewsCtrl count])
+		return nil;
+	
+	id item = _viewsCtrl[index];
+	
+	if ([item isKindOfClass:[TCChatViewController class]])
+	{
+		TCChatViewController *viewCtrl = item;
+
+		return viewCtrl.buddy;
+	}
+	else
+	{
+		return item;
+	}
 }
 
 @end

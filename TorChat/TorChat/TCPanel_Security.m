@@ -101,7 +101,14 @@
 		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_build_path"];
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
-			[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_error_build_path", @"")] runModal];
+			
+			NSAlert *alert = [[NSAlert alloc] init];
+			
+			alert.messageText = NSLocalizedString(@"logs_error_title", @"");
+			alert.informativeText = NSLocalizedString(@"ac_error_build_path", @"");
+
+			[alert runModal];
+			
 			exit(0);
 		});
 	}
@@ -126,7 +133,14 @@
 		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_build_path"];
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
-			[[NSAlert alertWithMessageText:NSLocalizedString(@"logs_error_title", @"") defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:NSLocalizedString(@"ac_error_write_file", @""), configPath] runModal];
+			
+			NSAlert *alert = [[NSAlert alloc] init];
+			
+			alert.messageText = NSLocalizedString(@"logs_error_title", @"");
+			alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"ac_error_write_file", @""), configPath];
+			
+			[alert runModal];
+			
 			exit(0);
 		});
 

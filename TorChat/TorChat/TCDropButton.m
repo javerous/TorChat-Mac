@@ -33,7 +33,7 @@
 - (void)awakeFromNib
 {
 	[self registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
-	[self registerForDraggedTypes:[NSImage imagePasteboardTypes]];
+	[self registerForDraggedTypes:[NSImage imageTypes]];
 }
 
 - (NSDragOperation)draggingEntered:(id < NSDraggingInfo >)sender
