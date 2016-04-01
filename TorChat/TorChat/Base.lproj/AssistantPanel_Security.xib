@@ -21,8 +21,8 @@
             <rect key="frame" x="0.0" y="0.0" width="420" height="327"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wrj-Cp-BS7">
-                    <rect key="frame" x="18" y="290" width="323" height="17"/>
+                <textField verticalHuggingPriority="750" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wrj-Cp-BS7">
+                    <rect key="frame" x="18" y="290" width="384" height="17"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Specify the security to use for your configuration file" id="orc-zu-V4h">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -106,7 +106,7 @@
                 <constraint firstItem="xiM-hi-roa" firstAttribute="centerY" secondItem="gKi-CM-Nz7" secondAttribute="centerY" id="Ivz-6z-sWI"/>
                 <constraint firstItem="wrj-Cp-BS7" firstAttribute="top" secondItem="nfa-Yn-Y4a" secondAttribute="top" constant="20" id="Kqd-cB-G1T"/>
                 <constraint firstAttribute="trailing" secondItem="gKi-CM-Nz7" secondAttribute="trailing" constant="20" symbolic="YES" id="OMC-hd-FcC"/>
-                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="wrj-Cp-BS7" secondAttribute="trailing" constant="20" symbolic="YES" id="RGY-Mq-Mmf"/>
+                <constraint firstAttribute="trailing" secondItem="wrj-Cp-BS7" secondAttribute="trailing" constant="20" symbolic="YES" id="RGY-Mq-Mmf"/>
                 <constraint firstItem="srX-24-dkT" firstAttribute="top" secondItem="gKi-CM-Nz7" secondAttribute="bottom" constant="10" symbolic="YES" id="WrG-SH-5Eq"/>
                 <constraint firstItem="7jJ-Xf-Rgj" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="WOH-cU-5NS" secondAttribute="leading" constant="25" id="bZq-Aw-SUj"/>
                 <constraint firstItem="gKi-CM-Nz7" firstAttribute="leading" secondItem="xiM-hi-roa" secondAttribute="trailing" constant="8" id="cUW-BW-GuL"/>
