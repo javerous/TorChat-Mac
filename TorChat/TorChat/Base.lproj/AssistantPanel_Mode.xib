@@ -18,8 +18,8 @@
             <rect key="frame" x="0.0" y="0.0" width="420" height="327"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wrj-Cp-BS7">
-                    <rect key="frame" x="18" y="290" width="168" height="17"/>
+                <textField verticalHuggingPriority="750" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wrj-Cp-BS7">
+                    <rect key="frame" x="18" y="290" width="384" height="17"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Select the Tor mode to use" id="orc-zu-V4h">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -68,7 +68,7 @@
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="xdg-SH-cGA" secondAttribute="trailing" constant="20" symbolic="YES" id="Cgx-GE-5OO"/>
                 <constraint firstItem="nQc-qs-6PX" firstAttribute="top" secondItem="wrj-Cp-BS7" secondAttribute="bottom" constant="8" symbolic="YES" id="Hcz-aI-1JX"/>
                 <constraint firstItem="wrj-Cp-BS7" firstAttribute="top" secondItem="nfa-Yn-Y4a" secondAttribute="top" constant="20" id="Kqd-cB-G1T"/>
-                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="wrj-Cp-BS7" secondAttribute="trailing" constant="20" symbolic="YES" id="RGY-Mq-Mmf"/>
+                <constraint firstAttribute="trailing" secondItem="wrj-Cp-BS7" secondAttribute="trailing" constant="20" symbolic="YES" id="RGY-Mq-Mmf"/>
                 <constraint firstItem="xdg-SH-cGA" firstAttribute="top" secondItem="nQc-qs-6PX" secondAttribute="bottom" constant="33" id="Vhg-dA-BKa"/>
                 <constraint firstAttribute="trailing" secondItem="nQc-qs-6PX" secondAttribute="trailing" constant="20" symbolic="YES" id="lc9-5a-9zK"/>
             </constraints>

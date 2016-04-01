@@ -94,9 +94,9 @@
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7w8-O8-ptE">
-                    <rect key="frame" x="18" y="290" width="178" height="17"/>
-                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Specify your settings bellow." usesSingleLineMode="YES" id="Qjw-dN-HSl">
+                <textField verticalHuggingPriority="750" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7w8-O8-ptE">
+                    <rect key="frame" x="18" y="290" width="384" height="17"/>
+                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Specify your settings bellow." usesSingleLineMode="YES" id="Qjw-dN-HSl">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -141,7 +141,7 @@
                 <constraint firstItem="swj-78-NTV" firstAttribute="centerY" secondItem="GCY-ZD-Qpx" secondAttribute="centerY" constant="-0.5" id="kYO-nu-8Ec"/>
                 <constraint firstItem="GCY-ZD-Qpx" firstAttribute="leading" secondItem="xcW-WL-RhM" secondAttribute="leading" id="nYr-3a-PsP"/>
                 <constraint firstItem="05u-ZS-OlH" firstAttribute="trailing" secondItem="quQ-6b-i5g" secondAttribute="trailing" id="oMH-WX-VgI"/>
-                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="7w8-O8-ptE" secondAttribute="trailing" constant="20" symbolic="YES" id="oV3-aQ-hcV"/>
+                <constraint firstAttribute="trailing" secondItem="7w8-O8-ptE" secondAttribute="trailing" constant="20" symbolic="YES" id="oV3-aQ-hcV"/>
                 <constraint firstItem="PFh-zn-GSc" firstAttribute="leading" secondItem="xcW-WL-RhM" secondAttribute="leading" id="rzY-KQ-vxs"/>
                 <constraint firstAttribute="trailing" secondItem="GCY-ZD-Qpx" secondAttribute="trailing" constant="20" id="sQK-T8-96l"/>
                 <constraint firstItem="PFh-zn-GSc" firstAttribute="leading" secondItem="bm3-qS-N8O" secondAttribute="trailing" constant="8" symbolic="YES" id="tIN-9G-Z1s"/>

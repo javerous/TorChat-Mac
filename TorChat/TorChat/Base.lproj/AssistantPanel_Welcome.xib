@@ -43,9 +43,9 @@
                         <action selector="selectChange:" target="-2" id="rzy-3b-HP2"/>
                     </connections>
                 </matrix>
-                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="zoy-1f-syz">
-                    <rect key="frame" x="18" y="290" width="184" height="17"/>
-                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Welcome on TorChat for Mac." usesSingleLineMode="YES" id="i0a-sg-LOk">
+                <textField verticalHuggingPriority="750" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zoy-1f-syz">
+                    <rect key="frame" x="18" y="290" width="384" height="17"/>
+                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Welcome on TorChat for Mac." usesSingleLineMode="YES" id="i0a-sg-LOk">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -83,7 +83,7 @@
                 <constraint firstItem="PSa-1x-c1P" firstAttribute="top" secondItem="T27-Bf-x3R" secondAttribute="bottom" constant="8" symbolic="YES" id="8j4-cf-vCc"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Lfd-R1-Tq3" secondAttribute="trailing" constant="20" symbolic="YES" id="Dmq-3W-a7d"/>
                 <constraint firstAttribute="trailing" secondItem="2xu-TJ-jaE" secondAttribute="trailing" constant="20" symbolic="YES" id="JYi-Cg-LVh"/>
-                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="zoy-1f-syz" secondAttribute="trailing" constant="20" symbolic="YES" id="aK6-HA-TH9"/>
+                <constraint firstAttribute="trailing" secondItem="zoy-1f-syz" secondAttribute="trailing" constant="20" symbolic="YES" id="aK6-HA-TH9"/>
                 <constraint firstItem="T27-Bf-x3R" firstAttribute="leading" secondItem="qbQ-Um-bCG" secondAttribute="leading" constant="44" id="cf9-mQ-9GV"/>
                 <constraint firstItem="zoy-1f-syz" firstAttribute="top" secondItem="qbQ-Um-bCG" secondAttribute="top" constant="20" symbolic="YES" id="d42-A0-QlW"/>
                 <constraint firstItem="Lfd-R1-Tq3" firstAttribute="leading" secondItem="PSa-1x-c1P" secondAttribute="trailing" constant="8" symbolic="YES" id="e5f-eA-i0u"/>
