@@ -1507,10 +1507,10 @@
 	// Not implemented.
 }
 
-- (int64_t)transcriptLastMessageIDForBuddyIdentifier:(NSString *)identifier
+- (BOOL)transcriptMessagesIDBoundariesForBuddyIdentifier:(NSString *)identifier firstMessageID:(int64_t *)firstID lastMessageID:(int64_t *)lastID
 {
 	// Not implemented.
-	return -1;
+	return NO;
 }
 
 
