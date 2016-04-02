@@ -50,7 +50,9 @@
 	BOOL _isFetchingTranscript;
 	BOOL _pendingFetchTranscript;
 	
-	int64_t		_transcriptTopMsgID;
+	int64_t		_topFetchedMsgID;
+	int64_t		_transcriptFirstMsgID;
+	int64_t		_transcriptLastMsgID;
 	int64_t		_tmpMsgID;
 	
 	NSDateFormatter *_timestampFormater;
@@ -117,16 +119,17 @@
 		_erroredMessages = [[NSMutableDictionary alloc] init];
 		
 		// Init IDs.
-		_transcriptTopMsgID = [_configuration transcriptLastMessageIDForBuddyIdentifier:buddy.identifier];
+		_topFetchedMsgID = -1;
 		
-		if (_transcriptTopMsgID == -1)
+		if ([_configuration transcriptMessagesIDBoundariesForBuddyIdentifier:buddy.identifier firstMessageID:&_transcriptFirstMsgID lastMessageID:&_transcriptLastMsgID] == NO)
 		{
 			NSString *timestampString = [_timestampFormater stringFromDate:[NSDate date]];
 			
 			[_chatTranscript addItems:@[ [[TCChatStatus alloc] initWithStatus:timestampString] ] endOfTranscript:NO];
+			
+			_transcriptFirstMsgID = -1;
+			_transcriptLastMsgID = -1;
 		}
-		else
-			_transcriptTopMsgID += 1;
 		
 		_tmpMsgID = -2;
 		
@@ -532,7 +535,11 @@
 {
 	// > main queue <
 	
-	if (_transcriptTopMsgID == -1)
+	// Check IDs.
+	if (_topFetchedMsgID == -1)
+		_topFetchedMsgID = _transcriptLastMsgID + 1;
+
+	if (_topFetchedMsgID <= _transcriptFirstMsgID)
 		return;
 	
 	// Handle requests.
@@ -567,40 +574,40 @@
 	_isFetchingTranscript = YES;
 	
 	// Fetch messages.
-	[_configuration transcriptMessagesForBuddyIdentifier:_buddy.identifier beforeMessageID:@(_transcriptTopMsgID) limit:fetchLimit completionHandler:^(NSArray *messages) {
+	[_configuration transcriptMessagesForBuddyIdentifier:_buddy.identifier beforeMessageID:@(_topFetchedMsgID) limit:fetchLimit completionHandler:^(NSArray *messages) {
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
 			
+			// > Unset fetching lock.
+			_isFetchingTranscript = NO;
+
 			if (messages.count == 0)
-			{
-				if (_topMessageTimestamp)
-				{
-					NSDate		*timestamp = [NSDate dateWithTimeIntervalSinceReferenceDate:[_topMessageTimestamp doubleValue]];
-					NSString	*timestampString = [_timestampFormater stringFromDate:timestamp];
-					
-					[_chatTranscript addItems:@[ [[TCChatStatus alloc] initWithStatus:timestampString] ] endOfTranscript:NO];
-				}
-				
-				_transcriptTopMsgID = -1;
-				
 				return;
-			}
 			
-			// > Handle messages.
+			// > Handle top message.
+			TCChatMessage *topMsg = [messages firstObject];
+			
+			_topFetchedMsgID = topMsg.messageID;
+
+			
+			// > Handle errors.
 			for (TCChatMessage *msg in messages)
 			{
-				if (msg.messageID < _transcriptTopMsgID)
-					_transcriptTopMsgID = msg.messageID;
-				
 				if (msg.error)
 					_erroredMessages[@(msg.messageID)] = msg;
 			}
 			
-			// > Add to transcript view.
+			// > Add messages transcript view.
 			[self _handleMessages:messages endOfTranscript:NO];
-
-			// > Unset fetching lock.
-			_isFetchingTranscript = NO;
+			
+			// > Add top timetamp.
+			if (_topFetchedMsgID <= _transcriptFirstMsgID)
+			{
+				NSDate		*timestamp = [NSDate dateWithTimeIntervalSinceReferenceDate:topMsg.timestamp];
+				NSString	*timestampString = [_timestampFormater stringFromDate:timestamp];
+				
+				[_chatTranscript addItems:@[ [[TCChatStatus alloc] initWithStatus:timestampString] ] endOfTranscript:NO];
+			}
 			
 			// > Re-fetch if pending.
 			if (_pendingFetchTranscript)

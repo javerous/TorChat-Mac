@@ -114,7 +114,7 @@
 	sqlite3_stmt		*_stmtInsertTranscript;
 	sqlite3_stmt		*_stmtSelectIdentifiersTranscript;
 	sqlite3_stmt		*_stmtSelectMsgTranscript;
-	sqlite3_stmt		*_stmtSelectLastIdTranscript;
+	sqlite3_stmt		*_stmtSelectMinMaxIdTranscript;
 	sqlite3_stmt		*_stmtDeleteIdentifierTranscript;
 	sqlite3_stmt		*_stmtDeleteIdTranscript;
 }
@@ -362,7 +362,7 @@
 	tc_sqlite3_prepare(_dtb, "INSERT INTO transcripts (buddy_id, message, side, timestamp, error) VALUES (?, ?, ?, ?, ?)", &_stmtInsertTranscript);
 	tc_sqlite3_prepare(_dtb, "SELECT identifier, max(transcripts.id) AS mx FROM transcripts, buddies WHERE transcripts.buddy_id=buddies.id GROUP BY identifier ORDER by mx DESC", &_stmtSelectIdentifiersTranscript);
 	tc_sqlite3_prepare(_dtb, "SELECT id, message, side, timestamp, error FROM transcripts WHERE buddy_id=? AND id<? ORDER BY id DESC LIMIT ?", &_stmtSelectMsgTranscript);
-	tc_sqlite3_prepare(_dtb, "SELECT max(id) FROM transcripts WHERE buddy_id=?", &_stmtSelectLastIdTranscript);
+	tc_sqlite3_prepare(_dtb, "SELECT min(id), max(id) FROM transcripts WHERE buddy_id=?", &_stmtSelectMinMaxIdTranscript);
 	tc_sqlite3_prepare(_dtb, "DELETE FROM transcripts WHERE buddy_id=?", &_stmtDeleteIdentifierTranscript);
 	tc_sqlite3_prepare(_dtb, "DELETE FROM transcripts WHERE id=?", &_stmtDeleteIdTranscript);
 	
@@ -1968,9 +1968,9 @@
 	});
 }
 
-- (int64_t)transcriptLastMessageIDForBuddyIdentifier:(NSString *)identifier
+- (BOOL)transcriptMessagesIDBoundariesForBuddyIdentifier:(NSString *)identifier firstMessageID:(int64_t *)firstID lastMessageID:(int64_t *)lastID
 {
-	__block int64_t result = -1;
+	__block BOOL result = NO;
 	
 	dispatch_sync(_localQueue, ^{
 		
@@ -1980,17 +1980,25 @@
 			return;
 		
 		// Bind.
-		sqlite3_bind_int64(_stmtSelectLastIdTranscript, 1, buddyID);
+		sqlite3_bind_int64(_stmtSelectMinMaxIdTranscript, 1, buddyID);
 		
 		// Execute.
-		if (sqlite3_step(_stmtSelectLastIdTranscript) == SQLITE_ROW)
+		if (sqlite3_step(_stmtSelectMinMaxIdTranscript) == SQLITE_ROW)
 		{
-			if (sqlite3_column_type(_stmtSelectLastIdTranscript, 0) == SQLITE_INTEGER)
-				result = sqlite3_column_int64(_stmtSelectLastIdTranscript, 0);
+			if (sqlite3_column_type(_stmtSelectMinMaxIdTranscript, 0) == SQLITE_INTEGER && sqlite3_column_type(_stmtSelectMinMaxIdTranscript, 1) == SQLITE_INTEGER)
+			{
+				if (firstID)
+					*firstID = sqlite3_column_int64(_stmtSelectMinMaxIdTranscript, 0);
+				
+				if (lastID)
+					*lastID = sqlite3_column_int64(_stmtSelectMinMaxIdTranscript, 1);
+				
+				result = YES;
+			}
 		}
 		
 		// Reset.
-		sqlite3_reset(_stmtSelectLastIdTranscript);
+		sqlite3_reset(_stmtSelectMinMaxIdTranscript);
 	});
 	
 	return result;

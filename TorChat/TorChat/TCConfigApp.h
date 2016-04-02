@@ -59,6 +59,6 @@ typedef enum
 - (void)transcriptRemoveMessagesForBuddyIdentifier:(NSString *)identifier;
 - (void)transcriptRemoveMessageForID:(int64_t)msgID;
 
-- (int64_t)transcriptLastMessageIDForBuddyIdentifier:(NSString *)identifier;
+- (BOOL)transcriptMessagesIDBoundariesForBuddyIdentifier:(NSString *)identifier firstMessageID:(int64_t *)firstID lastMessageID:(int64_t *)lastID;
 
 @end
