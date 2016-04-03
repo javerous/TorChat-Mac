@@ -19,7 +19,7 @@ fi
 # Create temporary DMG
 echo '[+] Create temporary DMG.'
 
-/usr/bin/hdiutil create -size 200m -type SPARSE -fs 'HFS+' -volname 'SourceCache' -plist /tmp/torchar_source > /tmp/torchat_output.plist
+/usr/bin/hdiutil create -size 300m -type SPARSE -fs 'HFS+' -volname 'SourceCache' -plist /tmp/torchar_source > /tmp/torchat_output.plist
 
 if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't create temporary DMG."
