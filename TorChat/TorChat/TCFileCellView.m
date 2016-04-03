@@ -106,15 +106,31 @@
 	[_transferIndicator setDoubleValue:fileDone];
 	
 	// Status.
-	NSString *directionText = nil;
 	NSString *statusText;
 	
+	// > Build direction.
+	NSString *directionText = nil;
+
 	if (way == tcfile_upload)
 		directionText = NSLocalizedString(@"file_progress_to", @"");
 	else if (way == tcfile_download)
 		directionText = NSLocalizedString(@"file_progress_from", @"");
 	
-	statusText = [NSString stringWithFormat:@"%@ %@ (%@) - %@ %@ %@", directionText, buddyName, buddyIdentifier, SMStringFromBytesAmount(fileCompletedSize), NSLocalizedString(@"file_progress_of", @""), SMStringFromBytesAmount(fileSize)];
+	// > Build progress.
+	NSString *progressText = nil;
+	NSNumber *remainingTime = content[TCFileRemainingTimeKey];
+	NSString *completedStr = SMStringFromBytesAmount(fileCompletedSize);
+	NSString *totalStr = SMStringFromBytesAmount(fileSize);
+	
+	if (!remainingTime || [remainingTime doubleValue] == -2.0 || [remainingTime doubleValue] == 0)
+		progressText = [NSString stringWithFormat:NSLocalizedString(@"file_progress", @""), completedStr, totalStr];
+	else if ([remainingTime doubleValue] == -1.0)
+		progressText = [NSString stringWithFormat:NSLocalizedString(@"file_progress_stalled", @""), completedStr, totalStr];
+	else
+		progressText = [NSString stringWithFormat:NSLocalizedString(@"file_progress_remaining", @""), completedStr, totalStr, SMStringFromSecondsAmount([remainingTime doubleValue])];
+
+	// > Build final status.
+	statusText = [NSString stringWithFormat:@"%@ %@ (%@) - %@", directionText, buddyName, buddyIdentifier, progressText];
 
 	[_transferStatusField setTextColor:txtColor];
 	[_transferStatusField setStringValue:statusText];

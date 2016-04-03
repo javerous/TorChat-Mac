@@ -20,12 +20,27 @@
  *
  */
 
+@import SMFoundation;
+
 #import "TCFilesWindowController.h"
 
 #import "TCFileCellView.h"
 
 #import "TCCoreManager.h"
 #import "TCBuddy.h"
+
+
+/*
+** Defines
+*/
+#pragma mark - Defines
+
+// Private file keys
+#define TCFileUUIDKey			@"uuid"
+#define TCFileStatusKey			@"status"
+#define TCFilePercentKey		@"percent"
+#define TCFileSpeedHelperKey	@"speed_helper"
+
 
 
 /*
@@ -411,7 +426,7 @@
 	for (i = 0; i < cnt; i++)
 	{
 		NSDictionary	*file = [_files objectAtIndex:i];
-		tcfile_status	status = (tcfile_status)[[file objectForKey:TCFileStatusKey] intValue];
+		tcfile_status	status = (tcfile_status)[file[TCFileStatusKey] intValue];
 
 		if (status != tcfile_status_running)
 			[indSet addIndex:i];
@@ -420,7 +435,6 @@
 	[_files removeObjectsAtIndexes:indSet];
 	
 	[_filesView reloadData];
-	
 	[self _updateCount];
 }
 
@@ -440,7 +454,7 @@
 {
 	TCFileCellView	*cellView = nil;
 	NSDictionary	*file = [_files objectAtIndex:(NSUInteger)rowIndex];
-	tcfile_status	status = (tcfile_status)[[file objectForKey:TCFileStatusKey] intValue];
+	tcfile_status	status = (tcfile_status)[file[TCFileStatusKey] intValue];
 
 	if (status == tcfile_status_finish || status == tcfile_status_cancel || status == tcfile_status_stopped || status == tcfile_status_error)
 		cellView = [tableView makeViewWithIdentifier:@"transfers_end" owner:self];
@@ -461,7 +475,7 @@
     while (currentIndex != NSNotFound)
 	{
 		NSDictionary	*file = [_files objectAtIndex:currentIndex];
-		tcfile_status	status = (tcfile_status)[[file objectForKey:TCFileStatusKey] intValue];
+		tcfile_status	status = (tcfile_status)[file[TCFileStatusKey] intValue];
 
 		if (status != tcfile_status_running)
 			[final addIndex:currentIndex];
@@ -495,8 +509,10 @@
 		return;
 	
 	// Build file description
-	NSMutableDictionary *item = [[NSMutableDictionary alloc] initWithCapacity:7];
-	NSImage				*icon = [[NSWorkspace sharedWorkspace] iconForFileType:[filePath pathExtension]];
+	NSMutableDictionary *item = [[NSMutableDictionary alloc] init];
+	
+	// > Set icon.
+	NSImage *icon = [[NSWorkspace sharedWorkspace] iconForFileType:[filePath pathExtension]];
 	
 	[icon setSize:NSMakeSize(50, 50)];
 	[icon lockFocus];
@@ -513,35 +529,55 @@
 	}
 	[icon unlockFocus];
 	
-	[item setObject:uuid forKey:TCFileUUIDKey];
-	[item setObject:filePath forKey:TCFileFilePathKey];
-	[item setObject:identifier forKey:TCFileBuddyIdentifierKey];
-	[item setObject:name forKey:TCFileBuddyNameKey];
-	[item setObject:[NSNumber numberWithInt:way] forKey:TCFileWayKey];
-	[item setObject:[NSNumber numberWithInt:tcfile_status_running] forKey:TCFileStatusKey];
-	[item setObject:[NSNumber numberWithFloat:0.0] forKey:TCFilePercentKey];
-	[item setObject:icon forKey:TCFileIconKey];
-	[item setObject:[NSNumber numberWithUnsignedLongLong:size] forKey:TCFileSizeKey];
-	[item setObject:[NSNumber numberWithUnsignedLongLong:0] forKey:TCFileCompletedKey];
+	item[TCFileIconKey] = icon;
+	
+	// > Set speed helper.
+	SMSpeedHelper *speedHelper = [[SMSpeedHelper alloc] initWithCompleteAmount:size];
+
+	speedHelper.updateHandler = ^(NSTimeInterval remainingTime) {
+		dispatch_async(_localQueue, ^{
+			
+			NSUInteger			idx = NSNotFound;
+			NSMutableDictionary *file = [self _fileForUUID:uuid way:way index:&idx];
+			
+			if (!file)
+				return;
+			
+			file[TCFileRemainingTimeKey] = @(remainingTime);
+			[_filesView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:idx] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
+		});
+	};
+	
+	item[TCFileSpeedHelperKey] = speedHelper;
+	
+	// > Set general stuff.
+	item[TCFileUUIDKey] = uuid;
+	item[TCFileFilePathKey] = filePath;
+	item[TCFileBuddyIdentifierKey] = identifier;
+	item[TCFileBuddyNameKey] = name;
+	item[TCFileWayKey] = @(way);
+	item[TCFileStatusKey] = @(tcfile_status_running);
+	item[TCFilePercentKey] = @0.0;
+	item[TCFileSizeKey] = @(size);
+	item[TCFileCompletedKey] = @0;
+	item[TCFileSpeedHelperKey] = speedHelper;
 	
 	if (way == tcfile_upload)
-		[item setObject:NSLocalizedString(@"file_uploading", @"") forKey:TCFileStatusTextKey];
+		item[TCFileStatusTextKey] = NSLocalizedString(@"file_uploading", @"");
 	else if (way == tcfile_download)
-		[item setObject:NSLocalizedString(@"file_downloading", @"") forKey:TCFileStatusTextKey];
+		item[TCFileStatusTextKey] = NSLocalizedString(@"file_downloading", @"");
 	
-	// Make internal & interface changes in main thread
+	// Update things.
 	dispatch_async(_localQueue, ^{
 		
-		// Add the file
+		// Add the file.
 		[_files addObject:item];
 		
-		// Reload the view
+		// Reload UID.
 		[_filesView reloadData];
-		
-		// Reaload count
 		[self _updateCount];
 		
-		// Show the window
+		// Show the window.
 		[self showWindow:nil];
 	});
 }
@@ -553,22 +589,31 @@
 	
 	dispatch_async(_localQueue, ^{
 		
-		for (NSMutableDictionary *file in _files)
-		{
-			NSString	*auuid = [file objectForKey:TCFileUUIDKey];
-			tcfile_way	away = (tcfile_way)[[file objectForKey:TCFileWayKey] intValue];
+		// Search file.
+		NSUInteger			idx = NSNotFound;
+		NSMutableDictionary	*file = [self _fileForUUID:uuid way:way index:&idx];
+		
+		if (!file)
+			return;
+		
+		// Update status.
+		file[TCFileStatusKey] = @(status);
+		file[TCFileStatusTextKey] = txtStatus;
+
+		// Remove speed updater.
+		if (status != tcfile_status_running)
+		{			
+			SMSpeedHelper *speedHelper = file[TCFileSpeedHelperKey];
 			
-			if (away == way && [auuid isEqualToString:uuid])
-			{
-				[file setObject:[NSNumber numberWithInt:status] forKey:TCFileStatusKey];
-				[file setObject:txtStatus forKey:TCFileStatusTextKey];
-				
-				[_filesView reloadData];
-				[self _updateCount];
-				break;
-			}
+			speedHelper.updateHandler = nil;
+			
+			[file removeObjectForKey:TCFileSpeedHelperKey];
+			[file removeObjectForKey:TCFileRemainingTimeKey];
 		}
 		
+		// Reload table.
+		[_filesView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:idx] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
+		[self _updateCount];
 	});
 }
 
@@ -576,20 +621,25 @@
 {
 	dispatch_async(_localQueue, ^{
 		
-		for (NSMutableDictionary *file in _files)
-		{
-			NSString	*auuid = [file objectForKey:TCFileUUIDKey];
-			tcfile_way	away = (tcfile_way)[[file objectForKey:TCFileWayKey] intValue];
-			
-			if (away == way && [auuid isEqualToString:uuid])
-			{
-				[file setObject:@(size) forKey:TCFileCompletedKey];
-				
-				[_filesView reloadData];
-				[self _updateCount];
-				break;
-			}
-		}
+		// Search file.
+		NSUInteger			idx = NSNotFound;
+		NSMutableDictionary *file = [self _fileForUUID:uuid way:way index:&idx];
+		
+		if (!file)
+			return;
+		
+		// Update completed.
+		file[TCFileCompletedKey] = @(size);
+		
+		// Update speed helper.
+		SMSpeedHelper *speedHelper = file[TCFileSpeedHelperKey];
+		
+		if (speedHelper)
+			[speedHelper setCurrentAmount:size];
+		
+		// Reload UI.
+		[_filesView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:idx] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
+		[self _updateCount];
 	});
 }
 
@@ -604,8 +654,8 @@
 	
 	for (NSDictionary *file in _files)
 	{
-		tcfile_status	status = (tcfile_status)[[file objectForKey:TCFileStatusKey] intValue];
-		tcfile_way		way = (tcfile_way)[[file objectForKey:TCFileWayKey] intValue];
+		tcfile_status	status = (tcfile_status)[file[TCFileStatusKey] intValue];
+		tcfile_way		way = (tcfile_way)[file[TCFileWayKey] intValue];
 		
 		if (status == tcfile_status_running)
 			count_run++;
@@ -654,6 +704,31 @@
 		else if (txt_down)
 			[_countField setStringValue:txt_down];
 	}
+}
+
+- (NSMutableDictionary *)_fileForUUID:(NSString *)uuid way:(tcfile_way)way index:(NSUInteger *)index
+{
+	// > localQueue <
+	
+	__block NSMutableDictionary *result = nil;
+	
+	[_files enumerateObjectsUsingBlock:^(NSMutableDictionary * _Nonnull file, NSUInteger idx, BOOL * _Nonnull stop) {
+		
+		NSString	*auuid = file[TCFileUUIDKey];
+		tcfile_way	away = (tcfile_way)[file[TCFileWayKey] intValue];
+		
+		if (away != way || [auuid isEqualToString:uuid] == NO)
+			return;
+		
+		result = file;
+		
+		if (index)
+			*index = idx;
+		
+		*stop = YES;
+	}];
+
+	return result;
 }
 
 @end
