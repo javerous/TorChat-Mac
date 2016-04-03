@@ -334,7 +334,7 @@
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
-	NSInteger	row = [_tableView selectedRow];
+	NSInteger row = [_tableView selectedRow];
 	
 	[_imRemove setEnabled:(row >= 0)];
 
