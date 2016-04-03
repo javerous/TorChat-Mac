@@ -71,7 +71,9 @@
 "file_one_upload" = "1 upload";
 "file_downloads" = "%u downloads";
 "file_one_download" = "1 download";
-"file_progress_of" = "of";
+"file_progress" = "%@ of %@";
+"file_progress_stalled" = "%@ of %@ (stalled)";
+"file_progress_remaining" = "%@ of %@ (%@ remaining)";
 "file_progress_from" = "From:";
 "file_progress_to" = "To:";
 

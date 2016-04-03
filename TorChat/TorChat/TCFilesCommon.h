@@ -52,14 +52,12 @@ typedef enum
 */
 #pragma mark - File Dictionary Keys
 
-#define TCFileUUIDKey			@"uuid"
 #define TCFileFilePathKey		@"filepath"
 #define TCFileBuddyIdentifierKey @"buddy_identifier"
 #define TCFileBuddyNameKey		@"buddy_name"
 #define TCFileWayKey			@"way"
-#define TCFileStatusKey			@"status"
 #define TCFileStatusTextKey		@"status_txt"
-#define TCFilePercentKey		@"percent"
 #define TCFileIconKey			@"icon"
 #define TCFileSizeKey			@"size"
 #define TCFileCompletedKey		@"completed"
+#define TCFileRemainingTimeKey	@"remaining_time"
