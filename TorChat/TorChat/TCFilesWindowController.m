@@ -640,7 +640,7 @@
 
 - (void)_updateCount
 {
-	// > localQueue <
+	// > main queue <
 	
 	unsigned count_up = 0;
 	unsigned count_down = 0;
@@ -703,7 +703,7 @@
 
 - (NSMutableDictionary *)_fileForUUID:(NSString *)uuid way:(tcfile_way)way index:(NSUInteger *)index
 {
-	// > localQueue <
+	// > main queue <
 	
 	__block NSMutableDictionary *result = nil;
 	

@@ -334,7 +334,7 @@
 
 - (void)_openChatWithBuddy:(TCBuddy *)buddy select:(BOOL)select
 {
-	// > localQueue <
+	// > main queue <
 	
 	// Show window.
 	[self showWindow:nil];
@@ -345,7 +345,7 @@
 
 - (void)_addChatWithBuddy:(TCBuddy *)buddy select:(BOOL)select
 {
-	// > localQueue <
+	// > main queue <
 	
 	// Add view if necessary.
 	if ([self _indexOfViewControllerForBuddy:buddy] == NSNotFound)
@@ -607,7 +607,7 @@
 
 - (void)_selectChatWithBuddy:(TCBuddy *)buddy
 {
-	// > localQueue <
+	// > main queue <
 	
 	if (!buddy)
 		return;
@@ -664,7 +664,7 @@
 
 - (void)_showChatViewController:(TCChatViewController *)viewCtrl
 {
-	// > localQueue <
+	// > main queue <
 	
 	// Remove current view
 	[_currentView removeFromSuperview];
@@ -693,7 +693,7 @@
 
 - (NSUInteger)_indexOfViewControllerForBuddy:(TCBuddy *)buddy
 {
-	// > localQueue <
+	// > main queue <
 	
 	if (!buddy)
 		return NSNotFound;
@@ -710,7 +710,7 @@
 
 - (TCBuddy *)_buddyAtIndex:(NSUInteger)index
 {
-	// > localQueue <
+	// > main queue <
 
 	if (index >= [_viewsCtrl count])
 		return nil;
