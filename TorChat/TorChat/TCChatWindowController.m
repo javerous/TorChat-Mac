@@ -71,8 +71,6 @@
 
 @interface TCChatWindowController () <TCCoreManagerObserver, TCBuddyObserver>
 {
-	dispatch_queue_t _localQueue;
-	
 	id <TCConfigApp>	_configuration;
 	TCCoreManager		*_core;
 	
@@ -124,9 +122,6 @@
 	
 	if (self)
 	{
-		// Queues.
-		_localQueue = dispatch_get_main_queue();
-		
 		// Containers
 		_viewsCtrl = [[NSMutableArray alloc] init];
 		_buddies = [[NSMutableSet alloc] init];
@@ -149,7 +144,7 @@
 	if (!handler)
 		handler = ^{ };
 	
-	dispatch_group_async(group, _localQueue, ^{
+	dispatch_group_async(group, dispatch_get_main_queue(), ^{
 		
 		// Hold parameters.
 		_configuration = configuration;
@@ -172,7 +167,7 @@
 		
 		[_configuration transcriptBuddiesIdentifiersWithCompletionHandler:^(NSArray *buddiesIdentifiers) {
 
-			dispatch_group_async(group, _localQueue, ^{
+			dispatch_group_async(group, dispatch_get_main_queue(), ^{
 
 				for (NSString *buddyIdentifier in buddiesIdentifiers)
 				{
@@ -200,7 +195,7 @@
 	if (!handler)
 		handler = ^{ };
 	
-	dispatch_group_async(group, _localQueue, ^{
+	dispatch_group_async(group, dispatch_get_main_queue(), ^{
 		
 		// Close.
 		[self close];
@@ -249,7 +244,7 @@
 {
 	NSInteger index = [_userList rowForView:sender];
 	
-	dispatch_async(_localQueue, ^{
+	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		if (index < 0 || index >= _viewsCtrl.count)
 			return;
@@ -318,7 +313,7 @@
 
 - (void)openChatWithBuddy:(TCBuddy *)abuddy select:(BOOL)select
 {
-	dispatch_async(_localQueue, ^{
+	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		TCBuddy *buddy = abuddy;
 		
@@ -366,7 +361,7 @@
 
 - (void)closeChatWithBuddy:(TCBuddy *)buddy
 {
-	dispatch_async(_localQueue, ^{
+	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		// Search view controller.
 		NSUInteger index = [self _indexOfViewControllerForBuddy:buddy];
@@ -500,7 +495,7 @@
 				if (!avatar)
 					avatar = [NSImage imageNamed:NSImageNameUser];
 				
-				dispatch_async(_localQueue, ^{
+				dispatch_async(dispatch_get_main_queue(), ^{
 					for (id item in _viewsCtrl)
 					{
 						if ([item isKindOfClass:[TCChatViewController class]])
@@ -521,7 +516,7 @@
 				
 				[buddy addObserver:self];
 				
-				dispatch_async(_localQueue, ^{
+				dispatch_async(dispatch_get_main_queue(), ^{
 					[_buddies addObject:buddy];
 				});
 
@@ -534,7 +529,7 @@
 				
 				[buddy removeObserver:self];
 				
-				dispatch_async(_localQueue, ^{
+				dispatch_async(dispatch_get_main_queue(), ^{
 					[_buddies removeObject:buddy];
 				});
 				
@@ -566,7 +561,7 @@
 					return;
 				
 				// Update table view.
-				dispatch_async(_localQueue, ^{
+				dispatch_async(dispatch_get_main_queue(), ^{
 					[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 				});
 				
@@ -580,7 +575,7 @@
 				if (!message)
 					break;
 				
-				dispatch_async(_localQueue, ^{
+				dispatch_async(dispatch_get_main_queue(), ^{
 					
 					// Start a chat UI.
 					[self _openChatWithBuddy:buddy select:(self.window.isVisible == NO)];

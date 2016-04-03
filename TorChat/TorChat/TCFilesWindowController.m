@@ -50,8 +50,6 @@
 
 @interface TCFilesWindowController () <TCCoreManagerObserver, TCBuddyObserver>
 {
-	dispatch_queue_t	_localQueue;
-	
 	TCCoreManager		*_core;
 
 	NSMutableArray		*_files;
@@ -109,9 +107,6 @@
 	
     if (self)
 	{
-		// Queue.
-		_localQueue = dispatch_get_main_queue();
-		
 		// Alloc containers.
 		_files =  [[NSMutableArray alloc] init];
 		_buddies = [[NSMutableSet alloc] init];
@@ -134,7 +129,7 @@
 	if (!handler)
 		handler = ^{ };
 	
-	dispatch_group_async(group, _localQueue, ^{
+	dispatch_group_async(group, dispatch_get_main_queue(), ^{
 		
 		// Hold parameters.
 		_core = coreMananager;
@@ -163,7 +158,7 @@
 	if (!handler)
 		handler = ^{ };
 	
-	dispatch_group_async(group, _localQueue, ^{
+	dispatch_group_async(group, dispatch_get_main_queue(), ^{
 		
 		// Unmonitor buddies.
 		for (TCBuddy *buddy in _buddies)
@@ -215,7 +210,7 @@
 			
 			[buddy addObserver:self];
 			
-			dispatch_async(_localQueue, ^{
+			dispatch_async(dispatch_get_main_queue(), ^{
 				[_buddies addObject:buddy];
 			});
 		}
@@ -225,7 +220,7 @@
 			
 			[buddy removeObserver:self];
 			
-			dispatch_async(_localQueue, ^{
+			dispatch_async(dispatch_get_main_queue(), ^{
 				[_buddies removeObject:buddy];
 			});
 		}
@@ -535,7 +530,7 @@
 	SMSpeedHelper *speedHelper = [[SMSpeedHelper alloc] initWithCompleteAmount:size];
 
 	speedHelper.updateHandler = ^(NSTimeInterval remainingTime) {
-		dispatch_async(_localQueue, ^{
+		dispatch_async(dispatch_get_main_queue(), ^{
 			
 			NSUInteger			idx = NSNotFound;
 			NSMutableDictionary *file = [self _fileForUUID:uuid way:way index:&idx];
@@ -568,7 +563,7 @@
 		item[TCFileStatusTextKey] = NSLocalizedString(@"file_downloading", @"");
 	
 	// Update things.
-	dispatch_async(_localQueue, ^{
+	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		// Add the file.
 		[_files addObject:item];
@@ -587,7 +582,7 @@
 	if (!txtStatus)
 		return;
 	
-	dispatch_async(_localQueue, ^{
+	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		// Search file.
 		NSUInteger			idx = NSNotFound;
@@ -619,7 +614,7 @@
 
 - (void)setCompleted:(uint64_t)size forFileTransfert:(NSString *)uuid withWay:(tcfile_way)way
 {
-	dispatch_async(_localQueue, ^{
+	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		// Search file.
 		NSUInteger			idx = NSNotFound;
