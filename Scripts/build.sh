@@ -19,7 +19,7 @@ fi
 # Create temporary DMG
 echo '[+] Create temporary DMG.'
 
-/usr/bin/hdiutil create -size 100m -type SPARSE -fs 'HFS+' -volname 'SourceCache' -plist /tmp/torchar_source > /tmp/torchat_output.plist
+/usr/bin/hdiutil create -size 200m -type SPARSE -fs 'HFS+' -volname 'SourceCache' -plist /tmp/torchar_source > /tmp/torchat_output.plist
 
 if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't create temporary DMG."
@@ -81,7 +81,7 @@ echo '[+] Compile sources.'
 
 cd "${volume_path}"
 
-xcodebuild archive -workspace 'TorChat.xcworkspace' -scheme 'TorChat' -archivePath "${volume_path}/torchat.xcarchive" 1> "${volume_path}/build.txt" 2> "${volume_path}/build_err.txt"
+xcodebuild archive -workspace 'TorChat.xcworkspace' -scheme 'TorChat' -derivedDataPath "${volume_path}/DerivedData/" -archivePath "${volume_path}/torchat.xcarchive" 1>> "${volume_path}/build.txt" 2>> "${volume_path}/build_err.txt"
 
 if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't build sources."
@@ -108,7 +108,7 @@ cat > "${volume_path}/archive.plist" <<EOL
 </plist>
 EOL
 
-xcodebuild -exportArchive -archivePath "${volume_path}/torchat.xcarchive" -exportPath "${volume_path}/output/" -exportOptionsPlist "${volume_path}/archive.plist" 1> "${volume_path}/build.txt" 2> "${volume_path}/build_err.txt"
+xcodebuild -exportArchive -archivePath "${volume_path}/torchat.xcarchive" -exportPath "${volume_path}/output/" -exportOptionsPlist "${volume_path}/archive.plist" 1>> "${volume_path}/build.txt" 2>> "${volume_path}/build_err.txt"
 
 if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't export archive."
