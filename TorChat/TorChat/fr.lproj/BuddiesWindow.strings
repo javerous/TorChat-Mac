@@ -50,7 +50,7 @@
 /* Class = "NSMenuItem"; title = "Extended Away"; ObjectID = "56"; */
 "56.title" = "Indisponible";
 
-/* Class = "NSWindow"; title = "Add Identifier"; ObjectID = "65"; */
+/* Class = "NSWindow"; title = "Add Buddy"; ObjectID = "65"; */
 "65.title" = "Ajouter un contact";
 
 /* Class = "NSTextFieldCell"; title = "Name: "; ObjectID = "68"; */
