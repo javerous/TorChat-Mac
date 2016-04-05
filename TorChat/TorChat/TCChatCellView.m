@@ -61,10 +61,10 @@
 
 - (void)awakeFromNib
 {
-	[_closeButton setImage:[NSImage imageNamed:@"file_stop"]];
-	[_closeButton setRollOverImage:[NSImage imageNamed:@"file_stop_rollover"]];
-	[_closeButton setPushImage:[NSImage imageNamed:@"file_stop_pushed"]];
-	
+	_closeButton.image = [NSImage imageNamed:@"file_stop"];
+	_closeButton.overImage = [NSImage imageNamed:@"file_stop_rollover"];
+	_closeButton.pushImage = [NSImage imageNamed:@"file_stop_pushed"];
+
 	_balloonView.startCap = [NSImage imageNamed:@"balloon_left"];
 	_balloonView.centerFill = [NSImage imageNamed:@"balloon_center"];
 	_balloonView.endCap = [NSImage imageNamed:@"balloon_right"];
@@ -83,7 +83,9 @@
 
 - (void)setContent:(NSDictionary *)content
 {
-	if (!content)
+	_content = content;
+	
+	if (!_content)
 		return;
 	
 	// Set avatar.

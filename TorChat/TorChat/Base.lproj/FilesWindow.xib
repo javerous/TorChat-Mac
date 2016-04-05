@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
     </dependencies>
     <objects>
@@ -94,51 +93,23 @@
                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                             </textFieldCell>
                                                         </textField>
-                                                        <progressIndicator maxValue="1" controlSize="small" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="FHg-Eb-qac">
+                                                        <progressIndicator wantsLayer="YES" maxValue="1" controlSize="small" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="FHg-Eb-qac">
                                                             <rect key="frame" x="63" y="18" width="352" height="12"/>
                                                         </progressIndicator>
-                                                        <button translatesAutoresizingMaskIntoConstraints="NO" id="gR2-Us-1NH" customClass="TCButton">
-                                                            <rect key="frame" x="443" y="17" width="14" height="14"/>
-                                                            <constraints>
-                                                                <constraint firstAttribute="height" constant="14" id="w4j-Li-Wj4"/>
-                                                                <constraint firstAttribute="width" constant="14" id="xk7-mq-ySt"/>
-                                                            </constraints>
-                                                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="file_reveal" imagePosition="overlaps" alignment="center" inset="2" id="hQ8-Gy-4yW">
-                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                <font key="font" metaFont="system"/>
-                                                            </buttonCell>
-                                                            <connections>
-                                                                <action selector="doShowTransfer:" target="-2" id="dC8-22-6DN"/>
-                                                            </connections>
-                                                        </button>
-                                                        <button translatesAutoresizingMaskIntoConstraints="NO" id="en4-xh-Paa" customClass="TCButton">
+                                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="JWq-l4-URn" userLabel="Cancel Button" customClass="TCButton">
                                                             <rect key="frame" x="423" y="17" width="14" height="14"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="width" constant="14" id="78t-sS-bhC"/>
-                                                                <constraint firstAttribute="height" constant="14" id="YB0-wF-hGN"/>
+                                                                <constraint firstAttribute="width" constant="14" id="PQt-Vx-bPf"/>
+                                                                <constraint firstAttribute="height" constant="14" id="Q37-h6-ntr"/>
                                                             </constraints>
-                                                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="file_stop" imagePosition="only" alignment="center" inset="2" id="rjk-zV-rgC">
-                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                <font key="font" metaFont="system"/>
-                                                            </buttonCell>
-                                                            <connections>
-                                                                <action selector="doCancelTransfer:" target="-2" id="rBO-jV-DOC"/>
-                                                            </connections>
-                                                        </button>
-                                                        <button translatesAutoresizingMaskIntoConstraints="NO" id="C33-kj-lUM">
-                                                            <rect key="frame" x="5" y="10" width="50" height="50"/>
+                                                        </customView>
+                                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="quK-fY-gEQ" userLabel="Show Button" customClass="TCButton">
+                                                            <rect key="frame" x="443" y="17" width="14" height="14"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="width" constant="50" id="Akr-6c-n0v"/>
-                                                                <constraint firstAttribute="height" constant="50" id="Qjx-4j-R5e"/>
+                                                                <constraint firstAttribute="width" constant="14" id="C32-im-odd"/>
+                                                                <constraint firstAttribute="height" constant="14" id="rtS-xG-ybJ"/>
                                                             </constraints>
-                                                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="NSFolder" imagePosition="overlaps" alignment="center" state="on" imageScaling="proportionallyUpOrDown" inset="2" id="bc3-BD-Gid">
-                                                                <behavior key="behavior" lightByContents="YES"/>
-                                                                <font key="font" metaFont="system"/>
-                                                            </buttonCell>
-                                                            <connections>
-                                                                <action selector="doOpenTransfer:" target="-2" id="XeV-RV-YmL"/>
-                                                            </connections>
-                                                        </button>
+                                                        </customView>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9YV-Gv-0CT">
                                                             <rect key="frame" x="61" y="5" width="53" height="13"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Uploading..." id="x9y-Jx-b7n">
@@ -147,32 +118,39 @@
                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                             </textFieldCell>
                                                         </textField>
+                                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="ABe-2X-CZZ" customClass="TCButton">
+                                                            <rect key="frame" x="5" y="10" width="50" height="50"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" constant="50" id="26F-wf-ckK"/>
+                                                                <constraint firstAttribute="height" constant="50" id="S25-4q-wz0"/>
+                                                            </constraints>
+                                                        </customView>
                                                     </subviews>
                                                     <constraints>
                                                         <constraint firstItem="JJP-tg-TNf" firstAttribute="top" secondItem="taV-6t-lMn" secondAttribute="bottom" constant="3" id="0i9-Gb-00v"/>
-                                                        <constraint firstItem="gR2-Us-1NH" firstAttribute="centerY" secondItem="en4-xh-Paa" secondAttribute="centerY" id="8xn-54-oZa"/>
-                                                        <constraint firstItem="FHg-Eb-qac" firstAttribute="leading" secondItem="C33-kj-lUM" secondAttribute="trailing" constant="8" symbolic="YES" id="BL3-J0-M6Q"/>
-                                                        <constraint firstAttribute="centerY" secondItem="C33-kj-lUM" secondAttribute="centerY" id="Bvk-bm-6QA"/>
                                                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="JJP-tg-TNf" secondAttribute="trailing" constant="20" symbolic="YES" id="CEj-pa-uWl"/>
+                                                        <constraint firstItem="ABe-2X-CZZ" firstAttribute="centerY" secondItem="oNF-Rj-bf9" secondAttribute="centerY" id="CWc-oE-68b"/>
+                                                        <constraint firstItem="FHg-Eb-qac" firstAttribute="leading" secondItem="ABe-2X-CZZ" secondAttribute="trailing" constant="8" symbolic="YES" id="Efs-7h-T1m"/>
                                                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="9YV-Gv-0CT" secondAttribute="trailing" constant="20" symbolic="YES" id="GQs-2i-lyB"/>
+                                                        <constraint firstItem="JWq-l4-URn" firstAttribute="centerY" secondItem="FHg-Eb-qac" secondAttribute="centerY" id="J0D-2M-2FL"/>
                                                         <constraint firstItem="taV-6t-lMn" firstAttribute="top" secondItem="oNF-Rj-bf9" secondAttribute="top" constant="4" id="LNP-u6-r40"/>
                                                         <constraint firstItem="9YV-Gv-0CT" firstAttribute="top" secondItem="FHg-Eb-qac" secondAttribute="bottom" id="PC5-e6-w3H"/>
-                                                        <constraint firstAttribute="trailing" secondItem="gR2-Us-1NH" secondAttribute="trailing" constant="20" symbolic="YES" id="PyL-vx-ngj"/>
+                                                        <constraint firstItem="JWq-l4-URn" firstAttribute="leading" secondItem="FHg-Eb-qac" secondAttribute="trailing" constant="8" symbolic="YES" id="Q7E-lm-o62"/>
+                                                        <constraint firstAttribute="trailing" secondItem="quK-fY-gEQ" secondAttribute="trailing" constant="20" symbolic="YES" id="S85-ho-iq2"/>
                                                         <constraint firstItem="FHg-Eb-qac" firstAttribute="leading" secondItem="taV-6t-lMn" secondAttribute="leading" id="Ugb-FL-4A4"/>
-                                                        <constraint firstItem="C33-kj-lUM" firstAttribute="leading" secondItem="oNF-Rj-bf9" secondAttribute="leading" constant="5" id="Zab-3d-GSi"/>
                                                         <constraint firstItem="FHg-Eb-qac" firstAttribute="leading" secondItem="9YV-Gv-0CT" secondAttribute="leading" id="cOb-EL-jVi"/>
                                                         <constraint firstItem="FHg-Eb-qac" firstAttribute="leading" secondItem="JJP-tg-TNf" secondAttribute="leading" id="fmm-jo-Dpf"/>
+                                                        <constraint firstItem="quK-fY-gEQ" firstAttribute="leading" secondItem="JWq-l4-URn" secondAttribute="trailing" constant="6" id="mZr-lH-txy"/>
                                                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="taV-6t-lMn" secondAttribute="trailing" constant="20" symbolic="YES" id="nuF-4E-nr8"/>
-                                                        <constraint firstItem="gR2-Us-1NH" firstAttribute="leading" secondItem="en4-xh-Paa" secondAttribute="trailing" constant="6" id="tVU-4n-pmj"/>
+                                                        <constraint firstItem="quK-fY-gEQ" firstAttribute="centerY" secondItem="JWq-l4-URn" secondAttribute="centerY" id="sfW-EO-zIm"/>
                                                         <constraint firstItem="FHg-Eb-qac" firstAttribute="top" secondItem="JJP-tg-TNf" secondAttribute="bottom" constant="3" id="ujo-rd-LK6"/>
-                                                        <constraint firstItem="en4-xh-Paa" firstAttribute="leading" secondItem="FHg-Eb-qac" secondAttribute="trailing" constant="8" symbolic="YES" id="xJy-6B-r4f"/>
-                                                        <constraint firstItem="en4-xh-Paa" firstAttribute="centerY" secondItem="FHg-Eb-qac" secondAttribute="centerY" id="y5f-HW-Ie8"/>
+                                                        <constraint firstItem="ABe-2X-CZZ" firstAttribute="leading" secondItem="oNF-Rj-bf9" secondAttribute="leading" constant="5" id="zfV-A8-cc9"/>
                                                     </constraints>
                                                     <connections>
-                                                        <outlet property="cancelButton" destination="en4-xh-Paa" id="Gh2-f9-2n1"/>
+                                                        <outlet property="cancelButton" destination="JWq-l4-URn" id="rlY-8M-Toe"/>
                                                         <outlet property="fileNameField" destination="taV-6t-lMn" id="79x-Xn-7vu"/>
-                                                        <outlet property="iconButton" destination="C33-kj-lUM" id="TZR-JH-RO6"/>
-                                                        <outlet property="showButton" destination="gR2-Us-1NH" id="jNe-LU-YAa"/>
+                                                        <outlet property="iconButton" destination="ABe-2X-CZZ" id="hdp-uT-ttn"/>
+                                                        <outlet property="showButton" destination="quK-fY-gEQ" id="ErE-Ot-pUL"/>
                                                         <outlet property="textField" destination="taV-6t-lMn" id="jYa-gA-LWP"/>
                                                         <outlet property="transferDirectionField" destination="9YV-Gv-0CT" id="Z9M-oo-KXg"/>
                                                         <outlet property="transferIndicator" destination="FHg-Eb-qac" id="QhQ-qK-2lR"/>
@@ -202,34 +180,6 @@
                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                             </textFieldCell>
                                                         </textField>
-                                                        <button translatesAutoresizingMaskIntoConstraints="NO" id="2C6-If-hDz" customClass="TCButton">
-                                                            <rect key="frame" x="443" y="28" width="14" height="14"/>
-                                                            <constraints>
-                                                                <constraint firstAttribute="width" constant="14" id="eil-Bm-pnm"/>
-                                                                <constraint firstAttribute="height" constant="14" id="h18-JS-Bwc"/>
-                                                            </constraints>
-                                                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="file_reveal" imagePosition="only" alignment="center" inset="2" id="rSW-4t-ux8">
-                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                <font key="font" metaFont="system"/>
-                                                            </buttonCell>
-                                                            <connections>
-                                                                <action selector="doShowTransfer:" target="-2" id="nhm-7t-9lz"/>
-                                                            </connections>
-                                                        </button>
-                                                        <button translatesAutoresizingMaskIntoConstraints="NO" id="yAb-Aq-Jlz">
-                                                            <rect key="frame" x="5" y="10" width="50" height="50"/>
-                                                            <constraints>
-                                                                <constraint firstAttribute="width" constant="50" id="0Eg-T2-Fcl"/>
-                                                                <constraint firstAttribute="height" constant="50" id="bKy-xL-mVk"/>
-                                                            </constraints>
-                                                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="NSFolder" imagePosition="overlaps" alignment="center" state="on" imageScaling="proportionallyUpOrDown" inset="2" id="6SO-Xx-IxY">
-                                                                <behavior key="behavior" lightByContents="YES"/>
-                                                                <font key="font" metaFont="system"/>
-                                                            </buttonCell>
-                                                            <connections>
-                                                                <action selector="doOpenTransfer:" target="-2" id="SzS-cQ-qrd"/>
-                                                            </connections>
-                                                        </button>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mRR-ki-JaO">
                                                             <rect key="frame" x="61" y="10" width="58" height="13"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Upload done." id="p4h-ix-yZk">
@@ -238,26 +188,40 @@
                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                             </textFieldCell>
                                                         </textField>
+                                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="0fx-Dm-wnm" userLabel="Show Button" customClass="TCButton">
+                                                            <rect key="frame" x="443" y="28" width="14" height="14"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" constant="14" id="Edq-WQ-g73"/>
+                                                                <constraint firstAttribute="height" constant="14" id="axM-Mg-z1v"/>
+                                                            </constraints>
+                                                        </customView>
+                                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="wGv-GB-OEb" userLabel="Icon Button" customClass="TCButton">
+                                                            <rect key="frame" x="5" y="10" width="50" height="50"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" constant="50" id="X6t-ui-2xR"/>
+                                                                <constraint firstAttribute="height" constant="50" id="ZAY-M8-hrY"/>
+                                                            </constraints>
+                                                        </customView>
                                                     </subviews>
                                                     <constraints>
+                                                        <constraint firstItem="wGv-GB-OEb" firstAttribute="leading" secondItem="MeD-NZ-wgZ" secondAttribute="leading" constant="5" id="0pa-fl-Z8a"/>
                                                         <constraint firstItem="JiK-DF-LO9" firstAttribute="leading" secondItem="bzE-Ni-6Mv" secondAttribute="leading" id="1nl-P6-yMH"/>
+                                                        <constraint firstItem="0fx-Dm-wnm" firstAttribute="centerY" secondItem="MeD-NZ-wgZ" secondAttribute="centerY" id="2gq-WG-r7V"/>
                                                         <constraint firstItem="mRR-ki-JaO" firstAttribute="top" secondItem="bzE-Ni-6Mv" secondAttribute="bottom" constant="5" id="3g8-ed-OBS"/>
-                                                        <constraint firstItem="yAb-Aq-Jlz" firstAttribute="leading" secondItem="MeD-NZ-wgZ" secondAttribute="leading" constant="5" id="D83-XJ-McU"/>
+                                                        <constraint firstItem="wGv-GB-OEb" firstAttribute="centerY" secondItem="MeD-NZ-wgZ" secondAttribute="centerY" id="4Je-mT-Syc"/>
                                                         <constraint firstItem="bzE-Ni-6Mv" firstAttribute="top" secondItem="JiK-DF-LO9" secondAttribute="bottom" constant="5" id="EoP-Pc-a9c"/>
-                                                        <constraint firstAttribute="trailing" secondItem="2C6-If-hDz" secondAttribute="trailing" constant="20" symbolic="YES" id="G64-cv-vtB"/>
-                                                        <constraint firstItem="bzE-Ni-6Mv" firstAttribute="leading" secondItem="yAb-Aq-Jlz" secondAttribute="trailing" constant="8" symbolic="YES" id="GK2-Qw-j6F"/>
+                                                        <constraint firstAttribute="trailing" secondItem="0fx-Dm-wnm" secondAttribute="trailing" constant="20" symbolic="YES" id="G7B-P1-wGb"/>
                                                         <constraint firstItem="bzE-Ni-6Mv" firstAttribute="leading" secondItem="mRR-ki-JaO" secondAttribute="leading" id="KiD-5s-dPm"/>
                                                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="mRR-ki-JaO" secondAttribute="trailing" constant="20" symbolic="YES" id="V1o-hg-Mco"/>
                                                         <constraint firstAttribute="centerY" secondItem="bzE-Ni-6Mv" secondAttribute="centerY" id="d47-k0-N8B"/>
+                                                        <constraint firstItem="bzE-Ni-6Mv" firstAttribute="leading" secondItem="wGv-GB-OEb" secondAttribute="trailing" constant="8" id="dIV-MA-JHh"/>
                                                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="JiK-DF-LO9" secondAttribute="trailing" constant="20" symbolic="YES" id="esp-hq-GzQ"/>
-                                                        <constraint firstItem="2C6-If-hDz" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="bzE-Ni-6Mv" secondAttribute="trailing" constant="8" symbolic="YES" id="hvr-mS-Bvd"/>
-                                                        <constraint firstAttribute="centerY" secondItem="2C6-If-hDz" secondAttribute="centerY" id="kQY-hh-1Wl"/>
-                                                        <constraint firstAttribute="centerY" secondItem="yAb-Aq-Jlz" secondAttribute="centerY" id="kwT-N5-hPw"/>
+                                                        <constraint firstItem="0fx-Dm-wnm" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="bzE-Ni-6Mv" secondAttribute="trailing" constant="8" symbolic="YES" id="hiI-xd-kn8"/>
                                                     </constraints>
                                                     <connections>
                                                         <outlet property="fileNameField" destination="JiK-DF-LO9" id="b6a-ZS-X3a"/>
-                                                        <outlet property="iconButton" destination="yAb-Aq-Jlz" id="fZp-t9-ehr"/>
-                                                        <outlet property="showButton" destination="2C6-If-hDz" id="QsO-hS-W4W"/>
+                                                        <outlet property="iconButton" destination="wGv-GB-OEb" id="wBF-70-MZZ"/>
+                                                        <outlet property="showButton" destination="0fx-Dm-wnm" id="MIa-IC-YWC"/>
                                                         <outlet property="textField" destination="JiK-DF-LO9" id="ofN-Zm-9U8"/>
                                                         <outlet property="transferDirectionField" destination="mRR-ki-JaO" id="j55-1X-zkb"/>
                                                         <outlet property="transferStatusField" destination="bzE-Ni-6Mv" id="3DJ-iW-ijd"/>
@@ -300,9 +264,4 @@
             </view>
         </window>
     </objects>
-    <resources>
-        <image name="NSFolder" width="32" height="32"/>
-        <image name="file_reveal" width="14" height="14"/>
-        <image name="file_stop" width="14" height="14"/>
-    </resources>
 </document>

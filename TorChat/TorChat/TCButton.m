@@ -24,23 +24,18 @@
 
 
 /*
-** TCButton Private
+** TCButtonContext
 */
-#pragma mark - TCButton Private
+#pragma mark - TCButtonContext
 
-@interface TCButton ()
-{
-    NSImage					*_image;
-	NSImage					*_rollOverImage;
-	
-	BOOL					_isOver;
-		
-	NSTrackingRectTag		_tracking;
-}
+@interface TCButtonContext : NSObject
 
-- (void)configure;
-- (void)loadImage;
-- (void)resetTracking;
+@property (assign, nonatomic) BOOL isOver;
+@property (assign, nonatomic) BOOL isPushed;
+
+@end
+
+@implementation TCButtonContext
 
 @end
 
@@ -52,6 +47,9 @@
 #pragma mark - TCButton
 
 @implementation TCButton
+{
+	id _monitor;
+}
 
 
 /*
@@ -59,171 +57,105 @@
 */
 #pragma mark - TCButton - Instance
 
-- (id)init
-{
-	self = [super init];
-	
-    if (self)
-	{
-		[self configure];
-	}
-    
-    return self;
-}
-
-- (id)initWithFrame:(NSRect)rect
-{
-	self = [super initWithFrame:rect];
-	
-	if (self)
-	{
-		[self configure];
-	}
-	
-	return self;
-}
-
-- (id)initWithCoder:(NSCoder *)coder
-{
-	self = [super initWithCoder:coder];
-	
-	if (self)
-	{
-		[self configure];
-	}
-	
-	return self;
-}
-
 - (void)dealloc
 {
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidResizeNotification object:nil];
-
-	if (_tracking)
-		 [self removeTrackingRect:_tracking];
+	[NSEvent removeMonitor:_monitor];
 }
 
 
 
 /*
-** TCButton - Overwrite
+** TCButton - NSView
 */
 #pragma mark - TCButton - OverWrite
 
-- (void)viewWillMoveToWindow:(NSWindow *)newWindow
+- (void)drawRect:(NSRect)dirtyRect
 {
-    if ([self window] && _tracking)
+	if (_context.isOver)
 	{
-        [self removeTrackingRect:_tracking];
-		_tracking = 0;
-    }
-}
-
-- (void)removeFromSuperview
-{
-	if (_tracking)
-		[self removeTrackingRect:_tracking];
-
-	[super removeFromSuperview];
-}
-
-- (void)removeFromSuperviewWithoutNeedingDisplay
-{
-	if (_tracking)
-		[self removeTrackingRect:_tracking];
-
-	[super removeFromSuperviewWithoutNeedingDisplay];
-}
-
-- (void)setFrame:(NSRect)frame
-{
-	NSRect prev = [self frame];
-	
-	[super setFrame:frame];
-	
-	if (prev.size.width != frame.size.width || prev.size.height != frame.size.height)
-		[self resetTracking];
+		if (_context.isPushed)
+			[_pushImage drawInRect:self.bounds];
+		else
+		{
+			if (_overImage)
+				[_overImage drawInRect:self.bounds];
+			else
+				[_image drawInRect:self.bounds];
+		}
+	}
+	else
+		[_image drawInRect:self.bounds];
 }
 
 - (void)viewDidMoveToWindow
 {
-	if ([self window])
+	[super viewDidMoveToWindow];
+
+	if (self.window)
 	{
-		[self resetTracking];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(frameDidChange:) name:NSWindowDidResizeNotification object:[self window]];
+		if (!_context)
+			_context = [TCButton createEmptyContext];
+		
+		if (!_monitor)
+			[self monitorEvents];
+		
+		[self setNeedsDisplay:YES];
 	}
 	else
 	{
-		if (_tracking)
-			[self removeTrackingRect:_tracking];
-		
-		_tracking = 0;
-		
-		[[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidResizeNotification object:nil];
+		if (_monitor)
+		{
+			[NSEvent removeMonitor:_monitor];
+			_monitor = nil;
+		}
 	}
 }
 
-- (void)frameDidChange:(NSNotification *)aNotification
-{	
-	[self resetTracking];
-}
-
 
 
 /*
-** TCButton - Tracking
+** TCButton - Context
 */
-#pragma mark - TCButton - Tracking
+#pragma mark - TCButton - Context
 
-- (void)mouseEntered:(NSEvent *)theEvent
-{	
-	_isOver = YES;
-	
-	[self loadImage];
-	
-	id <TCButtonDelegate> delegate = _delegate;
-	
-	if ([delegate respondsToSelector:@selector(button:isRollOver:)])
-		[delegate button:self isRollOver:YES];
-}
-
-- (void)mouseExited:(NSEvent *)theEvent
++ (TCButtonContext *)createEmptyContext
 {
-	_isOver = NO;
-	
-	[self loadImage];
-	
-	id <TCButtonDelegate> delegate = _delegate;
+	return [[TCButtonContext alloc] init];
+}
 
-	if ([delegate respondsToSelector:@selector(button:isRollOver:)])
-		[delegate button:self isRollOver:NO];
+- (void)setContext:(TCButtonContext *)context
+{
+	_context = context;
+	
+	[self setNeedsLayout:YES];
 }
 
 
 
 /*
-** TCButton - States
+** TCButton - Content
 */
-#pragma mark - TCButton - States
+#pragma mark - TCButton - Content
 
 - (void)setImage:(NSImage *)img
 {
 	_image = img;
-	
-	[self loadImage];
+	[self setNeedsDisplay:YES];
+}
+
+- (void)setOverImage:(NSImage *)img
+{
+	_overImage = img;
+	[self setNeedsDisplay:YES];
+	[self monitorEvents];
 }
 
 - (void)setPushImage:(NSImage *)img
 {
-	[self setAlternateImage:img];
+	_pushImage = img;
+	[self setNeedsDisplay:YES];
 }
 
-- (void)setRollOverImage:(NSImage *)img
-{
-	_rollOverImage = img;
-	
-	[self loadImage];
-}
 
 
 
@@ -232,33 +164,105 @@
 */
 #pragma mark - TCButton - Tools
 
-- (void)configure
+- (void)monitorEvents
 {
-	[self setBordered:NO];
-	[self setButtonType:NSMomentaryChangeButton];
-
-	[self resetTracking];
-}
-
-- (void)resetTracking
-{
-	NSRect trackingRect = [self frame];
+	__weak TCButton *weakButton = self;
+	NSEventMask		mask = NSLeftMouseDownMask | NSLeftMouseUpMask |  NSLeftMouseDraggedMask;
 	
-	trackingRect.origin = NSZeroPoint;
-	trackingRect.size = NSMakeSize(trackingRect.size.width, trackingRect.size.height);
+	if (_overImage)
+		mask |= NSMouseMovedMask;
 	
-	if (_tracking)
-		[self removeTrackingRect:_tracking];
+	if (_monitor)
+		[NSEvent removeMonitor:_monitor];
+	
+	_monitor = [NSEvent addLocalMonitorForEventsMatchingMask:mask handler:^NSEvent * _Nullable(NSEvent * _Nonnull event) {
 		
-	_tracking = [self addTrackingRect:trackingRect owner:self userData:nil assumeInside:NO];
+		if ([weakButton handleEvent:event])
+			return nil;
+		
+		return event;
+	}];
 }
 
-- (void)loadImage
+- (BOOL)handleEvent:(NSEvent *)event
 {
-	if (_isOver)
-		[super setImage:_rollOverImage];
-	else
-		[super setImage:_image];
+	if (self.window == nil || [self.window isKeyWindow] == NO)
+		return NO;
+	
+	NSPoint windowMouseLocation = [self.window mouseLocationOutsideOfEventStream];
+	NSPoint mouseLocation = [self convertPoint:windowMouseLocation fromView:nil];
+	BOOL	isOver = NSPointInRect(mouseLocation, [self bounds]);
+
+	BOOL needUpdate = NO;
+	BOOL captureEvent = NO;
+
+	if (isOver != _context.isOver)
+	{
+		needUpdate = YES;
+		_context.isOver = isOver;
+	}
+
+	switch (event.type)
+	{
+		case NSLeftMouseDown:
+		{
+			if (_context.isOver)
+			{
+				if (_context.isPushed == NO)
+				{
+					_context.isPushed = YES;
+					needUpdate = YES;
+				}
+				
+				captureEvent = YES;
+			}
+			
+			break;
+		}
+			
+		case NSLeftMouseUp:
+		{
+			if (_context.isOver && _context.isPushed)
+			{
+				void (^actionHandler)(TCButton *) = self.actionHandler;
+				
+				if (actionHandler)
+					actionHandler(self);
+			}
+			
+			if (_context.isPushed == YES)
+			{
+				_context.isPushed = NO;
+				needUpdate = YES;
+			}
+			
+			break;
+		}
+			
+		case NSLeftMouseDragged:
+		{
+			if (_context.isPushed == NO)
+			{
+				_context.isOver = NO;
+				needUpdate = YES;
+			}
+
+			break;
+		}
+			
+		case NSMouseMoved:
+		{
+			break;
+		}
+			
+		default:
+			return NO;
+	}
+	
+	if (needUpdate)
+		[self setNeedsDisplay:YES];
+	
+	return captureEvent;
 }
 
 @end

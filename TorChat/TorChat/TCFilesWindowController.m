@@ -25,6 +25,7 @@
 #import "TCFilesWindowController.h"
 
 #import "TCFileCellView.h"
+#import "TCButton.h"
 
 #import "TCCoreManager.h"
 #import "TCBuddy.h"
@@ -41,6 +42,10 @@
 #define TCFilePercentKey		@"percent"
 #define TCFileSpeedHelperKey	@"speed_helper"
 
+#define TCFileIconContextKey	@"icon_ctx"
+#define TCFileCancelContextKey	@"cancel_ctx"
+#define TCFileShowContextKey	@"show_ctx"
+
 
 
 /*
@@ -50,27 +55,15 @@
 
 @interface TCFilesWindowController () <TCCoreManagerObserver, TCBuddyObserver>
 {
-	TCCoreManager		*_core;
+	TCCoreManager	*_core;
 
-	NSMutableArray		*_files;
-	NSMutableSet		*_buddies;
-
+	NSMutableArray	*_files;
+	NSMutableSet	*_buddies;
 }
 
 @property (strong, nonatomic) IBOutlet NSTextField	*countField;
 @property (strong, nonatomic) IBOutlet NSButton		*clearButton;
 @property (strong, nonatomic) IBOutlet NSTableView	*filesView;
-
-// -- IBAction --
-- (IBAction)doShowTransfer:(id)sender;
-- (IBAction)doCancelTransfer:(id)sender;
-- (IBAction)doOpenTransfer:(id)sender;
-
-- (IBAction)doClear:(id)sender;
-
-
-// -- Helpers --
-- (void)_updateCount;
 
 @end
 
@@ -168,7 +161,6 @@
 		
 		// Unmonitor core.
 		[_core removeObserver:self];
-		
 		_core = nil;
 	});
 	
@@ -447,17 +439,48 @@
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)rowIndex
 {
+	// Get cell.
 	TCFileCellView	*cellView = nil;
 	NSDictionary	*file = [_files objectAtIndex:(NSUInteger)rowIndex];
 	tcfile_status	status = (tcfile_status)[file[TCFileStatusKey] intValue];
 
-	if (status == tcfile_status_finish || status == tcfile_status_cancel || status == tcfile_status_stopped || status == tcfile_status_error)
-		cellView = [tableView makeViewWithIdentifier:@"transfers_end" owner:self];
-	else
+	if (status == tcfile_status_running)
 		cellView = [tableView makeViewWithIdentifier:@"transfers_progress" owner:self];
+	else
+		cellView = [tableView makeViewWithIdentifier:@"transfers_end" owner:self];
 
+	// Set content.
 	[cellView setContent:file];
 	
+	// Set actions.
+	__weak TCFilesWindowController *weakSelf = self;
+	
+	if (cellView.showButton.actionHandler == nil)
+	{
+		cellView.showButton.actionHandler = ^(TCButton *button) {
+			[weakSelf doShowTransfer:button];
+		};
+	}
+	
+	if (cellView.cancelButton && cellView.cancelButton.actionHandler == nil)
+	{
+		cellView.cancelButton.actionHandler = ^(TCButton *button) {
+			[weakSelf doCancelTransfer:button];
+		};
+	}
+	
+	if (cellView.iconButton.actionHandler == nil)
+	{
+		cellView.iconButton.actionHandler = ^(TCButton *button) {
+			[weakSelf doOpenTransfer:button];
+		};
+	}
+	
+	// Set button context.
+	cellView.iconButton.context = file[TCFileIconContextKey];
+	cellView.cancelButton.context = file[TCFileCancelContextKey];
+	cellView.showButton.context = file[TCFileShowContextKey];
+
 	return cellView;
 }
 
@@ -544,6 +567,11 @@
 	};
 	
 	item[TCFileSpeedHelperKey] = speedHelper;
+	
+	// > Set button context.
+	item[TCFileIconContextKey] = [TCButton createEmptyContext];
+	item[TCFileCancelContextKey] = [TCButton createEmptyContext];
+	item[TCFileShowContextKey] = [TCButton createEmptyContext];
 	
 	// > Set general stuff.
 	item[TCFileUUIDKey] = uuid;

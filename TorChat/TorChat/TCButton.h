@@ -28,21 +28,7 @@
 */
 #pragma mark - Forward
 
-@class TCButton;
-
-
-
-/*
-** TCButton Delegate
-*/
-#pragma mark - TCButton Delegate
-
-@protocol TCButtonDelegate <NSObject>
-
-@optional
-	- (void)button:(TCButton *)button isRollOver:(BOOL)rollOver;
-@end
-
+@class TCButtonContext;
 
 
 /*
@@ -50,12 +36,19 @@
 */
 #pragma mark - TCButton
 
-@interface TCButton : NSButton
+@interface TCButton : NSView
 
-@property (weak, atomic) id <TCButtonDelegate> delegate;
+// Context
++ (TCButtonContext *)createEmptyContext;
 
-- (void)setImage:(NSImage *)img;
-- (void)setPushImage:(NSImage *)img;
-- (void)setRollOverImage:(NSImage *)img;
+@property (strong, nonatomic) TCButtonContext *context;
+
+// Content.
+@property (strong, nonatomic) NSImage *image;
+@property (strong, nonatomic) NSImage *overImage;
+@property (strong, nonatomic) NSImage *pushImage;
+
+// Action.
+@property (strong, nonatomic) void (^actionHandler)(TCButton *button);
 
 @end
