@@ -24,12 +24,27 @@
 
 
 /*
+** Forward
+*/
+#pragma mark - Forward
+
+@class TCButton;
+
+
+
+/*
 ** TCFileCellView
 */
 #pragma mark - TCFileCellView
 
 @interface TCFileCellView : NSTableCellView
 
-- (void)setContent:(NSDictionary *)content;
+@property (strong, nonatomic) NSDictionary *content;
+
+@property (strong, nonatomic, readonly) TCButton *showButton;
+@property (strong, nonatomic, readonly) TCButton *cancelButton;
+@property (strong, nonatomic, readonly) TCButton *iconButton;
+
+@property (assign, nonatomic, readonly) BOOL isCancelable;
 
 @end

@@ -35,13 +35,13 @@
 
 @interface TCFileCellView ()
 
-@property (retain, nonatomic) IBOutlet NSButton		*iconButton;
+@property (strong, nonatomic) IBOutlet TCButton		*iconButton;
 @property (retain, nonatomic) IBOutlet NSTextField	*fileNameField;
 @property (retain, nonatomic) IBOutlet NSTextField	*transferStatusField;
 @property (retain, nonatomic) IBOutlet NSTextField	*transferDirectionField;
 @property (retain, nonatomic) IBOutlet NSProgressIndicator	*transferIndicator;
-@property (retain, nonatomic) IBOutlet TCButton		*showButton;
-@property (retain, nonatomic) IBOutlet TCButton		*cancelButton;
+@property (strong, nonatomic) IBOutlet TCButton		*showButton;
+@property (strong, nonatomic) IBOutlet TCButton		*cancelButton;
 
 @end
 
@@ -62,13 +62,13 @@
 
 - (void)awakeFromNib
 {
-	[_showButton setImage:[NSImage imageNamed:@"file_reveal"]];
-	[_showButton setRollOverImage:[NSImage imageNamed:@"file_reveal_rollover"]];
-	[_showButton setPushImage:[NSImage imageNamed:@"file_reveal_pushed"]];
-
-	[_cancelButton setImage:[NSImage imageNamed:@"file_stop"]];
-	[_cancelButton setRollOverImage:[NSImage imageNamed:@"file_stop_rollover"]];
-	[_cancelButton setPushImage:[NSImage imageNamed:@"file_stop_pushed"]];
+	_showButton.image = [NSImage imageNamed:@"file_reveal"];
+	_showButton.overImage = [NSImage imageNamed:@"file_reveal_rollover"];
+	_showButton.pushImage = [NSImage imageNamed:@"file_reveal_pushed"];
+	
+	_cancelButton.image = [NSImage imageNamed:@"file_stop"];
+	_cancelButton.overImage = [NSImage imageNamed:@"file_stop_rollover"];
+	_cancelButton.pushImage = [NSImage imageNamed:@"file_stop_pushed"];
 }
 
 
@@ -80,7 +80,9 @@
 
 - (void)setContent:(NSDictionary *)content
 {
-	if (!content)
+	_content = content;
+	
+	if (!_content)
 		return;
 	
 	NSImage		*icon = [content objectForKey:TCFileIconKey];
@@ -95,7 +97,19 @@
 	NSColor		*txtColor = nil;
 	
 	// Icon.
-	[_iconButton setImage:icon];
+	_iconButton.image = icon;
+	_iconButton.pushImage = [NSImage imageWithSize:icon.size flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
+		
+		NSRect rect = NSMakeRect(0, 0, icon.size.width, icon.size.height);
+		
+		[icon drawInRect:rect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0f];
+
+		[[NSColor colorWithWhite:0 alpha:0.5] set];
+		
+		NSRectFillUsingOperation(rect, NSCompositeSourceAtop);
+		
+		return YES;
+	}];
 	
 	// Name.
 	NSString *name = [path lastPathComponent];

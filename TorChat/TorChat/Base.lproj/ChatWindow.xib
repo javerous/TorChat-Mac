@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
     </dependencies>
     <objects>
@@ -80,20 +79,13 @@
                                                                             </constraints>
                                                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSUser" id="e7X-CG-l49"/>
                                                                         </imageView>
-                                                                        <button hidden="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mSZ-jE-U9g" userLabel="close_button" customClass="TCButton">
-                                                                            <rect key="frame" x="179" y="10" width="14" height="14"/>
+                                                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="eHV-sh-C3b" userLabel="close_button" customClass="TCButton">
+                                                                            <rect key="frame" x="179" y="11" width="14" height="14"/>
                                                                             <constraints>
-                                                                                <constraint firstAttribute="width" constant="14" id="Y41-cp-4zn"/>
-                                                                                <constraint firstAttribute="height" constant="14" id="yp7-uI-9hT"/>
+                                                                                <constraint firstAttribute="height" constant="14" id="t3C-dF-LVs"/>
+                                                                                <constraint firstAttribute="width" constant="14" id="zYT-xD-y06"/>
                                                                             </constraints>
-                                                                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="file_stop" imagePosition="only" alignment="center" inset="2" id="Tke-jQ-zao">
-                                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                                <font key="font" metaFont="system"/>
-                                                                            </buttonCell>
-                                                                            <connections>
-                                                                                <action selector="closeAction:" target="-2" id="Gzw-oM-dE2"/>
-                                                                            </connections>
-                                                                        </button>
+                                                                        </customView>
                                                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="W54-32-Aw1" userLabel="balloon" customClass="TCThreePartImageView">
                                                                             <rect key="frame" x="39" y="1" width="54" height="18"/>
                                                                             <constraints>
@@ -113,24 +105,24 @@
                                                                         </textField>
                                                                     </subviews>
                                                                     <constraints>
+                                                                        <constraint firstAttribute="trailing" secondItem="eHV-sh-C3b" secondAttribute="trailing" constant="3" id="2YV-lM-Hqc"/>
                                                                         <constraint firstItem="W54-32-Aw1" firstAttribute="top" secondItem="Ql7-8b-pKL" secondAttribute="bottom" id="HL8-SH-lbq"/>
-                                                                        <constraint firstItem="mSZ-jE-U9g" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="W54-32-Aw1" secondAttribute="trailing" constant="8" symbolic="YES" id="HOa-lA-CWY"/>
                                                                         <constraint firstItem="W54-32-Aw1" firstAttribute="leading" secondItem="glf-cv-4vC" secondAttribute="leading" constant="-18" id="Hdf-nI-6a6"/>
-                                                                        <constraint firstAttribute="centerY" secondItem="mSZ-jE-U9g" secondAttribute="centerY" constant="-1" id="IGi-Nd-idB"/>
+                                                                        <constraint firstItem="eHV-sh-C3b" firstAttribute="centerY" secondItem="pc7-Vj-EAp" secondAttribute="centerY" id="QAS-R6-DYK"/>
                                                                         <constraint firstItem="Ql7-8b-pKL" firstAttribute="leading" secondItem="C1O-gM-NuO" secondAttribute="trailing" constant="8" symbolic="YES" id="QFJ-mL-hnp"/>
-                                                                        <constraint firstItem="mSZ-jE-U9g" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Ql7-8b-pKL" secondAttribute="trailing" constant="8" symbolic="YES" id="Vyr-hj-e2R"/>
                                                                         <constraint firstItem="Ql7-8b-pKL" firstAttribute="top" secondItem="pc7-Vj-EAp" secondAttribute="top" constant="1" id="Xtj-Lk-YBe"/>
-                                                                        <constraint firstAttribute="trailing" secondItem="mSZ-jE-U9g" secondAttribute="trailing" constant="3" id="YBn-ze-Cku"/>
                                                                         <constraint firstItem="W54-32-Aw1" firstAttribute="trailing" secondItem="glf-cv-4vC" secondAttribute="trailing" constant="9" id="flp-6j-rwU"/>
                                                                         <constraint firstItem="W54-32-Aw1" firstAttribute="centerY" secondItem="glf-cv-4vC" secondAttribute="centerY" id="oyt-Wd-5cQ"/>
+                                                                        <constraint firstItem="eHV-sh-C3b" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="W54-32-Aw1" secondAttribute="trailing" constant="8" symbolic="YES" id="q0e-Nw-qla"/>
                                                                         <constraint firstItem="C1O-gM-NuO" firstAttribute="leading" secondItem="pc7-Vj-EAp" secondAttribute="leading" constant="3" id="urW-vY-zNu"/>
                                                                         <constraint firstAttribute="centerY" secondItem="C1O-gM-NuO" secondAttribute="centerY" id="w0H-PF-LgK"/>
+                                                                        <constraint firstItem="eHV-sh-C3b" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Ql7-8b-pKL" secondAttribute="trailing" constant="8" symbolic="YES" id="w1B-DY-xgD"/>
                                                                         <constraint firstItem="W54-32-Aw1" firstAttribute="leading" secondItem="C1O-gM-NuO" secondAttribute="trailing" constant="8" symbolic="YES" id="z2o-eG-k3d"/>
                                                                     </constraints>
                                                                     <connections>
                                                                         <outlet property="avatarView" destination="C1O-gM-NuO" id="tPU-gy-5nu"/>
                                                                         <outlet property="balloonView" destination="W54-32-Aw1" id="EJt-Cp-KM4"/>
-                                                                        <outlet property="closeButton" destination="mSZ-jE-U9g" id="A9W-6J-wyX"/>
+                                                                        <outlet property="closeButton" destination="eHV-sh-C3b" id="vDb-bK-4bW"/>
                                                                         <outlet property="textField" destination="Ql7-8b-pKL" id="tJc-wG-lQh"/>
                                                                         <outlet property="unreadField" destination="glf-cv-4vC" id="qO0-ab-PWr"/>
                                                                     </connections>
@@ -158,33 +150,26 @@
                                                                             </constraints>
                                                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSUser" id="BG6-QW-DWh"/>
                                                                         </imageView>
-                                                                        <button hidden="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gez-9O-KLB" userLabel="close_button" customClass="TCButton">
-                                                                            <rect key="frame" x="179" y="10" width="14" height="14"/>
+                                                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="ekH-Os-y0s" userLabel="close_button" customClass="TCButton">
+                                                                            <rect key="frame" x="179" y="11" width="14" height="14"/>
                                                                             <constraints>
-                                                                                <constraint firstAttribute="height" constant="14" id="8o1-fs-R4L"/>
-                                                                                <constraint firstAttribute="width" constant="14" id="UNh-Xz-AfY"/>
+                                                                                <constraint firstAttribute="height" constant="14" id="3ZK-33-gxa"/>
+                                                                                <constraint firstAttribute="width" constant="14" id="S2X-ib-NMp"/>
                                                                             </constraints>
-                                                                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="file_stop" imagePosition="only" alignment="center" inset="2" id="FqD-cI-fsn">
-                                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                                <font key="font" metaFont="system"/>
-                                                                            </buttonCell>
-                                                                            <connections>
-                                                                                <action selector="closeAction:" target="-2" id="vxR-t7-6Yf"/>
-                                                                            </connections>
-                                                                        </button>
+                                                                        </customView>
                                                                     </subviews>
                                                                     <constraints>
                                                                         <constraint firstItem="Zkg-Kb-r81" firstAttribute="leading" secondItem="8Ao-wd-vXA" secondAttribute="trailing" constant="8" symbolic="YES" id="4PK-wo-c8k"/>
-                                                                        <constraint firstAttribute="centerY" secondItem="gez-9O-KLB" secondAttribute="centerY" constant="-1" id="E2D-bj-k06"/>
-                                                                        <constraint firstAttribute="trailing" secondItem="gez-9O-KLB" secondAttribute="trailing" constant="3" id="GIN-07-uet"/>
-                                                                        <constraint firstItem="gez-9O-KLB" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Zkg-Kb-r81" secondAttribute="trailing" constant="8" symbolic="YES" id="QM4-Dw-7eA"/>
                                                                         <constraint firstItem="8Ao-wd-vXA" firstAttribute="leading" secondItem="tUk-Fv-LrM" secondAttribute="leading" constant="3" id="ROz-Rg-lfW"/>
+                                                                        <constraint firstItem="ekH-Os-y0s" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Zkg-Kb-r81" secondAttribute="trailing" constant="8" symbolic="YES" id="Xlf-wM-OK6"/>
                                                                         <constraint firstAttribute="centerY" secondItem="8Ao-wd-vXA" secondAttribute="centerY" id="lhq-Td-5Fx"/>
+                                                                        <constraint firstAttribute="trailing" secondItem="ekH-Os-y0s" secondAttribute="trailing" constant="3" id="uUh-AJ-MwF"/>
+                                                                        <constraint firstItem="ekH-Os-y0s" firstAttribute="centerY" secondItem="tUk-Fv-LrM" secondAttribute="centerY" id="v6y-Hm-gwe"/>
                                                                         <constraint firstAttribute="centerY" secondItem="Zkg-Kb-r81" secondAttribute="centerY" id="vxM-cZ-TS2"/>
                                                                     </constraints>
                                                                     <connections>
                                                                         <outlet property="avatarView" destination="8Ao-wd-vXA" id="eGP-7G-Jmb"/>
-                                                                        <outlet property="closeButton" destination="gez-9O-KLB" id="PYb-J0-0pB"/>
+                                                                        <outlet property="closeButton" destination="ekH-Os-y0s" id="tCN-uc-p3J"/>
                                                                         <outlet property="textField" destination="Zkg-Kb-r81" id="68B-PF-i51"/>
                                                                     </connections>
                                                                 </tableCellView>
@@ -247,6 +232,5 @@
     </objects>
     <resources>
         <image name="NSUser" width="32" height="32"/>
-        <image name="file_stop" width="14" height="14"/>
     </resources>
 </document>

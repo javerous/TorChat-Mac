@@ -36,13 +36,23 @@
 
 
 /*
+** Forward
+*/
+#pragma mark - Forward
+
+@class TCButton;
+
+
+
+/*
 ** TCChatCellView
 */
 #pragma mark - TCChatCellView
 
 @interface TCChatCellView : NSTableCellView
 
-// -- Content --
-- (void)setContent:(NSDictionary *)content;
+@property (strong, nonatomic, readonly) TCButton *closeButton;
+
+@property (strong, nonatomic) NSDictionary *content;
 
 @end
