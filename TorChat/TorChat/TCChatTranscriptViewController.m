@@ -208,6 +208,16 @@ NSMutableDictionary	*gAvatarCache;
     return nil;
 }
 
+- (NSUInteger)webView:(WebView *)webView dragSourceActionMaskForPoint:(NSPoint)point
+{
+	return WebDragSourceActionNone;
+}
+
+- (NSUInteger)webView:(WebView *)webView dragDestinationActionMaskForDraggingInfo:(id <NSDraggingInfo>)draggingInfo
+{
+	return WebDragDestinationActionNone;
+}
+
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame
 {
 	NSView *documentView = sender.mainFrame.frameView.documentView;
