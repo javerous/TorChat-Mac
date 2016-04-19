@@ -26,7 +26,7 @@ if [ $? -ne 0 ]; then
 	exit 1	
 fi
 
-dmg_path=$(/usr/libexec/PlistBuddy -c 'Print :0' /tmp/torchat_output.plist)
+dmg_path=$( /usr/libexec/PlistBuddy -c 'Print :0' /tmp/torchat_output.plist )
 
 if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't obtain path of temporary DMG."
@@ -36,17 +36,17 @@ fi
 # Mount temporary DMG
 echo '[+] Attach temporary DMG.'
 
-/usr/bin/hdiutil attach "${dmg_path}" -nobrowse -plist > /tmp/torchat_output.plist
+/usr/bin/hdiutil attach "${dmg_path}" -nobrowse -plist > /tmp/torchat_output.plist 
 
 if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't attach temporary DMG."
 	exit 1	
 fi
 
-volume_path=$(/usr/libexec/PlistBuddy -c 'Print :system-entities:0:mount-point' /tmp/torchat_output.plist)
+volume_path=$( /usr/libexec/PlistBuddy -c 'Print :system-entities:0:mount-point' /tmp/torchat_output.plist 2> /dev/null )
 
 if [ $? -ne 0 ]; then
-	volume_path=$(/usr/libexec/PlistBuddy -c 'Print :system-entities:1:mount-point' /tmp/torchat_output.plist)
+	volume_path=$( /usr/libexec/PlistBuddy -c 'Print :system-entities:1:mount-point' /tmp/torchat_output.plist 2> /dev/null )
 	
 	if [ $? -ne 0 ]; then
 		echo "[-] Error: Can't obtain path of attached DMG."
