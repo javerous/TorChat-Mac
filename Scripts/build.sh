@@ -63,7 +63,7 @@ echo '[+] Copy sources to temporary DMG.'
 
 if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't copy sources."
-	/usr/bin/hdiutil detach "${volume_path}" 1>/dev/null 2>/dev/null
+	/usr/bin/hdiutil detach "${volume_path}"
 	exit 1	
 fi
 
@@ -91,7 +91,7 @@ if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't build sources."
 	cat "${volume_path}/build.txt"
 	cat "${volume_path}/build_err.txt"
-	/usr/bin/hdiutil detach "${volume_path}" 2>/dev/null 1>/dev/null
+	/usr/bin/hdiutil detach "${volume_path}"
 	exit 1
 fi
 
@@ -118,7 +118,7 @@ if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't export archive."
 	cat "${volume_path}/build.txt"
 	cat "${volume_path}/build_err.txt"
-	/usr/bin/hdiutil detach "${volume_path}" 2>/dev/null 1>/dev/null
+	/usr/bin/hdiutil detach "${volume_path}"
 	exit 1
 fi
 
@@ -131,7 +131,7 @@ cd "${volume_path}/output/"
 
 if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't create TorChat tarball."
-	/usr/bin/hdiutil detach "${volume_path}" 2>/dev/null 1>/dev/null
+	/usr/bin/hdiutil detach "${volume_path}"
 	exit 1
 fi
 
@@ -143,7 +143,7 @@ cd "${volume_path}/torchat.xcarchive/dSYMs/"
 
 if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't create TorChat symbols tarball."
-	/usr/bin/hdiutil detach "${volume_path}" 2>/dev/null 1>/dev/null
+	/usr/bin/hdiutil detach "${volume_path}"
 	exit 1
 fi
 
@@ -177,7 +177,7 @@ fi
 # Clean.
 echo '[+] Clean.'
 
-/usr/bin/hdiutil detach "${volume_path}" 2>/dev/null 1>/dev/null
+/usr/bin/hdiutil detach "${volume_path}"
 
 rm -f "${dmg_path}"
 rm -f "/tmp/torchat_output.plist"
