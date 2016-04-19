@@ -20,7 +20,7 @@
  *
  */
 
-@import SMFoundation;
+#import <SMFoundation/SMFoundation.h>
 
 #include <netdb.h>
 #include <pwd.h>

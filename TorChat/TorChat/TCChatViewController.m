@@ -20,7 +20,7 @@
  *
  */
 
-@import SMFoundation;
+#import <SMFoundation/SMFoundation.h>
 
 #import "TCChatViewController.h"
 

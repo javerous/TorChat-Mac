@@ -20,8 +20,8 @@
  *
  */
 
-@import SMFoundation;
-@import SMTor;
+#import <SMFoundation/SMFoundation.h>
+#import <SMTor/SMTor.h>
 
 #import "TCPanel_Bundled.h"
 

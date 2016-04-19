@@ -20,8 +20,8 @@
  *
  */
 
-@import Foundation;
-@import SMFoundation;
+#import <Foundation/Foundation.h>
+#import <SMFoundation/SMFoundation.h>
 
 #import "TCConfigCore.h"
 #import "TCBuddy.h"

@@ -42,6 +42,8 @@
 		E844C4AD1C77EAFD00D3AB2D /* SMAssistant.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = E844C4A91C77EAE700D3AB2D /* SMAssistant.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E8455D3D17A425F00046307B /* TCValue.m in Sources */ = {isa = PBXBuildFile; fileRef = E8455D3C17A425F00046307B /* TCValue.m */; };
 		E8455D4617A4386C0046307B /* NSData+TCTools.m in Sources */ = {isa = PBXBuildFile; fileRef = E8455D4517A438660046307B /* NSData+TCTools.m */; };
+		E845A34B1CC6B87400B98398 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E845A34A1CC6B87400B98398 /* libsqlite3.dylib */; };
+		E845A34D1CC6B8B100B98398 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E845A34C1CC6B8B100B98398 /* QuartzCore.framework */; };
 		E849BDB11A66EEA60040E294 /* PrefView_General.xib in Resources */ = {isa = PBXBuildFile; fileRef = E849BDAF1A66EEA60040E294 /* PrefView_General.xib */; };
 		E84CBD3A1C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = E84CBD391C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.m */; };
 		E852235217B504CA00C6F585 /* TCChatCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E852235117B504CA00C6F585 /* TCChatCellView.m */; };
@@ -75,7 +77,6 @@
 		E88AE83711EDE9D50037D808 /* TCConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = E88AE83511EDE9D50037D808 /* TCConnection.m */; };
 		E89E47021C8D904D004A5D72 /* SMCryptoFile.c in Sources */ = {isa = PBXBuildFile; fileRef = E89E47001C8D904D004A5D72 /* SMCryptoFile.c */; };
 		E89E47051C8D905E004A5D72 /* SMSQLiteCryptoVFS.c in Sources */ = {isa = PBXBuildFile; fileRef = E89E47031C8D905E004A5D72 /* SMSQLiteCryptoVFS.c */; };
-		E89E47071C8D907F004A5D72 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E89E47061C8D907F004A5D72 /* libsqlite3.tbd */; };
 		E89E470D1C8D966F004A5D72 /* TCConfigSQLite.m in Sources */ = {isa = PBXBuildFile; fileRef = E89E470C1C8D966F004A5D72 /* TCConfigSQLite.m */; };
 		E89E47111C8DA17C004A5D72 /* TCConfigurationCopy.m in Sources */ = {isa = PBXBuildFile; fileRef = E89E47101C8DA17C004A5D72 /* TCConfigurationCopy.m */; };
 		E8A2CC49185CC2AF00624448 /* TCThreePartImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A2CC48185CC2AF00624448 /* TCThreePartImageView.m */; };
@@ -167,6 +168,8 @@
 		E8455D3C17A425F00046307B /* TCValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCValue.m; sourceTree = "<group>"; };
 		E8455D4417A438660046307B /* NSData+TCTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+TCTools.h"; sourceTree = "<group>"; };
 		E8455D4517A438660046307B /* NSData+TCTools.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+TCTools.m"; sourceTree = "<group>"; };
+		E845A34A1CC6B87400B98398 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = /usr/lib/libsqlite3.dylib; sourceTree = "<absolute>"; };
+		E845A34C1CC6B8B100B98398 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		E84641AF186091FE0046BEFB /* TCDebugLog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TCDebugLog.h; sourceTree = "<group>"; };
 		E849BDB21A66EEBC0040E294 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/PrefView_General.xib; sourceTree = "<group>"; };
 		E849BDB61A66EF1B0040E294 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/PrefView_General.strings; sourceTree = "<group>"; };
@@ -254,7 +257,6 @@
 		E89E47011C8D904D004A5D72 /* SMCryptoFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMCryptoFile.h; path = Sources/SMCryptoFile.h; sourceTree = "<group>"; };
 		E89E47031C8D905E004A5D72 /* SMSQLiteCryptoVFS.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = SMSQLiteCryptoVFS.c; path = Sources/Extra/SQLite/SMSQLiteCryptoVFS.c; sourceTree = "<group>"; };
 		E89E47041C8D905E004A5D72 /* SMSQLiteCryptoVFS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMSQLiteCryptoVFS.h; path = Sources/Extra/SQLite/SMSQLiteCryptoVFS.h; sourceTree = "<group>"; };
-		E89E47061C8D907F004A5D72 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		E89E470B1C8D966F004A5D72 /* TCConfigSQLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCConfigSQLite.h; sourceTree = "<group>"; };
 		E89E470C1C8D966F004A5D72 /* TCConfigSQLite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCConfigSQLite.m; sourceTree = "<group>"; };
 		E89E470F1C8DA17C004A5D72 /* TCConfigurationCopy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCConfigurationCopy.h; sourceTree = "<group>"; };
@@ -317,7 +319,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E89E47071C8D907F004A5D72 /* libsqlite3.tbd in Frameworks */,
+				E845A34D1CC6B8B100B98398 /* QuartzCore.framework in Frameworks */,
+				E845A34B1CC6B87400B98398 /* libsqlite3.dylib in Frameworks */,
 				E809B1A51859CC4B001664E1 /* WebKit.framework in Frameworks */,
 				E80414CB17A57722008220C9 /* Security.framework in Frameworks */,
 				E81FD9F811E7259B000614D5 /* Cocoa.framework in Frameworks */,
@@ -349,7 +352,7 @@
 				E837DAD311E7739D004BC524 /* TorChat */,
 				E81FD9ED11E7259B000614D5 /* Supporting Files */,
 				E81FD9EE11E7259B000614D5 /* Resources */,
-				E81FD9EF11E7259B000614D5 /* Frameworks */,
+				E81FD9EF11E7259B000614D5 /* Links */,
 				E81FD9F511E7259B000614D5 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -375,18 +378,19 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
-		E81FD9EF11E7259B000614D5 /* Frameworks */ = {
+		E81FD9EF11E7259B000614D5 /* Links */ = {
 			isa = PBXGroup;
 			children = (
-				E89E47061C8D907F004A5D72 /* libsqlite3.tbd */,
+				E845A34A1CC6B87400B98398 /* libsqlite3.dylib */,
+				E81FD9F711E7259B000614D5 /* Cocoa.framework */,
+				E80414CA17A57722008220C9 /* Security.framework */,
+				E809B1A41859CC4B001664E1 /* WebKit.framework */,
+				E845A34C1CC6B8B100B98398 /* QuartzCore.framework */,
 				E844C4A91C77EAE700D3AB2D /* SMAssistant.framework */,
 				E844C49E1C77E68600D3AB2D /* SMFoundation.framework */,
 				E844C49F1C77E68600D3AB2D /* SMTor.framework */,
-				E809B1A41859CC4B001664E1 /* WebKit.framework */,
-				E80414CA17A57722008220C9 /* Security.framework */,
-				E81FD9F711E7259B000614D5 /* Cocoa.framework */,
 			);
-			name = Frameworks;
+			name = Links;
 			sourceTree = "<group>";
 		};
 		E81FD9F511E7259B000614D5 /* Products */ = {
@@ -1239,7 +1243,6 @@
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
-				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -1289,7 +1292,6 @@
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
-				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
