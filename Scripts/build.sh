@@ -94,7 +94,7 @@ fi
 echo '[+] Get source git hash.'
 
 cd "${base}"
-git rev-parse --short HEAD >  "${volume_path}/TorChat/git_hash.txt"
+git rev-parse --short HEAD >  "${volume_path}/TorChat/git_hash.txt" 2>/Dev/null
 
 if [ $? -ne 0 ]; then
 	echo "[#] Warning: Can't get git hash."
