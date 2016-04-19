@@ -46,8 +46,12 @@ fi
 volume_path=$(/usr/libexec/PlistBuddy -c 'Print :system-entities:0:mount-point' /tmp/torchat_output.plist)
 
 if [ $? -ne 0 ]; then
-	echo "[-] Error: Can't obtain path of attached DMG."
-	exit 1	
+	volume_path=$(/usr/libexec/PlistBuddy -c 'Print :system-entities:1:mount-point' /tmp/torchat_output.plist)
+	
+	if [ $? -ne 0 ]; then
+		echo "[-] Error: Can't obtain path of attached DMG."
+		exit 1
+	fi
 fi
 
 # Copy sources.
@@ -146,15 +150,29 @@ fi
 # Copy result.
 echo '[+] Copy result.'
 
-rm -rf "/Users/${USER}/Desktop/torchat-result/"
-mkdir "/Users/${USER}/Desktop/torchat-result/"
+if [ -z "$1" ]; then
+	if [ -z ${HOME} ]; then
+		target_path="/tmp/torchat-result/"
+	else
+		target_path="${HOME}/Desktop/torchat-result/"
+	fi
+else
+	target_path="$1/torchat-result/"
+fi
 
-cd "/Users/${USER}/Desktop/torchat-result/"
+echo "[#] Use path '${target_path}'."
 
-cp "${volume_path}/output/TorChat.tgz" "/Users/${USER}/Desktop/torchat-result/"
-cp "${volume_path}/torchat.xcarchive/dSYMs/TorChat-Symbols.tgz" "/Users/${USER}/Desktop/torchat-result/"
+rm -rf "${target_path}"
+mkdir "${target_path}"
 
-open "/Users/${USER}/Desktop/torchat-result/"
+cd "${target_path}"
+
+cp "${volume_path}/output/TorChat.tgz" "${target_path}"
+cp "${volume_path}/torchat.xcarchive/dSYMs/TorChat-Symbols.tgz" "${target_path}"
+
+if [ ! -z "$DISPLAY" ]; then
+	open "${target_path}"
+fi
 
 # Clean.
 echo '[+] Clean.'
