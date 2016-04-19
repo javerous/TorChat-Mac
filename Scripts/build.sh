@@ -5,10 +5,10 @@ base=$( dirname "$0" )
 base=$( cd "${base}/../" ; pwd -P )
 
 # Remove previous DMG.
-if [ -f '/tmp/torchar_source.sparseimage' ]; then
+if [ -f '/tmp/torchat_source.sparseimage' ]; then
 	echo '[+] Remove previous temporary DMG.'
 	
-	rm '/tmp/torchar_source.sparseimage'
+	rm '/tmp/torchat_source.sparseimage'
 	
 	if [ $? -ne 0 ]; then
 		echo "[-] Error: Can't remove previous temporary DMG."
@@ -19,7 +19,7 @@ fi
 # Create temporary DMG
 echo '[+] Create temporary DMG.'
 
-/usr/bin/hdiutil create -size 300m -type SPARSE -fs 'HFS+' -volname 'SourceCache' -plist /tmp/torchar_source > /tmp/torchat_output.plist
+/usr/bin/hdiutil create -size 300m -type SPARSE -fs 'HFS+' -volname 'SourceCache' -plist /tmp/torchat_source > /tmp/torchat_output.plist
 
 if [ $? -ne 0 ]; then
 	echo "[-] Error: Can't create temporary DMG."
