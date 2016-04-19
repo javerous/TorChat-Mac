@@ -24,7 +24,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-@import SMFoundation;
+#import <SMFoundation/SMFoundation.h>
 
 #import "TCCoreManager.h"
 #import "TCConnection.h"

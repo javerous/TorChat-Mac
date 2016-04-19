@@ -22,7 +22,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@import SMAssistant.SMAssistantPanel;
+#import <SMAssistant/SMAssistantPanel.h>
 
 
 /*

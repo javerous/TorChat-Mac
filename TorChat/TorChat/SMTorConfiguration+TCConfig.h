@@ -20,7 +20,7 @@
  *
  */
 
-@import SMTor;
+#import <SMTor/SMTor.h>
 
 #import "TCConfigCore.h"
 

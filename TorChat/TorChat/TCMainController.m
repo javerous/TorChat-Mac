@@ -20,9 +20,9 @@
  *
  */
 
-@import SMFoundation;
-@import SMTor;
-@import SMAssistant;
+#import <SMFoundation/SMFoundation.h>
+#import <SMTor/SMTor.h>
+#import <SMAssistant/SMAssistant.h>
 
 #import "TCMainController.h"
 
