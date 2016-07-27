@@ -307,7 +307,7 @@
 	// > Statements.
 	tc_sqlite3_prepare(_dtb, "INSERT INTO settings (key, value) VALUES (?, ?)", &_stmtInsertSetting);
 	tc_sqlite3_prepare(_dtb, "SELECT value FROM settings WHERE key=? LIMIT 1", &_stmtSelectSetting);
-	tc_sqlite3_prepare(_dtb, "DELETE FROM settings WHERE key=? LIMIT 1", &_stmtDeleteSetting);
+	tc_sqlite3_prepare(_dtb, "DELETE FROM settings WHERE key=?", &_stmtDeleteSetting);
 	
 	
 	// Create 'buddies' table.
@@ -325,7 +325,7 @@
 	tc_sqlite3_prepare(_dtb, "SELECT id FROM buddies WHERE identifier=? LIMIT 1", &_stmtSelectBuddyID);
 	tc_sqlite3_prepare(_dtb, "SELECT identifier FROM buddies", &_stmtSelectBuddyIdentifiers);
 	tc_sqlite3_prepare(_dtb, "SELECT value FROM buddies_properties WHERE buddy_id=? AND key=? LIMIT 1", &_stmtSelectBuddyProperty);
-	tc_sqlite3_prepare(_dtb, "DELETE FROM buddies WHERE identifier=? LIMIT 1", &_stmtDeleteBuddy);
+	tc_sqlite3_prepare(_dtb, "DELETE FROM buddies WHERE identifier=?", &_stmtDeleteBuddy);
 	
 	
 	// Create 'blocked' table.

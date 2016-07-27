@@ -173,13 +173,13 @@ fi
 echo '[+] Copy result.'
 
 if [ -z "$1" ]; then
-	if [ -z ${HOME} ]; then
+	if [ -z "${HOME}" ]; then
 		target_path="/tmp/torchat-result/"
 	else
 		target_path="${HOME}/Desktop/torchat-result/"
 	fi
 else
-	target_path="$1/torchat-result/"
+	target_path="${1}/torchat-result/"
 fi
 
 echo "[#] Use path '${target_path}'."
