@@ -5,4 +5,4 @@ Mac OS X native TorChat client.
 
 # Build
 
-Just open the project with Xcode and build it.
+Just open the TorChat workspace with Xcode and build TorChat project.
