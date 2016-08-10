@@ -157,13 +157,17 @@
 			}
 			else if (info.kind == SMInfoInfo)
 			{
-				if (info.code == SMTorManagerEventStartHostname)
+				if (info.code == SMTorEventStartServiceID)
 				{
 					[imIdentifierField setStringValue:info.context];
 					[_currentConfig setSelfIdentifier:info.context];
 					[_tor stopWithCompletionHandler:nil];
 				}
-				else if (info.code == SMTorManagerEventStartDone)
+				else if (info.code == SMTorEventStartServicePrivateKey)
+				{
+					[_currentConfig setSelfPrivateKey:info.context];
+				}
+				else if (info.code == SMTorEventStartDone)
 				{
 					[_tor stopWithCompletionHandler:^{
 						dispatch_async(dispatch_get_main_queue(), ^{
@@ -175,11 +179,11 @@
 			}
 			else if (info.kind == SMInfoWarning)
 			{
-				if (info.code == SMTorManagerWarningStartCanceled)
+				if (info.code == SMTorWarningStartCanceled)
 				{
 					[_loadingIndicator stopAnimation:self];
 
-					if (imIdentifierField.stringValue.length > 0)
+					if (_currentConfig.selfIdentifier.length > 0 && _currentConfig.selfPrivateKey != nil)
 						[self.panelProxy setDisableContinue:NO];
 				}
 			}

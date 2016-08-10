@@ -48,6 +48,7 @@
 #define TCConfigTorSocksAddressKey	@"tor_socks_address"
 #define TCConfigTorSocksPortKey		@"tor_socks_port"
 
+#define TCConfigSelfPrivateKey		@"self_privatekey"
 #define TCConfigSelfIdentifierKey	@"self_identifier"
 #define TCConfigSelfPortKey			@"self_port"
 
@@ -673,6 +674,16 @@
 
 
 #pragma mark TorChat
+
+- (NSString *)selfPrivateKey
+{
+	return [self settingForKey:TCConfigSelfPrivateKey];
+}
+
+- (void)setSelfPrivateKey:(NSString *)selfPrivateKey
+{
+	[self setSetting:selfPrivateKey forKey:TCConfigSelfPrivateKey];
+}
 
 - (NSString *)selfIdentifier
 {
@@ -1707,7 +1718,8 @@
 
 - (void)synchronize
 {
-	dispatch_sync(_localQueue, ^{ });
+	dispatch_sync(_localQueue, ^{
+	});
 }
 
 

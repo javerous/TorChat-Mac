@@ -64,7 +64,6 @@
 	NSMutableSet *_buddies;
 	
 	// Path monitor.
-	id	_torIdentityPathObserver;
 	id	_torBinPathObserver;
 	id	_torDataPathObserver;
 	
@@ -319,7 +318,7 @@
 - (void)_startWithConfiguration:(id <TCConfigAppEncryptable>)configuration completionHandler:(void (^)(TCCoreManager *core))handler
 {
 	// > opQueue <
-	
+
 	SMOperationsQueue *operationQueue = [[SMOperationsQueue alloc] initStarted];
 	
 	// -- Start Tor if necessary --
@@ -346,37 +345,37 @@
 		
 		_torManager = [[SMTorManager alloc] initWithConfiguration:torConfig];
 		
-		_torManager.logHandler = ^(SMTorManagerLogKind kind, NSString *log) {
+		_torManager.logHandler = ^(SMTorLogKind kind, NSString *log) {
 			
 			switch (kind)
 			{
-				case SMTorManagerLogStandard:
+				case SMTorLogStandard:
 					[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogInfo message:@"tor_out_log", log];
 					break;
 					
-				case SMTorManagerLogError:
+				case SMTorLogError:
 					[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"tor_error_log", log];
 					break;
 			}
 		};
-		
+
 		// Start tor manager via UI.
 		[SMTorStartController startWithTorManager:_torManager infoHandler:^(SMInfo *startInfo) {
 			
 			[[TCLogsManager sharedManager] addGlobalLogWithInfo:startInfo];
 			
-			if ([startInfo.domain isEqualToString:SMTorManagerInfoStartDomain] == NO)
+			if ([startInfo.domain isEqualToString:SMTorInfoStartDomain] == NO)
 				return;
 			
 			switch (startInfo.kind)
 			{
 				case SMInfoInfo:
 				{
-					if (startInfo.code == SMTorManagerEventStartHostname)
+					if (startInfo.code == SMTorEventStartServiceID)
 					{
 						[_configuration setSelfIdentifier:startInfo.context];
 					}
-					else if (startInfo.code == SMTorManagerEventStartDone)
+					else if (startInfo.code == SMTorEventStartDone)
 					{
 						ctrl(SMOperationsControlContinue);
 					}
@@ -385,7 +384,7 @@
 					
 				case SMInfoWarning:
 				{
-					if (startInfo.code == SMTorManagerWarningStartCanceled)
+					if (startInfo.code == SMTorWarningStartCanceled)
 					{
 						_torManager = nil;
 						ctrl(SMOperationsControlContinue);
@@ -422,7 +421,7 @@
 			[[TCLogsManager sharedManager] addGlobalLogWithInfo:updateInfo];
 			
 			// > Handle update.
-			if (updateInfo.kind == SMInfoInfo && [updateInfo.domain isEqualToString:SMTorManagerInfoCheckUpdateDomain] && updateInfo.code == SMTorManagerEventCheckUpdateAvailable)
+			if (updateInfo.kind == SMInfoInfo && [updateInfo.domain isEqualToString:SMTorInfoCheckUpdateDomain] && updateInfo.code == SMTorEventCheckUpdateAvailable)
 			{
 				NSDictionary	*context = updateInfo.context;
 				NSString		*oldVersion = context[@"old_version"];
@@ -648,10 +647,6 @@
 - (void)monitorPathsChanges
 {
 	__weak TCMainController *weakSelf = self;
-
-	_torIdentityPathObserver = [_configuration addPathObserverForComponent:TCConfigPathComponentTorIdentity queue:nil usingBlock:^{
-		[weakSelf handleTorPathChange];
-	}];
 	
 	_torBinPathObserver = [_configuration addPathObserverForComponent:TCConfigPathComponentTorBinary queue:nil usingBlock:^{
 		[weakSelf handleTorPathChange];

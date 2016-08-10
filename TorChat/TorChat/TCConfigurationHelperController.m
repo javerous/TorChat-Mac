@@ -96,7 +96,64 @@
 	}
 	
 	// Try to open as sqlite.
-	[TCSQLiteOpenWindowController openSQLiteConfigurationAtPath:path completionHandler:handler];
+	[TCSQLiteOpenWindowController openSQLiteConfigurationAtPath:path completionHandler:^(TCConfigurationHelperCompletionType type, id <TCConfigAppEncryptable> configuration) {
+		
+		// Import private key.
+		if (type == TCConfigurationHelperCompletionTypeDone && configuration && configuration.selfPrivateKey == nil)
+		{
+			// > Compose paths.
+			NSString *privateKeyPath = [[configuration pathForComponent:TCConfigPathComponentTorIdentity fullPath:YES] stringByAppendingPathComponent:@"private_key"];
+			NSString *hostnamePath = [[configuration pathForComponent:TCConfigPathComponentTorIdentity fullPath:YES] stringByAppendingPathComponent:@"hostname"];
+			
+			// > Read private key.
+			NSError	*error = nil;
+			NSData	*privateKeyData = [NSData dataWithContentsOfFile:privateKeyPath options:NSDataReadingUncached error:&error];
+			
+			if (privateKeyData)
+			{
+				// > Convert it as a string.
+				NSString *privateKeyString = [[NSString alloc] initWithData:privateKeyData encoding:NSASCIIStringEncoding];
+				
+				if (privateKeyString)
+				{
+					// > Parse RSA content.
+					NSRegularExpression					*regExp = [NSRegularExpression regularExpressionWithPattern:@"-----BEGIN RSA PRIVATE KEY-----(.*)-----END RSA PRIVATE KEY-----" options:(NSRegularExpressionCaseInsensitive | NSRegularExpressionDotMatchesLineSeparators) error:nil];
+					NSArray <NSTextCheckingResult *>	*match = [regExp matchesInString:privateKeyString options:0 range:NSMakeRange(0, privateKeyString.length)];
+					
+					if (match.count > 0 && [match[0] numberOfRanges] >= 2)
+					{
+						// > Extract private key as a raw Base64 string.
+						NSString *privateKey = [privateKeyString substringWithRange:[match[0] rangeAtIndex:1]];
+						
+						privateKey = [[privateKey componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] componentsJoinedByString:@""];
+						
+						// > Save this key as a setting.
+						configuration.selfPrivateKey = [NSString stringWithFormat:@"RSA1024:%@", privateKey];
+						[configuration synchronize]; // Be sure everything is written to disk before removing original file.
+						
+						// > Remove previous file on disk.
+						TCFileSecureRemove(privateKeyPath);
+						TCFileSecureRemove(hostnamePath);
+					}
+					else
+					{
+						NSLog(@"Can't extract RSA private key data at path '%@'.", privateKeyPath);
+					}
+				}
+				else
+				{
+					NSLog(@"Can't decode private key data at path '%@'.", privateKeyPath);
+				}
+			}
+			else
+			{
+				NSLog(@"Can't read private key data for importation at path '%@' - error:%@", privateKeyPath, error.localizedDescription);
+			}
+		}
+		
+		// Call original handler.
+		handler(type, configuration);
+	}];
 }
 
 @end

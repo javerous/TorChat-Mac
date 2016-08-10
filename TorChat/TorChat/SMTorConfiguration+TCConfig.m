@@ -43,6 +43,8 @@
 		// Hidden Service.
 		self.hiddenService = YES;
 		
+		self.hiddenServicePrivateKey = config.selfPrivateKey;
+		
 		self.hiddenServiceRemotePort = 11009;
 		
 		self.hiddenServiceLocalHost = @"127.0.0.1";
@@ -50,7 +52,6 @@
 		
 		// Path.
 		self.binaryPath = [config pathForComponent:TCConfigPathComponentTorBinary fullPath:YES];
-		self.identityPath = [config pathForComponent:TCConfigPathComponentTorIdentity fullPath:YES];
 		self.dataPath = [config pathForComponent:TCConfigPathComponentTorData fullPath:YES];
 	}
 	

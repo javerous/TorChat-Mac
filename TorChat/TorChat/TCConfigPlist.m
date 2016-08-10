@@ -256,6 +256,17 @@
 
 #pragma mark TorChat
 
+- (NSString *)selfPrivateKey
+{
+	// Not implemented.
+	return nil;
+}
+
+- (void)setSelfPrivateKey:(NSString *)selfPrivateKey
+{
+	// Not implemented.
+}
+
 - (NSString *)selfIdentifier
 {
 	__block NSString *value;
