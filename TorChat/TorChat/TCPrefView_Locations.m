@@ -37,12 +37,10 @@
 	
 	IBOutlet NSView	*torBinaryView;
 	IBOutlet NSView *torDataView;
-	IBOutlet NSView *torIdentityView;
 	IBOutlet NSView *downloadsView;
 	
 	TCLocationViewController *_torBinaryLocation;
 	TCLocationViewController *_torDataLocation;
-	TCLocationViewController *_torIdentityLocation;
 	TCLocationViewController *_torDownloadsLocation;
 	
 	id _pathObserver;
@@ -80,11 +78,6 @@
 	_torDataLocation = [[TCLocationViewController alloc] initWithConfiguration:self.config component:TCConfigPathComponentTorData];
 	
 	[_torDataLocation addToView:torDataView];
-	
-	// Load tor identity view.
-	_torIdentityLocation = [[TCLocationViewController alloc] initWithConfiguration:self.config component:TCConfigPathComponentTorIdentity];
-	
-	[_torIdentityLocation addToView:torIdentityView];
 	
 	// Load downloads view.
 	_torDownloadsLocation = [[TCLocationViewController alloc] initWithConfiguration:self.config component:TCConfigPathComponentDownloads];
