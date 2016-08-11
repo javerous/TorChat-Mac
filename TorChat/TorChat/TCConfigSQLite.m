@@ -48,6 +48,7 @@
 #define TCConfigTorSocksAddressKey	@"tor_socks_address"
 #define TCConfigTorSocksPortKey		@"tor_socks_port"
 
+#define TCConfigSelfPrivateKey		@"self_privatekey"
 #define TCConfigSelfIdentifierKey	@"self_identifier"
 #define TCConfigSelfPortKey			@"self_port"
 
@@ -276,6 +277,7 @@
 		{
 			if (error)
 				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:5 userInfo:@{ TCConfigSQLiteErrorKey : @(result), TCConfigSMCryptoFileErrorKey : @(SMSQLiteCryptoVFSLastFileCryptoError()) }];
+			
 			return NO;
 		}
 	}
@@ -673,6 +675,16 @@
 
 
 #pragma mark TorChat
+
+- (NSString *)selfPrivateKey
+{
+	return [self settingForKey:TCConfigSelfPrivateKey];
+}
+
+- (void)setSelfPrivateKey:(NSString *)selfPrivateKey
+{
+	[self setSetting:selfPrivateKey forKey:TCConfigSelfPrivateKey];
+}
 
 - (NSString *)selfIdentifier
 {
@@ -1705,9 +1717,22 @@
 
 #pragma mark Synchronize
 
-- (void)synchronize
+extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
+
+- (BOOL)synchronize
 {
-	dispatch_sync(_localQueue, ^{ });
+	__block BOOL result = YES;
+	
+	dispatch_sync(_localQueue, ^{
+		
+		if (!_dtb)
+			return;
+		
+		if (sqlite3_db_cacheflush != NULL)
+			result = (sqlite3_db_cacheflush(_dtb) == SQLITE_OK);
+	});
+	
+	return result;
 }
 
 

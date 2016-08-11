@@ -62,7 +62,7 @@ typedef enum
 	TCConfigPathComponentReferal,		// Path used as referal.
 	TCConfigPathComponentTorBinary,		// Path to the tor binary (and its dependancies) directory.
 	TCConfigPathComponentTorData,		// Path to the tor data directory.
-	TCConfigPathComponentTorIdentity,	// Path to tor hidden service (buddy identifier)
+	TCConfigPathComponentTorIdentity,	// Path to tor hidden service (buddy identifier) - Obsolete: identity is now included directely in settings (selfPrivateKey). Kept only for importation.
 	TCConfigPathComponentDownloads,		// Path to the downloads directory.
 } TCConfigPathComponent;
 
@@ -87,6 +87,7 @@ typedef enum
 @property uint16_t torPort;
 
 // -- TorChat --
+@property NSString *selfPrivateKey;
 @property NSString *selfIdentifier;
 @property uint16_t selfPort;
 
@@ -139,7 +140,7 @@ typedef enum
 - (NSString *)localizedString:(TCConfigStringItem)stringItem;
 
 // -- Synchronize --
-- (void)synchronize;
+- (BOOL)synchronize;
 
 // -- Life --
 - (void)close;

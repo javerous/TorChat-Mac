@@ -256,6 +256,17 @@
 
 #pragma mark TorChat
 
+- (NSString *)selfPrivateKey
+{
+	// Not implemented.
+	return nil;
+}
+
+- (void)setSelfPrivateKey:(NSString *)selfPrivateKey
+{
+	// Not implemented.
+}
+
 - (NSString *)selfIdentifier
 {
 	__block NSString *value;
@@ -1408,20 +1419,28 @@
 
 #pragma mark Synchronize
 
-- (void)synchronize
+- (BOOL)synchronize
 {
+	__block BOOL result;
+	
 	dispatch_barrier_sync(_localQueue, ^{
-		[self _synchronize];
+		result = [self _synchronize];
 	});
+	
+	return result;
 }
 
-- (void)_synchronize
+- (BOOL)_synchronize
 {
 	if (_isDirty)
 	{
-		[self saveConfig:_fcontent toFile:_fpath];
+		if ([self saveConfig:_fcontent toFile:_fpath] == NO)
+			return NO;
+		
 		_isDirty = NO;
 	}
+	
+	return YES;
 }
 
 - (void)close

@@ -8,9 +8,6 @@
 /* Class = "NSTextFieldCell"; title = "Tor Binary:"; ObjectID = "RXk-TU-Y9E"; */
 "RXk-TU-Y9E.title" = "Binaire Tor :";
 
-/* Class = "NSTextFieldCell"; title = "Tor Identity:"; ObjectID = "Ync-43-xOl"; */
-"Ync-43-xOl.title" = "Identité Tor :";
-
 /* Class = "NSTextFieldCell"; title = "Configuration:"; ObjectID = "b69-S6-NNB"; */
 "b69-S6-NNB.title" = "Configuration :";
 
