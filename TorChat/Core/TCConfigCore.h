@@ -140,7 +140,7 @@ typedef enum
 - (NSString *)localizedString:(TCConfigStringItem)stringItem;
 
 // -- Synchronize --
-- (void)synchronize;
+- (BOOL)synchronize;
 
 // -- Life --
 - (void)close;
