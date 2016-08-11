@@ -106,7 +106,7 @@
 	
 	// Set text.
 	NSString *text = content[TCChatCellChatTextKey];
-
+	
 	if ([text length] > 0)
 		_unreadField.stringValue = text;
 	else

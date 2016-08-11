@@ -421,10 +421,10 @@
 	// Get item.
 	TCChatEntry	*entry = _chatEntries[(NSUInteger)rowIndex];
 	TCBuddy		*buddy = entry.buddy;
-	
+	NSString	*lastMessage = entry.lastMessage;
+
 	// Select the right view.
 	TCChatCellView	*cellView = nil;
-	NSString		*lastMessage = entry.lastMessage;
 	
 	if (lastMessage)
 		cellView = [tableView makeViewWithIdentifier:@"chat_label" owner:self];
@@ -601,7 +601,7 @@
 						
 						if (entry)
 						{
-							entry.lastMessage = @"";
+							entry.lastMessage = message;
 							
 							[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 						}
