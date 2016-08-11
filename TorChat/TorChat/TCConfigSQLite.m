@@ -277,6 +277,9 @@
 		{
 			if (error)
 				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:5 userInfo:@{ TCConfigSQLiteErrorKey : @(result), TCConfigSMCryptoFileErrorKey : @(SMSQLiteCryptoVFSLastFileCryptoError()) }];
+			
+			NSLog(@"Open error ! (%@)", *error);
+
 			return NO;
 		}
 	}
@@ -1716,10 +1719,22 @@
 
 #pragma mark Synchronize
 
-- (void)synchronize
+extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
+
+- (BOOL)synchronize
 {
+	__block BOOL result = YES;
+	
 	dispatch_sync(_localQueue, ^{
+		
+		if (!_dtb)
+			return;
+		
+		if (sqlite3_db_cacheflush != NULL)
+			result = (sqlite3_db_cacheflush(_dtb) == SQLITE_OK);
 	});
+	
+	return result;
 }
 
 

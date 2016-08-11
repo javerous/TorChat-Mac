@@ -25,6 +25,9 @@
 #import "TCConfigAppEncryptable.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Types
 */
@@ -36,7 +39,7 @@ typedef enum
 	TCConfigurationHelperCompletionTypeDone,		// configuration loaded, or nil if error
 } TCConfigurationHelperCompletionType;
 
-typedef void (^TCConfigurationHelperCompletionHandler)(TCConfigurationHelperCompletionType type, id <TCConfigAppEncryptable> configuration);
+typedef void (^TCConfigurationHelperCompletionHandler)(TCConfigurationHelperCompletionType type, id <TCConfigAppEncryptable> _Nullable configuration);
 
 
 
@@ -50,3 +53,6 @@ typedef void (^TCConfigurationHelperCompletionHandler)(TCConfigurationHelperComp
 + (void)openConfigurationAtPath:(NSString *)path completionHandler:(TCConfigurationHelperCompletionHandler)handler;
 
 @end
+
+
+NS_ASSUME_NONNULL_END
