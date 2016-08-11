@@ -278,8 +278,6 @@
 			if (error)
 				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:5 userInfo:@{ TCConfigSQLiteErrorKey : @(result), TCConfigSMCryptoFileErrorKey : @(SMSQLiteCryptoVFSLastFileCryptoError()) }];
 			
-			NSLog(@"Open error ! (%@)", *error);
-
 			return NO;
 		}
 	}
