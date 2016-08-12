@@ -110,9 +110,6 @@
 
 
 /* Core */
-// General
-"core_mng_myself" = "myself";
-
 // TCBuddyInfoDomain
 "core_bd_event_connected" = "Buddy is connected on the remote buddy through tor SOCKS.";
 "core_bd_event_tor_connected" = "Buddy connected on tor SOCKS.";

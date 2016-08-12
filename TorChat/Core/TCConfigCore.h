@@ -50,12 +50,6 @@ typedef enum
 	TCConfigModeBundled
 } TCConfigMode;
 
-// -- Localization --
-typedef enum
-{
-	TCConfigStringItemMyselfBuddy,
-} TCConfigStringItem;
-
 // -- Paths --
 typedef enum
 {
@@ -135,9 +129,6 @@ typedef enum
 
 - (id)addPathObserverForComponent:(TCConfigPathComponent)component queue:(dispatch_queue_t)queue usingBlock:(dispatch_block_t)block;
 - (void)removePathObserver:(id)observer;
-
-// -- Strings --
-- (NSString *)localizedString:(TCConfigStringItem)stringItem;
 
 // -- Synchronize --
 - (BOOL)synchronize;

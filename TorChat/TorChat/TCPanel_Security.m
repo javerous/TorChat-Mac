@@ -147,6 +147,9 @@
 		return nil;
 	}
 	
+	// Set some intial values.
+	config.profileName = NSFullUserName();
+	
 	// Return config.
 	return config;
 }

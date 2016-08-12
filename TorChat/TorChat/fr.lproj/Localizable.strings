@@ -110,9 +110,6 @@
 
 
 /* Core */
-// General
-"core_mng_myself" = "moi";
-
 // TCBuddyInfoDomain
 "core_bd_event_connected" = "Le contact est connecté au contact distant via le SOCKS tor.";
 "core_bd_event_tor_connected" = "Contact connecté au SOCKS de tor.";

@@ -176,13 +176,15 @@
 		
 		if (!found)
 		{
-			NSString	*name = [_config localizedString:TCConfigStringItemMyselfBuddy];
-			TCBuddy		*buddy = [[TCBuddy alloc] initWithCoreManager:self configuration:_config identifier:selfIdentifier alias:name notes:@""];
+			// Add buddy in config.
+			[_config addBuddyWithIdentifier:selfIdentifier alias:@"" notes:@""];
+			[_config setBuddyLastName:_config.profileName forBuddyIdentifier:selfIdentifier];
+			
+			// Add buddy in our list.
+			TCBuddy *buddy = [[TCBuddy alloc] initWithCoreManager:self configuration:_config identifier:selfIdentifier alias:@"" notes:@""];
 
 			[self _checkBlocked:buddy];
 			[_buddies addObject:buddy];
-
-			[_config addBuddyWithIdentifier:selfIdentifier alias:name notes:@""];
 		}
 	}
 	

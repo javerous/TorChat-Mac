@@ -1403,20 +1403,6 @@
 }
 
 
-#pragma mark Strings
-
-- (NSString *)localizedString:(TCConfigStringItem)stringItem
-{
-	switch (stringItem)
-	{
-		case TCConfigStringItemMyselfBuddy:
-			return NSLocalizedString(@"core_mng_myself", @"");
-	}
-	
-	return nil;
-}
-
-
 #pragma mark Synchronize
 
 - (BOOL)synchronize
