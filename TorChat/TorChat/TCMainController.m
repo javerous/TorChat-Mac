@@ -145,29 +145,28 @@
 		// -- Try loading config from file --
 		[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
 			
+			// Search an accessible config path.
 			NSFileManager	*mng = [NSFileManager defaultManager];
-			NSBundle		*bundle = [NSBundle mainBundle];
 			NSString		*path = nil;
+
+			NSArray *defaultSearchPaths = @[
+				[[[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"], // config in same folder of the app (autonomous USB-key, DMG, etc.) - best to be first.
+				[@"~/torchat.conf" stringByExpandingTildeInPath],						// visible config in home directory.
+				[@"~/.torchat.conf" stringByExpandingTildeInPath],						// hidden config in home directory.
+				[@"~/.config/torchat.conf" stringByExpandingTildeInPath],				// visible config in config directory.
+				[@"~/Library/Preferences/torchat.conf" stringByExpandingTildeInPath],	// visible config in OS X Preferences directory.
+			];
 			
-			// Try to find config on the same folder as the application
-			if (!path)
+			for (NSString *tryPath in defaultSearchPaths)
 			{
-				path = [[[bundle bundlePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"];
-				
-				if ([mng fileExistsAtPath:path] == NO)
-					path = nil;
+				if ([mng isReadableFileAtPath:tryPath])
+				{
+					path = tryPath;
+					break;
+				}
 			}
 			
-			// Try to find on config home folder
-			if (!path)
-			{
-				path = [@"~/torchat.conf" stringByExpandingTildeInPath];
-				
-				if ([mng fileExistsAtPath:path] == NO)
-					path = nil;
-			}
-			
-			// Skip configuration.
+			// No path found : continue on assistant.
 			if (!path)
 			{
 				ctrl(SMOperationsControlContinue);

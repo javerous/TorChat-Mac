@@ -147,7 +147,7 @@
 		if (!_dtbPath)
 		{
 			if (error)
-				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:1 userInfo:nil];
+				*error = [self.class errorWithCode:1 localizedMessage:@"sqliteconf_error_internal"];
 			return nil;
 		}
 		
@@ -155,7 +155,7 @@
 		if ([[self class] isEncryptedFile:_dtbPath] && password == nil)
 		{
 			if (error)
-				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:2 userInfo:nil];
+				*error = [self.class errorWithCode:2 localizedMessage:@"sqliteconf_error_internal"];
 			return nil;
 		}
 		
@@ -170,15 +170,16 @@
 			if (posix_memalign(&_dtbPassword, hostPageSize, hostPageSize) != 0)
 			{
 				if (error)
-					*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:3 userInfo:nil];
+					*error = [self.class errorWithCode:3 localizedMessage:@(strerror(errno))];
 				return nil;
 			}
 			
 			if (mlock(_dtbPassword, hostPageSize) != 0)
 			{
 				if (error)
-					*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:4 userInfo:nil];
+					*error = [self.class errorWithCode:4 localizedMessage:@(strerror(errno))];
 				free(_dtbPassword);
+				_dtbPassword = NULL;
 				return nil;
 			}
 			
@@ -230,6 +231,45 @@
 	return SMCryptoFileCanOpen(filepath.fileSystemRepresentation);
 }
 
++ (NSError *)errorWithCode:(int)code localizedMessage:(nullable NSString *)message, ...
+{
+	if (message)
+	{
+		// Build string.
+		NSString	*localized = NSLocalizedString(message, @"");
+		NSString	*string;
+		va_list		ap;
+		
+		va_start(ap, message);
+		string = [[NSString alloc] initWithFormat:localized arguments:ap];
+		va_end(ap);
+	
+		// Build error.
+		return [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:code userInfo:@{ NSLocalizedDescriptionKey : string }];
+	}
+	else
+	{
+		return [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:code userInfo:nil];
+	}
+}
+
++ (NSError *)errorWithSQLiteDatabase:(nullable sqlite3 *)dtb internalCode:(int)internalCode sqlError:(int)sqlError
+{
+	NSString *message;
+	
+	if (dtb)
+		message = [NSString stringWithFormat:NSLocalizedString(@"sqliteconf_error_sqlite", @""), sqlError, @(sqlite3_errmsg(dtb))];
+	else
+		message = [NSString stringWithFormat:NSLocalizedString(@"sqliteconf_error_sqlite", @""), sqlError, @(sqlite3_errstr(sqlError))];
+	
+	SMCryptoFileError cryptoError = SMSQLiteCryptoVFSLastFileCryptoError();
+	
+	if (cryptoError == SMCryptoFileErrorNo)
+		return [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:internalCode userInfo:@{ NSLocalizedDescriptionKey : message, TCConfigSQLiteErrorKey : @(sqlError) }];
+	else
+		return [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:internalCode userInfo:@{ NSLocalizedDescriptionKey : message, TCConfigSQLiteErrorKey : @(sqlError), TCConfigSMCryptoFileErrorKey : @(cryptoError) }];
+}
+
 
 
 /*
@@ -237,7 +277,7 @@
 */
 #pragma mark - TCConfigSQLite - SQLite
 
-#pragma mark Instance
+#pragma mark Helpers
 
 - (BOOL)_openDatabaseWithError:(NSError **)error
 {
@@ -247,16 +287,16 @@
 	int __res = sqlite3_exec(Database, Sql, NULL, NULL, NULL);\
 	if (__res != SQLITE_OK) {	\
 		if (error)				\
-			*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(__res) }];\
+			*error =  [self.class errorWithSQLiteDatabase:(Database) internalCode:10 sqlError:__res]; \
 		return NO;				\
 	}							\
 } while (0)
 	
-#define tc_sqlite3_prepare(Dtb, Sql, Stmt) do { \
-	int __res = sqlite3_prepare_v2(Dtb, Sql, -1, Stmt, NULL);\
+#define tc_sqlite3_prepare(Database, Sql, Stmt) do { \
+	int __res = sqlite3_prepare_v2(Database, Sql, -1, Stmt, NULL);\
 	if (__res != SQLITE_OK) {	\
 		if (error)				\
-			*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(__res) }];\
+			*error =  [self.class errorWithSQLiteDatabase:(Database) internalCode:11 sqlError:__res]; \
 		return NO;				\
 	}\
 } while (0)
@@ -267,7 +307,7 @@
 	if (_dtbPassword)
 	{
 		const char *uriPath;
-		
+
 		_dtbUUID = SMSQLiteCryptoVFSSettingsAdd(_dtbPassword, SMCryptoFileKeySize256);
 		uriPath = [[NSString stringWithFormat:@"file://%@?crypto-uuid=%s", _dtbPath, _dtbUUID] UTF8String];
 		
@@ -276,7 +316,7 @@
 		if (result != SQLITE_OK)
 		{
 			if (error)
-				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:5 userInfo:@{ TCConfigSQLiteErrorKey : @(result), TCConfigSMCryptoFileErrorKey : @(SMSQLiteCryptoVFSLastFileCryptoError()) }];
+				*error = [self.class errorWithSQLiteDatabase:nil internalCode:5 sqlError:result];
 			
 			return NO;
 		}
@@ -288,7 +328,7 @@
 		if (result != SQLITE_OK)
 		{
 			if (error)
-				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:6 userInfo:@{ TCConfigSQLiteErrorKey : @(result) }];
+				*error = [self.class errorWithSQLiteDatabase:nil internalCode:6 sqlError:result];
 
 			return NO;
 		}
@@ -2113,7 +2153,7 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 			if (sres != SQLITE_OK)
 			{
 				if (error)
-					*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres), TCConfigSMCryptoFileErrorKey : @(SMSQLiteCryptoVFSLastFileCryptoError()) }];
+					*error = [self.class errorWithSQLiteDatabase:nil internalCode:20 sqlError:sres];
 				goto errDec;
 			}
 			
@@ -2125,7 +2165,7 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 			if (sres != SQLITE_OK)
 			{
 				if (error)
-					*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres) }];
+					*error = [self.class errorWithSQLiteDatabase:NULL internalCode:21 sqlError:sres];
 				goto errDec;
 			}
 			
@@ -2138,7 +2178,7 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 			if (!backup)
 			{
 				if (error)
-					*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ NSLocalizedDescriptionKey : @"can't create backup object" }];
+					*error = [self.class errorWithCode:22 localizedMessage:@"sqliteconf_error_backup_create"];
 				goto errDec;
 			}
 			
@@ -2148,7 +2188,7 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 			if (sres != SQLITE_DONE)
 			{
 				if (error)
-					*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres) }];
+					*error = [self.class errorWithSQLiteDatabase:NULL internalCode:23 sqlError:sres];
 				goto errDec;
 			}
 			
@@ -2254,13 +2294,15 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 			
 			if (posix_memalign(&ndtbPassword, hostPageSize, hostPageSize) != 0)
 			{
-				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ NSLocalizedDescriptionKey : @"can't allocate password buffer" }];
+				if (error)
+					*error = [self.class errorWithCode:24 localizedMessage:@"sqliteconf_error_buffer_alloc", @(strerror(errno))];
 				goto errEnc;
 			}
 			
 			if (mlock(ndtbPassword, hostPageSize) != 0)
 			{
-				*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ NSLocalizedDescriptionKey : @"can't mlock password buffer" }];
+				if (error)
+					*error = [self.class errorWithCode:25 localizedMessage:@"sqliteconf_error_buffer_lock", @(strerror(errno))];
 				goto errEnc;
 			}
 			
@@ -2279,7 +2321,7 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 			if (sres != SQLITE_OK)
 			{
 				if (error)
-					*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres) }];
+					*error = [self.class errorWithSQLiteDatabase:NULL internalCode:26 sqlError:sres];
 				goto errEnc;
 			}
 			
@@ -2297,7 +2339,7 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 			if (sres != SQLITE_OK)
 			{
 				if (error)
-					*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres), TCConfigSMCryptoFileErrorKey : @(SMSQLiteCryptoVFSLastFileCryptoError()) }];
+					*error = [self.class errorWithSQLiteDatabase:NULL internalCode:27 sqlError:sres];
 				goto errEnc;
 			}
 			
@@ -2309,7 +2351,7 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 			if (!backup)
 			{
 				if (error)
-					*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ NSLocalizedDescriptionKey : @"can't create backup object" }];
+					*error = [self.class errorWithCode:28 localizedMessage:@"sqliteconf_error_backup_create"];
 				goto errEnc;
 			}
 			
@@ -2319,7 +2361,7 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 			if (sres != SQLITE_DONE)
 			{
 				if (error)
-					*error = [NSError errorWithDomain:TCConfigSQLiteErrorDomain code:-1 userInfo:@{ TCConfigSQLiteErrorKey : @(sres) }];
+					*error = [self.class errorWithSQLiteDatabase:NULL internalCode:29 sqlError:sres];
 				goto errEnc;
 			}
 			

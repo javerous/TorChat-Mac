@@ -29,11 +29,16 @@
 "ac_title_custom" = "Setup the custom Tor instance mode";
 "ac_title_bundled" = "Setup the bundled Tor binary mode";
 
-"ac_error_build_path" = "Can't build the configuration path because of a system error";
-"ac_error_write_file" = "Can't build a configuration file (%@). Please check write access on your TorChat folder.";
-"ac_error_read_file" = "Can't open the configuration file (%@). Please check read access on your file.";
-"ac_error_read_proxy" = "Can't get the configuration data. Please check the proxy.";
-"ac_error_config" = "Error";
+"ac_error_title" = "TorChat Error";
+"ac_error_code" = "Error code %ld - %@";
+
+
+/* SQLite Config */
+"sqliteconf_error_internal" = "Internal error";
+"sqliteconf_error_sqlite" = "SQLite Error (%d - %@)";
+"sqliteconf_error_backup_create" = "Can't create backup object.";
+"sqliteconf_error_buffer_alloc" = "can't allocate password buffer (%@).";
+"sqliteconf_error_buffer_lock" = "Can't protect password buffer (%@).";
 
 
 /* Menu */
@@ -94,7 +99,6 @@
 /* Logs */
 "logs_all_logs" = "All logs";
 "logs_global_logs" = "Globals";
-"logs_error_title" = "TorChat Error";
 
 
 /* Location */

@@ -29,11 +29,14 @@
 "ac_title_custom" = "Configurez le mode instance Tor personnelle";
 "ac_title_bundled" = "Configurez le mode binaire Tor préinclus";
 
-"ac_error_build_path" = "Impossible de créer le chemin d'accès du fichier de configuration suite à une erreur système.";
-"ac_error_write_file" = "Impossible de créer un fichier de configuration (%@). Vérifiez les droits d'écriture sur votre dossier TorChat.";
-"ac_error_read_file" = "Impossible d'ouvrir le fichier configuration (%@). Vérifiez les droits de lecture sur votre fichier.";
-"ac_error_read_proxy" = "Impossible d'obtenir les données du fichier de configuration. Vérifiez le proxy.";
-"ac_error_config" = "Erreur";
+"ac_error_title" = "Erreur TorChat";
+"ac_error_code" = "Code d'erreur %ld - %@";
+
+
+/* SQLite Config */
+"sqliteconf_error_internal" = "Erreur interne";
+"sqliteconf_error_sqlite" = "Erreur SQLite (%d - %@)";
+"sqliteconf_error_backup_create" = "Impossible de créer un objet de sauvegarde.";
 
 
 /* Menu */
@@ -94,7 +97,6 @@
 /* Logs */
 "logs_all_logs" = "Tous les journaux";
 "logs_global_logs" = "Global";
-"logs_error_title" = "Erreur TorChat";
 
 
 /* Location */

@@ -92,26 +92,9 @@
 
 - (id)panelContent
 {
-	// Build configuration path.
+	// Compose configuration path.
 	NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
 	NSString *configPath = [[bundlePath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"];
-	
-	if (!configPath)
-	{
-		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_build_path"];
-		
-		dispatch_async(dispatch_get_main_queue(), ^{
-			
-			NSAlert *alert = [[NSAlert alloc] init];
-			
-			alert.messageText = NSLocalizedString(@"logs_error_title", @"");
-			alert.informativeText = NSLocalizedString(@"ac_error_build_path", @"");
-
-			[alert runModal];
-			
-			exit(0);
-		});
-	}
 	
 	// Build configuration file.
 	NSError			*error = nil;
@@ -130,14 +113,14 @@
 
 	if (!config)
 	{
-		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"ac_error_build_path"];
+		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:error.localizedDescription];
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
 			
 			NSAlert *alert = [[NSAlert alloc] init];
 			
-			alert.messageText = NSLocalizedString(@"logs_error_title", @"");
-			alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"ac_error_write_file", @""), configPath];
+			alert.messageText = NSLocalizedString(@"ac_error_title", @"");
+			alert.informativeText = [NSString stringWithFormat: NSLocalizedString(@"ac_error_code", @""), error.code, error.localizedDescription];
 			
 			[alert runModal];
 			

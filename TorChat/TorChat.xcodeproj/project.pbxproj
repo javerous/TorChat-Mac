@@ -723,7 +723,7 @@
 				E8D5E26114DAA0B400973297 /* TCSplitView.m */,
 				E8A2CC47185CC2AF00624448 /* TCThreePartImageView.h */,
 				E8A2CC48185CC2AF00624448 /* TCThreePartImageView.m */,
-				E8A6FE2917A993A700C4DEAB /* Panels */,
+				E8A6FE2917A993A700C4DEAB /* Assistant */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -778,7 +778,7 @@
 			name = Configuration;
 			sourceTree = "<group>";
 		};
-		E8A6FE2917A993A700C4DEAB /* Panels */ = {
+		E8A6FE2917A993A700C4DEAB /* Assistant */ = {
 			isa = PBXGroup;
 			children = (
 				E8A6FE2A17A993FC00C4DEAB /* TCPanel_Welcome.h */,
@@ -793,7 +793,7 @@
 				E8A6FE3417A995D100C4DEAB /* TCPanel_Custom.m */,
 				E870BD8F17A84A6900DFA076 /* XIB */,
 			);
-			name = Panels;
+			name = Assistant;
 			sourceTree = "<group>";
 		};
 		E8C6EC5F1C901F24005F3634 /* ConfigurationHelper */ = {
