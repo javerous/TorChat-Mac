@@ -45,7 +45,7 @@
 "menu_block_buddy" = "Bloquer le contact";
 "menu_unblock_buddy" = "Débloquer le contact";
 
-s
+
 /* Buddy */
 "bd_status_offline" = "Hors ligne";
 "bd_status_available" = "Disponible";
