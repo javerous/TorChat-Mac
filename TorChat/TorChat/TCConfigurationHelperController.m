@@ -24,6 +24,8 @@
 
 #import "TCConfigurationHelperController.h"
 
+#import "TCLogsManager.h"
+
 #import "TCConfigurationCopy.h"
 
 #import "TCConfigPlist.h"
@@ -128,7 +130,7 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	if (privateKeyData == nil)
 	{
-		NSLog(@"Can't read private key data for importation at path '%@' - error:%@", privateKeyPath, error.localizedDescription);
+		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"Can't read private key data for importation at path '%@' - error:%@", privateKeyPath, error.localizedDescription];
 		return NO;
 	}
 	
@@ -137,7 +139,7 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	if (privateKeyString == nil)
 	{
-		NSLog(@"Can't decode private key data at path '%@'.", privateKeyPath);
+		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"Can't decode private key data at path '%@'.", privateKeyPath];
 		return NO;
 	}
 	
@@ -147,7 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	if (match.count == 0 || [match[0] numberOfRanges] < 2)
 	{
-		NSLog(@"Can't extract RSA private key data at path '%@'.", privateKeyPath);
+		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"Can't extract RSA private key data at path '%@'.", privateKeyPath];
 		return NO;
 	}
 	
@@ -162,7 +164,7 @@ NS_ASSUME_NONNULL_BEGIN
 	// Be sure everything is written to disk before removing original file.
 	if ([configuration synchronize] == NO)
 	{
-		NSLog(@"Can't synchronize configuration file with imported key.");
+		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"Can't synchronize configuration file with imported key."];
 		return NO;
 	}
 	
@@ -170,7 +172,7 @@ NS_ASSUME_NONNULL_BEGIN
 	TCFileSecureRemove(privateKeyPath);
 	TCFileSecureRemove(hostnamePath);
 	
-	NSLog(@"Private key imported with success.");
+	[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogInfo message:@"Private key imported with success."];
 	
 	return YES;
 }

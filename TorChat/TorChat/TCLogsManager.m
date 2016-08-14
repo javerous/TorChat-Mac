@@ -135,6 +135,25 @@
 {
 	dispatch_sync(_localQueue, ^{
 		
+#if defined(DEBUG) && DEBUG
+		NSString *kindStr = @"<>";
+		
+		switch (kind)
+		{
+			case TCLogError:
+				kindStr = @"<error>";
+				break;
+			case TCLogWarning:
+				kindStr = @"<warning>";
+				break;
+			case TCLogInfo:
+				kindStr = @"<info>";
+				break;
+		}
+		
+		TCDebugLog(@"~ Log [%@ %@]: %@", key, kindStr, content);
+#endif
+		
 		// Create entry.
 		TCLogEntry *entry = [TCLogEntry logEntryWithTimestamp:timestamp kind:kind message:content];
 		
