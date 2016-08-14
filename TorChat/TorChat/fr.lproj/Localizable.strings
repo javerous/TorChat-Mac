@@ -37,13 +37,15 @@
 "sqliteconf_error_internal" = "Erreur interne";
 "sqliteconf_error_sqlite" = "Erreur SQLite (%d - %@)";
 "sqliteconf_error_backup_create" = "Impossible de créer un objet de sauvegarde.";
+"sqliteconf_error_buffer_alloc" = "Impossible d'allouer un cache pour de mot de passe (%@).";
+"sqliteconf_error_buffer_lock" = "Impossible de protéger le cache de mot de passe (%@).";
 
 
 /* Menu */
 "menu_block_buddy" = "Bloquer le contact";
 "menu_unblock_buddy" = "Débloquer le contact";
 
-
+s
 /* Buddy */
 "bd_status_offline" = "Hors ligne";
 "bd_status_available" = "Disponible";

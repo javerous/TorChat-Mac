@@ -478,7 +478,7 @@ static char gLocalQueueContext;
 
 - (NSString *)alias
 {
-	__block NSString *result = NULL;
+	__block NSString *result;
 	
 	dispatch_sync(_localQueue, ^{
 		result = _alias;
@@ -507,7 +507,7 @@ static char gLocalQueueContext;
 
 - (NSString *)notes
 {
-	__block NSString *result = NULL;
+	__block NSString *result;
 	
 	dispatch_sync(_localQueue, ^{
 		result = _notes;
@@ -589,7 +589,7 @@ static char gLocalQueueContext;
 
 - (NSString *)peerClient
 {
-	__block NSString * result = NULL;
+	__block NSString *result;
 	
 	dispatch_sync(_localQueue, ^{
 		result = _peerClient;
@@ -600,7 +600,7 @@ static char gLocalQueueContext;
 
 - (NSString *)peerVersion
 {
-	__block NSString * result = NULL;
+	__block NSString *result;
 	
 	dispatch_sync(_localQueue, ^{
 		result = _peerVersion;
@@ -611,7 +611,7 @@ static char gLocalQueueContext;
 
 - (NSString *)profileText
 {
-	__block NSString * result = NULL;
+	__block NSString *result;
 	
 	dispatch_sync(_localQueue, ^{
 		result = _profileText;
@@ -622,7 +622,7 @@ static char gLocalQueueContext;
 
 - (TCImage *)profileAvatar
 {
-	__block id result = NULL;
+	__block TCImage *result;
 	
 	dispatch_sync(_localQueue, ^{
 		result = _profileAvatar;
@@ -633,7 +633,7 @@ static char gLocalQueueContext;
 
 - (NSString *)profileName
 {
-	__block NSString * result = NULL;
+	__block NSString *result;
 	
 	dispatch_sync(_localQueue, ^{
 		result = _profileName;
@@ -644,7 +644,7 @@ static char gLocalQueueContext;
 
 - (NSString *)finalName
 {
-	__block NSString *result = NULL;
+	__block NSString *result;
 	
 	dispatch_sync(_localQueue, ^{
 		

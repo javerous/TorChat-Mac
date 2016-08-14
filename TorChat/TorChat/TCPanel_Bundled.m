@@ -147,7 +147,9 @@
 	[_tor startWithInfoHandler:^(SMInfo *info) {
 		
 		NSTextField *imIdentifierField = weakIMIdentifierField;
-		
+		__block BOOL serviceIDDone = NO;
+		__block BOOL servicePrivateKeyDone = NO;
+
 		dispatch_async(dispatch_get_main_queue(), ^{
 
 			if (info.kind == SMInfoError)
@@ -161,11 +163,22 @@
 				{
 					[imIdentifierField setStringValue:info.context];
 					[_currentConfig setSelfIdentifier:info.context];
-					[_tor stopWithCompletionHandler:nil];
+					
+					serviceIDDone = YES;
+					
+					// Don't need to go further.
+					if (serviceIDDone && servicePrivateKeyDone)
+						[_tor stopWithCompletionHandler:nil];
 				}
 				else if (info.code == SMTorEventStartServicePrivateKey)
 				{
 					[_currentConfig setSelfPrivateKey:info.context];
+
+					servicePrivateKeyDone = YES;
+					
+					// Don't need to go further.
+					if (serviceIDDone && servicePrivateKeyDone)
+						[_tor stopWithCompletionHandler:nil];
 				}
 				else if (info.code == SMTorEventStartDone)
 				{

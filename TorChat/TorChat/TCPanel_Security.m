@@ -120,7 +120,7 @@
 			NSAlert *alert = [[NSAlert alloc] init];
 			
 			alert.messageText = NSLocalizedString(@"ac_error_title", @"");
-			alert.informativeText = [NSString stringWithFormat: NSLocalizedString(@"ac_error_code", @""), error.code, error.localizedDescription];
+			alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"ac_error_code", @""), error.code, error.localizedDescription];
 			
 			[alert runModal];
 			

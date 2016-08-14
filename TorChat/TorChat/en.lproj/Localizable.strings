@@ -37,7 +37,7 @@
 "sqliteconf_error_internal" = "Internal error";
 "sqliteconf_error_sqlite" = "SQLite Error (%d - %@)";
 "sqliteconf_error_backup_create" = "Can't create backup object.";
-"sqliteconf_error_buffer_alloc" = "can't allocate password buffer (%@).";
+"sqliteconf_error_buffer_alloc" = "Can't allocate password buffer (%@).";
 "sqliteconf_error_buffer_lock" = "Can't protect password buffer (%@).";
 
 
