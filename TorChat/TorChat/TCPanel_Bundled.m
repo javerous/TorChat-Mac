@@ -139,6 +139,8 @@
 	
 	// Create tor manager & start it.
 	__weak NSTextField *weakIMIdentifierField = _imIdentifierField;
+	__block BOOL serviceIDDone = NO;
+	__block BOOL servicePrivateKeyDone = NO;
 	
 	_tor = [[SMTorManager alloc] initWithConfiguration:torConfig];
 	
@@ -147,8 +149,6 @@
 	[_tor startWithInfoHandler:^(SMInfo *info) {
 		
 		NSTextField *imIdentifierField = weakIMIdentifierField;
-		__block BOOL serviceIDDone = NO;
-		__block BOOL servicePrivateKeyDone = NO;
 
 		dispatch_async(dispatch_get_main_queue(), ^{
 
