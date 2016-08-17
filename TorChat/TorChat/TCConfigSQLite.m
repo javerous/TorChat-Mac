@@ -69,7 +69,7 @@
 #define TCConfigPathTorIdentityKey	@"tor_identity"
 #define TCConfigPathDownloadsKey	@"downloads"
 
-#define TCConfigPathTypeReferralKey	@"<referral>"
+#define TCConfigPathTypeReferralKey	@"<referal>"
 #define TCConfigPathTypeStandardKey	@"<standard>"
 #define TCConfigPathTypeAbsoluteKey	@"<absolute>"
 
