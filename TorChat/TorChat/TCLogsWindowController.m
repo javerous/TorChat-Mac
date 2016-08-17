@@ -89,16 +89,16 @@
 
 @interface TCLogsWindowController () <TCLogsObserver>
 {
-	NSMutableDictionary		*_logs;
-	NSMutableArray			*_klogs;
+	NSMutableDictionary	*_logs;
+	NSMutableArray		*_klogs;
 	
-	NSMutableArray			*_allLogs;
-	NSString				*_allLastKey;
+	NSMutableArray <NSDictionary *> *_allLogs;
+	NSString	*_allLastKey;
 	
-	NSCell					*_separatorCell;
-	NSCell					*_textCell;
+	NSCell	*_separatorCell;
+	NSCell	*_textCell;
 	
-	NSDateFormatter			*_dateFormatter;
+	NSDateFormatter	*_dateFormatter;
 }
 
 // -- Properties --

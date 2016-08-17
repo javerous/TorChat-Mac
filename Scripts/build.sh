@@ -103,7 +103,7 @@ fi
 
 
 # Compile.
-echo '[+] Compile sources.'
+echo "[+] Compile sources (using "`xcodebuild -version`")."
 
 cd "${volume_path}"
 
