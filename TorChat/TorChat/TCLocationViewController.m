@@ -56,7 +56,7 @@
 	
 	if (self)
 	{
-		if (!configuration || component == TCConfigPathComponentReferal)
+		if (!configuration || component == TCConfigPathComponentReferral)
 			return nil;
 		
 		_configuration = configuration;
@@ -104,10 +104,10 @@
 	
 	if (index == 0)
 	{
-		NSString	*refPath = [_configuration pathForComponent:TCConfigPathComponentReferal fullPath:YES];
+		NSString	*refPath = [_configuration pathForComponent:TCConfigPathComponentReferral fullPath:YES];
 		NSString	*fullPath = [_configuration pathForComponent:_component fullPath:YES];
 
-		pathType = TCConfigPathTypeReferal;
+		pathType = TCConfigPathTypeReferral;
 		path = [[self stringWithPath:fullPath relativeTo:refPath] stringByAppendingString:@"/"];
 	}
 	else if (index == 1)
@@ -191,12 +191,12 @@
 				
 				switch (pathType)
 				{
-					case TCConfigPathTypeReferal:
+					case TCConfigPathTypeReferral:
 					{
-						NSString *refPath = [_configuration pathForComponent:TCConfigPathComponentReferal fullPath:YES];
+						NSString *refPath = [_configuration pathForComponent:TCConfigPathComponentReferral fullPath:YES];
 						NSString *subPath = [[self stringWithPath:selectedPath relativeTo:refPath] stringByAppendingString:@"/"];
 						
-						[_configuration setPathForComponent:_component pathType:TCConfigPathTypeReferal path:subPath];
+						[_configuration setPathForComponent:_component pathType:TCConfigPathTypeReferral path:subPath];
 						
 						break;
 					}
@@ -281,7 +281,7 @@
 	
 	switch (pathType)
 	{
-		case TCConfigPathTypeReferal:
+		case TCConfigPathTypeReferral:
 			[placePopupButton selectItemAtIndex:0];
 			[subPathField setEnabled:YES];
 			[folderButton setEnabled:YES];

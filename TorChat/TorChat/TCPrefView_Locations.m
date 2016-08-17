@@ -32,7 +32,7 @@
 
 @implementation TCPrefView_Locations
 {
-	IBOutlet NSTextField	*referalTextField;
+	IBOutlet NSTextField	*referralTextField;
 	IBOutlet NSPathControl	*configPath;
 	
 	IBOutlet NSView	*torBinaryView;
@@ -100,10 +100,10 @@
 	// Load configuration.
 	[self reloadConfiguration];
 	
-	// Observe referal change.
+	// Observe referral change.
 	__weak TCPrefView_Locations *weakSelf = self;
 	
-	_pathObserver = [self.config addPathObserverForComponent:TCConfigPathComponentReferal queue:dispatch_get_main_queue() usingBlock:^{
+	_pathObserver = [self.config addPathObserverForComponent:TCConfigPathComponentReferral queue:dispatch_get_main_queue() usingBlock:^{
 		[weakSelf reloadConfiguration];
 	}];
 }
@@ -122,7 +122,7 @@
 #pragma mark - TCPrefView_Locations - IBAction
 
 
-- (IBAction)doSelectReferal:(id)sender
+- (IBAction)doSelectReferral:(id)sender
 {
 	NSUInteger flags = [[[NSApplication sharedApplication] currentEvent] modifierFlags];
 	
@@ -150,14 +150,14 @@
 				NSString *path = [[bundle bundlePath] stringByDeletingLastPathComponent];
 
 				// > Replace current value.
-				[self.config setPathForComponent:TCConfigPathComponentReferal pathType:TCConfigPathTypeAbsolute path:path];
+				[self.config setPathForComponent:TCConfigPathComponentReferral pathType:TCConfigPathTypeAbsolute path:path];
 			});
 		}];
 	}
 	else
 	{
 		// Configure open panel.
-		NSString	*fullPath = [self.config pathForComponent:TCConfigPathComponentReferal fullPath:YES];
+		NSString	*fullPath = [self.config pathForComponent:TCConfigPathComponentReferral fullPath:YES];
 		NSOpenPanel	*openPanel = [NSOpenPanel openPanel];
 		
 		openPanel.canChooseDirectories = YES;
@@ -179,13 +179,13 @@
 			
 			// > Replace current value.
 			dispatch_async(dispatch_get_main_queue(), ^{
-				[self.config setPathForComponent:TCConfigPathComponentReferal pathType:TCConfigPathTypeAbsolute path:selectedPath];
+				[self.config setPathForComponent:TCConfigPathComponentReferral pathType:TCConfigPathTypeAbsolute path:selectedPath];
 			});
 		}];
 	}
 }
 
-- (IBAction)doRevealReferal:(id)sender
+- (IBAction)doRevealReferral:(id)sender
 {
 	NSString *fullPath = configPath.URL.path;
 	
@@ -207,9 +207,9 @@
 
 - (void)reloadConfiguration
 {
-	NSString *refPath = [self.config pathForComponent:TCConfigPathComponentReferal fullPath:YES];
+	NSString *refPath = [self.config pathForComponent:TCConfigPathComponentReferral fullPath:YES];
 	
-	[referalTextField setStringValue:refPath];
+	[referralTextField setStringValue:refPath];
 	[configPath setURL:[[NSURL fileURLWithPath:refPath] URLByAppendingPathComponent:@"torchat.conf"]];
 }
 

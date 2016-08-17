@@ -133,13 +133,13 @@
 
 - (void)canceled
 {
-	NSString *referalPath = [_currentConfig pathForComponent:TCConfigPathComponentReferal fullPath:YES];
+	NSString *referralPath = [_currentConfig pathForComponent:TCConfigPathComponentReferral fullPath:YES];
 	
 	[_currentConfig close];
 	
-	if (referalPath)
+	if (referralPath)
 	{
-		NSString *confPath = [referalPath stringByAppendingPathComponent:@"torchat.conf"];
+		NSString *confPath = [referralPath stringByAppendingPathComponent:@"torchat.conf"];
 		
 		[[NSFileManager defaultManager] removeItemAtPath:confPath error:nil];
 	}

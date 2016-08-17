@@ -53,7 +53,7 @@ typedef enum
 // -- Paths --
 typedef enum
 {
-	TCConfigPathComponentReferal,		// Path used as referal.
+	TCConfigPathComponentReferral,		// Path used as referral.
 	TCConfigPathComponentTorBinary,		// Path to the tor binary (and its dependancies) directory.
 	TCConfigPathComponentTorData,		// Path to the tor data directory.
 	TCConfigPathComponentTorIdentity,	// Path to tor hidden service (buddy identifier) - Obsolete: identity is now included directely in settings (selfPrivateKey). Kept only for importation.
@@ -62,7 +62,7 @@ typedef enum
 
 typedef enum
 {
-	TCConfigPathTypeReferal,	// Path is relative to referal.
+	TCConfigPathTypeReferral,	// Path is relative to referral.
 	TCConfigPathTypeStandard,	// Path is relative to standard OS X directories in ~.
 	TCConfigPathTypeAbsolute,	// Path is absolute.
 } TCConfigPathType;

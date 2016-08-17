@@ -94,8 +94,8 @@
 		
 		switch (type)
 		{
-			case TCConfigPathTypeReferal:
-				[target setPathForComponent:component pathType:TCConfigPathTypeReferal path:[source pathForComponent:component fullPath:NO]];
+			case TCConfigPathTypeReferral:
+				[target setPathForComponent:component pathType:TCConfigPathTypeReferral path:[source pathForComponent:component fullPath:NO]];
 				break;
 				
 			case TCConfigPathTypeStandard:

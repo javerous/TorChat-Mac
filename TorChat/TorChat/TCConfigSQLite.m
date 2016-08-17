@@ -69,7 +69,7 @@
 #define TCConfigPathTorIdentityKey	@"tor_identity"
 #define TCConfigPathDownloadsKey	@"downloads"
 
-#define TCConfigPathTypeReferalKey	@"<referal>"
+#define TCConfigPathTypeReferralKey	@"<referral>"
 #define TCConfigPathTypeStandardKey	@"<standard>"
 #define TCConfigPathTypeAbsoluteKey	@"<absolute>"
 
@@ -1321,8 +1321,8 @@
 		if (!_dtb)
 			return;
 		
-		// Handle special referal component.
-		if (component == TCConfigPathComponentReferal)
+		// Handle special referral component.
+		if (component == TCConfigPathComponentReferral)
 		{
 			if (!path)
 				return;
@@ -1353,11 +1353,11 @@
 			[self _openDatabaseWithError:nil];
 			
 			// Notify this component.
-			[self _notifyPathChangeForComponent:TCConfigPathComponentReferal];
+			[self _notifyPathChangeForComponent:TCConfigPathComponentReferral];
 			
 			// Notify components using this component.
 			[self componentsEnumerateWithBlock:^(TCConfigPathComponent aComponent) {
-				if ([self _pathTypeForComponent:aComponent] == TCConfigPathTypeReferal)
+				if ([self _pathTypeForComponent:aComponent] == TCConfigPathTypeReferral)
 					[self _notifyPathChangeForComponent:aComponent];
 			}];
 		}
@@ -1409,11 +1409,11 @@
 	
 	// Get default subpath.
 	NSString	*standardSubPath = nil;
-	NSString	*referalSubPath = nil;
+	NSString	*referralSubPath = nil;
 	
 	switch (component)
 	{
-		case TCConfigPathComponentReferal:
+		case TCConfigPathComponentReferral:
 		{
 			if (fullPath)
 				return [_dtbPath stringByDeletingLastPathComponent];
@@ -1424,28 +1424,28 @@
 		case TCConfigPathComponentTorBinary:
 		{
 			standardSubPath = @"/TorChat/Tor/";
-			referalSubPath = @"/tor/bin/";
+			referralSubPath = @"/tor/bin/";
 			break;
 		}
 			
 		case TCConfigPathComponentTorData:
 		{
 			standardSubPath = @"/TorChat/TorData/";
-			referalSubPath = @"/tor/data/";
+			referralSubPath = @"/tor/data/";
 			break;
 		}
 			
 		case TCConfigPathComponentTorIdentity:
 		{
 			standardSubPath = @"/TorChat/TorIdentity/";
-			referalSubPath = @"/tor/identity/";
+			referralSubPath = @"/tor/identity/";
 			break;
 		}
 			
 		case TCConfigPathComponentDownloads:
 		{
 			standardSubPath = @"/TorChat/";
-			referalSubPath = @"/Downloads/";
+			referralSubPath = @"/Downloads/";
 			break;
 		}
 	}
@@ -1485,7 +1485,7 @@
 	// Compose path according to path type.
 	switch (componentPathType)
 	{
-		case TCConfigPathTypeReferal:
+		case TCConfigPathTypeReferral:
 		{
 			// > Get subpath.
 			NSString *subPath;
@@ -1493,12 +1493,12 @@
 			if (componentPath)
 				subPath = componentPath;
 			else
-				subPath = referalSubPath;
+				subPath = referralSubPath;
 			
 			// > Compose path.
 			if (fullPath)
 			{
-				NSString *path = [self _pathForComponent:TCConfigPathComponentReferal fullPath:YES];
+				NSString *path = [self _pathForComponent:TCConfigPathComponentReferral fullPath:YES];
 				
 				return [[path stringByAppendingPathComponent:subPath] stringByStandardizingPath];
 			}
@@ -1516,7 +1516,7 @@
 				
 				switch (component)
 				{
-					case TCConfigPathComponentReferal	: return nil; // never called.
+					case TCConfigPathComponentReferral	: return nil; // never called.
 					case TCConfigPathComponentTorBinary	: standardPathDirectory = NSApplicationSupportDirectory; break;
 					case TCConfigPathComponentTorData	: standardPathDirectory = NSApplicationSupportDirectory; break;
 					case TCConfigPathComponentTorIdentity: standardPathDirectory = NSApplicationSupportDirectory; break;
@@ -1572,12 +1572,12 @@
 	// > localQueue <
 	
 	if (!_dtb)
-		return TCConfigPathTypeReferal;
+		return TCConfigPathTypeReferral;
 	
 	NSString *componentStr = [self componentNameForComponent:component];
 	
 	if (!componentStr)
-		return TCConfigPathTypeReferal;
+		return TCConfigPathTypeReferral;
 	
 	// Get component config.
 	NSString *componentPathTypeStr = nil;
@@ -1603,22 +1603,22 @@
 
 - (TCConfigPathType)pathTypeForPathTypeName:(NSString *)pathTypeName
 {
-	if ([pathTypeName isEqualToString:TCConfigPathTypeReferalKey])
-		return TCConfigPathTypeReferal;
+	if ([pathTypeName isEqualToString:TCConfigPathTypeReferralKey])
+		return TCConfigPathTypeReferral;
 	else if ([pathTypeName isEqualToString:TCConfigPathTypeStandardKey])
 		return TCConfigPathTypeStandard;
 	else if ([pathTypeName isEqualToString:TCConfigPathTypeAbsoluteKey])
 		return TCConfigPathTypeAbsolute;
 	
-	return TCConfigPathTypeReferal;
+	return TCConfigPathTypeReferral;
 }
 
 - (NSString *)pathTypeNameForPathType:(TCConfigPathType)pathType
 {
 	switch (pathType)
 	{
-		case TCConfigPathTypeReferal:
-			return TCConfigPathTypeReferalKey;
+		case TCConfigPathTypeReferral:
+			return TCConfigPathTypeReferralKey;
 			
 		case TCConfigPathTypeStandard:
 			return TCConfigPathTypeStandardKey;
@@ -1637,7 +1637,7 @@
 {
 	switch (component)
 	{
-		case TCConfigPathComponentReferal:
+		case TCConfigPathComponentReferral:
 			return nil;
 			
 		case TCConfigPathComponentTorBinary:

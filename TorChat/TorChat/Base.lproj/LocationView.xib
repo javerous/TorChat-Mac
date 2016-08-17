@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11198.2" systemVersion="15G31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11198.2"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCLocationViewController">
@@ -20,13 +19,13 @@
             <rect key="frame" x="0.0" y="0.0" width="277" height="42"/>
             <subviews>
                 <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Nlk-4b-E9h">
-                    <rect key="frame" x="-3" y="21" width="127" height="22"/>
-                    <popUpButtonCell key="cell" type="push" title="Relative to referal" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="3MT-mP-XzI" id="QWc-Ae-9J8">
+                    <rect key="frame" x="-3" y="21" width="131" height="22"/>
+                    <popUpButtonCell key="cell" type="push" title="Relative to referral" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="3MT-mP-XzI" id="QWc-Ae-9J8">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                         <menu key="menu" id="3zY-dn-qku">
                             <items>
-                                <menuItem title="Relative to referal" state="on" id="3MT-mP-XzI"/>
+                                <menuItem title="Relative to referral" state="on" id="3MT-mP-XzI"/>
                                 <menuItem title="Standard path" id="s9g-2y-c52"/>
                                 <menuItem title="Absolute path" id="PQn-2x-SOb"/>
                             </items>
@@ -44,7 +43,7 @@
                     </pathCell>
                 </pathControl>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="FFw-Ao-FHi">
-                    <rect key="frame" x="149" y="28" width="110" height="11"/>
+                    <rect key="frame" x="153" y="28" width="110" height="11"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" sendsActionOnEndEditing="YES" title="&lt;DO-NOT-TRANSLATE&gt;" id="ecM-vt-aic">
                         <font key="font" metaFont="miniSystem"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -52,7 +51,7 @@
                     </textFieldCell>
                 </textField>
                 <button translatesAutoresizingMaskIntoConstraints="NO" id="CBx-t6-fxi">
-                    <rect key="frame" x="129" y="26" width="14" height="14"/>
+                    <rect key="frame" x="133" y="26" width="14" height="14"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="14" id="D9r-QZ-Itc"/>
                         <constraint firstAttribute="height" constant="14" id="hUM-dA-oSW"/>

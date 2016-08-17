@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11191" systemVersion="15G31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11198.2" systemVersion="15G31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11191"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11198.2"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCPrefView_Locations">
             <connections>
                 <outlet property="configPath" destination="hDg-Dn-kex" id="aKO-Nw-9dD"/>
                 <outlet property="downloadsView" destination="Lhd-yb-4Fh" id="bcT-Ij-ofk"/>
-                <outlet property="referalTextField" destination="q25-zh-lag" id="uzM-lR-g8a"/>
+                <outlet property="referralTextField" destination="q25-zh-lag" id="uzM-lR-g8a"/>
                 <outlet property="torBinaryView" destination="hPt-9H-7CA" id="vmx-JK-S7V"/>
                 <outlet property="torDataView" destination="9zb-Km-Bsf" id="ltW-Ds-sh8"/>
                 <outlet property="view" destination="c22-O7-iKe" id="b71-zv-g6j"/>
@@ -20,8 +20,8 @@
             <rect key="frame" x="0.0" y="0.0" width="650" height="284"/>
             <subviews>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="3y2-7L-c26">
-                    <rect key="frame" x="42" y="245" width="51" height="17"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Referal:" id="NXJ-GL-ZmH">
+                    <rect key="frame" x="37" y="245" width="56" height="17"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Referral:" id="NXJ-GL-ZmH">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -35,7 +35,7 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <button translatesAutoresizingMaskIntoConstraints="NO" id="PfT-mK-llQ" userLabel="Referal Button">
+                <button translatesAutoresizingMaskIntoConstraints="NO" id="PfT-mK-llQ" userLabel="Referral Button">
                     <rect key="frame" x="99" y="245" width="14" height="14"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="14" id="D51-ns-Dax"/>
@@ -46,7 +46,7 @@
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
-                        <action selector="doSelectReferal:" target="-2" id="aKH-ML-hYL"/>
+                        <action selector="doSelectReferral:" target="-2" id="aKH-ML-hYL"/>
                     </connections>
                 </button>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="kBP-vC-pfE">
@@ -75,7 +75,7 @@
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
-                        <action selector="doRevealReferal:" target="-2" id="Hda-vp-gcr"/>
+                        <action selector="doRevealReferral:" target="-2" id="Hda-vp-gcr"/>
                     </connections>
                 </button>
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="hPt-9H-7CA">
