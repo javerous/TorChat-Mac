@@ -43,11 +43,14 @@ This mode just connect TorChat for Mac to an already existing configured `tor` i
 
 All your settings are written on a file called `torchat.conf` - some other settings can be put in `~/Library/Preferences/com.SourceMac.TorChat.plist` by macOS, but it's mainly settings related to interface (Windows positions, last preference panel selection, last directory selected, etc.). Nothing related to your buddies, chats, etc.
 
-When you create a configuration file for the first time via the assistant, this file is created on the same directory as your `TorChat.app`.
+When you create a configuration file for the first time via the assistant, a configuration file is created accordingly to those specifications :
+- If your `TorChat.app` is in `/Applications/`, then your configuration file is created at this path : `~/Library/Preferences/torchat.conf`
+- If your `TorChat.app` is anywhere else, then your configuration file is created at the same directory as your `TorChat.app`.
 
-This unusual behavior (usually, configurations are placed in `~/Library/Preferences` or similar) responds to specific purposes :
+If you put TorChat in the Applications directory (first case), then it's supposed you want to respect standard macOS usage, and so we put stuff on the right places on your system. But if you put TorChat in another directory (second case), then we try to respond to those specific purposes :
 - Don't scatter private data everywhere in the computer. So if the computer is not yours, you can quickly delete this file once you have finished your chat.
 - Be able to create an "all-in-one" USB key / DMG. This way, you can just put TorChat.app, your configuration and your data files in a cyphered USB key / DMG, then plug-in it on any computer, chat, and eject when finished. No need to copy and expose your private data on the host computer.
+
 
 When `TorChat.app` is launched, it tries to find the configuration file in these places :
 - The same directory as your TorChat application (see upper explanations).
@@ -59,14 +62,14 @@ When `TorChat.app` is launched, it tries to find the configuration file in these
 Is none of this path can be opened, the assistant will either ask you to create a new configuration file, either ask you to select one manually.
 
 
-### Data files
+### Extra files
 
 When you use TorChat in bundled mode, a `tor` instance is configured and launched for you. This configuration needs two distinct directory :
-- The `bin` directory used to store `tor` binary itself + its signatures + dylib files. By default this directory is inside the `tor` directory, itself at the same level as your configuration file.
-- The `data` directory used to store data used by `tor` binary (mainly caches). By default this directory is inside the `tor` directory, itself at the same level as your configuration file.
+- The `bin` directory used to store `tor` binary itself + its signatures + dylib files. By default, this directory is either in `Tor` directory inside `~/Library/Application Support/TorChat/` (TorChat in Application directory), either inside the `tor` directory, itself at the same level as your configuration file (TorChat anywhere else).
+- The `data` directory used to store data used by `tor` binary (mainly caches). By default, this directory is either in `TorData` directory inside `~/Library/Application Support/TorChat/` (TorChat in Application directory), either inside the `tor` directory, itself at the same level as your configuration file.
+- The `Downloads` directory used to store files sent by your buddies. By default, this directory is either `~/Downloads/` (TorChat in Applications directory), either  at the same level as your configuration file.
 
 You can change the place and the name of those directories by going to the Preferences -> Locations panel settings. The "referral" is where your configuration file is, the "standard" is where you expect your file to be on a standard macOS application (`~/Library/...`), and "absolute" is absolute path.
-On a USB Key or DMG scenario, it's recommended keeping the defaults, and let those directories be in the `tor` directory at the same level as your configuration file, itself at the same level as your `TorChat.app` bundle.
 
 Note: the `tor` binary is not launched from inside the `TorChat.app` bundle because it can be updated. And it's not recommended to modify the content of an application bundle.
 

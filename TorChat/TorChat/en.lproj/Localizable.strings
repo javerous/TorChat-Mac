@@ -30,7 +30,7 @@
 "ac_title_bundled" = "Setup the bundled Tor binary mode";
 
 "ac_error_title" = "TorChat Error";
-"ac_error_code" = "Error code %ld - %@";
+"ac_error_code" = "Error code %ld - %@ : %@";
 
 
 /* SQLite Config */

@@ -92,9 +92,18 @@
 
 - (id)panelContent
 {
-	// Compose configuration path.
-	NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
-	NSString *configPath = [[bundlePath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"];
+	// Obtain launch context.
+	NSString	*bundlePath = [[NSBundle mainBundle] bundlePath];
+	NSString	*directoryPath = [bundlePath stringByDeletingLastPathComponent];
+	BOOL		isApplication = [directoryPath isEqualToString:@"/Applications"];
+	
+	// Compose path.
+	NSString *configPath;
+ 
+	if (isApplication)
+		configPath = [@"~/Library/Preferences/torchat.conf" stringByExpandingTildeInPath]; // TorChat is launched from Application directory : everything at the standard places.
+	else
+		configPath = [directoryPath stringByAppendingPathComponent:@"torchat.conf"]; // TorChat is launched from anywhere else : everything at the same place.
 	
 	// Build configuration file.
 	NSError			*error = nil;
@@ -104,7 +113,7 @@
 	{
 		config = [[TCConfigSQLite alloc] initWithFile:configPath password:passwordField.stringValue error:&error];
 		
-		config.saveTranscript = YES;
+		config.saveTranscript = YES; // it's safe to activate save transcript by default when using encrypted configuration.
 	}
 	else
 	{
@@ -120,7 +129,7 @@
 			NSAlert *alert = [[NSAlert alloc] init];
 			
 			alert.messageText = NSLocalizedString(@"ac_error_title", @"");
-			alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"ac_error_code", @""), error.code, error.localizedDescription];
+			alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"ac_error_code", @""), error.code, error.localizedDescription, configPath];
 			
 			[alert runModal];
 			
@@ -132,6 +141,14 @@
 	
 	// Set some intial values.
 	config.profileName = NSFullUserName();
+	
+	if (isApplication)
+	{
+		[config setPathForComponent:TCConfigPathComponentTorBinary pathType:TCConfigPathTypeStandard path:nil];
+		[config setPathForComponent:TCConfigPathComponentTorData pathType:TCConfigPathTypeStandard path:nil];
+		[config setPathForComponent:TCConfigPathComponentTorIdentity pathType:TCConfigPathTypeStandard path:nil];
+		[config setPathForComponent:TCConfigPathComponentDownloads pathType:TCConfigPathTypeStandard path:nil];
+	}
 	
 	// Return config.
 	return config;
