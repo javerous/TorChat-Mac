@@ -52,13 +52,9 @@
 #define TCConfigSelfIdentifierKey	@"self_identifier"
 #define TCConfigSelfPortKey			@"self_port"
 
-#define TCConfigTorModeKey			@"tor_mode"
-
 #define TCConfigPofileNameKey		@"profile_name"
 #define TCConfigPofileTextKey		@"profile_text"
 #define TCConfigPofileAvatarKey		@"profile_avatar"
-
-#define TCConfigUITitleKey			@"ui_title"
 
 #define TCConfigClientVersionKey	@"client_version"
 #define TCConfigClientNameKey		@"client_name"
@@ -72,6 +68,15 @@
 #define TCConfigPathTypeReferralKey	@"<referal>"
 #define TCConfigPathTypeStandardKey	@"<standard>"
 #define TCConfigPathTypeAbsoluteKey	@"<absolute>"
+
+// Mode
+#define TCConfigTorModeKey			@"tor_mode"
+
+// Title
+#define TCConfigUITitleKey			@"ui_title"
+
+// Theme
+#define TCConfigThemeIDKey			@"theme_id"
 
 // Transcript.
 #define TCConfigTranscriptSaveKey	@"transcript_save"
@@ -754,33 +759,6 @@
 - (void)setSelfPort:(uint16_t)selfPort
 {
 	[self setSetting:@(selfPort) forKey:TCConfigSelfPortKey];
-}
-
-
-#pragma mark Mode
-
-- (TCConfigMode)mode
-{
-	NSNumber *result = [self settingForKey:TCConfigTorModeKey];
-	
-	if (result)
-	{
-		int mode = [result unsignedShortValue];
-		
-		if (mode == TCConfigModeCustom)
-			return TCConfigModeCustom;
-		else if (mode == TCConfigModeBundled)
-			return TCConfigModeBundled;
-		
-		return TCConfigModeCustom;
-	}
-	else
-		return TCConfigModeCustom;
-}
-
-- (void)setMode:(TCConfigMode)mode
-{
-	[self setSetting:@(mode) forKey:TCConfigTorModeKey];
 }
 
 
@@ -1774,9 +1752,36 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 
 
 /*
-** TCConfigSQLite - TCConfigInterface
+** TCConfigSQLite - TCConfigApp
 */
-#pragma mark - TCConfigSQLite - TCConfigInterface
+#pragma mark - TCConfigSQLite - TCConfigApp
+
+#pragma mark Mode
+
+- (TCConfigMode)mode
+{
+	NSNumber *result = [self settingForKey:TCConfigTorModeKey];
+	
+	if (result)
+	{
+		int mode = [result unsignedShortValue];
+		
+		if (mode == TCConfigModeCustom)
+			return TCConfigModeCustom;
+		else if (mode == TCConfigModeBundled)
+			return TCConfigModeBundled;
+		
+		return TCConfigModeCustom;
+	}
+	else
+		return TCConfigModeCustom;
+}
+
+- (void)setMode:(TCConfigMode)mode
+{
+	[self setSetting:@(mode) forKey:TCConfigTorModeKey];
+}
+
 
 #pragma mark Title
 
@@ -1793,6 +1798,27 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 - (void)setModeTitle:(TCConfigTitle)mode
 {
 	[self setSetting:@(mode) forKey:TCConfigUITitleKey];
+}
+
+
+#pragma mark Theme
+
+- (NSString *)themeIdentifier
+{
+	NSString *themeIdentifier = [self settingForKey:TCConfigThemeIDKey];
+	
+	if (!themeIdentifier)
+		return @"";
+	
+	return themeIdentifier;
+}
+
+- (void)setThemeIdentifier:(NSString *)themeIdentifier
+{
+	if (!themeIdentifier)
+		return;
+	
+	[self setSetting:themeIdentifier forKey:TCConfigThemeIDKey];
 }
 
 

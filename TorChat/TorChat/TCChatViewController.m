@@ -114,9 +114,17 @@
 		_timestampFormater.dateStyle = NSDateFormatterMediumStyle;
 		_timestampFormater.timeStyle = NSDateFormatterMediumStyle;
 		
-		// Create trasncript controller. FIXME: fetch the identifier from settings.
-		TCTheme *theme = [[TCThemesManager sharedManager] themeForIdentifier:@"standard-flat"];
+		// Get theme to use.
+		TCTheme *theme = [[TCThemesManager sharedManager] themeForIdentifier:config.themeIdentifier];
 		
+		if (!theme)
+		{
+			NSArray *themes = [[TCThemesManager sharedManager] themes];
+			
+			theme = [themes firstObject];
+		}
+		
+		// Create trasncript controller.
 		_chatTranscript = [[TCChatTranscriptViewController alloc] initWithTheme:theme];
 		
 		// Containers.

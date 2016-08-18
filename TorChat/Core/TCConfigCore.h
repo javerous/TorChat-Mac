@@ -44,11 +44,7 @@ typedef enum
 	TCConfigGetReal		// Value to use in standard case (eg. defined / default automatic choise)
 } TCConfigGet;
 
-typedef enum
-{
-	TCConfigModeCustom,
-	TCConfigModeBundled
-} TCConfigMode;
+
 
 // -- Paths --
 typedef enum
@@ -84,9 +80,6 @@ typedef enum
 @property NSString *selfPrivateKey;
 @property NSString *selfIdentifier;
 @property uint16_t selfPort;
-
-// -- Mode --
-@property TCConfigMode mode;
 
 // -- Profile --
 @property NSString	*profileName;

@@ -314,41 +314,6 @@
 	});
 }
 
-
-#pragma mark Mode
-
-- (TCConfigMode)mode
-{
-	__block NSNumber *value;
- 
-	dispatch_sync(_localQueue, ^{
-		value = [_fcontent objectForKey:TCCONF_KEY_MODE];
-	});
-	
-	if (value)
-	{
-		int mode = [value unsignedShortValue];
-		
-		if (mode == TCConfigModeCustom)
-			return TCConfigModeCustom;
-		else if (mode == TCConfigModeBundled)
-			return TCConfigModeBundled;
-		
-		return TCConfigModeCustom;
-	}
-	else
-		return TCConfigModeCustom;
-}
-
-- (void)setMode:(TCConfigMode)mode
-{
-	dispatch_barrier_async(_localQueue, ^{
-		[_fcontent setObject:@(mode) forKey:TCCONF_KEY_MODE];
-		[self _markDirty];
-	});
-}
-
-
 #pragma mark Profile
 
 - (NSString *)profileName
@@ -1440,9 +1405,43 @@
 
 
 /*
-** TCConfigPlist - TCConfigInterface
+** TCConfigPlist - TCConfigApp
 */
-#pragma mark - TCConfigPlist - TCConfigInterface
+#pragma mark - TCConfigPlist - TCConfigApp
+
+#pragma mark Mode
+
+- (TCConfigMode)mode
+{
+	__block NSNumber *value;
+ 
+	dispatch_sync(_localQueue, ^{
+		value = [_fcontent objectForKey:TCCONF_KEY_MODE];
+	});
+	
+	if (value)
+	{
+		int mode = [value unsignedShortValue];
+		
+		if (mode == TCConfigModeCustom)
+			return TCConfigModeCustom;
+		else if (mode == TCConfigModeBundled)
+			return TCConfigModeBundled;
+		
+		return TCConfigModeCustom;
+	}
+	else
+		return TCConfigModeCustom;
+}
+
+- (void)setMode:(TCConfigMode)mode
+{
+	dispatch_barrier_async(_localQueue, ^{
+		[_fcontent setObject:@(mode) forKey:TCCONF_KEY_MODE];
+		[self _markDirty];
+	});
+}
+
 
 #pragma mark Title
 
@@ -1469,10 +1468,25 @@
 }
 
 
+#pragma mark Theme
+
+- (NSString *)themeIdentifier
+{
+	// Not implemented.
+	return nil;
+}
+
+- (void)setThemeIdentifier:(NSString *)themeIdentifier
+{
+	// Not implemented.
+}
+
+
 #pragma mark Transcript
+
 - (BOOL)saveTranscript
 {
-	// Not implemented
+	// Not implemented.
 	return NO;
 }
 

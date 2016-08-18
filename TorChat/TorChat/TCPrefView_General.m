@@ -63,7 +63,6 @@
 	
 	if (self)
 	{
-		
 	}
 	
 	return self;
@@ -92,28 +91,47 @@
 	[_saveTranscriptCheckBox setState:(self.config.saveTranscript ? NSOnState : NSOffState)];
 	
 	// Themes.
-	NSArray *themes = [[TCThemesManager sharedManager] themes];
-	
+	NSArray		*themes = [[TCThemesManager sharedManager] themes];
+	NSString	*themeID = self.config.themeIdentifier;
+	__block NSUInteger	themeIndex = NSNotFound;
+
 	[_themesPopup removeAllItems];
 	
-	for (TCTheme *theme in themes)
-	{
+	[themes enumerateObjectsUsingBlock:^(TCTheme * _Nonnull theme, NSUInteger idx, BOOL * _Nonnull stop) {
+		
 		NSString *localizdKey = [NSString stringWithFormat:@"pref_theme_%@", theme.identifier];
 		
 		[_themesPopup addItemWithTitle:NSLocalizedString(localizdKey, @"")];
-	}
-	
+		
+		if ([theme.identifier isEqualToString:themeID])
+			themeIndex = idx;
+	}];
+
 	[_themesPopup sizeToFit];
-	
-	// FIXME: select the one currently used.
+
+	if (themeIndex != NSNotFound)
+		[_themesPopup selectItemAtIndex:(NSInteger)themeIndex];
 }
 
 - (void)panelDidDisappear
 {
+	// Client info.
 	[self.config setClientName:[_clientNameField stringValue]];
 	[self.config setClientVersion:[_clientVersionField stringValue]];
 	
+	// Transcript.
 	[self.config setSaveTranscript:(_saveTranscriptCheckBox.state == NSOnState)];
+	
+	// Themes.
+	NSInteger	themeIndex = [_themesPopup indexOfSelectedItem];
+	NSArray		*themes = [[TCThemesManager sharedManager] themes];
+
+	if (themeIndex >= 0 && themeIndex < themes.count)
+	{
+		TCTheme *theme = themes[(NSUInteger)themeIndex];
+		
+		self.config.themeIdentifier = theme.identifier;
+	}
 }
 
 @end

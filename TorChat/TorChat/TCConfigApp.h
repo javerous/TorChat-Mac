@@ -36,6 +36,11 @@ typedef enum
 	TCConfigTitleName		= 1
 } TCConfigTitle;
 
+typedef enum
+{
+	TCConfigModeCustom,
+	TCConfigModeBundled
+} TCConfigMode;
 
 
 /*
@@ -45,8 +50,14 @@ typedef enum
 
 @protocol TCConfigApp <TCConfigCore>
 
+// -- Mode --
+@property TCConfigMode mode;
+
 // -- Title --
 @property (assign, atomic) TCConfigTitle modeTitle;
+
+// -- Theme --
+@property NSString *themeIdentifier;
 
 // -- Transcript --
 @property (assign, atomic) BOOL saveTranscript;

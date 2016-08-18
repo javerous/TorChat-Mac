@@ -142,6 +142,8 @@
 	// Set some intial values.
 	config.profileName = NSFullUserName();
 	
+	config.themeIdentifier = @"standard-flat";
+	
 	if (isApplication)
 	{
 		[config setPathForComponent:TCConfigPathComponentTorBinary pathType:TCConfigPathTypeStandard path:nil];
