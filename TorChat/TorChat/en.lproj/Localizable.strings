@@ -41,6 +41,11 @@
 "sqliteconf_error_buffer_lock" = "Can't protect password buffer (%@).";
 
 
+/* Preferences */
+"pref_theme_standard-aqua" = "Aqua";
+"pref_theme_standard-flat" = "Flat";
+
+
 /* Menu */
 "menu_block_buddy" = "Block Buddy";
 "menu_unblock_buddy" = "Unblock Buddy";

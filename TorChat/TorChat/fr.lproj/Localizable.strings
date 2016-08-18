@@ -41,6 +41,11 @@
 "sqliteconf_error_buffer_lock" = "Impossible de protéger le cache de mot de passe (%@).";
 
 
+/* Preferences */
+"pref_theme_standard-aqua" = "Aqua";
+"pref_theme_standard-flat" = "Plat";
+
+
 /* Menu */
 "menu_block_buddy" = "Bloquer le contact";
 "menu_unblock_buddy" = "Débloquer le contact";

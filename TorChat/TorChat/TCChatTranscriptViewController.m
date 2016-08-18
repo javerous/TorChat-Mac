@@ -30,22 +30,10 @@
 #import "TCChatMessage.h"
 #import "TCChatStatus.h"
 
+#import "TCThemesManager.h"
 
-/*
-** Defines
-*/
-#pragma mark - Defines
 
-#define TCTemplateCSSSnippet				@"CSS-Snippet"
-
-#define TCTemplateRemoteMessageSnippet		@"RemoteMessage-Snippet"
-#define TCTemplateLocalMessageSnippet		@"LocalMessage-Snippet"
-#define TCTemplateLocalMessageErrorSnippet	@"LocalMessageError-Snippet"
-
-#define TCTemplateStatusSnippet				@"Status-Snippet"
-
-#define TCTemplateMinHeight					@"Min-Height"
-
+NS_ASSUME_NONNULL_BEGIN
 
 
 /*
@@ -53,8 +41,9 @@
 */
 #pragma mark - Globals
 
-dispatch_queue_t	gAvatarQueue;
+dispatch_queue_t	gValuesQueue;
 NSMutableDictionary	*gAvatarCache;
+NSMutableDictionary	*gThemeCache;
 
 
 
@@ -65,8 +54,12 @@ NSMutableDictionary	*gAvatarCache;
 
 @interface TCURLProtocolInternal : NSURLProtocol
 
++ (void)setTheme:(TCTheme *)theme forIdentifier:(NSString *)identifier;
++ (void)removeThemeForIdentifier:(NSString *)identifier;
+
 + (void)setAvatar:(NSImage *)avatar forIdentifier:(NSString *)identifier;
 + (void)removeAvatarForIdentifier:(NSString *)identifier;
+
 
 @end
 
@@ -80,7 +73,9 @@ NSMutableDictionary	*gAvatarCache;
 @interface TCChatTranscriptViewController () <WebUIDelegate, WebFrameLoadDelegate, WebPolicyDelegate>
 {
 	WebView			*_webView;
-	NSDictionary	*_template;
+	
+	TCTheme			*_theme;
+	NSString		*_themeIdentifier;
 	
 	NSString		*_localAvatarIdentifier;
 	NSString		*_remoteAvatarIdentifier;
@@ -118,7 +113,7 @@ NSMutableDictionary	*gAvatarCache;
 */
 #pragma mark - TCChatTranscriptViewController - Instance
 
-- (id)init
+- (instancetype)initWithTheme:(TCTheme *)theme
 {
     self = [super init];
 	
@@ -131,6 +126,12 @@ NSMutableDictionary	*gAvatarCache;
 			[NSURLProtocol registerClass:[TCURLProtocolInternal class]];
 		});
 		
+		// Hold theme.
+		_theme = theme;
+		_themeIdentifier = [self uuid];
+		
+		[TCURLProtocolInternal setTheme:theme forIdentifier:_themeIdentifier];
+		
 		// Init flags.
 		_stuckAtEnd = YES;
 		
@@ -140,12 +141,6 @@ NSMutableDictionary	*gAvatarCache;
 		
 		[TCURLProtocolInternal setAvatar:[NSImage imageNamed:NSImageNameUser] forIdentifier:_localAvatarIdentifier];
 		[TCURLProtocolInternal setAvatar:[NSImage imageNamed:NSImageNameUser] forIdentifier:_remoteAvatarIdentifier];
-		
-		// Load template.
-		NSString	*path = [[NSBundle mainBundle] pathForResource:@"ChatTemplate" ofType:@"plist"];
-		NSData		*data = [NSData dataWithContentsOfFile:path];
-		
-		_template = [NSPropertyListSerialization propertyListWithData:data options:0 format:nil error:nil];
 		
 		// Temporary HTML section.
 		_tmpBody = [[NSMutableString alloc] init];
@@ -159,6 +154,8 @@ NSMutableDictionary	*gAvatarCache;
 - (void)dealloc
 {
 	TCDebugLog(@"TCChatTranscriptViewController dealloc");
+	
+	[TCURLProtocolInternal removeThemeForIdentifier:_themeIdentifier];
 	
     [TCURLProtocolInternal removeAvatarForIdentifier:_localAvatarIdentifier];
 	[TCURLProtocolInternal removeAvatarForIdentifier:_remoteAvatarIdentifier];
@@ -355,23 +352,26 @@ NSMutableDictionary	*gAvatarCache;
 					{
 						if (msg.error)
 						{
-							NSString *snippet = _template[TCTemplateLocalMessageErrorSnippet];
+							NSString *snippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatLocalErrorSnippetKey];
 							NSString *message = msg.message;
 							
 							message = [message stringByEscapingXMLEntities];
 							snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:message];
 							snippet = [snippet stringByReplacingOccurrencesOfString:@"[HREF-ERROR]" withString:[NSString stringWithFormat:@"tc-action://error/%lld", msg.messageID]];
-							
+							snippet = [snippet stringByReplacingOccurrencesOfString:@"[URL-ERROR-BUTTON]" withString:@"tc-resource://error/button"];
+							snippet = [snippet stringByReplacingOccurrencesOfString:@"[URL-THEME-ID]" withString:_themeIdentifier];
+
 							[result addObject:@{ @"id" : @(msg.messageID), @"html" : snippet }];
 						}
 						else
 						{
-							NSString *snippet = _template[TCTemplateLocalMessageSnippet];
+							NSString *snippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatLocalMessageSnippetKey];
 							NSString *message = msg.message;
 							
 							message = [message stringByEscapingXMLEntities];
 							snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:message];
-							
+							snippet = [snippet stringByReplacingOccurrencesOfString:@"[URL-THEME-ID]" withString:_themeIdentifier];
+
 							[result addObject:@{ @"id" : @(msg.messageID), @"html" : snippet }];
 						}
 						
@@ -382,7 +382,7 @@ NSMutableDictionary	*gAvatarCache;
 						
 					case TCChatMessageSideRemote:
 					{
-						NSString *snippet = _template[TCTemplateRemoteMessageSnippet];
+						NSString *snippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatRemoteMessageSnippetKey];
 						NSString *message = msg.message;
 						
 						message = [message stringByEscapingXMLEntities];
@@ -400,7 +400,7 @@ NSMutableDictionary	*gAvatarCache;
 			{
 				TCChatStatus *stat = item;
 				
-				NSString	*snippet = _template[TCTemplateStatusSnippet];
+				NSString	*snippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatStatusSnippetKey];
 				NSString	*status = stat.status;
 				
 				status = [status stringByEscapingXMLEntities];
@@ -478,7 +478,7 @@ NSMutableDictionary	*gAvatarCache;
 
 - (NSUInteger)maxMessagesCountToFillHeight:(CGFloat)height
 {
-	NSNumber *minHeight = _template[TCTemplateMinHeight];
+	NSNumber *minHeight = _theme.chatTheme[TCThemeChatPropertiesKey][TCThemeChatMinHeightPropertyKey];
 	
 	if (!minHeight)
 		return 0;
@@ -488,7 +488,7 @@ NSMutableDictionary	*gAvatarCache;
 
 - (CGFloat)maxHeightForMessagesCount:(NSUInteger)count
 {
-	NSNumber *minHeight = _template[TCTemplateMinHeight];
+	NSNumber *minHeight = _theme.chatTheme[TCThemeChatPropertiesKey][TCThemeChatMinHeightPropertyKey];
 	
 	if (!minHeight)
 		return 0;
@@ -578,22 +578,20 @@ NSMutableDictionary	*gAvatarCache;
 {
 	// > main queue <
 	
-	NSString *cssSnippet = _template[TCTemplateCSSSnippet];
+	NSString *cssSnippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatCSSSnippetKey];
 	
-	// 1x
-	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-RIGHT-BALLOON]" withString:@"tc-resource://balloon/right-balloon"];
-	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-LEFT-BALLOON]" withString:@"tc-resource://balloon/left-balloon"];
-	
+	// Global.
+	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-THEME-ID]" withString:_themeIdentifier];
+
+	// Avatar.
+	// > 1x
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-REMOTE-AVATAR]" withString:[NSString stringWithFormat:@"tc-resource://avatar/%@", _remoteAvatarIdentifier]];
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-LOCAL-AVATAR]" withString:[NSString stringWithFormat:@"tc-resource://avatar/%@", _localAvatarIdentifier]];
 	
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-ERROR-BUTTON]" withString:@"tc-resource://error/button"];
 
 	
-	// 2x
-	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-RIGHT-BALLOON-2X]" withString:@"tc-resource://balloon/right-balloon-2x"];
-	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-LEFT-BALLOON-2X]" withString:@"tc-resource://balloon/left-balloon-2x"];
-	
+	// > 2x
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-REMOTE-AVATAR-2X]" withString:[NSString stringWithFormat:@"tc-resource://avatar/%@", _remoteAvatarIdentifier]];
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-LOCAL-AVATAR-2X]" withString:[NSString stringWithFormat:@"tc-resource://avatar/%@", _localAvatarIdentifier]];
 	
@@ -697,8 +695,9 @@ NSMutableDictionary	*gAvatarCache;
 
 + (void)initialize
 {
-	gAvatarQueue = dispatch_queue_create("com.torchat.app.url-protocol-internal.local", DISPATCH_QUEUE_CONCURRENT);
+	gValuesQueue = dispatch_queue_create("com.torchat.app.url-protocol-internal.local", DISPATCH_QUEUE_CONCURRENT);
 	gAvatarCache = [[NSMutableDictionary alloc] init];
+	gThemeCache = [[NSMutableDictionary alloc] init];
 }
 
 
@@ -707,6 +706,26 @@ NSMutableDictionary	*gAvatarCache;
 ** TCURLProtocolInternal - Values
 */
 #pragma mark - TCURLProtocolInternal - Values
+
++ (void)setTheme:(TCTheme *)theme forIdentifier:(NSString *)identifier
+{
+	if (!theme || !identifier)
+		return;
+	
+	dispatch_barrier_async(gValuesQueue, ^{
+		gThemeCache[identifier] = theme;
+	});
+}
+
++ (void)removeThemeForIdentifier:(NSString *)identifier
+{
+	if (!identifier)
+		return;
+	
+	dispatch_barrier_async(gValuesQueue, ^{
+		[gThemeCache removeObjectForKey:identifier];
+	});
+}
 
 + (void)setAvatar:(NSImage *)avatar forIdentifier:(NSString *)identifier
 {
@@ -718,7 +737,7 @@ NSMutableDictionary	*gAvatarCache;
 	if (!tiff)
 		return;
 	
-	dispatch_barrier_async(gAvatarQueue, ^{
+	dispatch_barrier_async(gValuesQueue, ^{
 		gAvatarCache[identifier] = tiff;
 	});
 }
@@ -728,10 +747,12 @@ NSMutableDictionary	*gAvatarCache;
 	if (!identifier)
 		return;
 	
-	dispatch_barrier_async(gAvatarQueue, ^{
+	dispatch_barrier_async(gValuesQueue, ^{
 		[gAvatarCache removeObjectForKey:identifier];
 	});
 }
+		 
+		 
 
 
 
@@ -757,10 +778,10 @@ NSMutableDictionary	*gAvatarCache;
 		
 	if ([host isEqualToString:@"avatar"])
 		[self handleAvatar];
-	else if ([host isEqualToString:@"balloon"])
-		[self handleBalloon];
 	else if ([host isEqualToString:@"error"])
 		[self handleError];
+	else if ([host isEqualToString:@"theme"])
+		[self handleTheme];
 	else
 		[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Unknown host" code:0 userInfo:@{}]];
 }
@@ -792,109 +813,82 @@ NSMutableDictionary	*gAvatarCache;
 	identifier = parameters[1];
 	
 	// Send avatar.
-	dispatch_async(gAvatarQueue, ^{
+	dispatch_async(gValuesQueue, ^{
 		
 		NSData *data = gAvatarCache[identifier];
 		
-		if (data)
-		{
-			// Build response.
-			NSURLResponse *response = [[NSURLResponse alloc] initWithURL:self.request.URL MIMEType:@"image/tiff" expectedContentLength:(NSInteger)[data length] textEncodingName:nil];
-			
-			// Send response + content.
-			[self.client URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
-			[self.client URLProtocol:self didLoadData:data];
-			[self.client URLProtocolDidFinishLoading:self];
-		}
-		else
+		if (!data)
 		{
 			[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Avatar not found" code:0 userInfo:@{}]];
+			return;
 		}
+		
+		// Build response.
+		NSURLResponse *response = [[NSURLResponse alloc] initWithURL:self.request.URL MIMEType:@"image/tiff" expectedContentLength:(NSInteger)[data length] textEncodingName:nil];
+		
+		// Send response + content.
+		[self.client URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
+		[self.client URLProtocol:self didLoadData:data];
+		[self.client URLProtocolDidFinishLoading:self];
 	});
 }
 
-- (void)handleBalloon
+- (void)handleTheme
 {
-	// Get parameters.
 	NSURL		*url = self.request.URL;
 	NSArray		*parameters = url.pathComponents;
-	NSString	*side = nil;
-	
-	if ([parameters count] < 2)
+	NSString	*identifier = nil;
+	NSString	*resName = nil;
+
+	if ([parameters count] < 3)
 	{
 		[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Parameter error" code:0 userInfo:@{}]];
 		return;
 	}
 	
-	side = parameters[1];
+	identifier = parameters[1];
+	resName = parameters[2];
 	
-	// Load image.
-	static NSImage			*leftBalloon = nil;
-	static NSImage			*rightBalloon = nil;
-	static dispatch_once_t	onceToken;
-	
-	dispatch_once(&onceToken, ^{
-		leftBalloon = [NSImage imageNamed:@"balloon_graphite"];
-		rightBalloon = [[NSImage imageNamed:@"balloon_aqua"] flipHorizontally];
+	// Handle theme resource.
+	dispatch_async(gValuesQueue, ^{
+		
+		// > Get theme.
+		TCTheme *theme = gThemeCache[identifier];
+		
+		if (!theme)
+		{
+			[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Theme not found" code:0 userInfo:@{}]];
+			return;
+		}
+		
+		// > Get resource.
+		NSDictionary	*resources = theme.chatTheme[TCThemeChatResourcesKey];
+		NSDictionary	*resource = resources[resName];
+		
+		if (!resource)
+		{
+			[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Resource not found" code:0 userInfo:@{}]];
+			return;
+		}
+		
+		// > Get data.
+		NSData		*data = resource[TCThemeChatDataResourcesKey];
+		NSString	*mime = resource[TCThemeChatMIMEResourcesKey];
+		
+		if (!data || !mime)
+		{
+			[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Data not found" code:0 userInfo:@{}]];
+			return;
+		}
+		
+		// > Build response.
+		NSURLResponse *response = [[NSURLResponse alloc] initWithURL:self.request.URL MIMEType:mime expectedContentLength:(NSInteger)[data length] textEncodingName:nil];
+		
+		// Send response + content.
+		[self.client URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
+		[self.client URLProtocol:self didLoadData:data];
+		[self.client URLProtocolDidFinishLoading:self];
 	});
-	
-	
-    NSData *data = nil;
-	NSRect targetRect = NSZeroRect;
-	NSImage	*sourceImage = nil;
-		
-	if ([side isEqualToString:@"left-balloon"])
-	{
-		NSSize size = leftBalloon.size;
-		
-		targetRect = NSMakeRect(0, 0, size.width, size.height);
-		sourceImage = leftBalloon;
-	}
-	else if ([side isEqualToString:@"right-balloon"])
-	{
-		NSSize size = rightBalloon.size;
-		
-		targetRect = NSMakeRect(0, 0, size.width, size.height);
-		sourceImage = rightBalloon;
-	}
-	else if ([side isEqualToString:@"left-balloon-2x"])
-	{
-		NSSize size = leftBalloon.size;
-		
-		targetRect = NSMakeRect(0, 0, size.width * 2.0, size.height * 2.0);
-		sourceImage = leftBalloon;
-	}
-	else if ([side isEqualToString:@"right-balloon-2x"])
-	{
-		NSSize size = rightBalloon.size;
-		
-		targetRect = NSMakeRect(0, 0, size.width * 2.0, size.height * 2.0);
-		sourceImage = rightBalloon;
-	}
-	
-	if (sourceImage)
-	{
-		NSImage *image = [NSImage imageWithSize:targetRect.size flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
-			[sourceImage drawInRect:targetRect fromRect:NSZeroRect operation:NSCompositeCopy fraction:1.0];
-			return YES;
-		}];
-		
-		data = [image TIFFRepresentation];
-	}
-	
-	if (!data)
-	{
-		[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Can't create avatar" code:0 userInfo:@{}]];
-		return;
-	}
-	
-	// Build response.
-    NSURLResponse *response = [[NSURLResponse alloc] initWithURL:self.request.URL MIMEType:@"image/tiff" expectedContentLength:(NSInteger)[data length] textEncodingName:nil];
-	
-	// Send response + content.
-    [[self client] URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
-    [[self client] URLProtocol:self didLoadData:data];
-    [[self client] URLProtocolDidFinishLoading:self];
 }
 
 - (void)handleError
@@ -985,3 +979,6 @@ NSMutableDictionary	*gAvatarCache;
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

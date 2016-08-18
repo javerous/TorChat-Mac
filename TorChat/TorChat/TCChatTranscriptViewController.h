@@ -23,6 +23,17 @@
 #import <Foundation/Foundation.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
+/*
+** Forward
+*/
+#pragma mark - Forward
+
+@class TCTheme;
+
+
 
 /*
 ** TCChatTranscriptViewController
@@ -30,6 +41,9 @@
 #pragma mark - TCChatTranscriptViewController
 
 @interface TCChatTranscriptViewController : NSViewController
+
+// -- Instance --
+- (instancetype)initWithTheme:(TCTheme *)theme;
 
 // -- Content --
 - (void)addItems:(NSArray *)items endOfTranscript:(BOOL)endOfTranscript; // items: array of TCChatMessage and / or TCChatStatus
@@ -54,3 +68,6 @@
 @property (strong, atomic) void (^transcriptScrollHandler)(TCChatTranscriptViewController *controller, CGFloat scrollOffset); // called on main queue.
 
 @end
+
+
+NS_ASSUME_NONNULL_END

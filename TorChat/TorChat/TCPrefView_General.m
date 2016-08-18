@@ -22,6 +22,8 @@
 
 #import "TCPrefView_General.h"
 
+#import "TCThemesManager.h"
+
 
 /*
 ** TCPrefView_General - Private
@@ -35,6 +37,8 @@
 @property (strong, nonatomic) IBOutlet NSTextField		*clientVersionField;
 
 @property (strong, nonatomic) IBOutlet NSButton			*saveTranscriptCheckBox;
+
+@property (strong, nonatomic) IBOutlet NSPopUpButton	*themesPopup;
 
 @end
 
@@ -84,7 +88,24 @@
 	[_clientNameField setStringValue:[self.config clientName:TCConfigGetDefined]];
 	[_clientVersionField setStringValue:[self.config clientVersion:TCConfigGetDefined]];
 	
+	// Transcripts.
 	[_saveTranscriptCheckBox setState:(self.config.saveTranscript ? NSOnState : NSOffState)];
+	
+	// Themes.
+	NSArray *themes = [[TCThemesManager sharedManager] themes];
+	
+	[_themesPopup removeAllItems];
+	
+	for (TCTheme *theme in themes)
+	{
+		NSString *localizdKey = [NSString stringWithFormat:@"pref_theme_%@", theme.identifier];
+		
+		[_themesPopup addItemWithTitle:NSLocalizedString(localizdKey, @"")];
+	}
+	
+	[_themesPopup sizeToFit];
+	
+	// FIXME: select the one currently used.
 }
 
 - (void)panelDidDisappear

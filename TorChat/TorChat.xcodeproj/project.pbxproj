@@ -12,13 +12,15 @@
 		E807B4B2124FB52700FDC769 /* LogsWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E807B4B0124FB52700FDC769 /* LogsWindow.xib */; };
 		E809B1451859C593001664E1 /* TCChatTranscriptViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E809B1441859C593001664E1 /* TCChatTranscriptViewController.m */; };
 		E809B1481859C5BC001664E1 /* NSImage+TCExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = E809B1471859C5BC001664E1 /* NSImage+TCExtension.m */; };
-		E809B14E1859C6F9001664E1 /* ChatTemplate.plist in Resources */ = {isa = PBXBuildFile; fileRef = E809B14D1859C6F9001664E1 /* ChatTemplate.plist */; };
 		E809B1A51859CC4B001664E1 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E809B1A41859CC4B001664E1 /* WebKit.framework */; };
 		E809B1E71859F186001664E1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E809B1E61859F186001664E1 /* Images.xcassets */; };
 		E80A357C1A67F5FA00896518 /* LocationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E80A357A1A67F5FA00896518 /* LocationView.xib */; };
 		E80A357F1A67F61800896518 /* TCLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E80A357E1A67F61800896518 /* TCLocationViewController.m */; };
 		E80E0A3B1CA9A370001E64F9 /* TCChatStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = E80E0A3A1CA9A370001E64F9 /* TCChatStatus.m */; };
 		E8127AA91854CB1100FEDA7F /* TCChatTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = E8127AA81854CB1100FEDA7F /* TCChatTextField.m */; };
+		E812A5BD1D661F24009D69A6 /* ThemeAqua.plist in Resources */ = {isa = PBXBuildFile; fileRef = E812A5BC1D661F24009D69A6 /* ThemeAqua.plist */; };
+		E812A5BF1D661F2B009D69A6 /* ThemeFlat.plist in Resources */ = {isa = PBXBuildFile; fileRef = E812A5BE1D661F2B009D69A6 /* ThemeFlat.plist */; };
+		E812A5C21D661F7B009D69A6 /* TCThemesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E812A5C11D661F7B009D69A6 /* TCThemesManager.m */; };
 		E81D4E7D1C99DC4E00DD0925 /* TCChatMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = E81D4E7C1C99DC4E00DD0925 /* TCChatMessage.m */; };
 		E81FD9F811E7259B000614D5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81FD9F711E7259B000614D5 /* Cocoa.framework */; };
 		E81FD9FD11E7259B000614D5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E81FD9FB11E7259B000614D5 /* InfoPlist.strings */; };
@@ -131,7 +133,6 @@
 		E809B1441859C593001664E1 /* TCChatTranscriptViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatTranscriptViewController.m; sourceTree = "<group>"; };
 		E809B1461859C5BC001664E1 /* NSImage+TCExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSImage+TCExtension.h"; sourceTree = "<group>"; };
 		E809B1471859C5BC001664E1 /* NSImage+TCExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSImage+TCExtension.m"; sourceTree = "<group>"; };
-		E809B14D1859C6F9001664E1 /* ChatTemplate.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = ChatTemplate.plist; path = TorChat/ChatTemplate.plist; sourceTree = SOURCE_ROOT; };
 		E809B1A41859CC4B001664E1 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		E809B1E61859F186001664E1 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = TorChat/Images.xcassets; sourceTree = "<group>"; };
 		E80A357B1A67F5FA00896518 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LocationView.xib; sourceTree = "<group>"; };
@@ -141,6 +142,10 @@
 		E80E0A3A1CA9A370001E64F9 /* TCChatStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatStatus.m; sourceTree = "<group>"; };
 		E8127AA71854CB1100FEDA7F /* TCChatTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCChatTextField.h; sourceTree = "<group>"; };
 		E8127AA81854CB1100FEDA7F /* TCChatTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatTextField.m; sourceTree = "<group>"; };
+		E812A5BC1D661F24009D69A6 /* ThemeAqua.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = ThemeAqua.plist; path = TorChat/ThemeAqua.plist; sourceTree = "<group>"; };
+		E812A5BE1D661F2B009D69A6 /* ThemeFlat.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = ThemeFlat.plist; path = TorChat/ThemeFlat.plist; sourceTree = "<group>"; };
+		E812A5C01D661F7B009D69A6 /* TCThemesManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCThemesManager.h; sourceTree = "<group>"; };
+		E812A5C11D661F7B009D69A6 /* TCThemesManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCThemesManager.m; sourceTree = "<group>"; };
 		E81D4E7B1C99DC4E00DD0925 /* TCChatMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCChatMessage.h; sourceTree = "<group>"; };
 		E81D4E7C1C99DC4E00DD0925 /* TCChatMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatMessage.m; sourceTree = "<group>"; };
 		E81FD9F411E7259B000614D5 /* TorChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TorChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -344,6 +349,15 @@
 			name = Chat;
 			sourceTree = "<group>";
 		};
+		E812A5C31D661F83009D69A6 /* Themes */ = {
+			isa = PBXGroup;
+			children = (
+				E812A5BC1D661F24009D69A6 /* ThemeAqua.plist */,
+				E812A5BE1D661F2B009D69A6 /* ThemeFlat.plist */,
+			);
+			name = Themes;
+			sourceTree = "<group>";
+		};
 		E81FD9E511E7259B000614D5 = {
 			isa = PBXGroup;
 			children = (
@@ -360,6 +374,7 @@
 		E81FD9ED11E7259B000614D5 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				E812A5C31D661F83009D69A6 /* Themes */,
 				E82D3F7F142D2AB400A33C7A /* TorChat-Info.plist */,
 				E82D3F81142D2ABF00A33C7A /* TorChat_Prefix.pch */,
 				E82D3F82142D2AF300A33C7A /* main.m */,
@@ -574,6 +589,8 @@
 			children = (
 				E8EDBCD217AA4C6500172B9C /* TCLogsManager.h */,
 				E8EDBCD317AA4C6500172B9C /* TCLogsManager.m */,
+				E812A5C01D661F7B009D69A6 /* TCThemesManager.h */,
+				E812A5C11D661F7B009D69A6 /* TCThemesManager.m */,
 			);
 			name = Managers;
 			sourceTree = "<group>";
@@ -639,7 +656,6 @@
 		E870BD8817A849B200DFA076 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				E809B14D1859C6F9001664E1 /* ChatTemplate.plist */,
 				E870BD8D17A84A3B00DFA076 /* XIB */,
 			);
 			name = Resources;
@@ -907,9 +923,11 @@
 				E826208E1C90391500DC6806 /* SQLiteConfigurationConvertWindow.xib in Resources */,
 				E81FD9FD11E7259B000614D5 /* InfoPlist.strings in Resources */,
 				E81FDA0211E7259C000614D5 /* MainMenu.xib in Resources */,
+				E812A5BF1D661F2B009D69A6 /* ThemeFlat.plist in Resources */,
 				E8CCEF231C909C2B00B2D9A8 /* PrefView_Security.xib in Resources */,
 				E82FA258121583A400106C47 /* BuddiesWindow.xib in Resources */,
 				E8D717F61A66EF8600304109 /* PrefView_Locations.xib in Resources */,
+				E812A5BD1D661F24009D69A6 /* ThemeAqua.plist in Resources */,
 				E85923F7120A9E060035C420 /* FilesWindow.xib in Resources */,
 				E82FA25A121583B300106C47 /* ChatWindow.xib in Resources */,
 				E878983A17B05BC800DB7709 /* AssistantPanel_Welcome.xib in Resources */,
@@ -922,7 +940,6 @@
 				E80A357C1A67F5FA00896518 /* LocationView.xib in Resources */,
 				E878984817B05C0B00DB7709 /* AssistantPanel_Bundled.xib in Resources */,
 				E878984917B05C0B00DB7709 /* AssistantPanel_Mode.xib in Resources */,
-				E809B14E1859C6F9001664E1 /* ChatTemplate.plist in Resources */,
 				E807B4B2124FB52700FDC769 /* LogsWindow.xib in Resources */,
 				E87CB85312508F7A00A75686 /* BuddyInfoWindow.xib in Resources */,
 				E82B7D7D125A098000B7BA8A /* PreferencesWindow.xib in Resources */,
@@ -981,6 +998,7 @@
 				E8A6FE2C17A993FC00C4DEAB /* TCPanel_Welcome.m in Sources */,
 				E889F0C212531DB2000C36B2 /* TCFilesWindowController.m in Sources */,
 				E889F0C812531DC9000C36B2 /* TCLogsWindowController.m in Sources */,
+				E812A5C21D661F7B009D69A6 /* TCThemesManager.m in Sources */,
 				E8643D7F1A66DDB900B8C55F /* TCPrefView_Locations.m in Sources */,
 				E889F0CB12531DD6000C36B2 /* TorChatAppDelegate.m in Sources */,
 				E8C6EC6D1C902187005F3634 /* TCConfigurationHelperController.m in Sources */,

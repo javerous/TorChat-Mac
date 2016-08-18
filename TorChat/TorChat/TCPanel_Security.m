@@ -94,8 +94,8 @@
 {
 	// Obtain launch context.
 	NSString	*bundlePath = [[NSBundle mainBundle] bundlePath];
-	NSString	*directoryPath = [bundlePath stringByDeletingLastPathComponent];
-	BOOL		isApplication = [directoryPath isEqualToString:@"/Applications"];
+	NSString	*directoryPath = [[[bundlePath stringByDeletingLastPathComponent] stringByStandardizingPath] stringByAppendingString:@"/"];
+	BOOL		isApplication = [directoryPath hasPrefix:@"/Applications/"];
 	
 	// Compose path.
 	NSString *configPath;

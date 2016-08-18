@@ -26,6 +26,8 @@
 
 #import "TCChatTranscriptViewController.h"
 
+#import "TCThemesManager.h"
+
 #import "TCThreePartImageView.h"
 
 #import "TCChatMessage.h"
@@ -112,8 +114,10 @@
 		_timestampFormater.dateStyle = NSDateFormatterMediumStyle;
 		_timestampFormater.timeStyle = NSDateFormatterMediumStyle;
 		
-		// Create trasncript controller.
-		_chatTranscript = [[TCChatTranscriptViewController alloc] init];
+		// Create trasncript controller. FIXME: fetch the identifier from settings.
+		TCTheme *theme = [[TCThemesManager sharedManager] themeForIdentifier:@"standard-flat"];
+		
+		_chatTranscript = [[TCChatTranscriptViewController alloc] initWithTheme:theme];
 		
 		// Containers.
 		_erroredMessages = [[NSMutableDictionary alloc] init];
