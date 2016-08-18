@@ -175,19 +175,15 @@
 			
 			// Open configuration.
 			[TCConfigurationHelperController openConfigurationAtPath:path completionHandler:^(TCConfigurationHelperCompletionType type, id <TCConfigAppEncryptable> aConfiguration) {
-				switch (type)
+				
+				if (aConfiguration)
 				{
-					case TCConfigurationHelperCompletionTypeCanceled:
-					{
-						ctrl(SMOperationsControlFinish);
-						break;
-					}
-						
-					case TCConfigurationHelperCompletionTypeDone:
-					{
-						configuration = aConfiguration;
-						ctrl(SMOperationsControlContinue);
-					}
+					configuration = aConfiguration;
+					ctrl(SMOperationsControlContinue);
+				}
+				else
+				{
+					ctrl(SMOperationsControlFinish);
 				}
 			}];
 		}];
@@ -222,20 +218,15 @@
 						{
 							// Open configuration.
 							[TCConfigurationHelperController openConfigurationAtPath:context completionHandler:^(TCConfigurationHelperCompletionType confCompType, id <TCConfigAppEncryptable> aConfiguration) {
-								switch (confCompType)
+								
+								if (aConfiguration)
 								{
-									case TCConfigurationHelperCompletionTypeCanceled:
-									{
-										ctrl(SMOperationsControlFinish);
-										break;
-									}
-										
-									case TCConfigurationHelperCompletionTypeDone:
-									{
-										configuration = aConfiguration;
-										ctrl(SMOperationsControlContinue);
-										break;
-									}
+									configuration = aConfiguration;
+									ctrl(SMOperationsControlContinue);
+								}
+								else
+								{
+									ctrl(SMOperationsControlFinish);
 								}
 							}];
 						}
