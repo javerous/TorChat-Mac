@@ -117,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)importPrivateKey:(nullable id <TCConfigAppEncryptable>)configuration
 {
-	if (!configuration || configuration.selfPrivateKey != nil)
+	if (!configuration || configuration.selfPrivateKey != nil || configuration.mode != TCConfigModeBundled)
 		return YES;
 
 	// Compose paths.
