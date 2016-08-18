@@ -8,7 +8,7 @@
 	<dict>
 		<key>Snippets</key>
 		<dict>
-			<key>CSS-Snippet</key>
+			<key>CSS</key>
 			<string>body {
 	-webkit-user-select: none;
 	overflow-x: auto;
@@ -232,7 +232,7 @@ span.fromRemote {
 		background-size: 20px 40px;
 	}
 }</string>
-			<key>RemoteMessage-Snippet</key>
+			<key>RemoteMessage</key>
 			<string>&lt;div class=&quot;mc&quot; align=&quot;left&quot;&gt;
 	&lt;table&gt;
 		&lt;tr&gt;
@@ -258,7 +258,7 @@ span.fromRemote {
 		&lt;/tr&gt;
 	&lt;/table&gt;
 &lt;/div&gt;</string>
-			<key>LocalMessage-Snippet</key>
+			<key>LocalMessage</key>
 			<string>&lt;div class=&quot;mc&quot; align=&quot;right&quot;&gt;
 	&lt;table&gt;
 		&lt;tr&gt;
@@ -284,7 +284,7 @@ span.fromRemote {
 		&lt;/tr&gt;
 	&lt;/table&gt;
 &lt;/div&gt;</string>
-			<key>LocalMessageError-Snippet</key>
+			<key>LocalMessageError</key>
 			<string>&lt;div class=&quot;mc&quot; align=&quot;right&quot;&gt;
 	&lt;table&gt;
 		&lt;tr&gt;
@@ -314,7 +314,7 @@ span.fromRemote {
 	&lt;/table&gt;
 &lt;/div&gt;
 </string>
-			<key>Status-Snippet</key>
+			<key>Status</key>
 			<string>&lt;div class=&quot;status&quot;&gt;
 	&lt;div class=&quot;message-content&quot;&gt;
 		&lt;span class=&quot;unselectable&quot;&gt;[TEXT]&lt;/span&gt;

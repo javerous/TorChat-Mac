@@ -60,7 +60,6 @@ NSMutableDictionary	*gThemeCache;
 + (void)setAvatar:(NSImage *)avatar forIdentifier:(NSString *)identifier;
 + (void)removeAvatarForIdentifier:(NSString *)identifier;
 
-
 @end
 
 
@@ -352,7 +351,7 @@ NSMutableDictionary	*gThemeCache;
 					{
 						if (msg.error)
 						{
-							NSString *snippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatLocalErrorSnippetKey];
+							NSString *snippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatSnippetLocalErrorKey];
 							NSString *message = msg.message;
 							
 							message = [message stringByEscapingXMLEntities];
@@ -365,7 +364,7 @@ NSMutableDictionary	*gThemeCache;
 						}
 						else
 						{
-							NSString *snippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatLocalMessageSnippetKey];
+							NSString *snippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatSnippetLocalMessageKey];
 							NSString *message = msg.message;
 							
 							message = [message stringByEscapingXMLEntities];
@@ -382,7 +381,7 @@ NSMutableDictionary	*gThemeCache;
 						
 					case TCChatMessageSideRemote:
 					{
-						NSString *snippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatRemoteMessageSnippetKey];
+						NSString *snippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatSnippetRemoteMessageKey];
 						NSString *message = msg.message;
 						
 						message = [message stringByEscapingXMLEntities];
@@ -400,7 +399,7 @@ NSMutableDictionary	*gThemeCache;
 			{
 				TCChatStatus *stat = item;
 				
-				NSString	*snippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatStatusSnippetKey];
+				NSString	*snippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatSnippetStatusKey];
 				NSString	*status = stat.status;
 				
 				status = [status stringByEscapingXMLEntities];
@@ -478,7 +477,7 @@ NSMutableDictionary	*gThemeCache;
 
 - (NSUInteger)maxMessagesCountToFillHeight:(CGFloat)height
 {
-	NSNumber *minHeight = _theme.chatTheme[TCThemeChatPropertiesKey][TCThemeChatMinHeightPropertyKey];
+	NSNumber *minHeight = _theme.chatTheme[TCThemeChatPropertiesKey][TCThemeChatPropertyMinHeightKey];
 	
 	if (!minHeight)
 		return 0;
@@ -488,7 +487,7 @@ NSMutableDictionary	*gThemeCache;
 
 - (CGFloat)maxHeightForMessagesCount:(NSUInteger)count
 {
-	NSNumber *minHeight = _theme.chatTheme[TCThemeChatPropertiesKey][TCThemeChatMinHeightPropertyKey];
+	NSNumber *minHeight = _theme.chatTheme[TCThemeChatPropertiesKey][TCThemeChatPropertyMinHeightKey];
 	
 	if (!minHeight)
 		return 0;
@@ -578,7 +577,7 @@ NSMutableDictionary	*gThemeCache;
 {
 	// > main queue <
 	
-	NSString *cssSnippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatCSSSnippetKey];
+	NSString *cssSnippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatSnippetCSSKey];
 	
 	// Global.
 	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-THEME-ID]" withString:_themeIdentifier];
@@ -872,8 +871,8 @@ NSMutableDictionary	*gThemeCache;
 		}
 		
 		// > Get data.
-		NSData		*data = resource[TCThemeChatDataResourcesKey];
-		NSString	*mime = resource[TCThemeChatMIMEResourcesKey];
+		NSData		*data = resource[TCThemeChatResourceDataKey];
+		NSString	*mime = resource[TCThemeChatResourceMIMEKey];
 		
 		if (!data || !mime)
 		{

@@ -8,7 +8,7 @@
 	<dict>
 		<key>Snippets</key>
 		<dict>
-			<key>CSS-Snippet</key>
+			<key>CSS</key>
 			<string>body {
 	-webkit-user-select: none;
 	overflow-x: auto;
@@ -251,13 +251,13 @@ span.fromRemote {
 		background-size: 20px 40px;
 	}
 }</string>
-			<key>RemoteMessage-Snippet</key>
+			<key>RemoteMessage</key>
 			<string>&lt;div class=&quot;mc&quot; align=&quot;left&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td width=&quot;32px&quot; class=&quot;icon-container-remote&quot; nowrap=&quot;nowrap&quot;&gt;&lt;span class=&quot;icon-container&quot;&gt;&lt;div class=&quot;icon-pres-container&quot;&gt;&lt;div class=&quot;icon-pres icon-pres-remote&quot;&gt;&lt;/div&gt;&lt;div class=&quot;icon-pres-shadow&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/span&gt;&lt;/td&gt;&lt;td class=&quot;message-container-remote&quot;&gt;&lt;div  class=&quot;mc-remote-sender balloon-remote&quot;&gt;&lt;div class=&quot;balloon-inside&quot;&gt;&lt;message class=&quot;message&quot;&gt;&lt;span class=&quot;fromRemote&quot;&gt;&lt;span&gt;[TEXT]&lt;/span&gt;&lt;/span&gt;&lt;/message&gt;&lt;/div&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class=&quot;spacer-container&quot;&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</string>
-			<key>LocalMessage-Snippet</key>
+			<key>LocalMessage</key>
 			<string>&lt;div class=&quot;mc&quot; align=&quot;right&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;spacer-container&quot;&gt;&lt;/td&gt;&lt;td class=&quot;message-container-local&quot;&gt;&lt;div class=&quot;mc-local-sender balloon-local&quot;&gt;&lt;div class=&quot;balloon-inside&quot;&gt;&lt;message class=&quot;message&quot; &gt;&lt;span class=&quot;fromLocal&quot;&gt;&lt;span&gt;[TEXT]&lt;/span&gt;&lt;/span&gt;&lt;/message&gt;&lt;/div&gt;&lt;/div&gt;&lt;/td&gt;&lt;td width=&quot;32px&quot; class=&quot;icon-container-local&quot; nowrap=&quot;nowrap&quot;&gt;&lt;span class=&quot;icon-container&quot;&gt;&lt;div class=&quot;icon-pres-container&quot;&gt;&lt;div class=&quot;icon-pres icon-pres-local&quot;&gt;&lt;/div&gt;&lt;div class=&quot;icon-pres-shadow&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</string>
-			<key>LocalMessageError-Snippet</key>
+			<key>LocalMessageError</key>
 			<string>&lt;div class=&quot;mc&quot; align=&quot;right&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;spacer-container&quot;&gt;&lt;/td&gt;&lt;td class=&quot;message-container-local&quot;&gt;&lt;div class=&quot;mc-local-sender balloon-local&quot;&gt;&lt;div class=&quot;balloon-inside&quot;&gt;&lt;message class=&quot;message&quot; &gt;&lt;span class=&quot;fromLocal&quot;&gt;&lt;span&gt;[TEXT]&lt;/span&gt;&lt;/span&gt;&lt;/message&gt;&lt;/div&gt;&lt;/div&gt;&lt;/td&gt;&lt;td width=&quot;32px&quot; class=&quot;icon-container-err-local&quot; nowrap=&quot;nowrap&quot;&gt;&lt;span class=&quot;icon-container&quot;&gt;&lt;div class=&quot;icon-pres-container&quot;&gt;&lt;div class=&quot;icon-pres icon-pres-local&quot;&gt;&lt;/div&gt;&lt;div class=&quot;icon-pres-shadow&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/span&gt;&lt;/td&gt;&lt;td width=&quot;32px&quot; style=&quot;vertical-align:middle;&quot; nowrap=&quot;nowrap&quot;&gt;&lt;a class=&quot;error-button&quot; href=&quot;[HREF-ERROR]&quot;&gt;&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</string>
-			<key>Status-Snippet</key>
+			<key>Status</key>
 			<string>&lt;div class=&quot;status&quot;&gt;&lt;div class=&quot;message-content&quot;&gt;&lt;span class=&quot;unselectable&quot;&gt;[TEXT]&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</string>
 		</dict>
 		<key>Properties</key>

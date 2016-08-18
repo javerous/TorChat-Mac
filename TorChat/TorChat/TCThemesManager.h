@@ -33,18 +33,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Chat keys.
 #define TCThemeChatSnippetsKey				@"Snippets"
-#define TCThemeChatLocalErrorSnippetKey		@"LocalMessageError-Snippet"
-#define TCThemeChatRemoteMessageSnippetKey	@"RemoteMessage-Snippet"
-#define TCThemeChatLocalMessageSnippetKey	@"LocalMessage-Snippet"
-#define TCThemeChatStatusSnippetKey			@"Status-Snippet"
-#define TCThemeChatCSSSnippetKey			@"CSS-Snippet"
+#define TCThemeChatSnippetLocalErrorKey		@"LocalMessageError"
+#define TCThemeChatSnippetLocalMessageKey	@"LocalMessage"
+#define TCThemeChatSnippetRemoteMessageKey	@"RemoteMessage"
+#define TCThemeChatSnippetStatusKey			@"Status"
+#define TCThemeChatSnippetCSSKey			@"CSS"
 
 #define TCThemeChatPropertiesKey			@"Properties"
-#define TCThemeChatMinHeightPropertyKey		@"Min-Height"
+#define TCThemeChatPropertyMinHeightKey		@"Min-Height"
 
 #define TCThemeChatResourcesKey				@"Resources"
-#define TCThemeChatDataResourcesKey			@"data"
-#define TCThemeChatMIMEResourcesKey			@"mime"
+#define TCThemeChatResourceDataKey			@"data"
+#define TCThemeChatResourceMIMEKey			@"mime"
 
 
 
