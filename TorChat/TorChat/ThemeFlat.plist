@@ -158,7 +158,7 @@ span.fromRemote {
 }
 
 .balloon-local &gt; div.balloon-inside {
-	margin: -6px -3px -6px 0px;
+	margin: -6px -3px -6px -3px;
 	text-align: right;
 }
 
@@ -182,7 +182,7 @@ span.fromRemote {
 }
 
 .balloon-remote &gt; div.balloon-inside {
-	margin: -6px 0px -6px -3px;
+	margin: -6px -3px -6px -3px;
 }
 
 
