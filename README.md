@@ -86,3 +86,11 @@ TODO
 ### Logs
 
 TODO
+
+
+
+## Tests
+
+If you want to test new versions of TorChat, send me a simple e-mail to `torchat [at] sourcemac [dot] com`.
+
+I will send you betas or golden master versions some days before official releases, and if you have free time and motivation, you can peacefully test them and tell me if you saw problematic stuff. It's a best effort testing, so no pressure.
