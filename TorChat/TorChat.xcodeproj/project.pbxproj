@@ -374,7 +374,6 @@
 		E81FD9ED11E7259B000614D5 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				E812A5C31D661F83009D69A6 /* Themes */,
 				E82D3F7F142D2AB400A33C7A /* TorChat-Info.plist */,
 				E82D3F81142D2ABF00A33C7A /* TorChat_Prefix.pch */,
 				E82D3F82142D2AF300A33C7A /* main.m */,
@@ -385,6 +384,7 @@
 		E81FD9EE11E7259B000614D5 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				E812A5C31D661F83009D69A6 /* Themes */,
 				E81FD9FB11E7259B000614D5 /* InfoPlist.strings */,
 				E81FDA0011E7259C000614D5 /* MainMenu.xib */,
 				E83423EA11F6F97B00922152 /* Localizable.strings */,

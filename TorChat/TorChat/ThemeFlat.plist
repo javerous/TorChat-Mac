@@ -324,7 +324,7 @@ span.fromRemote {
 		<key>Properties</key>
 		<dict>
 			<key>Min-Height</key>
-			<integer>37</integer>
+			<integer>35</integer>
 		</dict>
 		<key>Resources</key>
 		<dict>
