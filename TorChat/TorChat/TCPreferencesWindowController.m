@@ -216,11 +216,30 @@
 		});
 		
 		// Restart main controller.
-		[[TCMainController sharedController] startWithConfiguration:config completionHandler:^(TCCoreManager *aCore) {
+		[[TCMainController sharedController] startWithConfiguration:config completionHandler:^(TCCoreManager * _Nullable aCore, NSError *_Nullable error) {
 
 			if (!aCore)
 			{
-				[[NSApplication sharedApplication] terminate:nil];
+				// Note: See explanation of run-loop perform in TorChatAppDelegate -> applicationDidFinishLaunching.
+				CFRunLoopRef runLoop = CFRunLoopGetMain();
+				
+				CFRunLoopPerformBlock(runLoop, kCFRunLoopCommonModes, ^{
+					
+					if (error)
+					{
+						NSAlert *alert = [[NSAlert alloc] init];
+						
+						alert.messageText = NSLocalizedString(@"app_delegate_start_error_title", @"");
+						alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"app_delegate_start_error_code", @""), error.code, error.localizedDescription];
+						
+						[alert runModal];
+					}
+					
+					[[NSApplication sharedApplication] terminate:nil];
+				});
+
+				CFRunLoopWakeUp(runLoop);
+
 				return;
 			}
 			

@@ -47,6 +47,9 @@
 #import "SMTorConfiguration+TCConfig.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCMainController - Private
 */
@@ -69,8 +72,6 @@
 	
 	dispatch_source_t _torChangesTimer;
 }
-
-@property (assign, nonatomic) BOOL isStarting;
 
 @end
 
@@ -125,16 +126,18 @@
 
 #pragma mark Start
 
-- (void)startWithCompletionHandler:(void (^)(id <TCConfigAppEncryptable> configuration, TCCoreManager *core))handler
+- (void)startWithCompletionHandler:(void (^)(id <TCConfigAppEncryptable> _Nullable configuration, TCCoreManager * _Nullable core, NSError * _Nullable error))handler
 {
 	if (!handler)
-		handler = ^(id <TCConfigAppEncryptable> configuration, TCCoreManager *core) { };
+		handler = ^(id <TCConfigAppEncryptable> _Nullable configuration, TCCoreManager * _Nullable core, NSError * _Nullable error) { };
 	
 	[_opQueue scheduleBlock:^(SMOperationsControl  _Nonnull opCtrl) {
 		
 		SMOperationsQueue *operations = [[SMOperationsQueue alloc] init];
+		
 		__block id <TCConfigAppEncryptable> configuration = nil;
-
+		__block NSError *error = nil;
+		
 		// -- Stop if necessary --
 		[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
 			[self _stopWithCompletionHandler:^{
@@ -174,16 +177,29 @@
 			}
 			
 			// Open configuration.
-			[TCConfigurationHelperController openConfigurationAtPath:path completionHandler:^(TCConfigurationHelperCompletionType type, id <TCConfigAppEncryptable> aConfiguration) {
+			[TCConfigurationHelperController openConfigurationAtPath:path completionHandler:^(TCConfigurationHelperCompletionType type, id _Nullable result) {
 				
-				if (aConfiguration)
+				switch (type)
 				{
-					configuration = aConfiguration;
-					ctrl(SMOperationsControlContinue);
-				}
-				else
-				{
-					ctrl(SMOperationsControlFinish);
+					case TCConfigurationHelperCompletionTypeCanceled:
+					{
+						ctrl(SMOperationsControlFinish);
+						break;
+					}
+						
+					case TCConfigurationHelperCompletionTypeError:
+					{
+						error = result;
+						ctrl(SMOperationsControlFinish);
+						break;
+					}
+					
+					case TCConfigurationHelperCompletionTypeDone:
+					{
+						configuration = result;
+						ctrl(SMOperationsControlContinue);
+						break;
+					}
 				}
 			}];
 		}];
@@ -217,16 +233,29 @@
 						if ([context isKindOfClass:[NSString class]])
 						{
 							// Open configuration.
-							[TCConfigurationHelperController openConfigurationAtPath:context completionHandler:^(TCConfigurationHelperCompletionType confCompType, id <TCConfigAppEncryptable> aConfiguration) {
+							[TCConfigurationHelperController openConfigurationAtPath:context completionHandler:^(TCConfigurationHelperCompletionType confCompType, id _Nullable result) {
 								
-								if (aConfiguration)
+								switch (confCompType)
 								{
-									configuration = aConfiguration;
-									ctrl(SMOperationsControlContinue);
-								}
-								else
-								{
-									ctrl(SMOperationsControlFinish);
+									case TCConfigurationHelperCompletionTypeCanceled:
+									{
+										ctrl(SMOperationsControlFinish);
+										break;
+									}
+										
+									case TCConfigurationHelperCompletionTypeError:
+									{
+										error = result;
+										ctrl(SMOperationsControlFinish);
+										break;
+									}
+										
+									case TCConfigurationHelperCompletionTypeDone:
+									{
+										configuration = result;
+										ctrl(SMOperationsControlContinue);
+										break;
+									}
 								}
 							}];
 						}
@@ -246,33 +275,34 @@
 		__block TCCoreManager *core = nil;
 		
 		[operations scheduleBlock:^(SMOperationsControl ctrl) {
-			[self _startWithConfiguration:configuration completionHandler:^(TCCoreManager *aCore) {
+			[self _startWithConfiguration:configuration completionHandler:^(TCCoreManager * _Nullable aCore, NSError * _Nullable anError) {
 				core = aCore;
+				error = anError;
 				ctrl(SMOperationsControlContinue);
 			}];
 		}];
 		
 		// -- Finish --
 		operations.finishHandler = ^(BOOL canceled) {
-			self.isStarting = NO;
 			opCtrl(SMOperationsControlContinue);
-			handler(configuration, core);
+			handler(configuration, core, error);
 		};
 		
 		// Start.
-		self.isStarting = YES;
 		[operations start];
 	}];
 }
 
-- (void)startWithConfiguration:(id <TCConfigAppEncryptable>)configuration completionHandler:(void (^)(TCCoreManager *core))handler
+- (void)startWithConfiguration:(id <TCConfigAppEncryptable>)configuration completionHandler:(void (^)(TCCoreManager * _Nullable core, NSError * _Nullable anError))handler
 {
 	if (!handler)
-		handler = ^(TCCoreManager *core) { };
+		handler = ^(TCCoreManager * _Nullable core, NSError * _Nullable error) { };
 	
 	[_opQueue scheduleBlock:^(SMOperationsControl  _Nonnull opCtrl) {
 		
 		SMOperationsQueue *operations = [[SMOperationsQueue alloc] init];
+		
+		__block NSError *error = nil;
 		
 		// -- Stop if necessary --
 		[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
@@ -285,57 +315,59 @@
 		__block TCCoreManager *core = nil;
 
 		[operations scheduleBlock:^(SMOperationsControl ctrl) {
-			[self _startWithConfiguration:configuration completionHandler:^(TCCoreManager *aCore) {
+			[self _startWithConfiguration:configuration completionHandler:^(TCCoreManager * _Nullable aCore, NSError * _Nullable anError) {
 				core = aCore;
+				error = anError;
 				ctrl(SMOperationsControlContinue);
 			}];
 		}];
 		
 		// -- Finish --
 		operations.finishHandler = ^(BOOL canceled) {
-			self.isStarting = NO;
 			opCtrl(SMOperationsControlContinue);
-			handler(core);
+			handler(core, error);
 		};
 		
 		// Start.
-		self.isStarting = YES;
 		[operations start];
 	}];
 }
 
 
-- (void)_startWithConfiguration:(id <TCConfigAppEncryptable>)configuration completionHandler:(void (^)(TCCoreManager *core))handler
+- (void)_startWithConfiguration:(id <TCConfigAppEncryptable>)configuration completionHandler:(void (^)(TCCoreManager * _Nullable core, NSError * _Nullable error))handler
 {
 	// > opQueue <
 
-	SMOperationsQueue *operationQueue = [[SMOperationsQueue alloc] initStarted];
+	SMOperationsQueue *operations = [[SMOperationsQueue alloc] init];
+	
+	__block TCCoreManager	*core = nil;
+	__block SMTorManager	*torManager = nil;
+
+	__block NSError			*error = nil;
 	
 	// -- Start Tor if necessary --
-	[operationQueue scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
-		
-		if (!configuration)
-		{
-			NSLog(@"Unable to create configuration.");
-			[[NSApplication sharedApplication] terminate:nil];
-			return;
-		}
-		
-		_configuration = configuration;
+	[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
 		
 		// Start tor only in bundled mode.
-		if ([_configuration mode] != TCConfigModeBundled)
+		if ([configuration mode] != TCConfigModeBundled)
 		{
 			ctrl(SMOperationsControlContinue);
 			return;
 		}
 		
 		// Create tor manager.
-		SMTorConfiguration *torConfig = [[SMTorConfiguration alloc] initWithTorChatConfiguration:_configuration];
+		SMTorConfiguration *torConfig = [[SMTorConfiguration alloc] initWithTorChatConfiguration:configuration];
 		
-		_torManager = [[SMTorManager alloc] initWithConfiguration:torConfig];
+		torManager = [[SMTorManager alloc] initWithConfiguration:torConfig];
 		
-		_torManager.logHandler = ^(SMTorLogKind kind, NSString *log) {
+		if (!torManager)
+		{
+			error = [NSError errorWithDomain:TCMainControllerErrorDomain code:1 userInfo:@{ NSLocalizedDescriptionKey: NSLocalizedString(@"main_ctrl_conf_error_tor_manager", @"") }];
+			ctrl(SMOperationsControlFinish);
+			return;
+		}
+		
+		torManager.logHandler = ^(SMTorLogKind kind, NSString *log) {
 			
 			switch (kind)
 			{
@@ -350,7 +382,7 @@
 		};
 
 		// Start tor manager via UI.
-		[SMTorStartController startWithTorManager:_torManager infoHandler:^(SMInfo *startInfo) {
+		[SMTorStartController startWithTorManager:torManager infoHandler:^(SMInfo *startInfo) {
 			
 			[[TCLogsManager sharedManager] addGlobalLogWithInfo:startInfo];
 			
@@ -363,7 +395,7 @@
 				{
 					if (startInfo.code == SMTorEventStartServiceID)
 					{
-						[_configuration setSelfIdentifier:startInfo.context];
+						configuration.selfIdentifier = startInfo.context;
 					}
 					else if (startInfo.code == SMTorEventStartDone)
 					{
@@ -376,16 +408,19 @@
 				{
 					if (startInfo.code == SMTorWarningStartCanceled)
 					{
-						_torManager = nil;
-						ctrl(SMOperationsControlContinue);
+						torManager = nil;
+						ctrl(SMOperationsControlFinish);
 					}
 					break;
 				}
 					
 				case SMInfoError:
 				{
-					_torManager = nil;
-					ctrl(SMOperationsControlContinue);
+					error = [NSError errorWithDomain:TCMainControllerErrorDomain code:1 userInfo:@{ NSLocalizedDescriptionKey: [startInfo renderMessage] }];
+					torManager = nil;
+					
+					ctrl(SMOperationsControlFinish);
+					
 					break;
 				}
 			}
@@ -396,16 +431,16 @@
 	}];
 	
 	// -- Update Tor if necessary --
-	[operationQueue scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
+	[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
 		
-		if (_torManager == nil)
+		if ([configuration mode] != TCConfigModeBundled)
 		{
 			ctrl(SMOperationsControlContinue);
 			return;
 		}
 		
 		// Launch update check.
-		[_torManager checkForUpdateWithInfoHandler:^(SMInfo *updateInfo) {
+		[torManager checkForUpdateWithInfoHandler:^(SMInfo *updateInfo) {
 			
 			// > Log check.
 			[[TCLogsManager sharedManager] addGlobalLogWithInfo:updateInfo];
@@ -417,7 +452,7 @@
 				NSString		*oldVersion = context[@"old_version"];
 				NSString		*newVersion = context[@"new_version"];
 				
-				[SMTorUpdateController handleUpdateWithTorManager:_torManager oldVersion:oldVersion newVersion:newVersion infoHandler:^(SMInfo * _Nonnull info) {
+				[SMTorUpdateController handleUpdateWithTorManager:torManager oldVersion:oldVersion newVersion:newVersion infoHandler:^(SMInfo * _Nonnull info) {
 					[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
 				}];
 			}
@@ -428,23 +463,15 @@
 	}];
 	
 	// -- Launch controllers --
-	[operationQueue scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
-		
-		if (_torManager == nil && [_configuration mode] == TCConfigModeBundled)
-		{
-			handler(nil);
-			ctrl(SMOperationsControlContinue);
-			return;
-		}
-		
+	[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
+
 		// Create core manager.
-		_core = [[TCCoreManager alloc] initWithConfiguration:_configuration];
-		
-		// Observe core.
-		[_core addObserver:self];
+		core = [[TCCoreManager alloc] initWithConfiguration:configuration];
+
+		[core addObserver:self];
 		
 		// Handle current buddies.
-		NSArray *buddies = [_core buddies];
+		NSArray *buddies = [core buddies];
 		
 		for (TCBuddy *buddy in buddies)
 		{
@@ -458,31 +485,43 @@
 		// > Buddies.
 		dispatch_group_enter(group);
 		
-		[[TCBuddiesWindowController sharedController] startWithConfiguration:_configuration coreManager:_core completionHandler:^{
+		[[TCBuddiesWindowController sharedController] startWithConfiguration:configuration coreManager:core completionHandler:^{
 			dispatch_group_leave(group);
 		}];
 		
 		// > Chat.
 		dispatch_group_enter(group);
 
-		[[TCChatWindowController sharedController] startWithConfiguration:_configuration coreManager:_core completionHandler:^{
+		[[TCChatWindowController sharedController] startWithConfiguration:configuration coreManager:core completionHandler:^{
 			dispatch_group_leave(group);
 		}];
 	
 		// > Files.
 		dispatch_group_enter(group);
 		
-		[[TCFilesWindowController sharedController] startWithCoreManager:_core completionHandler:^{
+		[[TCFilesWindowController sharedController] startWithCoreManager:core completionHandler:^{
 			dispatch_group_leave(group);
 		}];
 		
 		// Wait.
 		dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			handler(_core);
-			[_core start];
+			[core start];
 			ctrl(SMOperationsControlContinue);
 		});
 	}];
+	
+	// -- Finish --
+	operations.finishHandler = ^(BOOL canceled) {
+		
+		_configuration = configuration;
+		_torManager = torManager;
+		_core = core;
+		
+		handler(core, error);
+	};
+	
+	// Start.
+	[operations start];
 }
 
 
@@ -675,3 +714,6 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
+

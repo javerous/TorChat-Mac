@@ -13,3 +13,6 @@
 
 /* Class = "NSButtonCell"; title = "Save transcripts"; ObjectID = "hJZ-F5-GDn"; */
 "hJZ-F5-GDn.title" = "Sauvegarder les transcriptions";
+
+/* Class = "NSBox"; title = "Theme"; ObjectID = "hWm-UO-9el"; */
+"hWm-UO-9el.title" = "Thème";

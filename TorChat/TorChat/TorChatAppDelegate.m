@@ -40,9 +40,6 @@
 #pragma mark - TorChatAppDelegate - Private
 
 @interface TorChatAppDelegate ()
-{
-	BOOL _quitting;
-}
 
 @property (strong, nonatomic) IBOutlet NSMenuItem	*buddyShowMenu;
 @property (strong, nonatomic) IBOutlet NSMenuItem	*buddyDeleteMenu;
@@ -86,28 +83,53 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-	// Observe buddy select change.
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(buddySelectChanged:) name:TCBuddiesWindowControllerSelectChanged object:nil];
-
 	// Start TorChat.
-	[[TCMainController sharedController] startWithCompletionHandler:^(id <TCConfigAppEncryptable> configuration, TCCoreManager *core) {
+	[[TCMainController sharedController] startWithCompletionHandler:^(id <TCConfigAppEncryptable> _Nullable configuration, TCCoreManager * _Nullable core, NSError * _Nullable error) {
 		
 		if (!configuration || !core)
 		{
-			[[NSApplication sharedApplication] terminate:nil];
-			return;
+			// Note:
+			//  We have to show the error alert in the main thread (AppKit constraint), and because we have to wait for its end before calling terminate,
+			//    all our code should run in a row in the main thread.
+			//
+			//  When we call [NSApplication terminate] method, if [NSApplication applicationShouldTerminate] return NSTerminateLater, then a new run-loop is
+			//    launched, waiting for [NSApplication replyToApplicationShouldTerminate] to be called.
+			//  If we call terminate in dispatch_get_main_queue(), then this new run-loop is going to run in our dispatched block,
+			//    which makes our block waiting for the end of this run-loop, which makes the main run-loop waiting for the end of this run-loop. As our
+			//    "stopWithCompletionHandler" relies on some code executed on the main queue to finish, we are dead-locking (the stop wait on the main-queue,
+			//    itself waiting on the termination new run-loop, itself waiting for the termination-reply, itself waiting for the stop to be finished, etc.).
+			//  Because of the mode in which the "terminate" new run-loop run, the sources scheduled on the main-run loop (including blocks dispatched
+			//    on the main queue) continues to be executed. So we perform our termination on the main run-loop instead of the main queue : this way we
+			//    prevent the described dead-lock.
+			
+			CFRunLoopRef runLoop = CFRunLoopGetMain();
+			
+			CFRunLoopPerformBlock(runLoop, kCFRunLoopCommonModes, ^{
+				
+				if (error)
+				{
+					NSAlert *alert = [[NSAlert alloc] init];
+					
+					alert.messageText = NSLocalizedString(@"app_delegate_start_error_title", @"");
+					alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"app_delegate_start_error_code", @""), error.code, error.localizedDescription];
+					
+					[alert runModal];
+				}
+				
+				[[NSApplication sharedApplication] terminate:nil];
+			});
+			
+			CFRunLoopWakeUp(runLoop);
 		}
 	}];
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
-	_quitting = YES;
-	
 	[[TCMainController sharedController] stopWithCompletionHandler:^{
 		[sender replyToApplicationShouldTerminate:YES];
 	}];
-	
+
 	return NSTerminateLater;
 }
 
@@ -124,12 +146,6 @@
 {
 	[[TCPreferencesWindowController sharedController] showWindow:nil];
 }
-
-- (IBAction)doQuit:(id)sender
-{
-	[[NSApplication sharedApplication] terminate:sender];
-}
-
 
 #pragma mark Windows
 
@@ -200,84 +216,20 @@
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
-	if ([[TCMainController sharedController] isStarting])
-		return NO;
-	else
+	if (menuItem == _buddyShowMenu || menuItem == _buddyDeleteMenu || menuItem == _buddyChatMenu || menuItem == _buddyBlockMenu || menuItem == _buddyFileMenu)
 	{
-		if (menuItem == _buddyBlockMenu)
-		{
-			TCBuddy *buddy = [[TCBuddiesWindowController sharedController] selectedBuddy];
-			
-			if (!buddy)
-				return NO;
-			
-			if ([buddy blocked])
-				[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_unblock_buddy", @"")];
-			else
-				[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_block_buddy", @"")];
-			
-			return YES;
-		}
-		
-		if (menuItem.action == @selector(doQuit:))
-			return (_quitting == NO);
-
-		return YES;
-	}
-}
-
-
-
-/*
-** TorChatAppDelegate - NSNotification
-*/
-#pragma mark - TorChatAppDelegate - NSNotification
-
-- (void)buddySelectChanged:(NSNotification *)notice
-{
-	NSDictionary	*ui = [notice userInfo];
-	id				buddy = [ui objectForKey: TCBuddiesWindowControllerBuddyKey];
-		
-	if ([buddy isKindOfClass:[TCBuddy class]])
-	{
-		[_buddyShowMenu setTarget:self];
-		[_buddyShowMenu setAction:@selector(doBuddyShowInfo:)];
-		
-		[_buddyDeleteMenu setTarget:self];
-		[_buddyDeleteMenu setAction:@selector(doBuddyRemove:)];
-		
-		[_buddyChatMenu setTarget:self];
-		[_buddyChatMenu setAction:@selector(doBuddyChat:)];
-		
-		[_buddyBlockMenu setTarget:self];
-		[_buddyBlockMenu setAction:@selector(doBuddyToggleBlocked:)];
+		TCBuddy *buddy = [[TCBuddiesWindowController sharedController] selectedBuddy];
 		
 		if ([buddy blocked])
 			[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_unblock_buddy", @"")];
 		else
 			[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_block_buddy", @"")];
 		
-		[_buddyFileMenu setTarget:self];
-		[_buddyFileMenu setAction:@selector(doBuddySendFile:)];
+		if (!buddy)
+			return NO;
 	}
-	else
-	{
-		[_buddyShowMenu setTarget:nil];
-		[_buddyShowMenu setAction:NULL];
-		
-		[_buddyDeleteMenu setTarget:nil];
-		[_buddyDeleteMenu setAction:NULL];
-		
-		[_buddyChatMenu setTarget:nil];
-		[_buddyChatMenu setAction:NULL];
-		
-		[_buddyBlockMenu setTarget:nil];
-		[_buddyBlockMenu setAction:NULL];
-		[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_block_buddy", @"")];
-
-		[_buddyFileMenu setTarget:nil];
-		[_buddyFileMenu setAction:NULL];
-	}
+	
+	return YES;
 }
 
 @end

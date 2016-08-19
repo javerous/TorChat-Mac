@@ -79,14 +79,14 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	if (!path)
 	{
-		handler(TCConfigurationHelperCompletionTypeDone, nil);
+		handler(TCConfigurationHelperCompletionTypeError, [self errorWithCode:1 localizedMessage:@"Internal error (nil path)"]);
 		return;
 	}
 	
 	// Check file existente.
 	if ([[NSFileManager defaultManager] fileExistsAtPath:path] == NO)
 	{
-		handler(TCConfigurationHelperCompletionTypeDone, nil);
+		handler(TCConfigurationHelperCompletionTypeError, [self errorWithCode:2 localizedMessage:@"conf_helper_error_file_dont_exist"]);
 		return;
 	}
 	
@@ -101,21 +101,23 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 	
 	// Try to open as sqlite.
-	[TCSQLiteOpenWindowController openSQLiteConfigurationAtPath:path completionHandler:^(TCConfigurationHelperCompletionType type, id <TCConfigAppEncryptable> _Nullable configuration) {
+	[TCSQLiteOpenWindowController openSQLiteConfigurationAtPath:path completionHandler:^(TCConfigurationHelperCompletionType type, id result) {
 		
 		// Import private key file.
-		if (type == TCConfigurationHelperCompletionTypeDone && [self importPrivateKey:configuration] == NO)
+		NSError *error = nil;
+		
+		if (type == TCConfigurationHelperCompletionTypeDone && [self importPrivateKey:result error:&error] == NO)
 		{
-			handler(TCConfigurationHelperCompletionTypeDone, nil);
+			handler(TCConfigurationHelperCompletionTypeError, error);
 			return;
 		}
 		
 		// Call original handler.
-		handler(type, configuration);
+		handler(type, result);
 	}];
 }
 
-+ (BOOL)importPrivateKey:(nullable id <TCConfigAppEncryptable>)configuration
++ (BOOL)importPrivateKey:(nullable id <TCConfigAppEncryptable>)configuration error:(NSError **)error
 {
 	if (!configuration || configuration.selfPrivateKey != nil || configuration.mode != TCConfigModeBundled)
 		return YES;
@@ -125,12 +127,14 @@ NS_ASSUME_NONNULL_BEGIN
 	NSString *hostnamePath = [[configuration pathForComponent:TCConfigPathComponentTorIdentity fullPath:YES] stringByAppendingPathComponent:@"hostname"];
 	
 	// Read private key.
-	NSError	*error = nil;
-	NSData	*privateKeyData = [NSData dataWithContentsOfFile:privateKeyPath options:NSDataReadingUncached error:&error];
+	NSError	*ferror = nil;
+	NSData	*privateKeyData = [NSData dataWithContentsOfFile:privateKeyPath options:NSDataReadingUncached error:&ferror];
 	
 	if (privateKeyData == nil)
 	{
-		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"Can't read private key data for importation at path '%@' - error:%@", privateKeyPath, error.localizedDescription];
+		if (error)
+			*error = [self errorWithCode:10 localizedMessage:@"conf_helper_error_cant_read_private_key", privateKeyPath, ferror.localizedDescription];
+		
 		return NO;
 	}
 	
@@ -139,7 +143,9 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	if (privateKeyString == nil)
 	{
-		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"Can't decode private key data at path '%@'.", privateKeyPath];
+		if (error)
+			*error = [self errorWithCode:11 localizedMessage:@"conf_helper_error_cant_decode_private_key", privateKeyPath];
+
 		return NO;
 	}
 	
@@ -149,7 +155,9 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	if (match.count == 0 || [match[0] numberOfRanges] < 2)
 	{
-		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"Can't extract RSA private key data at path '%@'.", privateKeyPath];
+		if (error)
+			*error = [self errorWithCode:12 localizedMessage:@"conf_helper_error_cant_extract_private_key", privateKeyPath];
+		
 		return NO;
 	}
 	
@@ -164,7 +172,9 @@ NS_ASSUME_NONNULL_BEGIN
 	// Be sure everything is written to disk before removing original file.
 	if ([configuration synchronize] == NO)
 	{
-		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"Can't synchronize configuration file with imported key."];
+		if (error)
+			*error = [self errorWithCode:13 localizedMessage:@"conf_helper_error_cant_synchronize", privateKeyPath];
+		
 		return NO;
 	}
 	
@@ -172,9 +182,31 @@ NS_ASSUME_NONNULL_BEGIN
 	TCFileSecureRemove(privateKeyPath);
 	TCFileSecureRemove(hostnamePath);
 	
-	[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogInfo message:@"Private key imported with success."];
+	[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogInfo message:@"conf_helper_info_import_sucess"];
 	
 	return YES;
+}
+
++ (NSError *)errorWithCode:(int)code localizedMessage:(nullable NSString *)message, ...
+{
+	if (message)
+	{
+		// Build string.
+		NSString	*localized = NSLocalizedString(message, @"");
+		NSString	*string;
+		va_list		ap;
+		
+		va_start(ap, message);
+		string = [[NSString alloc] initWithFormat:localized arguments:ap];
+		va_end(ap);
+		
+		// Build error.
+		return [NSError errorWithDomain:TCConfigurationHelperErrorDomain code:code userInfo:@{ NSLocalizedDescriptionKey : string }];
+	}
+	else
+	{
+		return [NSError errorWithDomain:TCConfigurationHelperErrorDomain code:code userInfo:nil];
+	}
 }
 
 @end
@@ -217,7 +249,7 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	if (!ctrl)
 	{
-		handler(TCConfigurationHelperCompletionTypeDone, nil);
+		handler(TCConfigurationHelperCompletionTypeError, [TCConfigurationHelperController errorWithCode:20 localizedMessage:@"Internal error (nil ctrl)"]);
 		return;
 	}
 	
@@ -424,7 +456,7 @@ NS_ASSUME_NONNULL_BEGIN
 		
 		if (!ctrl)
 		{
-			handler(TCConfigurationHelperCompletionTypeDone, nil);
+			handler(TCConfigurationHelperCompletionTypeError, [TCConfigurationHelperController errorWithCode:30 localizedMessage:@"Internal error (nil ctrl)"]);
 			return;
 		}
 		

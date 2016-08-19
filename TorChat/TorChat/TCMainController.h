@@ -25,6 +25,18 @@
 #import "TCConfigAppEncryptable.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
+/*
+** Defines
+*/
+#pragma mark - Defines
+
+#define TCMainControllerErrorDomain @"TCMainControllerErrorDomain"
+
+
+
 /*
 ** Forward
 */
@@ -45,8 +57,8 @@
 + (TCMainController *)sharedController;
 
 // -- Life --
-- (void)startWithCompletionHandler:(void (^)(id <TCConfigAppEncryptable> configuration, TCCoreManager *core))handler;
-- (void)startWithConfiguration:(id <TCConfigAppEncryptable>)configuration completionHandler:(void (^)(TCCoreManager *core))handler;
+- (void)startWithCompletionHandler:(void (^)(id <TCConfigAppEncryptable> _Nullable configuration, TCCoreManager * _Nullable core, NSError * _Nullable error))handler;
+- (void)startWithConfiguration:(id <TCConfigAppEncryptable>)configuration completionHandler:(void (^)(TCCoreManager * _Nullable core, NSError * _Nullable error))handler;
 
 - (void)stopWithCompletionHandler:(dispatch_block_t)handler;
 
@@ -54,6 +66,6 @@
 @property (strong, readonly, nonatomic) id <TCConfigAppEncryptable>	configuration;
 @property (strong, readonly, nonatomic) TCCoreManager				*core;
 
-@property (assign, readonly, nonatomic) BOOL isStarting;
-
 @end
+
+NS_ASSUME_NONNULL_END

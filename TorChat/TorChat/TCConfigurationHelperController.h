@@ -29,17 +29,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
+** Defines
+*/
+#pragma mark - Defines
+
+#define TCConfigurationHelperErrorDomain @"TCConfigurationHelperErrorDomain"
+
+
+
+/*
 ** Types
 */
 #pragma mark - Types
 
 typedef enum
 {
-	TCConfigurationHelperCompletionTypeCanceled,	// configuration = nil
-	TCConfigurationHelperCompletionTypeDone,		// configuration loaded, or nil if error
+	TCConfigurationHelperCompletionTypeCanceled,	// result = nil
+	TCConfigurationHelperCompletionTypeError,		// result = NSError
+	TCConfigurationHelperCompletionTypeDone,		// result = <TCConfigAppEncryptable>
 } TCConfigurationHelperCompletionType;
 
-typedef void (^TCConfigurationHelperCompletionHandler)(TCConfigurationHelperCompletionType type, id <TCConfigAppEncryptable> _Nullable configuration);
+typedef void (^TCConfigurationHelperCompletionHandler)(TCConfigurationHelperCompletionType type, id _Nullable result);
 
 
 

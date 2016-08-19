@@ -37,16 +37,6 @@
 
 
 /*
-** Notification
-*/
-#pragma mark - Notification
-
-#define  TCBuddiesWindowControllerSelectChanged		@"TCBuddiesWindowControllerSelectChanged"
-#define  TCBuddiesWindowControllerBuddyKey			@"buddy"
-
-
-
-/*
 **  TCBuddiesWindowController
 */
 #pragma mark -  TCBuddiesWindowController

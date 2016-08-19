@@ -63,7 +63,6 @@
 	TCCoreManager		*_core;
 	
 	dispatch_queue_t	_localQueue;
-	dispatch_queue_t	_noticeQueue;
 
 	NSMutableArray		*_buddies;
 	id					_lastSelected;
@@ -147,7 +146,6 @@
 	{
 		// Build an event dispatch queue
 		_localQueue = dispatch_queue_create("com.torchat.app.buddies.local", DISPATCH_QUEUE_SERIAL);
-		_noticeQueue = dispatch_queue_create("com.torchat.app.buddies.notice", DISPATCH_QUEUE_SERIAL);
 
 		// Build array of cocoa buddy
 		_buddies = [[NSMutableArray alloc] init];
@@ -343,13 +341,6 @@
 		_lastSelected = [_buddies objectAtIndex:(NSUInteger)row];
 	else
 		_lastSelected = nil;
-	
-	// Notify.
-	id obj = (row >= 0 ? [_buddies objectAtIndex:(NSUInteger)row] : [NSNull null]);
-	
-	dispatch_async(_noticeQueue, ^{
-		[[NSNotificationCenter defaultCenter] postNotificationName:TCBuddiesWindowControllerSelectChanged object:self userInfo:@{ TCBuddiesWindowControllerBuddyKey : obj }];
-	});
 }
 
 - (void)tableViewDoubleClick:(id)sender

@@ -41,6 +41,25 @@
 "sqliteconf_error_buffer_lock" = "Impossible de protéger le cache de mot de passe (%@).";
 
 
+/* App Delegate */
+"app_delegate_start_error_title" = "Erreur de démarrage";
+"app_delegate_start_error_code" =  "TorChat ne peut pas être démarré à cause d'une erreur fatale.\n\nCode d'erreur %ld - %@";
+
+
+/* Main Controller */
+"main_ctrl_conf_error_tor_manager" =  "Impossible de créer le gestionnaire Tor - veuillez de vérifier votre fichier de configuration.";
+
+
+/* Configuration Helper */
+"conf_helper_info_import_sucess" = "Clef privée importé avec succès.";
+
+"conf_helper_error_file_dont_exist" = "Le fichier de configuration n'existe pas.";
+"conf_helper_error_cant_read_private_key" = "Impossible de lire les données de la clef privée pour l'importation '%@' (%@).";
+"conf_helper_error_cant_decode_private_key" = "Impossible de décoder la clef privée '%@'.";
+"conf_helper_error_cant_extract_private_key" = "Impossible d'extraire les données de la clef privée RSA '%@'.";
+"conf_helper_error_cant_synchronize" = "Impossible de synchroniser le fichier de configuration incluant la clef privée.";
+
+
 /* Preferences */
 "pref_theme_standard-aqua" = "Aqua";
 "pref_theme_standard-flat" = "Plat";

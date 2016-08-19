@@ -41,6 +41,25 @@
 "sqliteconf_error_buffer_lock" = "Can't protect password buffer (%@).";
 
 
+/* App Delegate */
+"app_delegate_start_error_title" = "Start Error";
+"app_delegate_start_error_code" =  "TorChat can't be started because of a fatal error.\n\nError code %ld - %@";
+
+
+/* Main Controller */
+"main_ctrl_conf_error_tor_manager" =  "Can't create Tor manager - check your configuration file.";
+
+
+/* Configuration Helper */
+"conf_helper_info_import_sucess" = "Private key imported with success.";
+
+"conf_helper_error_file_dont_exist" = "The configuration file doesn't exist.";
+"conf_helper_error_cant_read_private_key" = "Can't read private key data for importation at path '%@' (%@).";
+"conf_helper_error_cant_decode_private_key" = "Can't decode private key data at path '%@'.";
+"conf_helper_error_cant_extract_private_key" = "Can't extract RSA private key data at path '%@'.";
+"conf_helper_error_cant_synchronize" = "Can't synchronize configuration file with imported key.";
+
+
 /* Preferences */
 "pref_theme_standard-aqua" = "Aqua";
 "pref_theme_standard-flat" = "Flat";
