@@ -245,6 +245,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)convertPLISTConfigurationToSQLiteConfigurationAtPath:(NSString *)path completionHandler:(TCConfigurationHelperCompletionHandler)handler
 {
+	// Create controller.
 	TCSQLiteConvertionWindowController *ctrl = [[TCSQLiteConvertionWindowController alloc] init];
 	
 	if (!ctrl)
@@ -257,9 +258,18 @@ NS_ASSUME_NONNULL_BEGIN
 	ctrl->_completionHandler = handler;
 	ctrl->_path = path;
 	
-	dispatch_async(dispatch_get_main_queue(), ^{
-		[ctrl showWindow:nil];
+	// Show as modal.
+	CFRunLoopRef runLoop = CFRunLoopGetMain();
+	
+	CFRunLoopPerformBlock(runLoop, kCFRunLoopCommonModes, ^{
+		
+		ctrl.window.preventsApplicationTerminationWhenModal = YES;
+		ctrl.window.animationBehavior = NSWindowAnimationBehaviorDocumentWindow;
+		
+		[[NSApplication sharedApplication] runModalForWindow:ctrl.window];
 	});
+	
+	CFRunLoopWakeUp(runLoop);
 }
 
 - (id)init
@@ -271,20 +281,6 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 	
 	return self;
-}
-
-
-
-/*
-** TCSQLiteConvertionWindowController - NSWindowController
-*/
-#pragma mark - TCSQLiteConvertionWindowController - NSWindowController
-
-- (void)windowDidLoad
-{
-	[super windowDidLoad];
-	
-	[self.window center];
 }
 
 
@@ -307,7 +303,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)doQuit:(id)sender
 {
 	[self close];
-	
+	[[NSApplication sharedApplication] stopModal];
+
 	if (_completionHandler)
 		_completionHandler(TCConfigurationHelperCompletionTypeCanceled, nil);
 	
@@ -379,6 +376,7 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	// Result.
 	[self close];
+	[[NSApplication sharedApplication] stopModal];
 
 	if (_completionHandler)
 		_completionHandler(TCConfigurationHelperCompletionTypeDone, configSqlite);
@@ -464,9 +462,18 @@ NS_ASSUME_NONNULL_BEGIN
 		ctrl->_completionHandler = handler;
 		ctrl->_path = path;
 		
-		dispatch_async(dispatch_get_main_queue(), ^{
-			[ctrl showWindow:nil];
+		// Show as modal.
+		CFRunLoopRef runLoop = CFRunLoopGetMain();
+		
+		CFRunLoopPerformBlock(runLoop, kCFRunLoopCommonModes, ^{
+			
+			ctrl.window.preventsApplicationTerminationWhenModal = YES;
+			ctrl.window.animationBehavior = NSWindowAnimationBehaviorDocumentWindow;
+			
+			[[NSApplication sharedApplication] runModalForWindow:ctrl.window];
 		});
+		
+		CFRunLoopWakeUp(runLoop);
 	}
 }
 
@@ -484,20 +491,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
-** TCSQLiteOpenWindowController - NSWindowController
-*/
-#pragma mark - TCSQLiteOpenWindowController - NSWindowController
-
-- (void)windowDidLoad
-{
-	[super windowDidLoad];
-	
-	[self.window center];
-}
-
-
-
-/*
 ** TCSQLiteOpenWindowController - IBAction
 */
 #pragma mark - TCSQLiteOpenWindowController - IBAction
@@ -505,7 +498,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)doQuit:(id)sender
 {
 	[self close];
-	
+	[[NSApplication sharedApplication] stopModal];
+
 	if (_completionHandler)
 		_completionHandler(TCConfigurationHelperCompletionTypeCanceled, nil);
 	
@@ -523,7 +517,8 @@ NS_ASSUME_NONNULL_BEGIN
 			_completionHandler(TCConfigurationHelperCompletionTypeDone, config);
 		
 		[self close];
-		
+		[[NSApplication sharedApplication] stopModal];
+
 		_selfRetain = nil;
 	}
 	else
