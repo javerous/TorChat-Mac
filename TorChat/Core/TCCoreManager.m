@@ -63,6 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	// > Config
 	id <TCConfigCore>		_config;
+	NSString				*_selfIdentifier;
 	
 	// > Clients
 	NSMutableArray			*_connections;
@@ -119,13 +120,19 @@ NS_ASSUME_NONNULL_BEGIN
 	[self registerInfoDescriptors];
 }
 
-- (instancetype)initWithConfiguration:(id <TCConfigCore>)config
+- (nullable instancetype)initWithConfiguration:(id <TCConfigCore>)config
 {
 	self = [super init];
 	
 	if (self)
 	{
 		_config = config;
+		
+		// Hold self identifier.
+		_selfIdentifier = config.selfIdentifier;
+		
+		if (_selfIdentifier == nil)
+			return nil;
 		
 		// Init vars.
 		_mstatus = TCStatusAvailable;
@@ -165,12 +172,11 @@ NS_ASSUME_NONNULL_BEGIN
 		}];
 		
 		// > Check we are on buddy list.
-		BOOL		found = NO;
-		NSString	*selfIdentifier = [_config selfIdentifier];
+		BOOL found = NO;
 		
 		for (TCBuddy *buddy in _buddies)
 		{
-			if ([[buddy identifier] isEqualToString:selfIdentifier])
+			if ([[buddy identifier] isEqualToString:_selfIdentifier])
 			{
 				found = true;
 				break;
@@ -180,12 +186,12 @@ NS_ASSUME_NONNULL_BEGIN
 		if (!found)
 		{
 			// Add buddy in config.
-			[_config addBuddyWithIdentifier:selfIdentifier alias:nil notes:nil];
-			[_config setBuddyLastName:_config.profileName forBuddyIdentifier:selfIdentifier];
+			[_config addBuddyWithIdentifier:_selfIdentifier alias:nil notes:nil];
+			[_config setBuddyLastName:_config.profileName forBuddyIdentifier:_selfIdentifier];
 			
 			// Add buddy in our list.
-			TCBuddy *buddy = [[TCBuddy alloc] initWithCoreManager:self configuration:_config identifier:selfIdentifier alias:nil notes:nil];
-
+			TCBuddy *buddy = [[TCBuddy alloc] initWithCoreManager:self configuration:_config identifier:_selfIdentifier alias:nil notes:nil];
+			
 			[self _checkBlocked:buddy];
 			[_buddies addObject:buddy];
 		}
@@ -784,8 +790,7 @@ NS_ASSUME_NONNULL_BEGIN
 	// if someone is pinging us with our own identifier and the
 	// random value is not from us, then someone is definitely
 	// trying to fake and we can close.
-	
-	if ([identifier isEqualToString:[_config selfIdentifier]] && abuddy && [[abuddy random] isEqualToString:random] == NO)
+	if ([identifier isEqualToString:_selfIdentifier] && abuddy && [[abuddy random] isEqualToString:random] == NO)
 	{
 		[self _error:TCCoreErrorClientMasquerade fatal:NO];
 		[self removeConnection:connection];

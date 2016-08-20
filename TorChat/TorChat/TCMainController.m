@@ -362,7 +362,7 @@ NS_ASSUME_NONNULL_BEGIN
 		
 		if (!torManager)
 		{
-			error = [NSError errorWithDomain:TCMainControllerErrorDomain code:1 userInfo:@{ NSLocalizedDescriptionKey: NSLocalizedString(@"main_ctrl_conf_error_tor_manager", @"") }];
+			error = [NSError errorWithDomain:TCMainControllerErrorDomain code:10 userInfo:@{ NSLocalizedDescriptionKey: NSLocalizedString(@"main_ctrl_conf_error_tor_manager", @"") }];
 			ctrl(SMOperationsControlFinish);
 			return;
 		}
@@ -416,7 +416,7 @@ NS_ASSUME_NONNULL_BEGIN
 					
 				case SMInfoError:
 				{
-					error = [NSError errorWithDomain:TCMainControllerErrorDomain code:1 userInfo:@{ NSLocalizedDescriptionKey: [startInfo renderMessage] }];
+					error = [NSError errorWithDomain:TCMainControllerErrorDomain code:11 userInfo:@{ NSLocalizedDescriptionKey: [startInfo renderMessage] }];
 					torManager = nil;
 					
 					ctrl(SMOperationsControlFinish);
@@ -468,6 +468,16 @@ NS_ASSUME_NONNULL_BEGIN
 		// Create core manager.
 		core = [[TCCoreManager alloc] initWithConfiguration:configuration];
 
+		if (!core)
+		{
+			error = [NSError errorWithDomain:TCMainControllerErrorDomain code:12 userInfo:@{ NSLocalizedDescriptionKey: NSLocalizedString(@"main_ctrl_conf_error_core_manager", @"") }];
+			torManager = nil;
+			
+			ctrl(SMOperationsControlFinish);
+			
+			return;
+		}
+		
 		[core addObserver:self];
 		
 		// Handle current buddies.

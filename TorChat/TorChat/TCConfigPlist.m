@@ -266,7 +266,7 @@ NS_ASSUME_NONNULL_BEGIN
 	// Not implemented.
 }
 
-- (NSString *)selfIdentifier
+- (nullable NSString *)selfIdentifier
 {
 	__block NSString *value;
  
@@ -280,7 +280,7 @@ NS_ASSUME_NONNULL_BEGIN
 		return @"xxx";
 }
 
-- (void)setSelfIdentifier:(NSString *)identifier
+- (void)setSelfIdentifier:(nullable NSString *)identifier
 {
 	if (!identifier)
 		return;
@@ -447,7 +447,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark Client
 
-- (NSString *)clientVersion:(TCConfigGet)get
+- (nullable NSString *)clientVersion:(TCConfigGet)get
 {
 	switch (get)
 	{
@@ -489,7 +489,7 @@ NS_ASSUME_NONNULL_BEGIN
 	return @"";
 }
 
-- (void)setClientVersion:(NSString *)version
+- (void)setClientVersion:(nullable NSString *)version
 {
 	if (!version)
 		return;
@@ -500,7 +500,7 @@ NS_ASSUME_NONNULL_BEGIN
 	});
 }
 
-- (NSString *)clientName:(TCConfigGet)get
+- (nullable NSString *)clientName:(TCConfigGet)get
 {
 	switch (get)
 	{
@@ -537,7 +537,7 @@ NS_ASSUME_NONNULL_BEGIN
 	return @"";
 }
 
-- (void)setClientName:(NSString *)name
+- (void)setClientName:(nullable NSString *)name
 {
 	if (!name)
 		return;
@@ -1472,13 +1472,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark Theme
 
-- (NSString *)themeIdentifier
+- (nullable NSString *)themeIdentifier
 {
 	// Not implemented.
 	return nil;
 }
 
-- (void)setThemeIdentifier:(NSString *)themeIdentifier
+- (void)setThemeIdentifier:(nullable NSString *)themeIdentifier
 {
 	// Not implemented.
 }

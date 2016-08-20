@@ -757,17 +757,12 @@ NS_ASSUME_NONNULL_BEGIN
 	[self setSetting:selfPrivateKey forKey:TCConfigSelfPrivateKey];
 }
 
-- (NSString *)selfIdentifier
+- (nullable NSString *)selfIdentifier
 {
-	NSString *result = [self settingForKey:TCConfigSelfIdentifierKey];
-	
-	if (result)
-		return result;
-	
-	return @"xxx";
+	return [self settingForKey:TCConfigSelfIdentifierKey];
 }
 
-- (void)setSelfIdentifier:(NSString *)identifier
+- (void)setSelfIdentifier:(nullable NSString *)identifier
 {
 	[self setSetting:identifier forKey:TCConfigSelfIdentifierKey];
 }
@@ -859,52 +854,40 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark Client
 
-- (NSString *)clientVersion:(TCConfigGet)get
+- (nullable NSString *)clientVersion:(TCConfigGet)get
 {
 	switch (get)
 	{
 		case TCConfigGetDefault:
 		{
-			NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-			
-			if (version)
-				return version;
-			
-			return @"";
+			return [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
 		}
 			
 		case TCConfigGetDefined:
 		{
-			NSString *value = [self settingForKey:TCConfigClientVersionKey];
-			
-			if (value)
-				return value;
-			
-			return @"";
+			return [self settingForKey:TCConfigClientVersionKey];
 		}
 			
 		case TCConfigGetReal:
 		{
 			NSString *value = [self clientVersion:TCConfigGetDefined];
 			
-			if ([value length] == 0)
+			if (value.length == 0)
 				value = [self clientVersion:TCConfigGetDefault];
 			
 			return value;
 		}
 	}
 	
-	return @"";
+	return nil;
 }
 
-- (void)setClientVersion:(NSString *)version
+- (void)setClientVersion:(nullable NSString *)version
 {
-	NSAssert(version, @"version is nil");
-	
 	[self setSetting:version forKey:TCConfigClientVersionKey];
 }
 
-- (NSString *)clientName:(TCConfigGet)get
+- (nullable NSString *)clientName:(TCConfigGet)get
 {
 	switch (get)
 	{
@@ -915,32 +898,25 @@ NS_ASSUME_NONNULL_BEGIN
 			
 		case TCConfigGetDefined:
 		{
-			NSString *value = [self settingForKey:TCConfigClientNameKey];
-			
-			if (value)
-				return value;
-			
-			return @"";
+			return [self settingForKey:TCConfigClientNameKey];
 		}
 			
 		case TCConfigGetReal:
 		{
 			NSString *value = [self clientName:TCConfigGetDefined];
 			
-			if ([value length] == 0)
+			if (value.length == 0)
 				value = [self clientName:TCConfigGetDefault];
 			
 			return value;
 		}
 	}
 	
-	return @"";
+	return nil;
 }
 
-- (void)setClientName:(NSString *)name
+- (void)setClientName:(nullable NSString *)name
 {
-	NSAssert(name, @"name is nil");
-
 	[self setSetting:name forKey:TCConfigClientNameKey];
 }
 
@@ -1775,21 +1751,13 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 
 #pragma mark Theme
 
-- (NSString *)themeIdentifier
+- (nullable NSString *)themeIdentifier
 {
-	NSString *themeIdentifier = [self settingForKey:TCConfigThemeIDKey];
-	
-	if (!themeIdentifier)
-		return @"";
-	
-	return themeIdentifier;
+	return [self settingForKey:TCConfigThemeIDKey];
 }
 
-- (void)setThemeIdentifier:(NSString *)themeIdentifier
+- (void)setThemeIdentifier:(nullable NSString *)themeIdentifier
 {
-	if (!themeIdentifier)
-		return;
-	
 	[self setSetting:themeIdentifier forKey:TCConfigThemeIDKey];
 }
 

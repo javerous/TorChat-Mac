@@ -60,7 +60,7 @@ typedef enum
 @property (assign, atomic) TCConfigTitle modeTitle;
 
 // -- Theme --
-@property NSString *themeIdentifier;
+@property (nullable, atomic) NSString *themeIdentifier;
 
 // -- Transcript --
 @property (assign, atomic) BOOL saveTranscript;

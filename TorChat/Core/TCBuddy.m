@@ -1519,14 +1519,17 @@ static char gLocalQueueContext;
 */
 #pragma mark - Send Low Command
 
-- (void)_sendPing
+- (void)_sendPing:(NSString *)identifier random:(NSString *)random
 {
 	// > localQueue <
 	
+	NSAssert(identifier, @"identifier is nil");
+	NSAssert(random, @"random is nil");
+
 	NSMutableArray *items = [[NSMutableArray alloc] init];
 	
-	[items addObject:[_config selfIdentifier]];
-	[items addObject:_random];
+	[items addObject:identifier];
+	[items addObject:random];
 
 	[self _sendCommand:@"ping" array:items channel:TCBuddyChannelOut];
 }
@@ -1541,18 +1544,22 @@ static char gLocalQueueContext;
 	[self _sendCommand:@"pong" string:random channel:TCBuddyChannelOut];
 }
 
-- (void)_sendVersion
+- (void)_sendVersion:(NSString *)version
 {
 	// > localQueue <
 	
-	[self _sendCommand:@"version" string:[_config clientVersion:TCConfigGetReal] channel:TCBuddyChannelOut];
+	NSAssert(version, @"version is nil");
+
+	[self _sendCommand:@"version" string:version channel:TCBuddyChannelOut];
 }
 
-- (void)_sendClient
+- (void)_sendClient:(NSString *)client
 {
 	// > localQueue <
-		
-	[self _sendCommand:@"client" string:[_config clientName:TCConfigGetReal] channel:TCBuddyChannelOut];
+	
+	NSAssert(client, @"client is nil");
+
+	[self _sendCommand:@"client" string:client channel:TCBuddyChannelOut];
 }
 
 - (void)_sendProfileName:(NSString *)name
@@ -1975,7 +1982,10 @@ static char gLocalQueueContext;
 	// > localQueue <
 	
 	// Send ping.
-	[self _sendPing];
+	NSString *selfIdentifier = [_config selfIdentifier];
+
+	if (selfIdentifier && _random)
+		[self _sendPing:selfIdentifier random:_random];
 	
 	// Handle received ping, if we received one.
 	[self _handlePendingPing];
@@ -2039,15 +2049,25 @@ static char gLocalQueueContext;
 	[self _sendPong:_pingRandom];
 	
 	// Torchat info.
-	[self _sendClient];
-	[self _sendVersion];
+	[self _sendClient:([_config clientName:TCConfigGetReal] ?: @"")];
+	[self _sendVersion:([_config clientVersion:TCConfigGetReal] ?: @"")];
 	
 	// Profile.
+	// > Name.
+	NSString *profileName = [coreManager profileName];
+	
+	if (profileName)
+		[self _sendProfileName:profileName];
+	
+	// > Text.
+	NSString *profileText = [coreManager profileText];
+
+	if (profileText)
+		[self _sendProfileText:profileText];
+
+	// > Avatar
 	TCImage *img = [coreManager profileAvatar];
 
-	[self _sendProfileName:([coreManager profileName] ?: @"")];
-	[self _sendProfileText:([coreManager profileText] ?: @"")];
-	
 	if (img)
 		[self _sendAvatar:img];
 	

@@ -76,25 +76,25 @@ typedef enum
 @protocol TCConfigCore <NSObject>
 
 // -- Tor --
-@property NSString *torAddress;
-@property uint16_t torPort;
+@property (atomic)	NSString *torAddress;
+@property (atomic)	uint16_t torPort;
 
 // -- TorChat --
-@property (nullable) NSString *selfPrivateKey;
-@property NSString *selfIdentifier;
-@property uint16_t selfPort;
+@property (nullable, atomic)	NSString *selfPrivateKey;
+@property (nullable, atomic)	NSString *selfIdentifier;
+@property (atomic)				uint16_t selfPort;
 
 // -- Profile --
-@property (nullable) NSString	*profileName;
-@property (nullable) NSString	*profileText;
-@property (nullable) TCImage	*profileAvatar;
+@property (nullable, atomic) NSString	*profileName;
+@property (nullable, atomic) NSString	*profileText;
+@property (nullable, atomic) TCImage	*profileAvatar;
 
 // -- Client --
-- (NSString *)clientVersion:(TCConfigGet)get;
-- (void)setClientVersion:(NSString *)version;
+- (nullable NSString *)clientVersion:(TCConfigGet)get;
+- (void)setClientVersion:(nullable NSString *)version;
 
-- (NSString *)clientName:(TCConfigGet)get;
-- (void)setClientName:(NSString *)name;
+- (nullable NSString *)clientName:(TCConfigGet)get;
+- (void)setClientName:(nullable NSString *)name;
 
 // -- Buddies --
 - (NSArray *)buddiesIdentifiers; // Array of buddy identifier.

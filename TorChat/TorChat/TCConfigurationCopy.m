@@ -83,12 +83,17 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	if (version.length > 0)
 		[target setClientVersion:version];
-	
+	else
+		[target setClientVersion:nil];
+
 
 	NSString *name = [source clientName:TCConfigGetDefined];
 	
 	if (name.length > 0)
-		[target setClientVersion:name];
+		[target setClientName:name];
+	else
+		[target setClientName:nil];
+
 	
 	// Paths.
 	void (^handleComponent)(TCConfigPathComponent component) = ^(TCConfigPathComponent component) {

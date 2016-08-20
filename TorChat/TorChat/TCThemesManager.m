@@ -93,6 +93,8 @@ NS_ASSUME_NONNULL_BEGIN
 		
 		[self loadThemeAtPath:[[NSBundle mainBundle] pathForResource:@"ThemeFlat" ofType:@"plist"]];
 		[self loadThemeAtPath:[[NSBundle mainBundle] pathForResource:@"ThemeAqua" ofType:@"plist"]];
+	
+		NSAssert(_themes.count > 0, @"can't load any theme");
 	}
 	
 	return self;
@@ -152,6 +154,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable TCTheme *)themeForIdentifier:(NSString *)identifier
 {
+	NSAssert(identifier, @"identifier is nil");
+	
 	for (TCTheme *theme in _themes)
 	{
 		if ([theme.identifier isEqualToString:identifier])

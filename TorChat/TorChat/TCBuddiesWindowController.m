@@ -916,7 +916,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateTitleUI
 {	
-	NSString *content = @"-";
+	NSString *content = nil;
 	
 	if (_configuration)
 	{
@@ -929,18 +929,17 @@ NS_ASSUME_NONNULL_BEGIN
 				
 				[[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:0]] setState:NSOffState];
 				[[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:1]] setState:NSOnState];
+				
 				break;
 			}
 				
 			case TCConfigTitleName:
 			{
 				content = [_core profileName];
-				
-				if ([content length] == 0)
-					content = @"-";
 								
 				[[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:0]] setState:NSOnState];
 				[[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:1]] setState:NSOffState];
+				
 				break;
 			}
 		}
@@ -952,6 +951,9 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 	
 	// Update popup-title
+	if (content.length == 0)
+		content = @"-";
+	
 	[[_imTitle itemAtIndex:0] setTitle:content];
 }
 

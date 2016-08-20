@@ -131,7 +131,7 @@ typedef enum
 
 
 // -- Instance --
-- (instancetype)initWithConfiguration:(id <TCConfigCore>)config;
+- (nullable instancetype)initWithConfiguration:(id <TCConfigCore>)config;
 
 // -- Life --
 - (void)start;

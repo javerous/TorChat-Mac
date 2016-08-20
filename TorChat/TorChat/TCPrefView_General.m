@@ -84,11 +84,11 @@ NS_ASSUME_NONNULL_BEGIN
 	[self view];
 		
 	// Client info.
-	[[_clientNameField cell] setPlaceholderString:[self.config clientName:TCConfigGetDefault]];
-	[[_clientVersionField cell] setPlaceholderString:[self.config clientVersion:TCConfigGetDefault]];
+	[[_clientNameField cell] setPlaceholderString:([self.config clientName:TCConfigGetDefault] ?: @"")];
+	[[_clientVersionField cell] setPlaceholderString:([self.config clientVersion:TCConfigGetDefault] ?: @"")];
 	
-	[_clientNameField setStringValue:[self.config clientName:TCConfigGetDefined]];
-	[_clientVersionField setStringValue:[self.config clientVersion:TCConfigGetDefined]];
+	[_clientNameField setStringValue:([self.config clientName:TCConfigGetDefined] ?: @"")];
+	[_clientVersionField setStringValue:([self.config clientVersion:TCConfigGetDefined] ?: @"")];
 	
 	// Transcripts.
 	[_saveTranscriptCheckBox setState:(self.config.saveTranscript ? NSOnState : NSOffState)];
@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
 		
 		[_themesPopup addItemWithTitle:NSLocalizedString(localizdKey, @"")];
 		
-		if ([theme.identifier isEqualToString:themeID])
+		if (themeID && [theme.identifier isEqualToString:themeID])
 			themeIndex = idx;
 	}];
 
@@ -114,13 +114,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 	if (themeIndex != NSNotFound)
 		[_themesPopup selectItemAtIndex:(NSInteger)themeIndex];
+	else
+		[_themesPopup selectItemAtIndex:0];
 }
 
 - (void)panelDidDisappear
 {
-	// Client info.
-	[self.config setClientName:[_clientNameField stringValue]];
-	[self.config setClientVersion:[_clientVersionField stringValue]];
+	// CLient info.
+	// > name.
+	NSString *clientName = [_clientNameField stringValue];
+	
+	if (clientName.length > 0)
+		[self.config setClientName:clientName];
+	else
+		[self.config setClientName:nil];
+
+	// > version.
+	NSString *clientVersion = [_clientVersionField stringValue];
+	
+	if (clientVersion.length > 0)
+		[self.config setClientVersion:clientVersion];
+	else
+		[self.config setClientVersion:nil];
 	
 	// Transcript.
 	[self.config setSaveTranscript:(_saveTranscriptCheckBox.state == NSOnState)];

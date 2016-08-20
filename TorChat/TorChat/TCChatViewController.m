@@ -118,12 +118,16 @@ NS_ASSUME_NONNULL_BEGIN
 		_timestampFormater.timeStyle = NSDateFormatterMediumStyle;
 		
 		// Get theme to use.
-		TCTheme *theme = [[TCThemesManager sharedManager] themeForIdentifier:config.themeIdentifier];
+		NSString	*themeIdentifier = config.themeIdentifier;
+		TCTheme		*theme = nil;
+		
+		if (themeIdentifier)
+			theme = [[TCThemesManager sharedManager] themeForIdentifier:themeIdentifier];
 		
 		if (!theme)
 		{
 			NSArray *themes = [[TCThemesManager sharedManager] themes];
-			
+						
 			theme = [themes firstObject];
 		}
 		

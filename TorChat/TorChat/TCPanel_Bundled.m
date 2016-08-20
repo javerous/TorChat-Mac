@@ -205,7 +205,7 @@ NS_ASSUME_NONNULL_BEGIN
 				{
 					[_loadingIndicator stopAnimation:self];
 
-					if (_currentConfig.selfIdentifier.length > 0 && _currentConfig.selfPrivateKey != nil)
+					if (_currentConfig.selfIdentifier != nil && _currentConfig.selfPrivateKey != nil)
 						[self.panelProxy setDisableContinue:NO];
 				}
 			}
