@@ -165,6 +165,8 @@ NS_ASSUME_NONNULL_BEGIN
 	[self.panelProxy setNextPanelID:@"ac_mode"];
 	
 	[self checkValidity];
+	
+	[self.view.window makeFirstResponder:passwordField];
 }
 
 
