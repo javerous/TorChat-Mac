@@ -142,7 +142,6 @@ static BOOL isNumber(NSString *str);
 	}
 	
 	// Configure assistant.
-	[self.panelProxy setIsLastPanel:YES];
 	[self.panelProxy setDisableContinue:YES];
 	
 	[_currentConfig setMode:TCConfigModeCustom];

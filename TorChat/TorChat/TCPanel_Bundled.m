@@ -132,7 +132,6 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 	
 	// Configure assitant.
-	[self.panelProxy setIsLastPanel:YES];
 	[self.panelProxy setDisableContinue:YES]; // Wait for tor
 	
 	// Add view to configure download path.

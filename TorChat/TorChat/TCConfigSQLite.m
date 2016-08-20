@@ -181,8 +181,10 @@ NS_ASSUME_NONNULL_BEGIN
 			{
 				if (error)
 					*error = [self.class errorWithCode:4 localizedMessage:@(strerror(errno))];
+				
 				free(_dtbPassword);
 				_dtbPassword = NULL;
+				
 				return nil;
 			}
 			

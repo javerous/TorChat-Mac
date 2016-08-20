@@ -165,7 +165,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)panelDidAppear
 {
-	[self.panelProxy setIsLastPanel:NO];
 	[self.panelProxy setNextPanelID:@"ac_mode"];
 	
 	[self checkValidity];

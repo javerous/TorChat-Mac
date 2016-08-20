@@ -104,7 +104,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)panelDidAppear
 {
-	[self.panelProxy setIsLastPanel:NO];
 	[self.panelProxy setNextPanelID:@"ac_security"];
 }
 
@@ -123,16 +122,12 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	if (tag == 1)
 	{
-		[self.panelProxy setIsLastPanel:NO];
 		[self.panelProxy setNextPanelID:@"ac_mode"];
-		
 		[self.panelProxy setDisableContinue:NO];
 	}
 	else if (tag == 2)
 	{
-		[self.panelProxy setIsLastPanel:YES];
 		[self.panelProxy setNextPanelID:nil];
-		
 		[self.panelProxy setDisableContinue:!_configPath];
 	}
 }
