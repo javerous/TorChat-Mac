@@ -573,11 +573,18 @@ NS_ASSUME_NONNULL_BEGIN
 				NSImage *avatar = [tcAvatar imageRepresentation];
 				
 				if (!avatar)
-					return;
+					break;
 				
 				// Update table view.
 				dispatch_async(dispatch_get_main_queue(), ^{
-					[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
+					
+					NSUInteger	index = NSNotFound;
+					TCChatEntry	*entry = [self _chatEntryForBuddy:buddy index:&index];
+					
+					if (!entry)
+						return;
+					
+					[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 				});
 				
 				break;
