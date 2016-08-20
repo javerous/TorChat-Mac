@@ -23,6 +23,9 @@
 #import <Cocoa/Cocoa.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Defines
 */
@@ -56,3 +59,6 @@
 @property (strong, nonatomic) NSDictionary *content;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

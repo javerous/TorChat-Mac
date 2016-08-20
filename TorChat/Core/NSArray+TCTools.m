@@ -23,6 +23,9 @@
 #import "NSArray+TCTools.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** NSArray (TCTools)
 */
@@ -64,3 +67,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

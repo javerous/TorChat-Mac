@@ -25,6 +25,9 @@
 #import "TCChatMessage.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Types
 */
@@ -64,8 +67,8 @@ typedef enum
 
 - (void)addTranscriptForBuddyIdentifier:(NSString *)identifier message:(TCChatMessage *)message completionHandler:(void (^)(int64_t msgID))handler;
 
-- (void)transcriptBuddiesIdentifiersWithCompletionHandler:(void (^)(NSArray *buddiesIdentifiers))handler;
-- (void)transcriptMessagesForBuddyIdentifier:(NSString *)identifier beforeMessageID:(NSNumber *)msgId limit:(NSUInteger)limit completionHandler:(void (^)(NSArray *messages))handler;
+- (void)transcriptBuddiesIdentifiersWithCompletionHandler:(void (^)(NSArray * _Nullable buddiesIdentifiers))handler;
+- (void)transcriptMessagesForBuddyIdentifier:(NSString *)identifier beforeMessageID:(NSNumber *)msgId limit:(NSUInteger)limit completionHandler:(void (^)(NSArray * _Nullable messages))handler;
 
 - (void)transcriptRemoveMessagesForBuddyIdentifier:(NSString *)identifier;
 - (void)transcriptRemoveMessageForID:(int64_t)msgID;
@@ -73,3 +76,6 @@ typedef enum
 - (BOOL)transcriptMessagesIDBoundariesForBuddyIdentifier:(NSString *)identifier firstMessageID:(int64_t *)firstID lastMessageID:(int64_t *)lastID;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

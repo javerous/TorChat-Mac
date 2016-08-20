@@ -25,6 +25,9 @@
 #import "TCConfigAppEncryptable.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Forward
 */
@@ -51,3 +54,6 @@
 - (void)closeInfoForBuddy:(TCBuddy *)buddy;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

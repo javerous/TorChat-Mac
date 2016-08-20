@@ -51,6 +51,8 @@
 #import "TCLogsManager.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
 
 /*
 ** TCBuddiesController - Private
@@ -138,7 +140,7 @@
 	return instance;
 }
 
-- (id)init
+- (instancetype)init
 {
 	self = [super initWithWindowNibName:@"BuddiesWindow"];
 	
@@ -172,9 +174,9 @@
 	[_tableView setDoubleAction:@selector(tableViewDoubleClick:)];
 	
 	// Configura bar.
-	_barView.startCap = [NSImage imageNamed:@"bar"];
-	_barView.centerFill = [NSImage imageNamed:@"bar"];
-	_barView.endCap = [NSImage imageNamed:@"bar"];
+	_barView.startCap = (NSImage *)[NSImage imageNamed:@"bar"];
+	_barView.centerFill = (NSImage *)[NSImage imageNamed:@"bar"];
+	_barView.endCap = (NSImage *)[NSImage imageNamed:@"bar"];
 }
 
 
@@ -217,7 +219,7 @@
 		
 		// > Init avatar.
 		NSImage *avatar = [[_core profileAvatar] imageRepresentation];
-		
+				
 		if ([[avatar representations] count] > 0)
 			[_imAvatar setImage:avatar];
 		else
@@ -562,9 +564,6 @@
 
 - (void)dropButton:(TCDropButton *)button doppedImage:(NSImage *)avatar
 {
-	if (!avatar)
-		return;
-	
 	TCImage *image = [[TCImage alloc] initWithImage:avatar];
 	
 	[_core setProfileAvatar:image];
@@ -617,7 +616,7 @@
 		NSArray	*urls = [openDlg URLs];
 		NSImage *avatar = [[NSImage alloc] initWithContentsOfURL:[urls objectAtIndex:0]];
 
-		[self dropButton:nil doppedImage:avatar];
+		[self dropButton:_imAvatar doppedImage:avatar];
 	}
 }
 
@@ -731,7 +730,12 @@
 		NSArray *urls = [openDlg URLs];
 
 		for (NSURL *url in urls)
-			[buddy sendFile:[url path]];
+		{
+			NSString *path = url.path;
+			
+			if (path)
+				[buddy sendFile:path];
+		}
 	}
 }
 
@@ -756,8 +760,8 @@
 	NSString *tname = [_core profileName];
 	NSString *ttext = [_core profileText];
 	
-	[_profileName setStringValue:tname];
-	[[[_profileText textStorage] mutableString] setString:ttext];
+	[_profileName setStringValue:(tname ?: @"")];
+	[[[_profileText textStorage] mutableString] setString:(ttext ?: @"")];
 	
 	[self.window beginSheet:_profileWindow completionHandler:nil];
 }
@@ -874,13 +878,12 @@
 
 - (void)startChatForBuddy:(TCBuddy *)buddy
 {
-	if (!buddy)
-		return;
+	NSAssert(buddy, @"buddy is nil");
 
 	[[TCChatWindowController sharedController] openChatWithBuddy:buddy select:YES];
 }
 
-- (TCBuddy *)selectedBuddy
+- (nullable TCBuddy *)selectedBuddy
 {
 	NSInteger row = [_tableView selectedRow];
 	
@@ -952,13 +955,13 @@
 	[[_imTitle itemAtIndex:0] setTitle:content];
 }
 
-- (void)_reloadBuddy:(TCBuddy *)buddy
+- (void)_reloadBuddy:(nullable TCBuddy *)buddy
 {
 	// > main queue <
 	
 	if (buddy)
 	{
-		NSUInteger index = [_buddies indexOfObjectIdenticalTo:buddy];
+		NSUInteger index = [_buddies indexOfObjectIdenticalTo:(TCBuddy *)buddy];
 		
 		if (index != NSNotFound)
 			[_tableView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
@@ -977,3 +980,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

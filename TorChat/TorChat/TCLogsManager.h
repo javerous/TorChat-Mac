@@ -23,6 +23,9 @@
 #import <Foundation/Foundation.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Defines
 */
@@ -86,12 +89,11 @@ typedef enum
 - (void)addGlobalLogWithKind:(TCLogKind)kind message:(NSString *)message, ...;
 - (void)addGlobalLogWithInfo:(SMInfo *)info;
 
-
 // -- Properties --
-- (NSString *)nameForKey:(NSString *)key;
+- (nullable NSString *)nameForKey:(NSString *)key;
 
 // -- Observer --
-- (void)addObserver:(id <TCLogsObserver>)observer forKey:(NSString *)key; // observer is weak referenced.
+- (void)addObserver:(id <TCLogsObserver>)observer forKey:(nullable NSString *)key; // observer is weak referenced.
 - (void)removeObserverForKey:(NSString *)key;
 
 @end
@@ -110,3 +112,6 @@ typedef enum
 @property (readonly, nonatomic) NSString	*message;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

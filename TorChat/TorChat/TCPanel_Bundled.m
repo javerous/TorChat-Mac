@@ -34,6 +34,9 @@
 #import "SMTorConfiguration+TCConfig.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Macro
 */
@@ -94,7 +97,7 @@
 
 + (id <SMAssistantPanel>)panelInstance
 {
-	return [[TCPanel_Bundled alloc] initWithNibName:@"AssistantPanel_Bundled" bundle:nil];
+	return (id <SMAssistantPanel>)[[TCPanel_Bundled alloc] initWithNibName:@"AssistantPanel_Bundled" bundle:nil];
 }
 
 + (NSString *)panelIdentifier
@@ -112,7 +115,7 @@
 	return self.view;
 }
 
-- (id)panelContent
+- (nullable id)panelContent
 {
 	return _currentConfig;
 }
@@ -136,6 +139,12 @@
 	
 	// Create tor configuration.
 	SMTorConfiguration *torConfig = [[SMTorConfiguration alloc] initWithTorChatConfiguration:_currentConfig];
+	
+	if (!torConfig)
+	{
+		NSBeep();
+		exit(0);
+	}
 	
 	// Create tor manager & start it.
 	__weak NSTextField *weakIMIdentifierField = _imIdentifierField;
@@ -219,3 +228,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

@@ -23,6 +23,9 @@
 #import "TCImage.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Defines
 */
@@ -67,15 +70,15 @@
 */
 #pragma mark - TCImage - Instance
 
-- (id)initWithWidth:(NSUInteger)width andHeight:(NSUInteger)height
+- (instancetype)initWithWidth:(NSUInteger)width height:(NSUInteger)height
 {
 	self = [super init];
 	
 	if (self)
 	{
-		if (width == 0 || height == 0)
-			return nil;
-		
+		NSAssert(width > 0, @"width is zero");
+		NSAssert(height > 0, @"height is zero");
+
 		_width = width;
 		_height = height;
 	}
@@ -84,14 +87,11 @@
 }
 
 #if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-- (id)initWithImage:(UIImage *)image
+- (nullable instancetype)initWithImage:(UIImage *)image
 #else
-- (id)initWithImage:(NSImage *)image
+- (nullable instancetype)initWithImage:(NSImage *)image
 #endif
 {
-	if (!image)
-		return nil;
-	
 	self = [super init];
 	
 	if (self)
@@ -203,7 +203,7 @@
 */
 #pragma mark - TCImage - NSCopying
 
-- (id)copyWithZone:(NSZone *)zone
+- (id)copyWithZone:(nullable NSZone *)zone
 {
 	TCImage *copy = [[TCImage allocWithZone:zone] init];
 	
@@ -278,7 +278,7 @@
 	return _bitmapAlpha;
 }
 
-- (NSData *)bitmapMixed
+- (nullable NSData *)bitmapMixed
 {
 	if (_mixedBitmap && _mixedRendered)
 		return _mixedBitmap;
@@ -337,9 +337,9 @@
 #pragma mark - TCImage - Representation
 
 #if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-- (UIImage *)imageRepresentation
+- (nullable UIImage *)imageRepresentation
 #else
-- (NSImage	*)imageRepresentation
+- (nullable NSImage	*)imageRepresentation
 #endif
 {
 	// Create data provider from mixed data.
@@ -382,3 +382,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

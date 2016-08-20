@@ -25,6 +25,9 @@
 #import "TCConfigAppEncryptable.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Forward
 */
@@ -56,9 +59,13 @@
 - (IBAction)doEditProfile:(id)sender;
 
 // -- Tools --
-- (TCBuddy *)selectedBuddy;
+- (nullable TCBuddy *)selectedBuddy;
 
 // -- Running --
 - (void)startWithConfiguration:(id <TCConfigAppEncryptable>)configuration coreManager:(TCCoreManager *)coreMananager completionHandler:(dispatch_block_t)handler;
 - (void)stopWithCompletionHandler:(dispatch_block_t)handler;
+
 @end
+
+
+NS_ASSUME_NONNULL_END

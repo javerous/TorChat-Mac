@@ -28,6 +28,9 @@
 #import "TCConfigSQLite.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCPanel_Security - Private
 */
@@ -72,7 +75,7 @@
 
 + (id <SMAssistantPanel>)panelInstance
 {
-	return [[TCPanel_Security alloc] initWithNibName:@"AssistantPanel_Security" bundle:nil];
+	return (id <SMAssistantPanel>)[[TCPanel_Security alloc] initWithNibName:@"AssistantPanel_Security" bundle:nil];
 }
 
 + (NSString *)panelIdentifier
@@ -90,7 +93,7 @@
 	return self.view;
 }
 
-- (id)panelContent
+- (nullable id)panelContent
 {
 	// Obtain launch context.
 	NSString	*bundlePath = [[NSBundle mainBundle] bundlePath];
@@ -208,3 +211,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

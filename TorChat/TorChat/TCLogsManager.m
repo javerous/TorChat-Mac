@@ -25,6 +25,8 @@
 #import "TCLogsManager.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
 
 /*
 ** TCLogEntry - Private
@@ -34,7 +36,7 @@
 @interface TCLogEntry ()
 
 + (instancetype)logEntryWithKind:(TCLogKind)kind message:(NSString *)message;
-+ (instancetype)logEntryWithTimestamp:(NSDate *)timestamp kind:(TCLogKind)kind message:(NSString *)message;
++ (instancetype)logEntryWithTimestamp:(nullable NSDate *)timestamp kind:(TCLogKind)kind message:(NSString *)message;
 
 @end
 
@@ -45,19 +47,16 @@
 	return [self logEntryWithTimestamp:nil kind:kind message:message];
 }
 
-+ (instancetype)logEntryWithTimestamp:(NSDate *)timestamp kind:(TCLogKind)kind message:(NSString *)message
++ (instancetype)logEntryWithTimestamp:(nullable NSDate *)timestamp kind:(TCLogKind)kind message:(NSString *)message
 {
 	TCLogEntry *entry = [[TCLogEntry alloc] init];
-
-	if (!message)
-		message = @"";
 	
 	if (!timestamp)
 		timestamp = [NSDate date];
 	
-	entry->_timestamp = timestamp;
+	entry->_timestamp = (NSDate *)timestamp;
 	entry->_kind = kind;
-	entry->_message = message;
+	entry->_message = (NSString *)message;
 	
 	return entry;
 }
@@ -102,7 +101,7 @@
 	return shr;
 }
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
 	
@@ -131,7 +130,7 @@
 */
 #pragma mark - TCLogsWindowController - Logs
 
-- (void)addLogWithTimestamp:(NSDate *)timestamp key:(NSString *)key kind:(TCLogKind)kind content:(NSString *)content
+- (void)addLogWithTimestamp:(nullable NSDate *)timestamp key:(NSString *)key kind:(TCLogKind)kind content:(NSString *)content
 {
 	dispatch_sync(_localQueue, ^{
 		
@@ -298,10 +297,9 @@
 	return result;
 }
 
-- (NSArray *)logsForKey:(NSString *)key
+- (nullable NSArray *)logsForKey:(NSString *)key
 {
-	if (!key)
-		return nil;
+	NSAssert(key, @"key is nil");
 	
 	__block NSArray *result = nil;
 	
@@ -319,10 +317,9 @@
 */
 #pragma mark - TCLogsWindowController - Properties
 
-- (NSString *)nameForKey:(NSString *)key
+- (nullable NSString *)nameForKey:(NSString *)key
 {
-	if (!key)
-		return nil;
+	NSAssert(key, @"key is nil");
 	
 	__block NSString *result = nil;
 	
@@ -340,10 +337,9 @@
 */
 #pragma mark - TCLogsWindowController - Observer
 
-- (void)addObserver:(id <TCLogsObserver>)observer forKey:(NSString *)key
+- (void)addObserver:(id <TCLogsObserver>)observer forKey:(nullable NSString *)key
 {
-	if (!observer)
-		return;
+	NSAssert(observer, @"observer is nil");
 	
 	// Build observer item
 	dispatch_async(_localQueue, ^{
@@ -357,12 +353,12 @@
 		// Give the current content
 		if (key)
 		{
-			NSArray *items = [[_logs objectForKey:key] copy];
+			NSArray *items = [[_logs objectForKey:(NSString *)key] copy];
 		
 			if (items)
 			{
 				dispatch_async(_observerQueue, ^{
-					[observer logManager:self updateForKey:key withEntries:items];
+					[observer logManager:self updateForKey:(NSString *)key withEntries:items];
 				});
 			}
 		}
@@ -382,8 +378,7 @@
 
 - (void)removeObserverForKey:(NSString *)key
 {
-	if (!key)
-		return;
+	NSAssert(key, @"key is nil");
 	
 	dispatch_async(_localQueue, ^{
 		[_keyObservers removeObjectForKey:key];
@@ -391,3 +386,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

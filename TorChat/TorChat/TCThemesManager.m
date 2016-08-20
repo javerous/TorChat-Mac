@@ -105,10 +105,13 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCThemesManager - Load
 
-- (void)loadThemeAtPath:(NSString *)path
+- (void)loadThemeAtPath:(nullable NSString *)path
 {
+	if (!path)
+		return;
+	
 	// Read data.
-	NSData *data = [NSData dataWithContentsOfFile:path];
+	NSData *data = [NSData dataWithContentsOfFile:(NSString *)path];
 	
 	if (!data)
 		return;
@@ -123,8 +126,14 @@ NS_ASSUME_NONNULL_BEGIN
 	NSDictionary	*root = plist;
 	TCTheme			*theme = [[TCTheme alloc] init];
 	
-	theme.identifier = root[TCThemeIdentifierKey];
-	theme.chatTheme = root[TCThemeChatKey];
+	NSString		*identifier = root[TCThemeIdentifierKey];
+	NSDictionary	*chatTheme = root[TCThemeChatKey];
+	
+	if (!identifier || !chatTheme)
+		return;
+
+	theme.identifier = identifier;
+	theme.chatTheme = chatTheme;
 	
 	[_themes addObject:theme];
 }

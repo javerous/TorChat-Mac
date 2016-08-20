@@ -37,6 +37,9 @@
 #import "TCBuddy.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCChatViewController - Private
 */
@@ -98,7 +101,7 @@
 	return [[TCChatViewController alloc] initWithBuddy:buddy configuration:config];
 }
 
-- (id)initWithBuddy:(TCBuddy *)buddy configuration:(id <TCConfigApp>)config
+- (instancetype)initWithBuddy:(TCBuddy *)buddy configuration:(id <TCConfigApp>)config
 {
 	self = [super initWithNibName:@"ChatView" bundle:nil];
 
@@ -191,9 +194,9 @@
 		[_chatTranscript setRemoteAvatar:remoteAvatar];
 	
 	// Configure back.
-	_backView.startCap = [NSImage imageNamed:@"back_send_field"];
-	_backView.centerFill = [NSImage imageNamed:@"back_send_field"];
-	_backView.endCap = [NSImage imageNamed:@"back_send_field"];
+	_backView.startCap = (NSImage *)[NSImage imageNamed:@"back_send_field"];
+	_backView.centerFill = (NSImage *)[NSImage imageNamed:@"back_send_field"];
+	_backView.endCap = (NSImage *)[NSImage imageNamed:@"back_send_field"];
 	
 	// Handle error action.
 	__weak TCChatViewController	*weakSelf = self;
@@ -227,7 +230,7 @@
 			[alert addButtonWithTitle:NSLocalizedString(@"chat_send_resend", @"")];
 			[alert addButtonWithTitle:NSLocalizedString(@"chat_send_cancel", @"")];
 
-			[alert beginSheetModalForWindow:strongSelf.view.window completionHandler:^(NSModalResponse returnCode) {
+			[alert beginSheetModalForWindow:(NSWindow *)strongSelf.view.window completionHandler:^(NSModalResponse returnCode) {
 				if (returnCode == NSAlertFirstButtonReturn)
 				{
 					// > Remove message.
@@ -365,6 +368,11 @@
 
 - (void)handleLocalMessage:(NSString *)message
 {
+	TCBuddy *buddy = _buddy;
+	
+	if (!buddy)
+		return;
+	
 	// Create local message.
 	TCChatMessage *msg = [[TCChatMessage alloc] init];
 
@@ -373,8 +381,6 @@
 	msg.side = TCChatMessageSideLocal;
 	
 	// Send message.
-	TCBuddy *buddy = _buddy;
-	
 	[buddy sendMessage:message completionHanndler:^(SMInfo *info) {
 		
 		// Set send error.
@@ -547,6 +553,11 @@
 {
 	// > main queue <
 	
+	TCBuddy *buddy = _buddy;
+	
+	if (!buddy)
+		return;
+	
 	// Check IDs.
 	if (_topFetchedMsgID == -1)
 		_topFetchedMsgID = _transcriptLastMsgID + 1;
@@ -586,7 +597,7 @@
 	_isFetchingTranscript = YES;
 	
 	// Fetch messages.
-	[_configuration transcriptMessagesForBuddyIdentifier:_buddy.identifier beforeMessageID:@(_topFetchedMsgID) limit:fetchLimit completionHandler:^(NSArray *messages) {
+	[_configuration transcriptMessagesForBuddyIdentifier:buddy.identifier beforeMessageID:@(_topFetchedMsgID) limit:fetchLimit completionHandler:^(NSArray * _Nullable messages) {
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
 			
@@ -610,7 +621,7 @@
 			}
 			
 			// > Add messages transcript view.
-			[self _handleMessages:messages endOfTranscript:NO];
+			[self _handleMessages:(NSArray *)messages endOfTranscript:NO];
 			
 			// > Add top timetamp.
 			if (_topFetchedMsgID <= _transcriptFirstMsgID)
@@ -632,3 +643,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

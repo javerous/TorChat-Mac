@@ -25,6 +25,9 @@
 #import "TCLocationViewController.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCPrefView_Locations
 */
@@ -53,7 +56,7 @@
 */
 #pragma mark - TCPrefView_Locations - Instance
 
-- (id)init
+- (instancetype)init
 {
 	self = [super initWithNibName:@"PrefView_Locations" bundle:nil];
 	
@@ -138,7 +141,7 @@
 		[alert addButtonWithTitle:NSLocalizedString(@"location_cancel", @"")];
 		
 		// Ask user for confirmation.
-		[alert beginSheetModalForWindow:self.view.window completionHandler:^(NSModalResponse returnCode) {
+		[alert beginSheetModalForWindow:(NSWindow *)self.view.window completionHandler:^(NSModalResponse returnCode) {
 			
 			if (returnCode != NSAlertFirstButtonReturn)
 				return;
@@ -214,3 +217,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

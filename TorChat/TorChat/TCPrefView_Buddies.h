@@ -25,6 +25,9 @@
 #import "TCPrefView.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCPrefView_Buddies
 */
@@ -33,3 +36,6 @@
 @interface TCPrefView_Buddies : TCPrefView
 
 @end
+
+
+NS_ASSUME_NONNULL_END

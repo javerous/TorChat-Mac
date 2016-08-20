@@ -23,6 +23,9 @@
 #import "TCThreePartImageView.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCThreePartImageView
 */
@@ -43,7 +46,6 @@
 	NSImage *startCap = _startCap;
 	NSImage *centerFill = _centerFill;
 	NSImage *endCap = _endCap;
-
 	
 	if (!startCap || !centerFill || !endCap)
 		return;
@@ -54,3 +56,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

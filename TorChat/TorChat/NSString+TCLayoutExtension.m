@@ -23,6 +23,9 @@
 #import "NSString+TCLayoutExtension.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** NSString - TCLayoutExtension
 */
@@ -83,3 +86,7 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END
+

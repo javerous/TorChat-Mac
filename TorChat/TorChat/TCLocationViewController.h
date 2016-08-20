@@ -25,6 +25,9 @@
 #import "TCConfigApp.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCLocationViewController
 */
@@ -37,3 +40,6 @@
 - (void)addToView:(NSView *)view;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

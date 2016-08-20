@@ -23,6 +23,9 @@
 #import "TCValue.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCValue
 */
@@ -38,7 +41,7 @@
 	return [[[self class] alloc] initWithWeakObject:object];
 }
 
-- (id)initWithWeakObject:(id)object
+- (instancetype)initWithWeakObject:(id)object
 {
 	self = [super init];
 	
@@ -50,9 +53,12 @@
 	return self;
 }
 
-- (id)object
+- (nullable id)object
 {
 	return _object;
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

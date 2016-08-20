@@ -36,6 +36,8 @@
 #import "TCChatCellView.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
 
 /*
 ** TCChatEntry
@@ -47,7 +49,7 @@
 @property (strong, nonatomic) TCBuddy				*buddy;
 @property (strong, nonatomic) TCChatViewController	*viewController;
 
-@property (strong, nonatomic) NSString				*lastMessage;
+@property (strong, nonatomic, nullable) NSString	*lastMessage;
 
 @property (strong, nonatomic) TCButtonContext		*buttonContext;
 
@@ -111,7 +113,7 @@
 	return shr;
 }
 
-- (id)init
+- (instancetype)init
 {
 	self = [super initWithWindowNibName:@"ChatWindow"];
 	
@@ -264,7 +266,7 @@
 			[alert addButtonWithTitle:NSLocalizedString(@"chat_close", @"")];
 			[alert addButtonWithTitle:NSLocalizedString(@"chat_cancel", @"")];
 			
-			[alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
+			[alert beginSheetModalForWindow:(NSWindow *)self.window completionHandler:^(NSModalResponse returnCode) {
 				if (returnCode == NSAlertFirstButtonReturn)
 				{
 					[self closeChatWithBuddy:buddy];
@@ -306,7 +308,7 @@
 */
 #pragma mark - TCChatWindowController - Chat
 
-- (void)openChatWithBuddy:(TCBuddy *)abuddy select:(BOOL)select
+- (void)openChatWithBuddy:(nullable TCBuddy *)abuddy select:(BOOL)select
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
@@ -625,8 +627,7 @@
 {
 	// > main queue <
 	
-	if (!buddy)
-		return;
+	NSAssert(buddy, @"buddy is nil");
 	
 	if (_selectedBuddy == buddy)
 		return;
@@ -676,7 +677,7 @@
 	[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 }
 
-- (void)_showChatViewController:(TCChatViewController *)viewCtrl
+- (void)_showChatViewController:(nullable TCChatViewController *)viewCtrl
 {
 	// > main queue <
 	
@@ -705,12 +706,11 @@
 	[viewCtrl makeFirstResponder];
 }
 
-- (TCChatEntry *)_chatEntryForBuddy:(TCBuddy *)buddy index:(NSUInteger *)index
+- (nullable TCChatEntry *)_chatEntryForBuddy:(TCBuddy *)buddy index:(nullable NSUInteger *)index
 {
 	// > main queue <
 	
-	if (!buddy)
-		return nil;
+	NSAssert(buddy, @"buddy is nil");
 	
 	NSUInteger findex = [_chatEntries indexOfObjectPassingTest:^BOOL(TCChatEntry * _Nonnull entry, NSUInteger idx, BOOL * _Nonnull stop) {
 		
@@ -731,3 +731,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

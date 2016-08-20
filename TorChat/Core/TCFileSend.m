@@ -26,6 +26,9 @@
 #import "TCDebugLog.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCFileSend - Private
 */
@@ -55,7 +58,7 @@
 */
 #pragma mark - TCFileSend - Instance
 
-- (id)initWithFilePath:(NSString *)filePath
+- (nullable instancetype)initWithFilePath:(NSString *)filePath
 {
 	self = [super init];
 	
@@ -89,13 +92,7 @@
 		_blockSize = 8192;
 		
 		// UUID.
-		uuid_t	out;
-		char	cout[40];
-		
-		uuid_generate(out);
-		uuid_unparse(out, cout);
-		
-		_uuid = [[NSString alloc] initWithCString:cout encoding:NSASCIIStringEncoding];
+		_uuid = [[NSUUID UUID] UUIDString];
 		
 		// Filename.
 		_fileName = [_filePath lastPathComponent];
@@ -121,10 +118,9 @@
 */
 #pragma mark - TCFileSend - Tools
 
-- (NSString *)readChunk:(void *)bytes chunkSize:(uint64_t *)chunkSize fileOffset:(uint64_t *)fileOffset
+- (nullable NSString *)readChunk:(void *)bytes chunkSize:(uint64_t *)chunkSize fileOffset:(uint64_t *)fileOffset
 {
-	if (!bytes)
-		return nil;
+	NSAssert(bytes, @"bytes is NULL");
 
 	// Get the current file position.
 	long tl = ftell(_file);
@@ -195,3 +191,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

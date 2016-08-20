@@ -25,6 +25,9 @@
 #import "TCConfigApp.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCConfigurationCopy
 */
@@ -35,3 +38,6 @@
 + (BOOL)copyConfiguration:(id <TCConfigApp>)source toConfiguration:(id <TCConfigApp>)target;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

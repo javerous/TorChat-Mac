@@ -28,6 +28,9 @@
 #import "NSArray+TCTools.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCParser - Private
 */
@@ -55,12 +58,14 @@
 */
 #pragma mark - TCParser - Instance
 
-- (id)initWithParsingResult:(id <TCParserCommand>)receiver
+- (instancetype)initWithParsingResult:(id <TCParserCommand>)receiver
 {
 	self = [super init];
 	
 	if (self)
 	{
+		NSAssert(receiver, @"receiver is nil");
+		
 		_receiver = receiver;
 	}
 	
@@ -76,8 +81,7 @@
 
 - (void)parseLine:(NSData *)line
 {
-	if (!line)
-		return;
+	NSAssert(line, @"line is nil");
 	
 	// Unscape protocol special chars.
 	NSMutableData *mutableLine = [line mutableCopy];
@@ -166,6 +170,12 @@
 	NSString *identifier = [[NSString alloc] initWithData:args[0] encoding:NSASCIIStringEncoding];
 	NSString *random = [[NSString alloc] initWithData:args[1] encoding:NSASCIIStringEncoding];
 	
+	if (!identifier || !random)
+	{
+		[self parserError:TCParserErrorCmdPing withString:@"Ping: Bad data"];
+		return;
+	}
+	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
 	
@@ -186,6 +196,12 @@
 	
 	// Parse command.
 	NSString *random = [[NSString alloc] initWithData:parameters encoding:NSASCIIStringEncoding];
+	
+	if (!random)
+	{
+		[self parserError:TCParserErrorCmdPong withString:@"Pong: Bad data"];
+		return;
+	}
 	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
@@ -208,6 +224,12 @@
 	// Parse command.
 	NSString *status = [[NSString alloc] initWithData:parameters encoding:NSASCIIStringEncoding];
 	
+	if (!status)
+	{
+		[self parserError:TCParserErrorCmdStatus withString:@"Status: Bad data"];
+		return;
+	}
+	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
 	
@@ -228,6 +250,12 @@
 	
 	// Parse command.
 	NSString *version = [[NSString alloc] initWithData:parameters encoding:NSASCIIStringEncoding];
+	
+	if (!version)
+	{
+		[self parserError:TCParserErrorCmdStatus withString:@"Version: Bad data"];
+		return;
+	}
 	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
@@ -251,7 +279,10 @@
 	NSString *client = [[NSString alloc] initWithData:parameters encoding:NSUTF8StringEncoding];
 	
 	if (!client)
+	{
+		[self parserError:TCParserErrorCmdClient withString:@"Client: Bad data"];
 		return;
+	}
 	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
@@ -345,7 +376,10 @@
 	NSString *message = [[NSString alloc] initWithData:parameters encoding:NSUTF8StringEncoding];
 	
 	if (!message)
+	{
+		[self parserError:TCParserErrorCmdMessage withString:@"Message: Bad data"];
 		return;
+	}
 	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
@@ -395,6 +429,12 @@
 	NSString *blockSize = [[NSString alloc] initWithData:args[2] encoding:NSASCIIStringEncoding];
 	NSString *fileName = [[NSString alloc] initWithData:args[3] encoding:NSUTF8StringEncoding];
 
+	if (!uuid || !fileSize || !blockSize || !fileName)
+	{
+		[self parserError:TCParserErrorCmdFileName withString:@"Name: Bad data"];
+		return;
+	}
+	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
 	
@@ -421,6 +461,12 @@
 	NSString	*hash = [[NSString alloc] initWithData:args[2] encoding:NSASCIIStringEncoding];
 	NSData		*fileData = args[3];
 
+	if (!uuid || !start || !hash)
+	{
+		[self parserError:TCParserErrorCmdFileData withString:@"FileData: Bad data"];
+		return;
+	}
+	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
 	
@@ -444,6 +490,12 @@
 	// Parse command.
 	NSString	*uuid = [[NSString alloc] initWithData:args[0] encoding:NSASCIIStringEncoding];
 	NSString	*start = [[NSString alloc] initWithData:args[1] encoding:NSASCIIStringEncoding];
+	
+	if (!uuid || !start)
+	{
+		[self parserError:TCParserErrorCmdFileDataOk withString:@"FileDataOk: Bad data"];
+		return;
+	}
 	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
@@ -469,6 +521,12 @@
 	NSString	*uuid = [[NSString alloc] initWithData:args[0] encoding:NSASCIIStringEncoding];
 	NSString	*start = [[NSString alloc] initWithData:args[1] encoding:NSASCIIStringEncoding];
 	
+	if (!uuid || !start)
+	{
+		[self parserError:TCParserErrorCmdFileDataError withString:@"FileDataError: Bad data"];
+		return;
+	}
+	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
 	
@@ -490,6 +548,12 @@
 	// Parse command.
 	NSString *uuid = [[NSString alloc] initWithData:parameters encoding:NSASCIIStringEncoding];
 	
+	if (!uuid)
+	{
+		[self parserError:TCParserErrorCmdFileStopSending withString:@"FileStopSending: Bad data"];
+		return;
+	}
+	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
 	
@@ -510,6 +574,12 @@
 	
 	// Parse command.
 	NSString *uuid = [[NSString alloc] initWithData:parameters encoding:NSASCIIStringEncoding];
+	
+	if (!uuid)
+	{
+		[self parserError:TCParserErrorCmdFileStopReceiving withString:@"FileStopReceiving: Bad data"];
+		return;
+	}
 	
 	// Give to receiver.
 	id <TCParserCommand> receiver = _receiver;
@@ -535,3 +605,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

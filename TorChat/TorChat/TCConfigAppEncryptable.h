@@ -23,6 +23,9 @@
 #import "TCConfigApp.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCConfigAppEncryptable
 */
@@ -32,6 +35,9 @@
 
 - (BOOL)isEncrypted;
 
-- (void)changePassword:(NSString *)newPassword completionHandler:(void (^)(NSError *error))handler;
+- (void)changePassword:(nullable NSString *)newPassword completionHandler:(nullable void (^)(NSError * _Nullable error))handler;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

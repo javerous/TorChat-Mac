@@ -26,6 +26,9 @@
 #import "TCThreePartImageView.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCChatCellView - Private
 */
@@ -61,13 +64,13 @@
 
 - (void)awakeFromNib
 {
-	_closeButton.image = [NSImage imageNamed:@"file_stop"];
-	_closeButton.overImage = [NSImage imageNamed:@"file_stop_rollover"];
-	_closeButton.pushImage = [NSImage imageNamed:@"file_stop_pushed"];
+	_closeButton.image = (NSImage *)[NSImage imageNamed:@"file_stop"];
+	_closeButton.overImage = (NSImage *)[NSImage imageNamed:@"file_stop_rollover"];
+	_closeButton.pushImage = (NSImage *)[NSImage imageNamed:@"file_stop_pushed"];
 
-	_balloonView.startCap = [NSImage imageNamed:@"balloon_left"];
-	_balloonView.centerFill = [NSImage imageNamed:@"balloon_center"];
-	_balloonView.endCap = [NSImage imageNamed:@"balloon_right"];
+	_balloonView.startCap = (NSImage *)[NSImage imageNamed:@"balloon_left"];
+	_balloonView.centerFill = (NSImage *)[NSImage imageNamed:@"balloon_center"];
+	_balloonView.endCap = (NSImage *)[NSImage imageNamed:@"balloon_right"];
 	
 	_trakingArea = [[NSTrackingArea alloc] initWithRect:NSZeroRect options:(NSTrackingMouseEnteredAndExited | NSTrackingActiveInKeyWindow | NSTrackingInVisibleRect) owner:self userInfo:nil];
 
@@ -83,10 +86,9 @@
 
 - (void)setContent:(NSDictionary *)content
 {
+	NSAssert(content, @"content is nil");
+
 	_content = content;
-	
-	if (!_content)
-		return;
 	
 	// Set avatar.
 	NSImage *avatar = content[TCChatCellAvatarKey];
@@ -150,3 +152,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

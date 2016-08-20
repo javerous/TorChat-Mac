@@ -23,8 +23,14 @@
 #import <Foundation/Foundation.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 // == Network ==
 BOOL doAsyncSocket(int sock);
 
 // == Hash ==
 NSString *	hashMD5(NSData *data);
+
+
+NS_ASSUME_NONNULL_END

@@ -25,6 +25,9 @@
 #import "TCConfigApp.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Forward
 */
@@ -50,7 +53,10 @@
 - (void)stopWithCompletionHandler:(dispatch_block_t)handler;
 
 // -- Chat --
-- (void)openChatWithBuddy:(TCBuddy *)buddy select:(BOOL)select;
+- (void)openChatWithBuddy:(nullable TCBuddy *)buddy select:(BOOL)select;
 - (void)closeChatWithBuddy:(TCBuddy *)buddy;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

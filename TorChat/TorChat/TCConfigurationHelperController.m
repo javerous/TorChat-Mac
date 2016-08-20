@@ -74,14 +74,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)openConfigurationAtPath:(NSString *)path completionHandler:(TCConfigurationHelperCompletionHandler)handler
 {
 	// Check parameters.
-	if (!handler)
-		return;
-	
-	if (!path)
-	{
-		handler(TCConfigurationHelperCompletionTypeError, [self errorWithCode:1 localizedMessage:@"Internal error (nil path)"]);
-		return;
-	}
+	NSAssert(path, @"path is nil");
+	NSAssert(handler, @"handler is nil");
 	
 	// Check file existente.
 	if ([[NSFileManager defaultManager] fileExistsAtPath:path] == NO)
@@ -192,7 +186,7 @@ NS_ASSUME_NONNULL_BEGIN
 	if (message)
 	{
 		// Build string.
-		NSString	*localized = NSLocalizedString(message, @"");
+		NSString	*localized = NSLocalizedString((NSString *)message, @"");
 		NSString	*string;
 		va_list		ap;
 		
@@ -266,13 +260,13 @@ NS_ASSUME_NONNULL_BEGIN
 		ctrl.window.preventsApplicationTerminationWhenModal = YES;
 		ctrl.window.animationBehavior = NSWindowAnimationBehaviorDocumentWindow;
 		
-		[[NSApplication sharedApplication] runModalForWindow:ctrl.window];
+		[[NSApplication sharedApplication] runModalForWindow:(NSWindow *)ctrl.window];
 	});
 	
 	CFRunLoopWakeUp(runLoop);
 }
 
-- (id)init
+- (instancetype)init
 {
 	self = [super initWithWindowNibName:@"SQLiteConfigurationConvertWindow"];
 	
@@ -470,14 +464,14 @@ NS_ASSUME_NONNULL_BEGIN
 			ctrl.window.preventsApplicationTerminationWhenModal = YES;
 			ctrl.window.animationBehavior = NSWindowAnimationBehaviorDocumentWindow;
 			
-			[[NSApplication sharedApplication] runModalForWindow:ctrl.window];
+			[[NSApplication sharedApplication] runModalForWindow:(NSWindow *)ctrl.window];
 		});
 		
 		CFRunLoopWakeUp(runLoop);
 	}
 }
 
-- (id)init
+- (instancetype)init
 {
 	self = [super initWithWindowNibName:@"SQLiteConfigurationOpenWindow"];
 	

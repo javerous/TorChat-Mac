@@ -31,6 +31,9 @@
 #import "TCFileHelper.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Defines
 */
@@ -109,6 +112,7 @@
 	sqlite3_stmt		*_stmtSelectBuddyIdentifiers;
 	sqlite3_stmt		*_stmtSelectBuddyProperty;
 	sqlite3_stmt		*_stmtDeleteBuddy;
+	sqlite3_stmt		*_stmtDeleteBuddyProperty;
 	
 	sqlite3_stmt		*_stmtInsertBlocked;
 	sqlite3_stmt		*_stmtSelectBlocked;
@@ -140,21 +144,15 @@
 	}
 }
 
-- (id)initWithFile:(NSString *)filepath password:(NSString *)password error:(NSError **)error
+- (nullable instancetype)initWithFile:(NSString *)filepath password:(nullable NSString *)password error:(NSError **)error
 {
 	self = [super init];
 	
 	if (self)
 	{
-		// Hold parameters.
-		_dtbPath = filepath;
+		NSAssert(filepath, @"filepath is nil");
 		
-		if (!_dtbPath)
-		{
-			if (error)
-				*error = [self.class errorWithCode:1 localizedMessage:@"sqliteconf_error_internal"];
-			return nil;
-		}
+		_dtbPath = filepath;
 		
 		// Check parameters.
 		if ([[self class] isEncryptedFile:_dtbPath] && password == nil)
@@ -241,7 +239,7 @@
 	if (message)
 	{
 		// Build string.
-		NSString	*localized = NSLocalizedString(message, @"");
+		NSString	*localized = NSLocalizedString((NSString *)message, @"");
 		NSString	*string;
 		va_list		ap;
 		
@@ -373,7 +371,8 @@
 	tc_sqlite3_prepare(_dtb, "SELECT identifier FROM buddies", &_stmtSelectBuddyIdentifiers);
 	tc_sqlite3_prepare(_dtb, "SELECT value FROM buddies_properties WHERE buddy_id=? AND key=? LIMIT 1", &_stmtSelectBuddyProperty);
 	tc_sqlite3_prepare(_dtb, "DELETE FROM buddies WHERE identifier=?", &_stmtDeleteBuddy);
-	
+	tc_sqlite3_prepare(_dtb, "DELETE FROM buddies_properties WHERE buddy_id=? AND key=?", &_stmtDeleteBuddyProperty);
+
 	
 	// Create 'blocked' table.
 	// > Table.
@@ -459,9 +458,11 @@
 
 #pragma mark Bridge
 
-- (id)_sqliteValueForStatement:(sqlite3_stmt *)stmt column:(int)column
+- (nullable id)_sqliteValueForStatement:(sqlite3_stmt *)stmt column:(int)column
 {
-	if (!stmt || !_dtb)
+	NSAssert(stmt, @"stmt is NULL");
+	
+	if (!_dtb)
 		return nil;
 	
 	int type = sqlite3_column_type(stmt, column);
@@ -509,11 +510,13 @@
 	return nil;
 }
 
-- (id)_sqliteStepValueForStatement:(sqlite3_stmt *)stmt column:(int)column
+- (nullable id)_sqliteStepValueForStatement:(sqlite3_stmt *)stmt column:(int)column
 {
 	// > localQueue <
 	
-	if (!stmt || !_dtb)
+	NSAssert(stmt, @"stmt is NULL");
+
+	if (!_dtb)
 		return nil;
 	
 	id	obj = nil;
@@ -534,7 +537,10 @@
 {
 	// > localQueue <
 	
-	if (!value || !stmt || !_dtb)
+	NSAssert(value, @"value is NULL");
+	NSAssert(stmt, @"stmt is NULL");
+
+	if (!_dtb)
 		return;
 
 	// Bind.
@@ -578,10 +584,9 @@
 
 #pragma mark Settings
 
-- (id)settingForKey:(NSString *)key
+- (nullable id)settingForKey:(NSString *)key
 {
-	if (!key)
-		return nil;
+	NSAssert(key, @"key is nil");
 	
 	__block id obj = nil;
 	
@@ -598,10 +603,9 @@
 	return obj;
 }
 
-- (void)setSetting:(id)value forKey:(NSString *)key
+- (void)setSetting:(nullable id)value forKey:(NSString *)key
 {
-	if (!key)
-		return;
+	NSAssert(key, @"key is nil");
 	
 	dispatch_async(_localQueue, ^{
 		
@@ -612,7 +616,7 @@
 		{
 			sqlite3_bind_text(_stmtInsertSetting, 1, key.UTF8String, -1, SQLITE_TRANSIENT);
 			
-			[self _sqliteStepSetValue:value forStatement:_stmtInsertSetting index:2];
+			[self _sqliteStepSetValue:(id)value forStatement:_stmtInsertSetting index:2];
 		}
 		else
 		{
@@ -634,7 +638,9 @@
 
 - (sqlite3_int64)_buddyIDForIdentifier:(NSString *)identifier
 {
-	if (!identifier || !_dtb)
+	NSAssert(identifier, @"identifier is nil");
+
+	if (!_dtb)
 		return -1;
 	
 	sqlite3_int64 result = -1;
@@ -653,11 +659,13 @@
 	return result;
 }
 
-- (id)_getBuddyProperty:(sqlite3_int64)buddyID key:(NSString *)key
+- (nullable id)_getBuddyProperty:(sqlite3_int64)buddyID key:(NSString *)key
 {
 	// > localQueue <
 	
-	if (!key || !_dtb)
+	NSAssert(key, @"key is nil");
+
+	if (!_dtb)
 		return nil;
 	
 	sqlite3_bind_int64(_stmtSelectBuddyProperty, 1, buddyID);
@@ -666,17 +674,35 @@
 	return [self _sqliteStepValueForStatement:_stmtSelectBuddyProperty column:0];
 }
 
-- (void)_setBuddyProperty:(sqlite3_int64)buddyID key:(NSString *)key value:(id)value
+- (void)_setBuddyProperty:(sqlite3_int64)buddyID key:(NSString *)key value:(nullable id)value
 {
 	// > localQueue <
 	
 	if (!_dtb)
 		return;
 	
-	sqlite3_bind_int64(_stmtInsertBuddyProperty, 1, buddyID);
-	sqlite3_bind_text(_stmtInsertBuddyProperty, 2, key.UTF8String, -1, SQLITE_TRANSIENT);
+	if (value)
+	{
+		// Bind.
+		sqlite3_bind_int64(_stmtInsertBuddyProperty, 1, buddyID);
+		sqlite3_bind_text(_stmtInsertBuddyProperty, 2, key.UTF8String, -1, SQLITE_TRANSIENT);
+	
+		//Exec.
+		[self _sqliteStepSetValue:value forStatement:_stmtInsertBuddyProperty index:3];
+	}
+	else
+	{
+		// Bind.
+		sqlite3_bind_int64(_stmtDeleteBuddyProperty, 1, buddyID);
+		sqlite3_bind_text(_stmtDeleteBuddyProperty, 2, key.UTF8String, -1, SQLITE_TRANSIENT);
+
+		// Exec.
+		sqlite3_step(_stmtDeleteBuddyProperty);
 		
-	[self _sqliteStepSetValue:value forStatement:_stmtInsertBuddyProperty index:3];
+		// Reset.
+		sqlite3_reset(_stmtDeleteBuddyProperty);
+		sqlite3_clear_bindings(_stmtDeleteBuddyProperty);
+	}
 }
 
 
@@ -721,12 +747,12 @@
 
 #pragma mark TorChat
 
-- (NSString *)selfPrivateKey
+- (nullable NSString *)selfPrivateKey
 {
 	return [self settingForKey:TCConfigSelfPrivateKey];
 }
 
-- (void)setSelfPrivateKey:(NSString *)selfPrivateKey
+- (void)setSelfPrivateKey:(nullable NSString *)selfPrivateKey
 {
 	[self setSetting:selfPrivateKey forKey:TCConfigSelfPrivateKey];
 }
@@ -764,51 +790,42 @@
 
 #pragma mark Profile
 
-- (NSString *)profileName
+- (nullable NSString *)profileName
 {
-	NSString *result = [self settingForKey:TCConfigPofileNameKey];
-	
-	if (result)
-		return result;
-	
-	return @"-";
+	return [self settingForKey:TCConfigPofileNameKey];
 }
 
-- (void)setProfileName:(NSString *)name
+- (void)setProfileName:(nullable NSString *)name
 {
 	[self setSetting:name forKey:TCConfigPofileNameKey];
 }
 
-- (NSString *)profileText
+- (nullable NSString *)profileText
 {
-	NSString *result = [self settingForKey:TCConfigPofileTextKey];
-	
-	if (result)
-		return result;
-	
-	return @"";
+	return [self settingForKey:TCConfigPofileTextKey];
 }
 
-- (void)setProfileText:(NSString *)text
+- (void)setProfileText:(nullable NSString *)text
 {
 	[self setSetting:text forKey:TCConfigPofileTextKey];
 }
 
-- (TCImage *)profileAvatar
+- (nullable TCImage *)profileAvatar
 {
 	NSData *result = [self settingForKey:TCConfigPofileAvatarKey];
 	
-	if (result)
-	{
-		NSImage *image = [[NSImage alloc] initWithData:result];
-		
-		return [[TCImage alloc] initWithImage:image];
-	}
+	if (!result)
+		return nil;
 	
-	return nil;
+	NSImage *image = [[NSImage alloc] initWithData:result];
+	
+	if (!image)
+		return nil;
+	
+	return [[TCImage alloc] initWithImage:image];
 }
 
-- (void)setProfileAvatar:(TCImage *)picture
+- (void)setProfileAvatar:(nullable TCImage *)picture
 {
 	if (picture)
 	{
@@ -882,8 +899,7 @@
 
 - (void)setClientVersion:(NSString *)version
 {
-	if (!version)
-		return;
+	NSAssert(version, @"version is nil");
 	
 	[self setSetting:version forKey:TCConfigClientVersionKey];
 }
@@ -923,9 +939,8 @@
 
 - (void)setClientName:(NSString *)name
 {
-	if (!name)
-		return;
-	
+	NSAssert(name, @"name is nil");
+
 	[self setSetting:name forKey:TCConfigClientNameKey];
 }
 
@@ -957,16 +972,9 @@
 	return result;
 }
 
-- (void)addBuddyWithIdentifier:(NSString *)identifier alias:(NSString *)alias notes:(NSString *)notes
+- (void)addBuddyWithIdentifier:(NSString *)identifier alias:(nullable NSString *)alias notes:(nullable NSString *)notes
 {
-	if (!identifier)
-		return;
-	
-	if (!alias)
-		alias = @"";
-	
-	if (!notes)
-		notes = @"";
+	NSAssert(identifier, @"identifier is nil");
 	
 	dispatch_async(_localQueue, ^{
 
@@ -996,8 +1004,7 @@
 
 - (void)removeBuddyWithIdentifier:(NSString *)identifier
 {
-	if (!identifier)
-		return;
+	NSAssert(identifier, @"identifier is nil");
 	
 	dispatch_async(_localQueue, ^{
 
@@ -1015,13 +1022,9 @@
 	});
 }
 
-- (void)setBuddyAlias:(NSString *)alias forBuddyIdentifier:(NSString *)identifier
+- (void)setBuddyAlias:(nullable NSString *)alias forBuddyIdentifier:(NSString *)identifier
 {
-	if (!identifier)
-		return;
-	
-	if (!alias)
-		alias = @"";
+	NSAssert(identifier, @"identifier is nil");
 	
 	dispatch_async(_localQueue, ^{
 		
@@ -1034,14 +1037,10 @@
 	});
 }
 
-- (void)setBuddyNotes:(NSString *)notes forBuddyIdentifier:(NSString *)identifier
+- (void)setBuddyNotes:(nullable NSString *)notes forBuddyIdentifier:(NSString *)identifier
 {
-	if (!identifier)
-		return;
-	
-	if (!notes)
-		notes = @"";
-	
+	NSAssert(identifier, @"identifier is nil");
+
 	dispatch_async(_localQueue, ^{
 		
 		sqlite3_int64 buddyID = [self _buddyIDForIdentifier:identifier];
@@ -1053,14 +1052,10 @@
 	});
 }
 
-- (void)setBuddyLastName:(NSString *)lastName forBuddyIdentifier:(NSString *)identifier
+- (void)setBuddyLastName:(nullable NSString *)lastName forBuddyIdentifier:(NSString *)identifier
 {
-	if (!identifier)
-		return;
-	
-	if (!lastName)
-		lastName = @"";
-	
+	NSAssert(identifier, @"identifier is nil");
+
 	dispatch_async(_localQueue, ^{
 		
 		sqlite3_int64 buddyID = [self _buddyIDForIdentifier:identifier];
@@ -1072,14 +1067,10 @@
 	});
 }
 
-- (void)setBuddyLastText:(NSString *)lastText forBuddyIdentifier:(NSString *)identifier
+- (void)setBuddyLastText:(nullable NSString *)lastText forBuddyIdentifier:(NSString *)identifier
 {
-	if (!identifier)
-		return;
-	
-	if (!lastText)
-		lastText = @"";
-	
+	NSAssert(identifier, @"identifier is nil");
+
 	dispatch_async(_localQueue, ^{
 		
 		sqlite3_int64 buddyID = [self _buddyIDForIdentifier:identifier];
@@ -1091,10 +1082,9 @@
 	});
 }
 
-- (void)setBuddyLastAvatar:(TCImage *)lastAvatar forBuddyIdentifier:(NSString *)identifier
+- (void)setBuddyLastAvatar:(nullable TCImage *)lastAvatar forBuddyIdentifier:(NSString *)identifier
 {
-	if (!identifier || !lastAvatar)
-		return;
+	NSAssert(identifier, @"identifier is nil");
 	
 	dispatch_async(_localQueue, ^{
 		
@@ -1106,27 +1096,19 @@
 		// Create PNG representation.
 		NSImage *image = [lastAvatar imageRepresentation];
 		NSData	*tiffData = [image TIFFRepresentation];
-		NSData	*pngData;
+		NSData	*pngData = nil;
 		
-		if (!tiffData)
-			return;
-		
-		pngData = [[[NSBitmapImageRep alloc] initWithData:tiffData] representationUsingType:NSPNGFileType properties:@{ }];
-		
-		if (!pngData)
-			return;
+		if (tiffData)
+			pngData = [[[NSBitmapImageRep alloc] initWithData:tiffData] representationUsingType:NSPNGFileType properties:@{ }];
 		
 		// Save
 		[self _setBuddyProperty:buddyID key:TCConfigBuddyLastAvatarKey value:pngData];
 	});
 }
 
-- (NSString *)buddyAliasForBuddyIdentifier:(NSString *)identifier
+- (nullable NSString *)buddyAliasForBuddyIdentifier:(NSString *)identifier
 {
-	if (!identifier)
-		return @"";
-	
-	__block NSString *result = @"";
+	__block NSString *result = nil;
 	
 	dispatch_sync(_localQueue, ^{
 		
@@ -1141,12 +1123,9 @@
 	return result;
 }
 
-- (NSString *)buddyNotesForBuddyIdentifier:(NSString *)identifier
+- (nullable NSString *)buddyNotesForBuddyIdentifier:(NSString *)identifier
 {
-	if (!identifier)
-		return @"";
-	
-	__block NSString *result = @"";
+	__block NSString *result = nil;
 	
 	dispatch_sync(_localQueue, ^{
 		
@@ -1161,12 +1140,9 @@
 	return result;
 }
 
-- (NSString *)buddyLastNameForBuddyIdentifier:(NSString *)identifier
+- (nullable NSString *)buddyLastNameForBuddyIdentifier:(NSString *)identifier
 {
-	if (!identifier)
-		return @"";
-	
-	__block NSString *result = @"";
+	__block NSString *result = nil;
 	
 	dispatch_sync(_localQueue, ^{
 		
@@ -1181,12 +1157,9 @@
 	return result;
 }
 
-- (NSString *)buddyLastTextForBuddyIdentifier:(NSString *)identifier
+- (nullable NSString *)buddyLastTextForBuddyIdentifier:(NSString *)identifier
 {
-	if (!identifier)
-		return @"";
-	
-	__block NSString *result = @"";
+	__block NSString *result = nil;
 	
 	dispatch_sync(_localQueue, ^{
 		
@@ -1201,10 +1174,9 @@
 	return result;
 }
 
-- (TCImage *)buddyLastAvatarForBuddyIdentifier:(NSString *)identifier
+- (nullable TCImage *)buddyLastAvatarForBuddyIdentifier:(NSString *)identifier
 {
-	if (!identifier)
-		return nil;
+	NSAssert(identifier, @"identifier is nil");
 	
 	__block TCImage *result;
 	
@@ -1215,8 +1187,15 @@
 		if (buddyID < 0)
 			return;
 		
-		NSData	*data = [self _getBuddyProperty:buddyID key:TCConfigBuddyLastAvatarKey];
+		NSData *data = [self _getBuddyProperty:buddyID key:TCConfigBuddyLastAvatarKey];
+		
+		if (!data)
+			return;
+		
 		NSImage *image = [[NSImage alloc] initWithData:data];
+		
+		if (!image)
+			return;
 		
 		result = [[TCImage alloc] initWithImage:image];
 	});
@@ -1252,8 +1231,7 @@
 
 - (void)addBlockedBuddyWithIdentifier:(NSString *)identifier
 {
-	if (!identifier)
-		return;
+	NSAssert(identifier, @"identifier is nil");
 	
 	dispatch_async(_localQueue, ^{
 		
@@ -1292,7 +1270,7 @@
 
 #pragma mark Paths
 
-- (void)setPathForComponent:(TCConfigPathComponent)component pathType:(TCConfigPathType)pathType path:(NSString *)path
+- (void)setPathForComponent:(TCConfigPathComponent)component pathType:(TCConfigPathType)pathType path:(nullable NSString *)path
 {
 	dispatch_async(_localQueue, ^{
 		
@@ -1308,7 +1286,7 @@
 			// Check parameter.
 			BOOL isDirectory = NO;
 			
-			if ([[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDirectory] && isDirectory == NO)
+			if ([[NSFileManager defaultManager] fileExistsAtPath:(NSString *)path isDirectory:&isDirectory] && isDirectory == NO)
 				return;
 			
 			// Prepare move.
@@ -1367,7 +1345,7 @@
 	});
 }
 
-- (NSString *)pathForComponent:(TCConfigPathComponent)component fullPath:(BOOL)fullPath
+- (nullable NSString *)pathForComponent:(TCConfigPathComponent)component fullPath:(BOOL)fullPath
 {
 	__block NSString *result;
 	
@@ -1378,13 +1356,13 @@
 	return result;
 }
 
-- (NSString *)_pathForComponent:(TCConfigPathComponent)component fullPath:(BOOL)fullPath
+- (nullable NSString *)_pathForComponent:(TCConfigPathComponent)component fullPath:(BOOL)fullPath
 {
 	// > localQueue <
 	
 	if (!_dtb)
 		return nil;
-	
+
 	// Get default subpath.
 	NSString	*standardSubPath = nil;
 	NSString	*referralSubPath = nil;
@@ -1427,7 +1405,7 @@
 			break;
 		}
 	}
-	
+
 	// Get component key.
 	NSString *componentStr = [self componentNameForComponent:component];
 	
@@ -1527,8 +1505,6 @@
 				return componentPath;
 		}
 	}
-	
-	return nil;
 }
 
 
@@ -1604,14 +1580,12 @@
 		case TCConfigPathTypeAbsolute:
 			return TCConfigPathTypeAbsoluteKey;
 	}
-	
-	return nil;
 }
 
 
 #pragma mark > Component
 
-- (NSString *)componentNameForComponent:(TCConfigPathComponent)component
+- (nullable NSString *)componentNameForComponent:(TCConfigPathComponent)component
 {
 	switch (component)
 	{
@@ -1645,12 +1619,11 @@
 
 #pragma mark > Observers
 
-- (id)addPathObserverForComponent:(TCConfigPathComponent)component queue:(dispatch_queue_t)queue usingBlock:(dispatch_block_t)block
+- (id)addPathObserverForComponent:(TCConfigPathComponent)component queue:(nullable dispatch_queue_t)queue usingBlock:(dispatch_block_t)block
 {
-	// Check parameters.
-	if (!block)
-		return nil;
+	NSAssert(block, @"block is nil");
 	
+	// Check parameters.
 	if (!queue)
 		queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 	
@@ -1682,8 +1655,7 @@
 
 - (void)removePathObserver:(id)observer
 {
-	if (!observer)
-		return;
+	NSAssert(observer, @"observer is nil");
 	
 	NSDictionary	*info = observer;
 	NSNumber		*component = info[@"component"];
@@ -1839,11 +1811,8 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 	if (!handler)
 		handler = ^(int64_t msgID) { };
 	
-	if (!identifier || !message)
-	{
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ handler(-1); });
-		return;
-	}
+	NSAssert(identifier, @"identifier is nil");
+	NSAssert(message, @"message is nil");
 	
 	dispatch_async(_localQueue, ^{
 		
@@ -1890,10 +1859,9 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 	});
 }
 
-- (void)transcriptBuddiesIdentifiersWithCompletionHandler:(void (^)(NSArray *buddiesIdentifiers))handler
+- (void)transcriptBuddiesIdentifiersWithCompletionHandler:(void (^)(NSArray * _Nullable buddiesIdentifiers))handler
 {
-	if (!handler)
-		return;
+	NSAssert(handler, @"handler is nil");
 	
 	NSMutableArray *identifiers = [[NSMutableArray alloc] init];
 	
@@ -1926,11 +1894,11 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 	});
 }
 
-- (void)transcriptMessagesForBuddyIdentifier:(NSString *)identifier beforeMessageID:(NSNumber *)msgId limit:(NSUInteger)limit completionHandler:(void (^)(NSArray *messages))handler
+- (void)transcriptMessagesForBuddyIdentifier:(NSString *)identifier beforeMessageID:(NSNumber *)msgId limit:(NSUInteger)limit completionHandler:(void (^)(NSArray * _Nullable messages))handler
 {
-	if (!identifier || !handler)
-		return;
-	
+	NSAssert(identifier, @"identifier is nil");
+	NSAssert(handler, @"handler is nil");
+
 	dispatch_async(_localQueue, ^{
 		
 		// Check database.
@@ -2002,8 +1970,7 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 
 - (void)transcriptRemoveMessagesForBuddyIdentifier:(NSString *)identifier
 {
-	if (!identifier)
-		return;
+	NSAssert(identifier, @"identifier is nil");
 	
 	dispatch_async(_localQueue, ^{
 		
@@ -2099,7 +2066,7 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 	return result;
 }
 
-- (void)changePassword:(NSString *)newPassword completionHandler:(void (^)(NSError *error))handler
+- (void)changePassword:(nullable NSString *)newPassword completionHandler:(nullable void (^)(NSError * _Nullable error))handler
 {
 	if (!handler)
 		handler = ^(NSError *error) { };
@@ -2124,7 +2091,7 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 	});
 }
 
-- (BOOL)_changePassword:(NSString *)newPassword error:(NSError **)error
+- (BOOL)_changePassword:(nullable NSString *)newPassword error:(NSError **)error
 {
 	// > localQueue <
 	
@@ -2470,3 +2437,6 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

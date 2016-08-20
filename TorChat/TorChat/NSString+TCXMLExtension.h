@@ -23,6 +23,9 @@
 #import <Foundation/Foundation.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** NSString - TCXMLExtension
 */
@@ -33,3 +36,6 @@
 - (NSString *)stringByEscapingXMLEntities;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

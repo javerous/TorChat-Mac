@@ -23,6 +23,9 @@
 #import <Foundation/Foundation.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** NSData (TCTools)
 */
@@ -46,3 +49,6 @@
 - (void)replaceCStr:(const char *)str withCStr:(const char *)replace;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

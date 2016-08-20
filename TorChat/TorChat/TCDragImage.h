@@ -23,6 +23,9 @@
 #import <Foundation/Foundation.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCDragImage - Interface
 */
@@ -31,10 +34,13 @@
 @interface TCDragImage : NSObject < NSPasteboardWriting>
 
 // -- Instance --
-- (id)initWithImage:(NSImage *)image andName:(NSString *)name;
+- (instancetype)initWithImage:(NSImage *)image name:(NSString *)name;
 
 // -- Properties --
 @property (strong, nonatomic, readonly) NSImage		*image;
 @property (strong, nonatomic, readonly) NSString	*name;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

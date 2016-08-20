@@ -30,6 +30,9 @@
 #import "TCDebugLog.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Macro
 */
@@ -85,7 +88,7 @@
 
 + (id <SMAssistantPanel>)panelInstance
 {
-	return [[TCPanel_Custom alloc] initWithNibName:@"AssistantPanel_Custom" bundle:nil];
+	return (id <SMAssistantPanel>)[[TCPanel_Custom alloc] initWithNibName:@"AssistantPanel_Custom" bundle:nil];
 }
 
 + (NSString *)panelIdentifier
@@ -103,7 +106,7 @@
 	return self.view;
 }
 
-- (id)panelContent
+- (nullable id)panelContent
 {
 	// Set up the config with the fields.
 	_currentConfig.torAddress = _torAddressField.stringValue;
@@ -146,3 +149,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

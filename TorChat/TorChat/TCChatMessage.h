@@ -23,6 +23,9 @@
 #import <Foundation/Foundation.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Types
 */
@@ -52,3 +55,6 @@ typedef enum
 @property (atomic) NSString				*error;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

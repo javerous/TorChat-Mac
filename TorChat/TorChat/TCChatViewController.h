@@ -25,6 +25,9 @@
 #import "TCConfigApp.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Forward
 */
@@ -69,3 +72,6 @@
 - (void)makeFirstResponder;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

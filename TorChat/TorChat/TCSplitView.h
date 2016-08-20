@@ -23,6 +23,9 @@
 #import <Cocoa/Cocoa.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCSplitView
 */
@@ -31,3 +34,6 @@
 @interface TCSplitView : NSSplitView
 
 @end
+
+
+NS_ASSUME_NONNULL_END

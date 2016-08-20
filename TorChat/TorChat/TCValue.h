@@ -23,6 +23,9 @@
 #import <Foundation/Foundation.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCValue
 */
@@ -32,8 +35,11 @@
 
 + (TCValue *)valueWithWeakObject:(id)object;
 
-- (id)initWithWeakObject:(id)object;
+- (instancetype)initWithWeakObject:(id)object;
 
-- (id)object;
+- (nullable id)object;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

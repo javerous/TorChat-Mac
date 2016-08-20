@@ -23,6 +23,9 @@
 #import "NSString+TCPathExtension.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** NSString - TCPathExtension
 */
@@ -30,7 +33,7 @@
 
 @implementation NSString (TCPathExtension)
 
-- (NSString *)stringByCanonizingPath
+- (nullable NSString *)stringByCanonizingPath
 {
 	const char	*path = [self UTF8String];
 	char		*rpath;
@@ -86,3 +89,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

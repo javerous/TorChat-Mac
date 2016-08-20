@@ -28,6 +28,9 @@
 #import "TCFilesCommon.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCFileCellView - Private
 */
@@ -62,13 +65,13 @@
 
 - (void)awakeFromNib
 {
-	_showButton.image = [NSImage imageNamed:@"file_reveal"];
-	_showButton.overImage = [NSImage imageNamed:@"file_reveal_rollover"];
-	_showButton.pushImage = [NSImage imageNamed:@"file_reveal_pushed"];
+	_showButton.image = (NSImage *)[NSImage imageNamed:@"file_reveal"];
+	_showButton.overImage = (NSImage *)[NSImage imageNamed:@"file_reveal_rollover"];
+	_showButton.pushImage = (NSImage *)[NSImage imageNamed:@"file_reveal_pushed"];
 	
-	_cancelButton.image = [NSImage imageNamed:@"file_stop"];
-	_cancelButton.overImage = [NSImage imageNamed:@"file_stop_rollover"];
-	_cancelButton.pushImage = [NSImage imageNamed:@"file_stop_pushed"];
+	_cancelButton.image = (NSImage *)[NSImage imageNamed:@"file_stop"];
+	_cancelButton.overImage = (NSImage *)[NSImage imageNamed:@"file_stop_rollover"];
+	_cancelButton.pushImage = (NSImage *)[NSImage imageNamed:@"file_stop_pushed"];
 }
 
 
@@ -80,10 +83,9 @@
 
 - (void)setContent:(NSDictionary *)content
 {
+	NSAssert(content, @"content is nil");
+
 	_content = content;
-	
-	if (!_content)
-		return;
 	
 	NSImage		*icon = [content objectForKey:TCFileIconKey];
 	NSString	*path = [content objectForKey:TCFileFilePathKey];
@@ -179,3 +181,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

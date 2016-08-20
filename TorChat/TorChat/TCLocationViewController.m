@@ -25,6 +25,9 @@
 #import "TCDebugLog.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCLocationViewController
 */
@@ -56,8 +59,8 @@
 	
 	if (self)
 	{
-		if (!configuration || component == TCConfigPathComponentReferral)
-			return nil;
+		NSAssert(configuration, @"configuration is nil");
+		NSAssert(component != TCConfigPathComponentReferral, @"component is TCConfigPathComponentReferral");
 		
 		_configuration = configuration;
 		_component = component;
@@ -153,7 +156,7 @@
 		[alert addButtonWithTitle:NSLocalizedString(@"location_cancel", @"")];
 
 		// Ask user for confirmation.
-		[alert beginSheetModalForWindow:self.view.window completionHandler:^(NSModalResponse returnCode) {
+		[alert beginSheetModalForWindow:(NSWindow *)self.view.window completionHandler:^(NSModalResponse returnCode) {
 			
 			if (returnCode != NSAlertFirstButtonReturn)
 				return;
@@ -237,8 +240,7 @@
 
 - (void)addToView:(NSView *)view
 {
-	if (!view)
-		return;
+	NSAssert(view, @"view is nil");
 	
 	NSDictionary	*viewsDictionary;
 	NSView			*sview = self.view;
@@ -336,3 +338,7 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END
+

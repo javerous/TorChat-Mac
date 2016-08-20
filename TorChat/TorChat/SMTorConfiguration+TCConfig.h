@@ -25,6 +25,9 @@
 #import "TCConfigCore.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** SMTorConfiguration + TCConfigCore
 */
@@ -32,6 +35,9 @@
 
 @interface SMTorConfiguration (TCConfigCore)
 
-- (instancetype)initWithTorChatConfiguration:(id <TCConfigCore>)config;
+- (nullable instancetype)initWithTorChatConfiguration:(id <TCConfigCore>)config;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

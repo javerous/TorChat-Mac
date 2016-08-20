@@ -26,6 +26,9 @@
 #import "TCConfigAppEncryptable.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCPanel_Mode - Private
 */
@@ -75,7 +78,7 @@
 
 + (id <SMAssistantPanel>)panelInstance
 {
-	return [[TCPanel_Mode alloc] initWithNibName:@"AssistantPanel_Mode" bundle:nil];
+	return (id <SMAssistantPanel>)[[TCPanel_Mode alloc] initWithNibName:@"AssistantPanel_Mode" bundle:nil];
 }
 
 + (NSString *)panelIdentifier
@@ -93,7 +96,7 @@
 	return self.view;
 }
 
-- (id)panelContent
+- (nullable id)panelContent
 {
 	if ([modeMatrix selectedTag] == 1)
 		[_currentConfig setMode:TCConfigModeBundled];
@@ -145,3 +148,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

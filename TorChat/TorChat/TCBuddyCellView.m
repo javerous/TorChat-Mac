@@ -26,6 +26,9 @@
 #import "TCImage.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCBuddyCellView - Private
 */
@@ -57,8 +60,7 @@
 
 - (void)setBuddy:(TCBuddy *)buddy
 {
-	if (!buddy)
-		return;
+	NSAssert(buddy, @"buddy is nil");
 	
 	// Status.
 	if ([buddy blocked])
@@ -98,7 +100,7 @@
 	// Avatar.
 	TCImage *tcImage = [buddy profileAvatar];
 	NSImage *image = [tcImage imageRepresentation];
-	
+
 	if (image)
 		[_avatarView setImage:image];
 	else
@@ -130,3 +132,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

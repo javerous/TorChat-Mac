@@ -47,6 +47,9 @@
 #import "NSData+TCTools.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Defines
 */
@@ -119,8 +122,8 @@ static char gLocalQueueContext;
 }
 
 // -- Instance --
-- (id)initWithFileSend:(TCFileSend *)sender;
-- (id)initWithFileReceive:(TCFileReceive *)receiver;
+- (instancetype)initWithFileSend:(TCFileSend *)sender;
+- (instancetype)initWithFileReceive:(TCFileReceive *)receiver;
 
 @end
 
@@ -214,14 +217,15 @@ static char gLocalQueueContext;
 	[self registerInfoDescriptors];
 }
 
-- (id)initWithCoreManager:(TCCoreManager *)core configuration:(id <TCConfigCore>)configuration identifier:(NSString *)identifier alias:(NSString *)alias notes:(NSString *)notes
+- (instancetype)initWithCoreManager:(TCCoreManager *)core configuration:(id <TCConfigCore>)configuration identifier:(NSString *)identifier alias:(nullable NSString *)alias notes:(nullable NSString *)notes
 {
 	self = [super init];
 	
 	if (self)
 	{
-		if (!core || !configuration)
-			return nil;
+		NSAssert(core, @"core is nil");
+		NSAssert(configuration, @"configuration is nil");
+		NSAssert(identifier, @"identifier is nil");
 		
 		// Hold parameters.
 		_coreManager = core;
@@ -256,12 +260,9 @@ static char gLocalQueueContext;
 		_status = TCStatusOffline;
 		
 		// Init profiles
-		_profileName = [_config buddyLastNameForBuddyIdentifier:_identifier] ?: @"";
-		_profileText = [_config buddyLastTextForBuddyIdentifier:_identifier] ?: @"";
+		_profileName = [_config buddyLastNameForBuddyIdentifier:_identifier];
+		_profileText = [_config buddyLastTextForBuddyIdentifier:_identifier];
 		_profileAvatar = [_config buddyLastAvatarForBuddyIdentifier:_identifier];
-
-		if (!_profileAvatar)
-			_profileAvatar = [[TCImage alloc] initWithWidth:64 andHeight:64];
 		
 		// Init remotes
 		_peerClient = @"";
@@ -321,7 +322,7 @@ static char gLocalQueueContext;
 	});
 }
 
-- (void)stopWithCompletionHandler:(dispatch_block_t)handler
+- (void)stopWithCompletionHandler:(nullable dispatch_block_t)handler
 {
 	dispatch_group_t group = dispatch_group_create();
 	
@@ -476,7 +477,7 @@ static char gLocalQueueContext;
 */
 #pragma mark - Properties
 
-- (NSString *)alias
+- (nullable NSString *)alias
 {
 	__block NSString *result;
 	
@@ -487,11 +488,8 @@ static char gLocalQueueContext;
 	return result;
 }
 
-- (void)setAlias:(NSString *)name
+- (void)setAlias:(nullable NSString *)name
 {
-	if (!name)
-		return;
-		
 	dispatch_async(_localQueue, ^{
 		
 		// Set the new name in config
@@ -505,7 +503,7 @@ static char gLocalQueueContext;
 	});
 }
 
-- (NSString *)notes
+- (nullable NSString *)notes
 {
 	__block NSString *result;
 	
@@ -516,11 +514,8 @@ static char gLocalQueueContext;
 	return result;
 }
 
-- (void)setNotes:(NSString *)notes
+- (void)setNotes:(nullable NSString *)notes
 {
-	if (!notes)
-		return;
-		
 	dispatch_async(_localQueue, ^{
 		
 		// Set the new name in config
@@ -609,7 +604,7 @@ static char gLocalQueueContext;
 	return result;
 }
 
-- (NSString *)profileText
+- (nullable NSString *)profileText
 {
 	__block NSString *result;
 	
@@ -620,7 +615,7 @@ static char gLocalQueueContext;
 	return result;
 }
 
-- (TCImage *)profileAvatar
+- (nullable TCImage *)profileAvatar
 {
 	__block TCImage *result;
 	
@@ -631,7 +626,7 @@ static char gLocalQueueContext;
 	return result;
 }
 
-- (NSString *)profileName
+- (nullable NSString *)profileName
 {
 	__block NSString *result;
 	
@@ -642,13 +637,13 @@ static char gLocalQueueContext;
 	return result;
 }
 
-- (NSString *)finalName
+- (nullable NSString *)finalName
 {
 	__block NSString *result;
 	
 	dispatch_sync(_localQueue, ^{
 		
-		if ([_alias length] > 0)
+		if (_alias.length > 0)
 			result = _alias;
 		else
 			result = _profileName;
@@ -664,10 +659,9 @@ static char gLocalQueueContext;
 */
 #pragma mark - Files Info
 
-- (NSString *)fileNameForUUID:(NSString *)uuid andWay:(TCBuddyFileWay)way
+- (nullable NSString *)fileNameForUUID:(NSString *)uuid way:(TCBuddyFileWay)way
 {
-	if (!uuid)
-		return nil;
+	NSAssert(uuid, @"uuid is nil");
 	
 	__block NSString *res = nil;
 	
@@ -692,10 +686,9 @@ static char gLocalQueueContext;
 	return res;
 }
 
-- (NSString *)filePathForUUID:(NSString *)uuid andWay:(TCBuddyFileWay)way
+- (nullable NSString *)filePathForUUID:(NSString *)uuid way:(TCBuddyFileWay)way
 {
-	if (!uuid)
-		return nil;
+	NSAssert(uuid, @"uuid is nil");
 	
 	__block NSString *res = nil;
 	
@@ -721,8 +714,7 @@ static char gLocalQueueContext;
 
 - (BOOL)fileStatForUUID:(NSString *)uuid way:(TCBuddyFileWay)way done:(uint64_t *)done total:(uint64_t *)total
 {
-	if (!uuid)
-		return NO;
+	NSAssert(uuid, @"uuid is nil");
 	
 	__block BOOL		result = false;
 	__block uint64_t	rdone = 0;
@@ -770,8 +762,7 @@ static char gLocalQueueContext;
 
 - (void)fileCancelOfUUID:(NSString *)uuid way:(TCBuddyFileWay)way
 {
-	if (!uuid)
-		return;
+	NSAssert(uuid, @"uuid is nil");
 	
 	dispatch_async(_localQueue, ^{
 		
@@ -851,10 +842,10 @@ static char gLocalQueueContext;
 	});
 }
 
-- (void)sendAvatar:(TCImage *)avatar
+- (void)sendAvatar:(nullable TCImage *)avatar
 {
 	if (!avatar)
-		return;
+		avatar = [[TCImage alloc] initWithWidth:64 height:64];
 	
 	dispatch_async(_localQueue, ^{
 		
@@ -863,10 +854,10 @@ static char gLocalQueueContext;
 	});
 }
 
-- (void)sendProfileName:(NSString *)name
+- (void)sendProfileName:(nullable NSString *)name
 {
 	if (!name)
-		return;
+		name = @"";
 	
 	dispatch_async(_localQueue, ^{
 		
@@ -875,10 +866,10 @@ static char gLocalQueueContext;
 	});
 }
 
-- (void)sendProfileText:(NSString *)text
+- (void)sendProfileText:(nullable NSString *)text
 {
 	if (!text)
-		return;
+		text = @"";
 		
 	dispatch_async(_localQueue, ^{
 		
@@ -889,9 +880,8 @@ static char gLocalQueueContext;
 
 - (void)sendMessage:(NSString *)message completionHanndler:(void (^)(SMInfo *info))handler
 {
-	if (!message)
-		return;
-		
+	NSAssert(message, @"message is nil");
+	
 	dispatch_async(_localQueue, ^{
 		
 		SMInfo *err = nil;
@@ -916,9 +906,8 @@ static char gLocalQueueContext;
 
 - (void)sendFile:(NSString *)filepath
 {
-	if (!filepath)
-		return;
-	
+	NSAssert(filepath, @"filepath is nil");
+
 	dispatch_async(_localQueue, ^{
 		
 		// Send file only if we sent pong and we are ponged
@@ -971,9 +960,8 @@ static char gLocalQueueContext;
 
 - (void)handlePingWithRandomToken:(NSString *)remoteRandom
 {
-	if (!remoteRandom)
-		return;
-		
+	NSAssert(remoteRandom, @"remoteRandom is nil");
+	
 	dispatch_async(_localQueue, ^{
 		
 		if (_blocked)
@@ -987,9 +975,8 @@ static char gLocalQueueContext;
 
 - (void)handlePongWithSocket:(SMSocket *)sock
 {
-	if (!sock)
-		return;
-	
+	NSAssert(sock, @"sock is nil");
+
 	dispatch_async(_localQueue, ^{
 		
 		if (_blocked)
@@ -1028,8 +1015,7 @@ static char gLocalQueueContext;
 
 - (void)addObserver:(id <TCBuddyObserver>)observer
 {
-	if (!observer)
-		return;
+	NSAssert(observer, @"observer is nil");
 	
 	dispatch_async(_localQueue, ^{
 		[_observers addObject:observer];
@@ -1246,6 +1232,9 @@ static char gLocalQueueContext;
 		return;
 	
 	// Hold & convert avatar.
+	if (!_profileAvatar)
+		_profileAvatar = [[TCImage alloc] initWithWidth:64 height:64];
+
 	[_profileAvatar setBitmap:bitmap];
 	
 	// Store profile avatar.
@@ -1261,6 +1250,9 @@ static char gLocalQueueContext;
 	
 	if (_blocked)
 		return;
+
+	if (!_profileAvatar)
+		_profileAvatar = [[TCImage alloc] initWithWidth:64 height:64];
 
 	[_profileAvatar setBitmapAlpha:bitmap];
 }
@@ -1567,8 +1559,7 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	if (!name)
-		return;
+	NSAssert(name, @"name is nil");
 
 	[self _sendCommand:@"profile_name" string:name channel:TCBuddyChannelOut];
 }
@@ -1577,8 +1568,7 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	if (!text)
-		return;
+	NSAssert(text, @"text is nil");
 	
 	[self _sendCommand:@"profile_text" string:text channel:TCBuddyChannelOut];
 }
@@ -1587,9 +1577,8 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	if (!avatar)
-		return;
-	
+	NSAssert(avatar, @"avatar is nil");
+
 	if ([avatar bitmapAlpha])
 	{
 		NSData *data = [avatar bitmapAlpha];
@@ -1656,8 +1645,7 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	if (!file)
-		return;
+	NSAssert(file, @"file is nil");
 	
 	NSMutableArray *items = [[NSMutableArray alloc] init];
 		
@@ -1681,7 +1669,9 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	if (!file || [file readSize] >= [file fileSize])
+	NSAssert(file, @"file is nil");
+	
+	if ([file readSize] >= [file fileSize])
 		return;
 	
 	uint8_t		*chunk = malloc([file blockSize]);
@@ -1804,25 +1794,28 @@ static char gLocalQueueContext;
 	return [self _sendCommand:command data:[data dataUsingEncoding:NSUTF8StringEncoding] channel:channel];
 }
 
-- (BOOL)_sendCommand:(NSString *)command data:(NSData *)data channel:(TCBuddyChannel)channel
+- (BOOL)_sendCommand:(NSString *)command data:(nullable NSData *)data channel:(TCBuddyChannel)channel
 {
 	// > localQueue <
 	
-	if (!command)
-		return NO;
+	NSAssert(command, @"command is nil");
 	
 	if (_socksstate != socks_finish)
 		return NO;
 	
 	// -- Build the command line --
-	NSMutableData *part = [[NSMutableData alloc] init];
+	NSMutableData	*part = [[NSMutableData alloc] init];
+	NSData			*commandData = [command dataUsingEncoding:NSASCIIStringEncoding];
 	
-	[part appendData:[command dataUsingEncoding:NSASCIIStringEncoding]];
+	if (!commandData)
+		return NO;
+	
+	[part appendData:commandData];
 	
 	if ([data length] > 0)
 	{
 		[part appendBytes:" " length:1];
-		[part appendData:data];
+		[part appendData:(NSData *)data];
 	}
 	
 	// Escape protocol special chars
@@ -1850,8 +1843,8 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	if (!bytes || length == 0)
-		return NO;
+	NSAssert(bytes, @"bytes is NULL");
+	NSAssert(length > 0, @"length is zero");
 	
 	if (channel == TCBuddyChannelIn && _inSocket)
 		[_inSocket sendBytes:bytes ofSize:length copy:YES];
@@ -2042,13 +2035,26 @@ static char gLocalQueueContext;
 	
 	_pingHandled = YES;
 
+	// Pong.
 	[self _sendPong:_pingRandom];
+	
+	// Torchat info.
 	[self _sendClient];
 	[self _sendVersion];
-	[self _sendProfileName:[coreManager profileName]];
-	[self _sendProfileText:[coreManager profileText]];
-	[self _sendAvatar:[coreManager profileAvatar]];
+	
+	// Profile.
+	TCImage *img = [coreManager profileAvatar];
+
+	[self _sendProfileName:([coreManager profileName] ?: @"")];
+	[self _sendProfileText:([coreManager profileText] ?: @"")];
+	
+	if (img)
+		[self _sendAvatar:img];
+	
+	// Add me.
 	[self _sendAddMe];
+	
+	// Status.
 	[self _sendStatus:[coreManager status]];
 }
 
@@ -2059,7 +2065,7 @@ static char gLocalQueueContext;
 */
 #pragma mark - Helpers
 
-- (void)_error:(TCBuddyError)code context:(id)context info:(SMInfo *)info channel:(TCBuddyChannel)channel
+- (void)_error:(TCBuddyError)code context:(nullable id)context info:(nullable SMInfo *)info channel:(TCBuddyChannel)channel
 {
 	// > localQueue <
 
@@ -2081,7 +2087,7 @@ static char gLocalQueueContext;
 	[self _sendEvent:err];
 }
 
-- (void)_error:(TCBuddyError)code context:(id)ctx
+- (void)_error:(TCBuddyError)code context:(nullable id)ctx
 {
 	// > localQueue <
 	
@@ -2108,7 +2114,7 @@ static char gLocalQueueContext;
 	[self _sendEvent:ifo];
 }
 
-- (void)_notify:(TCBuddyEvent)notice context:(id)ctx
+- (void)_notify:(TCBuddyEvent)notice context:(nullable id)ctx
 {
 	// > localQueue <
 	
@@ -2121,8 +2127,7 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	if (!info)
-		return;
+	NSAssert(info, @"info is nil");
 	
 	for (id <TCBuddyObserver> observer in _observers)
 	{
@@ -2525,30 +2530,28 @@ static char gLocalQueueContext;
 */
 #pragma mark - TCFileInfo - Instance
 
-- (id)initWithFileSend:(TCFileSend *)sender
+- (instancetype)initWithFileSend:(TCFileSend *)sender
 {
-	if (!sender)
-		return nil;
-	
 	self = [super init];
 	
 	if (self)
 	{
+		NSAssert(sender, @"sender is nil");
+		
 		_sender = sender;
 	}
 	
 	return self;
 }
 
-- (id)initWithFileReceive:(TCFileReceive *)receiver
+- (instancetype)initWithFileReceive:(TCFileReceive *)receiver
 {
-	if (!receiver)
-		return nil;
-	
 	self = [super init];
 	
 	if (self)
 	{
+		NSAssert(receiver, @"receiver is nil");
+
 		_receiver = receiver;
 	}
 	
@@ -2617,3 +2620,6 @@ static char gLocalQueueContext;
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

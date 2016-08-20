@@ -23,6 +23,8 @@
 #import "TCConfigApp.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
 
 /*
 ** TCConfigPlist
@@ -32,6 +34,9 @@
 @interface TCConfigPlist : NSObject <TCConfigApp>
 
 // -- Instance --
-- (id)initWithFile:(NSString *)filepath;
+- (nullable instancetype)initWithFile:(NSString *)filepath;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

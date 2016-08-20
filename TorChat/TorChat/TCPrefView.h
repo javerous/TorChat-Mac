@@ -25,6 +25,9 @@
 #import "TCConfigAppEncryptable.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Forward
 */
@@ -53,3 +56,6 @@
 - (void)reloadConfigurationWithCompletionHandler:(dispatch_block_t)handler;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

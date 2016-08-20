@@ -33,6 +33,9 @@
 #import "TCImage.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Defines
 */
@@ -97,7 +100,7 @@
 @property (strong, readonly, nonatomic) TCBuddy	*buddy;
 
 // -- Instance --
-- (id)initWithWindowsController:(TCBuddyInfoWindowsController *)windowsController buddy:(TCBuddy *)buddy coreManager:(TCCoreManager *)coreManager;
+- (instancetype)initWithWindowsController:(TCBuddyInfoWindowsController *)windowsController buddy:(TCBuddy *)buddy coreManager:(TCCoreManager *)coreManager;
 
 // -- IBAction --
 - (IBAction)doToolBar:(id)sender;
@@ -119,14 +122,13 @@
 */
 #pragma mark - TCBuddyInfoWindowsController - Instance
 
-- (instancetype)initWithCoreManager:(TCCoreManager *)coreManager;
+- (instancetype)initWithCoreManager:(TCCoreManager *)coreManager
 {
 	self = [super init];
 	
 	if (self)
 	{
-		if (!coreManager)
-			return nil;
+		NSAssert(coreManager, @"coreManager is nil");
 		
 		_coreManager = coreManager;
 		_windowsControllers = [[NSMutableArray alloc] init];
@@ -179,9 +181,8 @@
 
 - (void)closeInfoForBuddy:(TCBuddy *)buddy
 {
-	if (!buddy)
-		return;
-	
+	NSAssert(buddy, @"buddy is nil");
+
 	dispatch_async(_localQueue, ^{
 		
 		NSUInteger i, cnt = [_windowsControllers count];
@@ -241,14 +242,14 @@
 */
 #pragma mark - TCBuddyInfoWindowController - Instance
 
-- (id)initWithWindowsController:(TCBuddyInfoWindowsController *)windowsController buddy:(TCBuddy *)buddy coreManager:(TCCoreManager *)coreManager
+- (instancetype)initWithWindowsController:(TCBuddyInfoWindowsController *)windowsController buddy:(TCBuddy *)buddy coreManager:(TCCoreManager *)coreManager
 {
 	self = [super initWithWindowNibName:@"BuddyInfoWindow"];
 	
 	if (self)
 	{
-		if (!windowsController || !buddy)
-			return nil;
+		NSAssert(windowsController, @"windowsController is nil");
+		NSAssert(buddy, @"buddy is nil");
 		
 		_windowsController = windowsController;
 		_buddy = buddy;
@@ -303,7 +304,7 @@
 
 	// -- Configure content --
 	// Name.
-	NSString *name = [_buddy profileName];
+	NSString *name = _buddy.profileName;
 
 	[self setInfo:name withKey:BICInfoProfileName];
 	
@@ -321,20 +322,28 @@
 	[_identifierField setStringValue:_buddy.identifier];
 	
 	// Alias.
-	[_aliasField setStringValue:_buddy.alias];
-	[_aliasField.cell setPlaceholderString:name];
+	NSString *alias = _buddy.alias;
+	
+	if (alias)
+		[_aliasField setStringValue:_buddy.alias];
+	
+	if (name)
+		[_aliasField.cell setPlaceholderString:name];
 	
 	// Notes.
-	[[_notesField.textStorage mutableString] setString:_buddy.notes];
+	NSString *notes = _buddy.notes;
+	
+	if (notes)
+		[[_notesField.textStorage mutableString] setString:notes];
 	
 	[self updateStatus:_buddy.status];
 	
 	// Profile.
-	[self setInfo:[_buddy profileText] withKey:BICInfoProfileText];
+	[self setInfo:_buddy.profileText withKey:BICInfoProfileText];
 	
 	// Peer.
-	[self setInfo:[_buddy peerClient] withKey:BICInfoPeerClient];
-	[self setInfo:[_buddy peerVersion] withKey:BICInfoPeerVersion];
+	[self setInfo:_buddy.peerClient withKey:BICInfoPeerClient];
+	[self setInfo:_buddy.peerVersion withKey:BICInfoPeerVersion];
 	
 	// Blocked.
 	if ([_buddy blocked])
@@ -422,11 +431,11 @@
 		switch (entry.kind)
 		{
 			case TCLogError:
-				return [NSImage imageNamed:NSImageNameStatusUnavailable];
+				return (NSImage *)[NSImage imageNamed:NSImageNameStatusUnavailable];
 			case TCLogWarning:
-				return [NSImage imageNamed:NSImageNameStatusPartiallyAvailable];
+				return (NSImage *)[NSImage imageNamed:NSImageNameStatusPartiallyAvailable];
 			case TCLogInfo:
-				return [NSImage imageNamed:NSImageNameStatusNone];
+				return (NSImage *)[NSImage imageNamed:NSImageNameStatusNone];
 		}
 	}
 	else if ([identifier isEqualToString:@"date"])
@@ -465,11 +474,14 @@
 	
 	if (object == _notesField)
 	{
-		[_buddy setNotes:[[_notesField textStorage] mutableString]];
+		NSTextStorage *textStorage = [_notesField textStorage];
+		
+		if (textStorage)
+			[_buddy setNotes:[textStorage mutableString]];
 	}
 }
 
-- (void)setInfo:(NSString *)info withKey:(NSString *)key
+- (void)setInfo:(nullable NSString *)info withKey:(NSString *)key
 {
 	if ([key length] == 0)
 		return;
@@ -694,3 +706,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

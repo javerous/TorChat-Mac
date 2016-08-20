@@ -33,6 +33,9 @@
 #import "TCPrefView_Security.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCPrefView - Private
 */
@@ -92,7 +95,7 @@
 	return instance;
 }
 
-- (id)init
+- (instancetype)init
 {
 	self = [super initWithWindowNibName:@"PreferencesWindow"];
 	
@@ -181,8 +184,7 @@
 	else if ([identifier isEqualToString:@"security"])
 		viewCtrl = [[TCPrefView_Security alloc] init];
 	
-	if (!viewCtrl)
-		return;
+	NSAssert(viewCtrl, @"viewCtrl is nil - unknown identifier");
 	
 	// Save current identifier.
 	[[NSUserDefaults standardUserDefaults] setValue:identifier forKey:@"preference_id"];
@@ -245,7 +247,7 @@
 			
 			dispatch_async(dispatch_get_main_queue(), ^{
 				
-				weakViewCtrl.core = aCore;
+				weakViewCtrl.core = (TCCoreManager *)aCore;
 				
 				if (doneHandler)
 					doneHandler();
@@ -314,3 +316,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

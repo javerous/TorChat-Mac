@@ -25,6 +25,9 @@
 #import "TCThemesManager.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCPrefView_General - Private
 */
@@ -57,7 +60,7 @@
 */
 #pragma mark - TCPrefView_General - Instance
 
-- (id)init
+- (instancetype)init
 {
 	self = [super initWithNibName:@"PrefView_General" bundle:nil];
 	
@@ -135,3 +138,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

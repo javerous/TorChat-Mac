@@ -33,6 +33,9 @@
 #define TCLogsTitleKey		@"title"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCCellSeparator
 */
@@ -45,7 +48,7 @@
 
 @implementation TCCellSeparator
 
-- (id)initTextCell:(NSString *)aString
+- (instancetype)initTextCell:(NSString *)aString
 {
 	self = [super initTextCell:@""];
 	
@@ -56,7 +59,7 @@
 	return self;
 }
 
-- (id)initImageCell:(NSImage *)anImage
+- (instancetype)initImageCell:(nullable NSImage *)anImage
 {
 	self = [super initImageCell:nil];
 	
@@ -136,7 +139,7 @@
 	return shr;
 }
 
-- (id)init
+- (instancetype)init
 {
 	self = [super initWithWindowNibName:@"LogsWindow"];
 	
@@ -231,7 +234,7 @@
 		else if ([key isEqualToString:TCLogsGlobalKey])
 			return NSLocalizedString(@"logs_global_logs", @"");
 		else
-			return [[TCLogsManager sharedManager] nameForKey:key];
+			return (id)[[TCLogsManager sharedManager] nameForKey:key];
 	}
 	else if (aTableView == _logsView)
 	{
@@ -298,11 +301,11 @@
 				switch (entry.kind)
 				{
 					case TCLogError:
-						return [NSImage imageNamed:NSImageNameStatusUnavailable];
+						return (NSImage *)[NSImage imageNamed:NSImageNameStatusUnavailable];
 					case TCLogWarning:
-						return [NSImage imageNamed:NSImageNameStatusPartiallyAvailable];
+						return (NSImage *)[NSImage imageNamed:NSImageNameStatusPartiallyAvailable];
 					case TCLogInfo:
-						return [NSImage imageNamed:NSImageNameStatusNone];
+						return (NSImage *)[NSImage imageNamed:NSImageNameStatusNone];
 				}
 			}
 			else if ([identifier isEqualToString:@"date"])
@@ -531,3 +534,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

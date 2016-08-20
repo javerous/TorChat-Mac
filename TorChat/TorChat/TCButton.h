@@ -23,6 +23,9 @@
 #import <Cocoa/Cocoa.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Forward
 */
@@ -52,3 +55,6 @@
 @property (strong, nonatomic) void (^actionHandler)(TCButton *button);
 
 @end
+
+
+NS_ASSUME_NONNULL_END

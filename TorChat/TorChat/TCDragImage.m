@@ -23,6 +23,9 @@
 #import "TCDragImage.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCDragImage
 */
@@ -36,15 +39,15 @@
 */
 #pragma mark - TCDragImage - Instance
 
-- (id)initWithImage:(NSImage *)image andName:(NSString *)name
+- (instancetype)initWithImage:(NSImage *)image name:(NSString *)name
 {
-	if (!image || [name length] == 0)
-		return nil;
-	
 	self = [super init];
 	
 	if (self)
 	{
+		NSAssert(image, @"image is nil");
+		NSAssert(name, @"name is nill");
+		
 		_image = image;
 		_name = name;
 	}
@@ -64,7 +67,7 @@
 	return @[ NSPasteboardTypePNG, (NSString *)kPasteboardTypeFileURLPromise ];
 }
 
-- (id)pasteboardPropertyListForType:(NSString *)type
+- (nullable id)pasteboardPropertyListForType:(NSString *)type
 {
 	if ([type isEqualToString:NSPasteboardTypePNG])
 	{
@@ -114,11 +117,11 @@
 
 
 /*
- ** TCDragImage - Helpers
- */
+** TCDragImage - Helpers
+*/
 #pragma mark - TCDragImage - Helpers
 
-- (NSData *)pngImage
+- (nullable NSData *)pngImage
 {
 	CGImageRef			ref = [[self image] CGImageForProposedRect:NULL context:nil hints:nil];
 	NSBitmapImageRep	*imp;
@@ -138,3 +141,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

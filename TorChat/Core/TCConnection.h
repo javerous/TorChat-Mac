@@ -23,6 +23,9 @@
 #import <Foundation/Foundation.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Globals
 */
@@ -67,10 +70,13 @@
 @interface TCConnection : NSObject
 
 // -- Instance --
-- (id)initWithDelegate:(id <TCConnectionDelegate>)delegate andSocket:(int)sock;
+- (instancetype)initWithDelegate:(id <TCConnectionDelegate>)delegate andSocket:(int)sock;
 
 // -- Life --
 - (void)start;
-- (void)stopWithCompletionHandler:(dispatch_block_t)handler;
+- (void)stopWithCompletionHandler:(nullable dispatch_block_t)handler;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

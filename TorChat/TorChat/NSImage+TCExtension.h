@@ -23,6 +23,9 @@
 #import <Cocoa/Cocoa.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** NSImage + TCExtension
 */
@@ -33,3 +36,6 @@
 - (NSImage *)flipHorizontally;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

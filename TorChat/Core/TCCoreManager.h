@@ -27,6 +27,9 @@
 #import "TCBuddy.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Globals
 */
@@ -128,7 +131,7 @@ typedef enum
 
 
 // -- Instance --
-- (id)initWithConfiguration:(id <TCConfigCore>)config;
+- (instancetype)initWithConfiguration:(id <TCConfigCore>)config;
 
 // -- Life --
 - (void)start;
@@ -138,18 +141,18 @@ typedef enum
 @property (assign, atomic) TCStatus status;
 
 // -- Profile --
-@property (strong, atomic) TCImage	*profileAvatar;
-@property (strong, atomic) NSString	*profileName;
-@property (strong, atomic) NSString	*profileText;
+@property (nullable, strong, atomic) TCImage	*profileAvatar;
+@property (nullable, strong, atomic) NSString	*profileName;
+@property (nullable, strong, atomic) NSString	*profileText;
 
 // -- Buddies --
 @property (copy, atomic, readonly) NSArray *buddies;
 
-- (void)addBuddyWithIdentifier:(NSString *)identifier name:(NSString *)name;
-- (void)addBuddyWithIdentifier:(NSString *)identifier name:(NSString *)name comment:(NSString *)comment;
+- (void)addBuddyWithIdentifier:(NSString *)identifier name:(nullable NSString *)name;
+- (void)addBuddyWithIdentifier:(NSString *)identifier name:(nullable NSString *)name comment:(nullable NSString *)comment;
 - (void)removeBuddyWithIdentifier:(NSString *)identifier;
-- (TCBuddy *)buddyWithIdentifier:(NSString *)identifier;
-- (TCBuddy *)buddyWithRandom:(NSString *)random;
+- (nullable TCBuddy *)buddyWithIdentifier:(NSString *)identifier;
+- (nullable TCBuddy *)buddyWithRandom:(NSString *)random;
 
 // -- Blocked Buddies --
 - (void)addBlockedBuddyWithIdentifier:(NSString *)identifier;
@@ -160,3 +163,6 @@ typedef enum
 - (void)removeObserver:(id <TCCoreManagerObserver>)observer;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

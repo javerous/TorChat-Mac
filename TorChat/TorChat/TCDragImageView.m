@@ -25,6 +25,9 @@
 #import "TCDragImage.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCDragImageView - Private
 */
@@ -56,7 +59,12 @@
 	NSRect dragFrame = NSMakeRect(0, 0, size.width, size.height);
 		
 	// Create drag image.
-	TCDragImage *dragImage = [[TCDragImage alloc] initWithImage:self.image andName:self.name];
+	NSImage *image = self.image;
+	
+	if (!image)
+		return;
+	
+	TCDragImage *dragImage = [[TCDragImage alloc] initWithImage:image name:self.name];
 	
 	if (!dragImage)
 		return;
@@ -90,3 +98,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

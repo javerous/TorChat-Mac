@@ -23,6 +23,9 @@
 #import <Foundation/Foundation.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Forward
 */
@@ -77,14 +80,14 @@ typedef enum
 @property uint16_t torPort;
 
 // -- TorChat --
-@property NSString *selfPrivateKey;
+@property (nullable) NSString *selfPrivateKey;
 @property NSString *selfIdentifier;
 @property uint16_t selfPort;
 
 // -- Profile --
-@property NSString	*profileName;
-@property NSString	*profileText;
-@property TCImage	*profileAvatar;
+@property (nullable) NSString	*profileName;
+@property (nullable) NSString	*profileText;
+@property (nullable) TCImage	*profileAvatar;
 
 // -- Client --
 - (NSString *)clientVersion:(TCConfigGet)get;
@@ -95,20 +98,20 @@ typedef enum
 
 // -- Buddies --
 - (NSArray *)buddiesIdentifiers; // Array of buddy identifier.
-- (void)addBuddyWithIdentifier:(NSString *)identifier alias:(NSString *)alias notes:(NSString *)notes;
+- (void)addBuddyWithIdentifier:(NSString *)identifier alias:(nullable NSString *)alias notes:(nullable NSString *)notes;
 - (void)removeBuddyWithIdentifier:(NSString *)identifier;
 
-- (void)setBuddyAlias:(NSString *)alias forBuddyIdentifier:(NSString *)identifier;
-- (void)setBuddyNotes:(NSString *)notes forBuddyIdentifier:(NSString *)identifier;
-- (void)setBuddyLastName:(NSString *)lastName forBuddyIdentifier:(NSString *)identifier;
-- (void)setBuddyLastText:(NSString *)lastText forBuddyIdentifier:(NSString *)identifier;
-- (void)setBuddyLastAvatar:(TCImage *)lastAvatar forBuddyIdentifier:(NSString *)identifier;
+- (void)setBuddyAlias:(nullable NSString *)alias forBuddyIdentifier:(NSString *)identifier;
+- (void)setBuddyNotes:(nullable NSString *)notes forBuddyIdentifier:(NSString *)identifier;
+- (void)setBuddyLastName:(nullable NSString *)lastName forBuddyIdentifier:(NSString *)identifier;
+- (void)setBuddyLastText:(nullable NSString *)lastText forBuddyIdentifier:(NSString *)identifier;
+- (void)setBuddyLastAvatar:(nullable TCImage *)lastAvatar forBuddyIdentifier:(NSString *)identifier;
 
-- (NSString *)buddyAliasForBuddyIdentifier:(NSString *)identifier;
-- (NSString *)buddyNotesForBuddyIdentifier:(NSString *)identifier;
-- (NSString *)buddyLastNameForBuddyIdentifier:(NSString *)identifier;
-- (NSString *)buddyLastTextForBuddyIdentifier:(NSString *)identifier;
-- (TCImage *)buddyLastAvatarForBuddyIdentifier:(NSString *)identifier;
+- (nullable NSString *)buddyAliasForBuddyIdentifier:(NSString *)identifier;
+- (nullable NSString *)buddyNotesForBuddyIdentifier:(NSString *)identifier;
+- (nullable NSString *)buddyLastNameForBuddyIdentifier:(NSString *)identifier;
+- (nullable NSString *)buddyLastTextForBuddyIdentifier:(NSString *)identifier;
+- (nullable TCImage *)buddyLastAvatarForBuddyIdentifier:(NSString *)identifier;
 
 // -- Blocked --
 - (NSArray *)blockedBuddies;
@@ -116,11 +119,11 @@ typedef enum
 - (void)removeBlockedBuddyWithIdentifier:(NSString *)identifier;
 
 // -- Paths --
-- (void)setPathForComponent:(TCConfigPathComponent)component pathType:(TCConfigPathType)pathType path:(NSString *)path;
-- (NSString *)pathForComponent:(TCConfigPathComponent)component fullPath:(BOOL)fullPath;
+- (void)setPathForComponent:(TCConfigPathComponent)component pathType:(TCConfigPathType)pathType path:(nullable NSString *)path;
+- (nullable NSString *)pathForComponent:(TCConfigPathComponent)component fullPath:(BOOL)fullPath;
 - (TCConfigPathType)pathTypeForComponent:(TCConfigPathComponent)component;
 
-- (id)addPathObserverForComponent:(TCConfigPathComponent)component queue:(dispatch_queue_t)queue usingBlock:(dispatch_block_t)block;
+- (id)addPathObserverForComponent:(TCConfigPathComponent)component queue:(nullable dispatch_queue_t)queue usingBlock:(dispatch_block_t)block;
 - (void)removePathObserver:(id)observer;
 
 // -- Synchronize --
@@ -130,3 +133,6 @@ typedef enum
 - (void)close;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

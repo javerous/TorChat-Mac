@@ -25,6 +25,9 @@
 #import "TCFilesCommon.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Forward
 */
@@ -50,3 +53,6 @@
 - (void)stopWithCompletionHandler:(dispatch_block_t)handler;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

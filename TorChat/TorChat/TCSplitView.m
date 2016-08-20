@@ -23,6 +23,9 @@
 #import "TCSplitView.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCSplitView
 */
@@ -42,3 +45,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

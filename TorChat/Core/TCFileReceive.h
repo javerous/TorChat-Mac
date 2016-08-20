@@ -23,6 +23,9 @@
 #import <Foundation/Foundation.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCFileReceive
 */
@@ -38,7 +41,7 @@
 @property (strong, nonatomic, readonly) NSString	*filePath;
 
 // -- Instance --
-- (id)initWithUUID:(NSString *)uuid folder:(NSString *)folder fileName:(NSString *)fileName fileSize:(uint64_t)fileSize blockSiz:(uint64_t)blockSize;
+- (nullable instancetype)initWithUUID:(NSString *)uuid folder:(NSString *)folder fileName:(NSString *)fileName fileSize:(uint64_t)fileSize blockSiz:(uint64_t)blockSize;
 
 // -- Tools --
 - (BOOL)writeChunk:(const void *)bytes chunkSize:(uint64_t)chunkSize hash:(NSString *)hash offset:(uint64_t *)offset;
@@ -47,3 +50,6 @@
 - (uint64_t)receivedSize;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

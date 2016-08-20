@@ -27,6 +27,9 @@
 #import "TCDebugLog.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCPanel_Welcome - Private
 */
@@ -76,7 +79,7 @@
 
 + (id <SMAssistantPanel>)panelInstance
 {
-	return [[TCPanel_Welcome alloc] initWithNibName:@"AssistantPanel_Welcome" bundle:nil];
+	return (id <SMAssistantPanel>)[[TCPanel_Welcome alloc] initWithNibName:@"AssistantPanel_Welcome" bundle:nil];
 }
 
 + (NSString *)panelIdentifier
@@ -94,7 +97,7 @@
 	return self.view;
 }
 
-- (id)panelContent
+- (nullable id)panelContent
 {
 	return _configPath;
 }
@@ -157,3 +160,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

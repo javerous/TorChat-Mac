@@ -23,6 +23,9 @@
 #import <Foundation/Foundation.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Forward
 */
@@ -109,9 +112,12 @@ typedef enum
 @property (weak, atomic) id <TCParserDelegate> delegate;
 
 // -- Instance --
-- (id)initWithParsingResult:(id <TCParserCommand>)receiver;
+- (instancetype)initWithParsingResult:(id <TCParserCommand>)receiver;
 
 // -- Parsing --
 - (void)parseLine:(NSData *)line;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

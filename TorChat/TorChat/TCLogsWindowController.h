@@ -23,6 +23,9 @@
 #import <Cocoa/Cocoa.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCLogsWindowController
 */
@@ -34,3 +37,6 @@
 + (TCLogsWindowController *)sharedController;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

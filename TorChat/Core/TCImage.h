@@ -29,6 +29,9 @@
 #endif
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCImage
 */
@@ -37,11 +40,11 @@
 @interface TCImage : NSObject <NSCopying>
 
 // -- Instance --
-- (id)initWithWidth:(NSUInteger)width andHeight:(NSUInteger)height;
+- (instancetype)initWithWidth:(NSUInteger)width height:(NSUInteger)height;
 #if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-- (id)initWithImage:(UIImage *)image;
+- (nullable instancetype)initWithImage:(UIImage *)image;
 #else
-- (id)initWithImage:(NSImage *)image;
+- (nullable instancetype)initWithImage:(NSImage *)image;
 #endif
 
 // -- Content --
@@ -51,7 +54,7 @@
 - (NSData *)bitmap;
 - (NSData *)bitmapAlpha;
 
-- (NSData *)bitmapMixed;
+- (nullable NSData *)bitmapMixed;
 
 // -- Properties --
 - (NSUInteger)width;
@@ -59,8 +62,12 @@
 
 // -- Representation --
 #if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-- (UIImage *)imageRepresentation;
+- (nullable UIImage *)imageRepresentation;
 #else
-- (NSImage *)imageRepresentation;
+- (nullable NSImage *)imageRepresentation;
 #endif
 @end
+
+
+NS_ASSUME_NONNULL_END
+

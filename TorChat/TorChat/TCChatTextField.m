@@ -25,6 +25,9 @@
 #import "NSString+TCLayoutExtension.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCChatTextField
 */
@@ -69,3 +72,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

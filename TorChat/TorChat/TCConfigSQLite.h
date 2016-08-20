@@ -25,6 +25,9 @@
 #import "TCConfigAppEncryptable.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Defines
 */
@@ -44,9 +47,12 @@
 @interface TCConfigSQLite : NSObject <TCConfigAppEncryptable>
 
 // -- Instance --
-- (id)initWithFile:(NSString *)filepath password:(NSString *)password error:(NSError **)error;
+- (nullable instancetype)initWithFile:(NSString *)filepath password:(nullable NSString *)password error:(NSError **)error;
 
 // -- Tools --
 + (BOOL)isEncryptedFile:(NSString *)filepath;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

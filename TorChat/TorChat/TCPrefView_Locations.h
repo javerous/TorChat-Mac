@@ -23,6 +23,9 @@
 #import "TCPrefView.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCPrefView_Locations
 */
@@ -31,3 +34,6 @@
 @interface TCPrefView_Locations : TCPrefView
 
 @end
+
+
+NS_ASSUME_NONNULL_END

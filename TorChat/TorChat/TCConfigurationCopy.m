@@ -23,6 +23,9 @@
 #import "TCConfigurationCopy.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCConfigurationCopy
 */
@@ -32,8 +35,8 @@
 
 + (BOOL)copyConfiguration:(id <TCConfigApp>)source toConfiguration:(id <TCConfigApp>)target
 {
-	if (!source || !target)
-		return NO;
+	NSAssert(source, @"source is nil");
+	NSAssert(target, @"target is nil");
 	
 	// Tor.
 	target.torAddress = source.torAddress;
@@ -121,3 +124,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

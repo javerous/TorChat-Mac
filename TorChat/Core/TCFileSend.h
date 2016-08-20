@@ -23,6 +23,9 @@
 #import <Foundation/Foundation.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCFileSend
 */
@@ -38,10 +41,10 @@
 @property (strong, nonatomic, readonly) NSString	*filePath;
 
 // -- Instance --
-- (id)initWithFilePath:(NSString *)filePath;
+- (nullable instancetype)initWithFilePath:(NSString *)filePath;
 
 // -- Tools --
-- (NSString *)readChunk:(void *)bytes chunkSize:(uint64_t *)chunkSize fileOffset:(uint64_t *)fileOffset;
+- (nullable NSString *)readChunk:(void *)bytes chunkSize:(uint64_t *)chunkSize fileOffset:(uint64_t *)fileOffset;
 - (void)setNextChunkOffset:(uint64_t)offset;
 
 - (BOOL)isFinished;
@@ -51,3 +54,6 @@
 - (void)setValidatedOffset:(uint64_t)offset;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

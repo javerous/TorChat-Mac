@@ -23,6 +23,9 @@
 #import "NSData+TCTools.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** NSData (TCTools)
 */
@@ -32,15 +35,14 @@
 
 - (NSArray *)explodeWithMaxFields:(NSUInteger)count withFieldSeparator:(const char *)separator
 {
+	NSAssert(count > 0, @"count is zero");
+	NSAssert(separator, @"separator is NULL");
+
 	// Check args.
-	if (count == 0 || !separator)
-		return nil;
-	
 	size_t sepSize = strlen(separator);
 	
-	if (sepSize == 0)
-		return nil;
-	
+	NSAssert(sepSize > 0, @"sepSize is zero");
+
 	const void		*bytes = [self bytes];
 	NSUInteger		lasti, i;
 	NSUInteger		length = [self length];
@@ -90,8 +92,8 @@
 
 - (void)replaceCStr:(const char *)str withCStr:(const char *)replace
 {
-	if (!str || !replace)
-		return;
+	NSAssert(str, @"str is NULL");
+	NSAssert(replace, @"replace is NULL");
 	
 	size_t str_len = strlen(str);
 	size_t replace_len = strlen(replace);
@@ -121,6 +123,7 @@
 	}
 }
 
-
-
 @end
+
+
+NS_ASSUME_NONNULL_END

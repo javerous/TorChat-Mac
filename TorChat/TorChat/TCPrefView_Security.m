@@ -25,6 +25,9 @@
 #import "TCConfigSQLite.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCPrefView_Security
 */
@@ -47,7 +50,7 @@
 	IBOutlet NSButton *okButton;
 	
 	// Vars.
-	void (^_passwordHandler)(NSString *password);
+	void (^_passwordHandler)(NSString * _Nullable password);
 }
 
 
@@ -57,7 +60,7 @@
 */
 #pragma mark - TCPrefView_Security - Instance
 
-- (id)init
+- (instancetype)init
 {
 	self = [super initWithNibName:@"PrefView_Security" bundle:nil];
 	
@@ -105,7 +108,7 @@
 			return;
 		}
 
-		_passwordHandler = ^(NSString *password) {
+		_passwordHandler = ^(NSString * _Nullable password) {
 
 			if (!password)
 			{
@@ -146,7 +149,7 @@
 	__weak TCPrefView_Security	*weakSelf = self;
 	id <TCConfigAppEncryptable>	config = self.config;
 	
-	_passwordHandler = ^(NSString *password) {
+	_passwordHandler = ^(NSString * _Nullable password) {
 		
 		if (!password)
 		{
@@ -240,3 +243,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

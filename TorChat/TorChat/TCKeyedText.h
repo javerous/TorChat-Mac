@@ -24,6 +24,9 @@
 #import <Foundation/Foundation.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCKeyedText
 */
@@ -31,7 +34,7 @@
 
 @interface TCKeyedText : NSObject
 
-- (id)initWithKeySize:(NSUInteger)ksize;
+- (instancetype)initWithKeySize:(NSUInteger)ksize;
 
 - (void)addLineWithKey:(NSString *)key andContent:(NSString *)content;
 - (void)addAttributedLineWithKey:(NSAttributedString *)key andContent:(NSAttributedString *)content;
@@ -39,3 +42,7 @@
 - (NSAttributedString *)renderedText;
 
 @end
+
+
+NS_ASSUME_NONNULL_END
+

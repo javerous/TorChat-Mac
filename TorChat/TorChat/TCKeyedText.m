@@ -23,6 +23,9 @@
 #import "TCKeyedText.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCKeyedText - Private
 */
@@ -37,7 +40,7 @@
 	NSUInteger					_keySize;
 }
 
-- (void)addValue:(NSAttributedString *)value color:(NSColor *)color row:(NSUInteger)row column:(NSUInteger)column alignment:(NSTextAlignment)alignment;
+- (void)addValue:(NSAttributedString *)value color:(nullable NSColor *)color row:(NSUInteger)row column:(NSUInteger)column alignment:(NSTextAlignment)alignment;
 
 @end
 
@@ -56,7 +59,7 @@
 */
 #pragma mark - TCKeyedText - Instance
 
-- (id)initWithKeySize:(NSUInteger)ksize
+- (instancetype)initWithKeySize:(NSUInteger)ksize
 {
 	self = [super init];
 	
@@ -66,7 +69,6 @@
 		_result = [[NSMutableAttributedString alloc] init];
 		_table = [[NSTextTable alloc] init];
 		_nline = [[NSAttributedString alloc] initWithString:@"\n"];
-
 		
 		// Configure
 		[_table setNumberOfColumns:2];
@@ -115,7 +117,7 @@
 */
 #pragma mark - TCKeyedText - Internal
 
-- (void)addValue:(NSAttributedString *)value color:(NSColor *)color row:(NSUInteger)row column:(NSUInteger)column alignment:(NSTextAlignment)alignment
+- (void)addValue:(NSAttributedString *)value color:(nullable NSColor *)color row:(NSUInteger)row column:(NSUInteger)column alignment:(NSTextAlignment)alignment
 {
 	NSTextTableBlock		*block = [[NSTextTableBlock alloc] initWithTable:_table startingRow:(NSInteger)row rowSpan:1 startingColumn:(NSInteger)column columnSpan:1];
 	NSMutableParagraphStyle	*style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
@@ -145,10 +147,13 @@
 	
 	// Apply color
 	if (color)
-		[_result addAttribute:NSForegroundColorAttributeName value:color range:NSMakeRange(textLength, [_result length] - textLength)];
+		[_result addAttribute:NSForegroundColorAttributeName value:(id)color range:NSMakeRange(textLength, [_result length] - textLength)];
 	
 	// Apply style
 	[_result addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(textLength, [_result length] - textLength)];
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

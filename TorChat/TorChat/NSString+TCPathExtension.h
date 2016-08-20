@@ -23,6 +23,9 @@
 #import <Foundation/Foundation.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** NSString - TCPathExtension
 */
@@ -30,8 +33,11 @@
 
 @interface NSString (TCPathExtension)
 
-- (NSString *)stringByCanonizingPath;
+- (nullable NSString *)stringByCanonizingPath;
 
 - (NSString *)stringWithPathRelativeTo:(NSString *)anchorPath;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

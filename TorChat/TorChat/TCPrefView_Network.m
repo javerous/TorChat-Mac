@@ -23,6 +23,9 @@
 #import "TCPrefView_Network.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCPrefView_Network - Private
 */
@@ -61,7 +64,7 @@
 */
 #pragma mark - TCPrefView_Network - Instance
 
-- (id)init
+- (instancetype)init
 {
 	self = [super initWithNibName:@"PrefView_Network" bundle:nil];
 	
@@ -212,3 +215,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -31,6 +31,9 @@
 #import "TCBuddy.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCConnection - Private
 */
@@ -88,7 +91,7 @@
 	[self registerInfoDescriptors];
 }
 
-- (id)initWithDelegate:(id <TCConnectionDelegate>)delegate andSocket:(int)sock
+- (instancetype)initWithDelegate:(id <TCConnectionDelegate>)delegate andSocket:(int)sock
 {
 	self = [super init];
 	
@@ -151,7 +154,7 @@
 	});
 }
 
-- (void)stopWithCompletionHandler:(dispatch_block_t)handler
+- (void)stopWithCompletionHandler:(nullable dispatch_block_t)handler
 {
 	if (!handler)
 		handler = ^{ };
@@ -480,3 +483,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

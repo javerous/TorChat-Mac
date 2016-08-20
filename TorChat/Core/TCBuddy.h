@@ -25,6 +25,9 @@
 #import "TCConfigCore.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Globals
 */
@@ -151,36 +154,37 @@ typedef enum
 @interface TCBuddy : NSObject
 
 // -- Instance --
-- (id)initWithCoreManager:(TCCoreManager *)core configuration:(id <TCConfigCore>)configuration identifier:(NSString *)identifier alias:(NSString *)alias notes:(NSString *)notes;
+- (instancetype)initWithCoreManager:(TCCoreManager *)core configuration:(id <TCConfigCore>)configuration identifier:(NSString *)identifier alias:(nullable NSString *)alias notes:(nullable NSString *)notes;
 
 // -- Run --
 - (void)start;
-- (void)stopWithCompletionHandler:(dispatch_block_t)handler;
+- (void)stopWithCompletionHandler:(nullable dispatch_block_t)handler;
 
 - (BOOL)isRunning;
 - (BOOL)isPonged;
 
 // -- Properties --
-@property (strong, atomic) NSString	*alias;
-@property (strong, atomic) NSString	*notes;
-@property (assign, atomic) BOOL		blocked;
+@property (nullable, strong, atomic) NSString	*alias;
+@property (nullable, strong, atomic) NSString	*notes;
 
-@property (assign, atomic, readonly) TCStatus	status;
+@property (assign, atomic) BOOL blocked;
 
-@property (strong, atomic, readonly) NSString	*identifier;
-@property (strong, atomic, readonly) NSString	*random;
+@property (assign, readonly) TCStatus	status;
 
-@property (strong, atomic, readonly) NSString	*peerClient;
-@property (strong, atomic, readonly) NSString	*peerVersion;
+@property (strong, readonly) NSString	*identifier;
+@property (strong, readonly) NSString	*random;
 
-@property (strong, atomic, readonly) NSString	*profileText;
-@property (strong, atomic, readonly) TCImage	*profileAvatar;
-@property (strong, atomic, readonly) NSString	*profileName;
-@property (strong, atomic, readonly) NSString	*finalName; // Best name representation (alias / profile name)
+@property (strong, readonly) NSString	*peerClient;
+@property (strong, readonly) NSString	*peerVersion;
+
+@property (nullable, strong, readonly) NSString	*profileText;
+@property (nullable, strong, readonly) TCImage	*profileAvatar;
+@property (nullable, strong, readonly) NSString	*profileName;
+@property (nullable, strong, readonly) NSString	*finalName; // Best name representation (alias / profile name)
 
 // -- Files Info --
-- (NSString *)fileNameForUUID:(NSString *)uuid andWay:(TCBuddyFileWay)way;
-- (NSString *)filePathForUUID:(NSString *)uuid andWay:(TCBuddyFileWay)way;
+- (nullable NSString *)fileNameForUUID:(NSString *)uuid way:(TCBuddyFileWay)way;
+- (nullable NSString *)filePathForUUID:(NSString *)uuid way:(TCBuddyFileWay)way;
 - (BOOL)fileStatForUUID:(NSString *)uuid way:(TCBuddyFileWay)way done:(uint64_t *)done total:(uint64_t *)total;
 - (void)fileCancelOfUUID:(NSString *)uuid way:(TCBuddyFileWay)way;
 
@@ -189,9 +193,9 @@ typedef enum
 
 // -- Send Command --
 - (void)sendStatus:(TCStatus)status;
-- (void)sendAvatar:(TCImage *)avatar;
-- (void)sendProfileName:(NSString *)name;
-- (void)sendProfileText:(NSString *)text;
+- (void)sendAvatar:(nullable TCImage *)avatar;
+- (void)sendProfileName:(nullable NSString *)name;
+- (void)sendProfileText:(nullable NSString *)text;
 - (void)sendMessage:(NSString *)message completionHanndler:(void (^)(SMInfo *info))handler;
 - (void)sendFile:(NSString *)filepath;
 
@@ -223,3 +227,6 @@ typedef enum
 - (NSString *)filePath;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

@@ -22,5 +22,12 @@
 
 #import <Foundation/Foundation.h>
 
+
+NS_ASSUME_NONNULL_BEGIN
+
+
 // useless on most SSD, but do it for other kinds of devices.
 BOOL TCFileSecureRemove(NSString *path);
+
+
+NS_ASSUME_NONNULL_END

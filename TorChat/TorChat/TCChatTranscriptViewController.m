@@ -138,8 +138,8 @@ NSMutableDictionary	*gThemeCache;
 		_localAvatarIdentifier = [self uuid];
 		_remoteAvatarIdentifier	= [self uuid];
 		
-		[TCURLProtocolInternal setAvatar:[NSImage imageNamed:NSImageNameUser] forIdentifier:_localAvatarIdentifier];
-		[TCURLProtocolInternal setAvatar:[NSImage imageNamed:NSImageNameUser] forIdentifier:_remoteAvatarIdentifier];
+		[TCURLProtocolInternal setAvatar:(NSImage *)[NSImage imageNamed:NSImageNameUser] forIdentifier:_localAvatarIdentifier];
+		[TCURLProtocolInternal setAvatar:(NSImage *)[NSImage imageNamed:NSImageNameUser] forIdentifier:_remoteAvatarIdentifier];
 		
 		// Temporary HTML section.
 		_tmpBody = [[NSMutableString alloc] init];
@@ -421,9 +421,8 @@ NSMutableDictionary	*gThemeCache;
 
 - (void)setLocalAvatar:(NSImage *)image
 {
-	if (!image)
-		return;
-	
+	NSAssert(image, @"image is nil");
+
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		[TCURLProtocolInternal removeAvatarForIdentifier:_localAvatarIdentifier];
@@ -438,8 +437,7 @@ NSMutableDictionary	*gThemeCache;
 
 - (void)setRemoteAvatar:(NSImage *)image
 {
-	if (!image)
-		return;
+	NSAssert(image, @"image is nil");
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
@@ -626,7 +624,7 @@ NSMutableDictionary	*gThemeCache;
 	}
 }
 
-- (DOMHTMLElement *)_styleNode
+- (nullable DOMHTMLElement *)_styleNode
 {
 	// > main queue <
 
@@ -708,8 +706,8 @@ NSMutableDictionary	*gThemeCache;
 
 + (void)setTheme:(TCTheme *)theme forIdentifier:(NSString *)identifier
 {
-	if (!theme || !identifier)
-		return;
+	NSAssert(theme, @"theme is nil");
+	NSAssert(identifier, @"identifier is nil");
 	
 	dispatch_barrier_async(gValuesQueue, ^{
 		gThemeCache[identifier] = theme;
@@ -718,8 +716,7 @@ NSMutableDictionary	*gThemeCache;
 
 + (void)removeThemeForIdentifier:(NSString *)identifier
 {
-	if (!identifier)
-		return;
+	NSAssert(identifier, @"identifier is nil");
 	
 	dispatch_barrier_async(gValuesQueue, ^{
 		[gThemeCache removeObjectForKey:identifier];
@@ -728,9 +725,9 @@ NSMutableDictionary	*gThemeCache;
 
 + (void)setAvatar:(NSImage *)avatar forIdentifier:(NSString *)identifier
 {
-	if (!avatar || !identifier)
-		return;
-	
+	NSAssert(avatar, @"avatar is nil");
+	NSAssert(identifier, @"identifier is nil");
+
 	NSData *tiff = [avatar TIFFRepresentation];
 	
 	if (!tiff)
@@ -743,8 +740,7 @@ NSMutableDictionary	*gThemeCache;
 
 + (void)removeAvatarForIdentifier:(NSString *)identifier
 {
-	if (!identifier)
-		return;
+	NSAssert(identifier, @"identifier is nil");
 	
 	dispatch_barrier_async(gValuesQueue, ^{
 		[gAvatarCache removeObjectForKey:identifier];
@@ -809,6 +805,12 @@ NSMutableDictionary	*gThemeCache;
 		return;
 	}
 	
+	if (!url)
+	{
+		[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Invalid URL" code:0 userInfo:@{}]];
+		return;
+	}
+	
 	identifier = parameters[1];
 	
 	// Send avatar.
@@ -823,7 +825,7 @@ NSMutableDictionary	*gThemeCache;
 		}
 		
 		// Build response.
-		NSURLResponse *response = [[NSURLResponse alloc] initWithURL:self.request.URL MIMEType:@"image/tiff" expectedContentLength:(NSInteger)[data length] textEncodingName:nil];
+		NSURLResponse *response = [[NSURLResponse alloc] initWithURL:url MIMEType:@"image/tiff" expectedContentLength:(NSInteger)[data length] textEncodingName:nil];
 		
 		// Send response + content.
 		[self.client URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
@@ -842,6 +844,12 @@ NSMutableDictionary	*gThemeCache;
 	if ([parameters count] < 3)
 	{
 		[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Parameter error" code:0 userInfo:@{}]];
+		return;
+	}
+	
+	if (!url)
+	{
+		[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Invalid URL" code:0 userInfo:@{}]];
 		return;
 	}
 	
@@ -881,7 +889,7 @@ NSMutableDictionary	*gThemeCache;
 		}
 		
 		// > Build response.
-		NSURLResponse *response = [[NSURLResponse alloc] initWithURL:self.request.URL MIMEType:mime expectedContentLength:(NSInteger)[data length] textEncodingName:nil];
+		NSURLResponse *response = [[NSURLResponse alloc] initWithURL:url MIMEType:mime expectedContentLength:(NSInteger)[data length] textEncodingName:nil];
 		
 		// Send response + content.
 		[self.client URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
@@ -900,6 +908,12 @@ NSMutableDictionary	*gThemeCache;
 	if ([parameters count] < 2)
 	{
 		[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Parameter error" code:0 userInfo:@{}]];
+		return;
+	}
+	
+	if (!url)
+	{
+		[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Invalid URL" code:0 userInfo:@{}]];
 		return;
 	}
 	
@@ -969,7 +983,7 @@ NSMutableDictionary	*gThemeCache;
 	NSData *data = [image TIFFRepresentation];
 	
 	// Build response.
-	NSURLResponse *response = [[NSURLResponse alloc] initWithURL:self.request.URL MIMEType:@"image/tiff" expectedContentLength:(NSInteger)[data length] textEncodingName:nil];
+	NSURLResponse *response = [[NSURLResponse alloc] initWithURL:url MIMEType:@"image/tiff" expectedContentLength:(NSInteger)[data length] textEncodingName:nil];
 	
 	// Send response + content.
 	[[self client] URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageAllowedInMemoryOnly];

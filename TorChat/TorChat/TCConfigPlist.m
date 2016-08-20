@@ -27,6 +27,9 @@
 #import "TCImage.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Defines
 */
@@ -130,14 +133,13 @@
 */
 #pragma mark - TCConfigPlist - Instance
 
-- (id)initWithFile:(NSString *)filepath
+- (nullable instancetype)initWithFile:(NSString *)filepath
 {
 	self = [super init];
 	
 	if (self)
 	{
-		if (!filepath)
-			return nil;
+		NSAssert(filepath, @"filepath is nil");
 		
 		NSFileManager	*mng = [NSFileManager defaultManager];
 		NSString		*npath;
@@ -148,9 +150,6 @@
 		
 		if (npath)
 			filepath = npath;
-		
-		if (!filepath)
-			return nil;
 		
 		// Hold path.
 		_fpath = filepath;
@@ -256,13 +255,13 @@
 
 #pragma mark TorChat
 
-- (NSString *)selfPrivateKey
+- (nullable NSString *)selfPrivateKey
 {
 	// Not implemented.
 	return nil;
 }
 
-- (void)setSelfPrivateKey:(NSString *)selfPrivateKey
+- (void)setSelfPrivateKey:(nullable NSString *)selfPrivateKey
 {
 	// Not implemented.
 }
@@ -316,7 +315,7 @@
 
 #pragma mark Profile
 
-- (NSString *)profileName
+- (nullable NSString *)profileName
 {
 	__block NSString *value;
  
@@ -330,7 +329,7 @@
 		return @"-";
 }
 
-- (void)setProfileName:(NSString *)name
+- (void)setProfileName:(nullable NSString *)name
 {
 	if (!name)
 		return;
@@ -341,7 +340,7 @@
 	});
 }
 
-- (NSString *)profileText
+- (nullable NSString *)profileText
 {
 	__block NSString *value;
  
@@ -355,7 +354,7 @@
 		return @"";
 }
 
-- (void)setProfileText:(NSString *)text
+- (void)setProfileText:(nullable NSString *)text
 {
 	if (!text)
 		return;
@@ -366,7 +365,7 @@
 	});
 }
 
-- (TCImage *)profileAvatar
+- (nullable TCImage *)profileAvatar
 {
 	__block id avatar;
  
@@ -384,10 +383,10 @@
 		NSData			*bitmapAlpha = [describe objectForKey:@"bitmap_alpha"];
 		
 		if ([width unsignedIntValue] == 0 || [height unsignedIntValue] == 0)
-			return NULL;
+			return nil;
 		
 		// Build TorChat core image
-		TCImage *image = [[TCImage alloc] initWithWidth:[width unsignedIntValue] andHeight:[height unsignedIntValue]];
+		TCImage *image = [[TCImage alloc] initWithWidth:[width unsignedIntValue] height:[height unsignedIntValue]];
 		
 		[image setBitmap:bitmap];
 		[image setBitmapAlpha:bitmapAlpha];
@@ -408,7 +407,7 @@
 	return nil;
 }
 
-- (void)setProfileAvatar:(TCImage *)picture
+- (void)setProfileAvatar:(nullable TCImage *)picture
 {
 	// Remove avatar.
 	if (!picture)
@@ -572,7 +571,7 @@
 	return result;
 }
 
-- (void)addBuddyWithIdentifier:(NSString *)identifier alias:(NSString *)alias notes:(NSString *)notes
+- (void)addBuddyWithIdentifier:(NSString *)identifier alias:(nullable NSString *)alias notes:(nullable NSString *)notes
 {
 	if (!identifier)
 		return;
@@ -633,7 +632,7 @@
 	});
 }
 
-- (void)setBuddyAlias:(NSString *)alias forBuddyIdentifier:(NSString *)identifier
+- (void)setBuddyAlias:(nullable NSString *)alias forBuddyIdentifier:(NSString *)identifier
 {
 	if (!identifier)
 		return;
@@ -663,7 +662,7 @@
 	});
 }
 
-- (void)setBuddyNotes:(NSString *)notes forBuddyIdentifier:(NSString *)identifier
+- (void)setBuddyNotes:(nullable NSString *)notes forBuddyIdentifier:(NSString *)identifier
 {
 	if (!identifier)
 		return;
@@ -693,7 +692,7 @@
 	});
 }
 
-- (void)setBuddyLastName:(NSString *)lastName forBuddyIdentifier:(NSString *)identifier
+- (void)setBuddyLastName:(nullable NSString *)lastName forBuddyIdentifier:(NSString *)identifier
 {
 	if (!identifier)
 		return;
@@ -723,7 +722,7 @@
 	});
 }
 
-- (void)setBuddyLastText:(NSString *)lastText forBuddyIdentifier:(NSString *)identifier
+- (void)setBuddyLastText:(nullable NSString *)lastText forBuddyIdentifier:(NSString *)identifier
 {
 	if (!identifier)
 		return;
@@ -753,7 +752,7 @@
 	});
 }
 
-- (void)setBuddyLastAvatar:(TCImage *)lastAvatar forBuddyIdentifier:(NSString *)identifier
+- (void)setBuddyLastAvatar:(nullable TCImage *)lastAvatar forBuddyIdentifier:(NSString *)identifier
 {
 	if (!identifier || !lastAvatar)
 		return;
@@ -793,7 +792,7 @@
 	});
 }
 
-- (NSString *)buddyAliasForBuddyIdentifier:(NSString *)identifier
+- (nullable NSString *)buddyAliasForBuddyIdentifier:(NSString *)identifier
 {
 	if (!identifier)
 		return @"";
@@ -817,7 +816,7 @@
 	return result;
 }
 
-- (NSString *)buddyNotesForBuddyIdentifier:(NSString *)identifier
+- (nullable NSString *)buddyNotesForBuddyIdentifier:(NSString *)identifier
 {
 	if (!identifier)
 		return @"";
@@ -841,7 +840,7 @@
 	return result;
 }
 
-- (NSString *)buddyLastNameForBuddyIdentifier:(NSString *)identifier
+- (nullable NSString *)buddyLastNameForBuddyIdentifier:(NSString *)identifier
 {
 	if (!identifier)
 		return @"";
@@ -865,10 +864,9 @@
 	return result;
 }
 
-- (NSString *)buddyLastTextForBuddyIdentifier:(NSString *)identifier
+- (nullable NSString *)buddyLastTextForBuddyIdentifier:(NSString *)identifier
 {
-	if (!identifier)
-		return @"";
+	NSAssert(identifier, @"identifier is nil");
 	
 	__block NSString *result = @"";
 	
@@ -889,10 +887,9 @@
 	return result;
 }
 
-- (TCImage *)buddyLastAvatarForBuddyIdentifier:(NSString *)identifier
+- (nullable TCImage *)buddyLastAvatarForBuddyIdentifier:(NSString *)identifier
 {
-	if (!identifier)
-		return nil;
+	NSAssert(identifier, @"identifier is nil");
 	
 	__block NSData *result = nil;
 	
@@ -914,7 +911,10 @@
 	{
 		NSImage *image = [[NSImage alloc] initWithData:result];
 		
-		return [[TCImage alloc] initWithImage:image];
+		if (!image)
+			return nil;
+		
+		return [[TCImage alloc] initWithImage:(NSImage *)image];
 	}
 	else
 		return nil;
@@ -986,7 +986,7 @@
 
 #pragma mark > Set
 
-- (void)setPathForComponent:(TCConfigPathComponent)component pathType:(TCConfigPathType)pathType path:(NSString *)path
+- (void)setPathForComponent:(TCConfigPathComponent)component pathType:(TCConfigPathType)pathType path:(nullable NSString *)path
 {
 	dispatch_barrier_async(_localQueue, ^{
 		
@@ -996,7 +996,10 @@
 			// Check parameter.
 			BOOL isDirectory = NO;
 			
-			if ([[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDirectory] && isDirectory == NO)
+			if (!path)
+				return;
+			
+			if ([[NSFileManager defaultManager] fileExistsAtPath:(NSString *)path isDirectory:&isDirectory] && isDirectory == NO)
 				return;
 			
 			// Prepare move.
@@ -1064,7 +1067,7 @@
 
 #pragma mark > Get
 
-- (NSString *)pathForComponent:(TCConfigPathComponent)component fullPath:(BOOL)fullPath
+- (nullable NSString *)pathForComponent:(TCConfigPathComponent)component fullPath:(BOOL)fullPath
 {
 	__block NSString *result;
 	
@@ -1075,7 +1078,7 @@
 	return result;
 }
 
-- (NSString *)_pathForComponent:(TCConfigPathComponent)component fullPath:(BOOL)fullPath
+- (nullable NSString *)_pathForComponent:(TCConfigPathComponent)component fullPath:(BOOL)fullPath
 {
 	// > localQueue <
 	
@@ -1294,12 +1297,11 @@
 
 #pragma mark > Observers
 
-- (id)addPathObserverForComponent:(TCConfigPathComponent)component queue:(dispatch_queue_t)queue usingBlock:(dispatch_block_t)block
+- (id)addPathObserverForComponent:(TCConfigPathComponent)component queue:(nullable dispatch_queue_t)queue usingBlock:(dispatch_block_t)block
 {
+	NSAssert(block, @"block is nil");
+
 	// Check parameters.
-	if (!block)
-		return nil;
-	
 	if (!queue)
 		queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 	
@@ -1502,14 +1504,14 @@
 		handler(-1);
 }
 
-- (void)transcriptBuddiesIdentifiersWithCompletionHandler:(void (^)(NSArray *buddiesIdentifiers))handler
+- (void)transcriptBuddiesIdentifiersWithCompletionHandler:(void (^)(NSArray * _Nullable buddiesIdentifiers))handler
 {
 	// Not implemented.
 	if (handler)
 		handler(nil);
 }
 
-- (void)transcriptMessagesForBuddyIdentifier:(NSString *)identifier beforeMessageID:(NSNumber *)msgId limit:(NSUInteger)limit completionHandler:(void (^)(NSArray *messages))handler
+- (void)transcriptMessagesForBuddyIdentifier:(NSString *)identifier beforeMessageID:(NSNumber *)msgId limit:(NSUInteger)limit completionHandler:(void (^)(NSArray * _Nullable messages))handler
 {
 	// Not implemented.
 	if (handler)
@@ -1550,7 +1552,7 @@
 	dispatch_source_set_timer(_timer, dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), 0, 1 * NSEC_PER_SEC);
 }
 
-- (NSMutableDictionary *)loadConfig:(NSData *)data
+- (nullable NSMutableDictionary *)loadConfig:(NSData *)data
 {
 	NSMutableDictionary	*content = nil;
 	
@@ -1694,3 +1696,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

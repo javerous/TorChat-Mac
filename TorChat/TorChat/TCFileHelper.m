@@ -23,6 +23,9 @@
 #import "TCFileHelper.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Prototypes
 */
@@ -57,8 +60,7 @@ BOOL TCFileSecureRemove(NSString *path)
 
 static BOOL TCFileRandomize(NSString *path)
 {
-	if (!path)
-		return NO;
+	assert(path);
 	
 	FILE *f = fopen(path.fileSystemRepresentation, "r+");
 	
@@ -100,3 +102,6 @@ error:
 	fclose(f);
 	return NO;
 }
+
+
+NS_ASSUME_NONNULL_END

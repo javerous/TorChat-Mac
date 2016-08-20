@@ -39,6 +39,9 @@
 #import "TCTools.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCCoreManager
 */
@@ -116,7 +119,7 @@
 	[self registerInfoDescriptors];
 }
 
-- (id)initWithConfiguration:(id <TCConfigCore>)config
+- (instancetype)initWithConfiguration:(id <TCConfigCore>)config
 {
 	self = [super init];
 	
@@ -177,11 +180,11 @@
 		if (!found)
 		{
 			// Add buddy in config.
-			[_config addBuddyWithIdentifier:selfIdentifier alias:@"" notes:@""];
+			[_config addBuddyWithIdentifier:selfIdentifier alias:nil notes:nil];
 			[_config setBuddyLastName:_config.profileName forBuddyIdentifier:selfIdentifier];
 			
 			// Add buddy in our list.
-			TCBuddy *buddy = [[TCBuddy alloc] initWithCoreManager:self configuration:_config identifier:selfIdentifier alias:@"" notes:@""];
+			TCBuddy *buddy = [[TCBuddy alloc] initWithCoreManager:self configuration:_config identifier:selfIdentifier alias:nil notes:nil];
 
 			[self _checkBlocked:buddy];
 			[_buddies addObject:buddy];
@@ -329,7 +332,7 @@
 	});
 }
 
-- (void)_stopWithCompletionHandler:(dispatch_block_t)handler
+- (void)_stopWithCompletionHandler:(nullable dispatch_block_t)handler
 {
 	// > localQueue <
 	
@@ -441,11 +444,8 @@
 */
 #pragma mark - TCCoreManager - Profile
 
-- (void)setProfileAvatar:(TCImage *)avatar
+- (void)setProfileAvatar:(nullable TCImage *)avatar
 {
-	if (!avatar)
-		return;
-	
 	// Set the avatar
 	dispatch_async(_localQueue, ^{
 		
@@ -463,9 +463,9 @@
 	});
 }
 
-- (TCImage *)profileAvatar
+- (nullable TCImage *)profileAvatar
 {
-	__block id result = NULL;
+	__block id result = nil;
 	
 	dispatch_sync(_localQueue, ^{
 		result = _profileAvatar;
@@ -475,11 +475,8 @@
 }
 
 
-- (void)setProfileName:(NSString *)name
+- (void)setProfileName:(nullable NSString *)name
 {
-	if (!name)
-		return;
-	
 	// Set the avatar
 	dispatch_async(_localQueue, ^{
 		
@@ -498,9 +495,9 @@
 	});
 }
 
-- (NSString *)profileName
+- (nullable NSString *)profileName
 {
-	__block NSString *result = NULL;
+	__block NSString *result = nil;
 	
 	dispatch_sync(_localQueue, ^{
 		result = _profileName;
@@ -509,11 +506,8 @@
 	return result;
 }
 
-- (void)setProfileText:(NSString *)text
+- (void)setProfileText:(nullable NSString *)text
 {
-	if (!text)
-		return;
-	
 	// Set the avatar
 	dispatch_async(_localQueue, ^{
 		
@@ -532,9 +526,9 @@
 	});
 }
 
-- (NSString *)profileText
+- (nullable NSString *)profileText
 {
-	__block NSString *result = NULL;
+	__block NSString *result = nil;
 	
 	dispatch_sync(_localQueue, ^{
 		result = _profileText;
@@ -560,21 +554,14 @@
 	return buddies;
 }
 
-- (void)addBuddyWithIdentifier:(NSString *)identifier name:(NSString *)name
+- (void)addBuddyWithIdentifier:(NSString *)identifier name:(nullable NSString *)name
 {
 	[self addBuddyWithIdentifier:identifier name:name comment:@""];
 }
 
-- (void)addBuddyWithIdentifier:(NSString *)identifier name:(NSString *)name comment:(NSString *)comment
+- (void)addBuddyWithIdentifier:(NSString *)identifier name:(nullable NSString *)name comment:(nullable NSString *)comment
 {
-	if (!identifier)
-		return;
-	
-	if (!name)
-		name = @"";
-	
-	if (!comment)
-		comment = @"";
+	NSAssert(identifier, @"identifier is nil");
 	
 	TCBuddy *buddy = [[TCBuddy alloc] initWithCoreManager:self configuration:_config identifier:identifier alias:name notes:comment];
 	
@@ -600,9 +587,8 @@
 
 - (void)removeBuddyWithIdentifier:(NSString *)identifier
 {
-	if (!identifier)
-		return;
-	
+	NSAssert(identifier, @"identifier is nil");
+
 	dispatch_async(_localQueue, ^{
 		
 		NSUInteger	i, cnt = [_buddies count];
@@ -631,12 +617,11 @@
 	});
 }
 
-- (TCBuddy *)buddyWithIdentifier:(NSString *)identifier
+- (nullable TCBuddy *)buddyWithIdentifier:(NSString *)identifier
 {
-	if (!identifier)
-		return nil;
+	NSAssert(identifier, @"identifier is nil");
 	
-    __block TCBuddy *result = NULL;
+    __block TCBuddy *result = nil;
 	
 	dispatch_sync(_localQueue, ^{
         
@@ -653,12 +638,11 @@
     return result;
 }
 
-- (TCBuddy *)buddyWithRandom:(NSString *)random
+- (nullable TCBuddy *)buddyWithRandom:(NSString *)random
 {
-	if (!random)
-		return nil;
+	NSAssert(random, @"random is nil");
 	
-    __block TCBuddy *result = NULL;
+    __block TCBuddy *result = nil;
 	
 	dispatch_sync(_localQueue, ^{
 		
@@ -755,8 +739,7 @@
 
 - (void)addObserver:(id <TCCoreManagerObserver>)observer
 {
-	if (!observer)
-		return;
+	NSAssert(observer, @"observer is nil");
 	
 	dispatch_async(_localQueue, ^{
 		[_observers addObject:observer];
@@ -858,10 +841,7 @@
 }
 
 - (void)connection:(TCConnection *)connection information:(SMInfo *)info
-{
-	if (!info)
-		return;
-	
+{	
 	// Forward the information.
 	dispatch_async(_localQueue, ^{
 		[self _sendEvent:info];
@@ -952,8 +932,7 @@
 {
 	// > localQueue <
 	
-	if (!info)
-		return;
+	NSAssert(info, @"info is nil");
 	
 	for (id <TCCoreManagerObserver> observer in _observers)
 	{
@@ -975,7 +954,7 @@
 	NSMutableDictionary *descriptors = [[NSMutableDictionary alloc] init];
 	
 	// == TCCoreManagerInfoDomain ==
-	descriptors[TCCoreManagerInfoDomain] = ^ NSDictionary * (SMInfoKind kind, int code) {
+	descriptors[TCCoreManagerInfoDomain] = ^  NSDictionary * (SMInfoKind kind, int code) {
 		
 		switch (kind) {
 			case SMInfoInfo:
@@ -1340,3 +1319,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

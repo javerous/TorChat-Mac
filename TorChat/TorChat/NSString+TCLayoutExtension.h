@@ -23,6 +23,9 @@
 #import <Cocoa/Cocoa.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** NSString - TCLayoutExtension
 */
@@ -46,3 +49,6 @@
 - (CGFloat)heightForDrawingWithWidth:(float)width;
 
 @end
+
+
+NS_ASSUME_NONNULL_END

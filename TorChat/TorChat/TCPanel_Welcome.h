@@ -24,6 +24,9 @@
 #import <SMAssistant/SMAssistantPanel.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCPanel_Welcome
 */
@@ -32,3 +35,6 @@
 @interface TCPanel_Welcome : NSViewController <SMAssistantPanel>
 
 @end
+
+
+NS_ASSUME_NONNULL_END

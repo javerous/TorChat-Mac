@@ -27,6 +27,9 @@
 #import "TCCoreManager.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCPrefView_Buddies - Private
 */
@@ -63,13 +66,12 @@
 */
 #pragma mark - TCPrefView_Buddies - Instance
 
-- (id)init
+- (instancetype)init
 {
 	self = [super initWithNibName:@"PrefView_Buddies" bundle:nil];
 	
 	if (self)
 	{
-		
 	}
 	
 	return self;
@@ -228,3 +230,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

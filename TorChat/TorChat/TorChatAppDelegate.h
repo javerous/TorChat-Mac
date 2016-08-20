@@ -21,6 +21,9 @@
  */
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TorChatAppDelegate
 */
@@ -29,3 +32,6 @@
 @interface TorChatAppDelegate : NSObject <NSApplicationDelegate>
 
 @end
+
+
+NS_ASSUME_NONNULL_END

@@ -23,6 +23,9 @@
 #import "SMTorConfiguration+TCConfig.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** SMTorConfiguration + TCConfigCore
 */
@@ -30,12 +33,14 @@
 
 @implementation SMTorConfiguration (TCConfigCore)
 
-- (instancetype)initWithTorChatConfiguration:(id <TCConfigCore>)config
+- (nullable instancetype)initWithTorChatConfiguration:(id <TCConfigCore>)config
 {
 	self = [super init];
 	
 	if (self)
 	{
+		NSAssert(config, @"config is nil");
+		
 		// Socks.
 		self.socksPort = config.torPort;
 		self.socksHost = (config.torAddress ?: @"localhost");
@@ -50,12 +55,21 @@
 		self.hiddenServiceLocalHost = @"127.0.0.1";
 		self.hiddenServiceLocalPort = config.selfPort;
 		
-		// Path.
-		self.binaryPath = [config pathForComponent:TCConfigPathComponentTorBinary fullPath:YES];
-		self.dataPath = [config pathForComponent:TCConfigPathComponentTorData fullPath:YES];
+		// Paths.
+		NSString *binPath = [config pathForComponent:TCConfigPathComponentTorBinary fullPath:YES];
+		NSString *dataPath = [config pathForComponent:TCConfigPathComponentTorData fullPath:YES];
+		
+		if (!binPath || !dataPath)
+			return nil;
+		
+		self.binaryPath = binPath;
+		self.dataPath = dataPath;
 	}
 	
 	return self;
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

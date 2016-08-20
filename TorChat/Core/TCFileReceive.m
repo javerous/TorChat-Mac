@@ -27,6 +27,9 @@
 #import "TCTools.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCFileReceive - Private
 */
@@ -55,15 +58,16 @@
 */
 #pragma mark - TCFileReceive - Instance
 
-- (id)initWithUUID:(NSString *)uuid folder:(NSString *)folder fileName:(NSString *)fileName fileSize:(uint64_t)fileSize blockSiz:(uint64_t)blockSize
+- (nullable instancetype)initWithUUID:(NSString *)uuid folder:(NSString *)folder fileName:(NSString *)fileName fileSize:(uint64_t)fileSize blockSiz:(uint64_t)blockSize
 {
-	if (!uuid || !folder || !fileName)
-		return nil;
-	
 	self = [super init];
 	
 	if (self)
 	{
+		NSAssert(uuid, @"uuid is nil");
+		NSAssert(folder, @"folder is nil");
+		NSAssert(fileName, @"fileName is nil");
+		
 		NSString *fullPath = [folder stringByAppendingPathComponent:fileName];
 		struct stat	st;
 		
@@ -196,3 +200,6 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END

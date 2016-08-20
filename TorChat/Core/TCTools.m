@@ -28,6 +28,9 @@
 #import "TCTools.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Network
 */
@@ -84,5 +87,8 @@ NSString * hashMD5(NSData *data)
 	string[i * 2] = '\0';
 
 	// Return result.
-	return [[NSString alloc] initWithCString:string encoding:NSASCIIStringEncoding];
+	return (NSString *)[[NSString alloc] initWithCString:string encoding:NSASCIIStringEncoding];
 }
+
+
+NS_ASSUME_NONNULL_END

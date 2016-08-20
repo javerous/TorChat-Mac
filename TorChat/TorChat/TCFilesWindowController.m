@@ -31,6 +31,9 @@
 #import "TCBuddy.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** Defines
 */
@@ -94,7 +97,7 @@
 	return shr;
 }
 
-- (id)init
+- (instancetype)init
 {
 	self = [super initWithWindowNibName:@"FilesWindow"];
 	
@@ -477,9 +480,9 @@
 	}
 	
 	// Set button context.
-	cellView.iconButton.context = file[TCFileIconContextKey];
-	cellView.cancelButton.context = file[TCFileCancelContextKey];
-	cellView.showButton.context = file[TCFileShowContextKey];
+	cellView.iconButton.context = (TCButtonContext *)file[TCFileIconContextKey];
+	cellView.cancelButton.context = (TCButtonContext *)file[TCFileCancelContextKey];
+	cellView.showButton.context = (TCButtonContext *)file[TCFileShowContextKey];
 
 	return cellView;
 }
@@ -523,8 +526,10 @@
 
 - (void)startFileTransfert:(NSString *)uuid withFilePath:(NSString *)filePath buddyIdentifier:(NSString *)identifier buddyName:(NSString *)name transfertWay:(tcfile_way)way fileSize:(uint64_t)size
 {
-	if (!uuid || !filePath || !name || !identifier)
-		return;
+	NSAssert(uuid, @"uuid is nil");
+	NSAssert(filePath, @"filePath is nil");
+	NSAssert(name, @"name is nil");
+	NSAssert(identifier, @"identifier is nil");
 	
 	// Build file description
 	NSMutableDictionary *item = [[NSMutableDictionary alloc] init];
@@ -607,8 +612,7 @@
 
 - (void)setStatus:(tcfile_status)status andTextStatus:(NSString *)txtStatus forFileTransfert:(NSString *)uuid withWay:(tcfile_way)way
 {
-	if (!txtStatus)
-		return;
+	NSAssert(txtStatus, @"txtStatus is nil");
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
@@ -755,3 +759,7 @@
 }
 
 @end
+
+
+NS_ASSUME_NONNULL_END
+
