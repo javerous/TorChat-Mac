@@ -274,19 +274,18 @@ NS_ASSUME_NONNULL_BEGIN
 		value = [_fcontent objectForKey:TCCONF_KEY_IM_IDENTIFIER];
 	});
 	
-	if (value)
-		return value;
-	else
-		return @"xxx";
+	return value;
 }
 
 - (void)setSelfIdentifier:(nullable NSString *)identifier
 {
-	if (!identifier)
-		return;
-	
 	dispatch_barrier_async(_localQueue, ^{
-		[_fcontent setObject:identifier forKey:TCCONF_KEY_IM_IDENTIFIER];
+		
+		if (identifier)
+			[_fcontent setObject:identifier forKey:TCCONF_KEY_IM_IDENTIFIER];
+		else
+			[_fcontent removeObjectForKey:TCCONF_KEY_IM_IDENTIFIER];
+		
 		[self _markDirty];
 	});
 }
@@ -322,20 +321,19 @@ NS_ASSUME_NONNULL_BEGIN
 	dispatch_sync(_localQueue, ^{
 		value = [_fcontent objectForKey:TCCONF_KEY_PROFILE_NAME];
 	});
-	
-	if (value)
-		return value;
-	else
-		return @"-";
+
+	return value;
 }
 
 - (void)setProfileName:(nullable NSString *)name
 {
-	if (!name)
-		return;
-	
 	dispatch_barrier_async(_localQueue, ^{
-		[_fcontent setObject:name forKey:TCCONF_KEY_PROFILE_NAME];
+		
+		if (name)
+			[_fcontent setObject:name forKey:TCCONF_KEY_PROFILE_NAME];
+		else
+			[_fcontent removeObjectForKey:TCCONF_KEY_PROFILE_NAME];
+			
 		[self _markDirty];
 	});
 }
@@ -348,19 +346,18 @@ NS_ASSUME_NONNULL_BEGIN
 		value = [_fcontent objectForKey:TCCONF_KEY_PROFILE_TEXT];
 	});
 	
-	if (value)
-		return value;
-	else
-		return @"";
+	return value;
 }
 
 - (void)setProfileText:(nullable NSString *)text
 {
-	if (!text)
-		return;
-	
 	dispatch_barrier_async(_localQueue, ^{
-		[_fcontent setObject:text forKey:TCCONF_KEY_PROFILE_TEXT];
+		
+		if (text)
+			[_fcontent setObject:text forKey:TCCONF_KEY_PROFILE_TEXT];
+		else
+			[_fcontent removeObjectForKey:TCCONF_KEY_PROFILE_TEXT];
+
 		[self _markDirty];
 	});
 }
@@ -453,12 +450,7 @@ NS_ASSUME_NONNULL_BEGIN
 	{
 		case TCConfigGetDefault:
 		{
-			NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-			
-			if (version)
-				return version;
-			
-			return @"";
+			return [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
 		}
 			
 		case TCConfigGetDefined:
@@ -469,10 +461,7 @@ NS_ASSUME_NONNULL_BEGIN
 				value = [_fcontent objectForKey:TCCONF_KEY_CLIENT_VERSION];
 			});
 			
-			if (value)
-				return value;
-			
-			return @"";
+			return value;
 		}
 			
 		case TCConfigGetReal:
@@ -486,16 +475,18 @@ NS_ASSUME_NONNULL_BEGIN
 		}
 	}
 	
-	return @"";
+	return nil;
 }
 
 - (void)setClientVersion:(nullable NSString *)version
 {
-	if (!version)
-		return;
-	
 	dispatch_barrier_async(_localQueue, ^{
-		[_fcontent setObject:version forKey:TCCONF_KEY_CLIENT_VERSION];
+		
+		if (version)
+			[_fcontent setObject:version forKey:TCCONF_KEY_CLIENT_VERSION];
+		else
+			[_fcontent removeObjectForKey:TCCONF_KEY_CLIENT_VERSION];
+			
 		[self _markDirty];
 	});
 }
@@ -517,10 +508,7 @@ NS_ASSUME_NONNULL_BEGIN
 				value = [_fcontent objectForKey:TCCONF_KEY_CLIENT_NAME];
 			});
 			
-			if (value)
-				return value;
-			
-			return @"";
+			return value;
 		}
 			
 		case TCConfigGetReal:
@@ -534,16 +522,18 @@ NS_ASSUME_NONNULL_BEGIN
 		}
 	}
 	
-	return @"";
+	return nil;
 }
 
 - (void)setClientName:(nullable NSString *)name
 {
-	if (!name)
-		return;
-	
 	dispatch_barrier_async(_localQueue, ^{
-		[_fcontent setObject:name forKey:TCCONF_KEY_CLIENT_NAME];
+		
+		if (name)
+			[_fcontent setObject:name forKey:TCCONF_KEY_CLIENT_NAME];
+		else
+			[_fcontent removeObjectForKey:TCCONF_KEY_CLIENT_NAME];
+			
 		[self _markDirty];
 	});
 }
@@ -576,12 +566,6 @@ NS_ASSUME_NONNULL_BEGIN
 	if (!identifier)
 		return;
 	
-	if (!alias)
-		alias = @"";
-	
-	if (!notes)
-		notes = @"";
-	
 	dispatch_barrier_async(_localQueue, ^{
 		
 		// Get buddies list.
@@ -597,9 +581,12 @@ NS_ASSUME_NONNULL_BEGIN
 		NSMutableDictionary *buddy = [[NSMutableDictionary alloc] init];
 		
 		[buddy setObject:identifier forKey:TCConfigBuddyIdentifier];
-		[buddy setObject:alias forKey:TCConfigBuddyAlias];
-		[buddy setObject:notes forKey:TCConfigBuddyNotes];
-		[buddy setObject:@"" forKey:TCConfigBuddyLastName];
+		
+		if (alias)
+			[buddy setObject:alias forKey:TCConfigBuddyAlias];
+		
+		if (notes)
+			[buddy setObject:notes forKey:TCConfigBuddyNotes];
 		
 		[buddies addObject:buddy];
 		
@@ -637,9 +624,6 @@ NS_ASSUME_NONNULL_BEGIN
 	if (!identifier)
 		return;
 	
-	if (!alias)
-		alias = @"";
-	
 	dispatch_barrier_async(_localQueue, ^{
 		
 		// Change from Cocoa version.
@@ -652,7 +636,11 @@ NS_ASSUME_NONNULL_BEGIN
 			
 			if ([[buddy objectForKey:TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
-				[buddy setObject:alias forKey:TCConfigBuddyAlias];
+				if (alias)
+					[buddy setObject:alias forKey:TCConfigBuddyAlias];
+				else
+					[buddy removeObjectForKey:TCConfigBuddyAlias];
+					
 				break;
 			}
 		}
@@ -667,9 +655,6 @@ NS_ASSUME_NONNULL_BEGIN
 	if (!identifier)
 		return;
 	
-	if (!notes)
-		notes = @"";
-	
 	dispatch_barrier_async(_localQueue, ^{
 	
 		// Change from Cocoa version.
@@ -682,7 +667,11 @@ NS_ASSUME_NONNULL_BEGIN
 			
 			if ([[buddy objectForKey:TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
-				[buddy setObject:notes forKey:TCConfigBuddyNotes];
+				if (notes)
+					[buddy setObject:notes forKey:TCConfigBuddyNotes];
+				else
+					[buddy removeObjectForKey:TCConfigBuddyNotes];
+				
 				break;
 			}
 		}
@@ -697,9 +686,6 @@ NS_ASSUME_NONNULL_BEGIN
 	if (!identifier)
 		return;
 	
-	if (!lastName)
-		lastName = @"";
-	
 	dispatch_barrier_async(_localQueue, ^{
 		
 		// Change from Cocoa version
@@ -712,7 +698,11 @@ NS_ASSUME_NONNULL_BEGIN
 			
 			if ([[buddy objectForKey:TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
-				[buddy setObject:lastName forKey:TCConfigBuddyLastName];
+				if (lastName)
+					[buddy setObject:lastName forKey:TCConfigBuddyLastName];
+				else
+					[buddy removeObjectForKey:TCConfigBuddyLastName];
+					
 				break;
 			}
 		}
@@ -727,9 +717,6 @@ NS_ASSUME_NONNULL_BEGIN
 	if (!identifier)
 		return;
 	
-	if (!lastText)
-		lastText = @"";
-	
 	dispatch_barrier_async(_localQueue, ^{
 		
 		// Change from Cocoa version
@@ -742,7 +729,11 @@ NS_ASSUME_NONNULL_BEGIN
 			
 			if ([[buddy objectForKey:TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
-				[buddy setObject:lastText forKey:TCConfigBuddyLastText];
+				if (lastText)
+					[buddy setObject:lastText forKey:TCConfigBuddyLastText];
+				else
+					[buddy removeObjectForKey:TCConfigBuddyLastText];
+
 				break;
 			}
 		}
@@ -754,7 +745,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setBuddyLastAvatar:(nullable TCImage *)lastAvatar forBuddyIdentifier:(NSString *)identifier
 {
-	if (!identifier || !lastAvatar)
+	if (!identifier)
 		return;
 	
 	// Create PNG representation.
@@ -762,13 +753,8 @@ NS_ASSUME_NONNULL_BEGIN
 	NSData	*tiffData = [image TIFFRepresentation];
 	NSData	*pngData;
 	
-	if (!tiffData)
-		return;
-	
-	pngData = [[[NSBitmapImageRep alloc] initWithData:tiffData] representationUsingType:NSPNGFileType properties:@{ }];
-	
-	if (!pngData)
-		return;
+	if (tiffData)
+		pngData = [[[NSBitmapImageRep alloc] initWithData:tiffData] representationUsingType:NSPNGFileType properties:@{ }];
 	
 	// Change item.
 	dispatch_barrier_async(_localQueue, ^{
@@ -782,7 +768,11 @@ NS_ASSUME_NONNULL_BEGIN
 			
 			if ([[buddy objectForKey:TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
-				[buddy setObject:pngData forKey:TCConfigBuddyLastAvatar];
+				if (pngData)
+					[buddy setObject:pngData forKey:TCConfigBuddyLastAvatar];
+				else
+					[buddy removeObjectForKey:TCConfigBuddyLastAvatar];
+				
 				break;
 			}
 		}
@@ -795,9 +785,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)buddyAliasForBuddyIdentifier:(NSString *)identifier
 {
 	if (!identifier)
-		return @"";
+		return nil;
 	
-	__block NSString *result = @"";
+	__block NSString *result = nil;
 	
 	dispatch_sync(_localQueue, ^{
 		
@@ -819,9 +809,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)buddyNotesForBuddyIdentifier:(NSString *)identifier
 {
 	if (!identifier)
-		return @"";
+		return nil;
 	
-	__block NSString *result = @"";
+	__block NSString *result = nil;
 	
 	dispatch_sync(_localQueue, ^{
 		
@@ -843,9 +833,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)buddyLastNameForBuddyIdentifier:(NSString *)identifier
 {
 	if (!identifier)
-		return @"";
+		return nil;
 	
-	__block NSString *result = @"";
+	__block NSString *result = nil;
 
 	dispatch_sync(_localQueue, ^{
 		
@@ -868,7 +858,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	NSAssert(identifier, @"identifier is nil");
 	
-	__block NSString *result = @"";
+	__block NSString *result = nil;
 	
 	dispatch_sync(_localQueue, ^{
 		
