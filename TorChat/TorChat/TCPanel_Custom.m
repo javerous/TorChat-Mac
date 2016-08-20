@@ -168,7 +168,6 @@ static BOOL isNumber(NSString *str);
 	};
 	
 	// > IM port.
-	/*
 	_imInPortField.validCharacterSet = [NSCharacterSet decimalDigitCharacterSet];
 	_imInPortField.validateContent = ^ BOOL (NSString *newContent) {
 		return (newContent.length <= 5);
@@ -176,7 +175,7 @@ static BOOL isNumber(NSString *str);
 	_imInPortField.textDidChange = ^(NSString *content) {
 		[weakSekf validateContent];
 	};
-	*/
+
 	// > Tor address.
 	_torAddressField.validCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@"abcdefghijklmnopqrstuvwxyz0123456789.-"];
 	_torAddressField.textDidChange = ^(NSString *content) {
