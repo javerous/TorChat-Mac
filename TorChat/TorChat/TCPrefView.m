@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TCPrefView ()
 
 @property (strong, nonatomic) void (^reloadConfig)(dispatch_block_t doneHandler);
+@property (strong, nonatomic) void (^disableDisappearance)(BOOL disable);
 
 @property (strong, nonatomic) id <TCConfigAppEncryptable>	config;
 @property (strong, nonatomic) TCCoreManager				*core;
@@ -69,6 +70,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	if (_reloadConfig)
 		_reloadConfig(handler);
+}
+
+- (void)disableDisappearance:(BOOL)disable
+{
+	if (_disableDisappearance)
+		_disableDisappearance(disable);
 }
 
 @end

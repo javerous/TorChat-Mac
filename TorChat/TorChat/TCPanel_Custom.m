@@ -27,6 +27,8 @@
 
 #import "TCLocationViewController.h"
 
+#import "TCValidatedTextField.h"
+
 #import "TCDebugLog.h"
 
 
@@ -43,6 +45,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
+** Prototypes
+*/
+#pragma mark - Prototypes
+
+static BOOL isNumber(NSString *str);
+
+
+
+/*
 ** TCPanel_Custom - Private
 */
 #pragma mark - TCPanel_Custom - Private
@@ -54,12 +65,12 @@ NS_ASSUME_NONNULL_BEGIN
 	TCLocationViewController *_torDownloadsLocation;
 }
 
-@property (strong, nonatomic)	IBOutlet NSTextField	*imIdentifierField;
-@property (strong, nonatomic)	IBOutlet NSTextField	*imInPortField;
-@property (strong, nonatomic)	IBOutlet NSView			*downloadLocationView;
+@property (strong, nonatomic)	IBOutlet TCValidatedTextField	*imIdentifierField;
+@property (strong, nonatomic)	IBOutlet TCValidatedTextField	*imInPortField;
+@property (strong, nonatomic)	IBOutlet NSView *downloadLocationView;
 
-@property (strong, nonatomic)	IBOutlet NSTextField	*torAddressField;
-@property (strong, nonatomic)	IBOutlet NSTextField	*torPortField;
+@property (strong, nonatomic)	IBOutlet TCValidatedTextField	*torAddressField;
+@property (strong, nonatomic)	IBOutlet TCValidatedTextField	*torPortField;
 
 @end
 
@@ -121,10 +132,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)panelDidAppear
 {
+	// Handle config.
 	_currentConfig = self.panelPreviousContent;
+
+	if (!_currentConfig)
+	{
+		[self.panelProxy setDisableContinue:YES];
+		return;
+	}
 	
 	// Configure assistant.
 	[self.panelProxy setIsLastPanel:YES];
+	[self.panelProxy setDisableContinue:YES];
 	
 	[_currentConfig setMode:TCConfigModeCustom];
 	
@@ -132,6 +151,46 @@ NS_ASSUME_NONNULL_BEGIN
 	_torDownloadsLocation = [[TCLocationViewController alloc] initWithConfiguration:_currentConfig component:TCConfigPathComponentDownloads];
 	
 	[_torDownloadsLocation addToView:_downloadLocationView];
+	
+	// Select first field.
+	[self.view.window makeFirstResponder:_imIdentifierField];
+
+	// Configure validation.
+	TCPanel_Custom *weakSekf = self;
+	
+	// > Identifier.
+	_imIdentifierField.validCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@"abcdefghijklmnopqrstuvwxyz0123456789"];
+	_imIdentifierField.validateContent = ^ BOOL (NSString *newContent) {
+		return (newContent.length <= 16);
+	};
+	_imIdentifierField.textDidChange = ^(NSString *content) {
+		[weakSekf validateContent];
+	};
+	
+	// > IM port.
+	/*
+	_imInPortField.validCharacterSet = [NSCharacterSet decimalDigitCharacterSet];
+	_imInPortField.validateContent = ^ BOOL (NSString *newContent) {
+		return (newContent.length <= 5);
+	};
+	_imInPortField.textDidChange = ^(NSString *content) {
+		[weakSekf validateContent];
+	};
+	*/
+	// > Tor address.
+	_torAddressField.validCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@"abcdefghijklmnopqrstuvwxyz0123456789.-"];
+	_torAddressField.textDidChange = ^(NSString *content) {
+		[weakSekf validateContent];
+	};
+	
+	// > Tor port.
+	_torPortField.validCharacterSet = [NSCharacterSet decimalDigitCharacterSet];
+	_torPortField.validateContent = ^ BOOL (NSString *newContent) {
+		return (newContent.length <= 5);
+	};
+	_torPortField.textDidChange = ^(NSString *content) {
+		[weakSekf validateContent];
+	};
 }
 
 - (void)canceled
@@ -148,7 +207,63 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 }
 
+- (void)validateContent
+{
+	// Init regexp.
+	static dispatch_once_t		onceToken;
+	static NSRegularExpression	*hostnameRegexp;
+
+	dispatch_once(&onceToken, ^{
+		hostnameRegexp = [NSRegularExpression regularExpressionWithPattern:@"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$" options:0 error:nil];
+	});
+	
+	// Check.
+	NSString	*torAddressString = _torAddressField.stringValue;
+	BOOL		valid = YES;
+	
+	valid = valid && _imIdentifierField.stringValue.length == 16;
+	valid = valid && (_imInPortField.integerValue >= 1 && _imInPortField.integerValue <= 65535);
+	
+	// Validate IPv4 or hostname.
+	if (valid)
+	{
+		NSArray <NSString *> *components = [torAddressString componentsSeparatedByString:@"."];
+		
+		// > Check if it look like a valid IPv4.
+		if (components.count == 4 && isNumber(components[0]) && isNumber(components[1]) && isNumber(components[2]) && isNumber(components[3]))
+		{
+			if (valid && (components[0].integerValue <= 0 || components[0].integerValue >= 255))
+				valid = NO;
+			if (valid && (components[1].integerValue <= 0 || components[1].integerValue >= 255))
+				valid = NO;
+			if (valid && (components[2].integerValue <= 0 || components[2].integerValue >= 255))
+				valid = NO;
+			if (valid && (components[3].integerValue <= 0 || components[3].integerValue >= 255))
+				valid = NO;
+		}
+		// > Check if it look like a valid hostname.
+		else
+			valid = ([hostnameRegexp numberOfMatchesInString:torAddressString options:NSMatchingAnchored range:NSMakeRange(0, torAddressString.length)] > 0);
+	}
+
+	valid = valid && (_torPortField.integerValue >= 1 && _torPortField.integerValue <= 65535);
+
+	[self.panelProxy setDisableContinue:!valid];
+}
+
 @end
+
+
+
+/*
+** C Tools
+*/
+#pragma mark - C Tools
+
+static BOOL isNumber(NSString *str)
+{
+	return (str.length > 0) && ([str rangeOfCharacterFromSet:[[NSCharacterSet decimalDigitCharacterSet] invertedSet]].location == NSNotFound);
+}
 
 
 NS_ASSUME_NONNULL_END

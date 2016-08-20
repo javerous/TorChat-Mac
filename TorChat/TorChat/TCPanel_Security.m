@@ -122,12 +122,14 @@ NS_ASSUME_NONNULL_BEGIN
 	{
 		config = [[TCConfigSQLite alloc] initWithFile:configPath password:nil error:&error];
 	}
-
+	
 	if (!config)
 	{
 		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:error.localizedDescription];
 		
-		dispatch_async(dispatch_get_main_queue(), ^{
+		CFRunLoopRef runLoop = CFRunLoopGetMain();
+		
+		CFRunLoopPerformBlock(runLoop, kCFRunLoopCommonModes, ^{
 			
 			NSAlert *alert = [[NSAlert alloc] init];
 			
@@ -138,7 +140,9 @@ NS_ASSUME_NONNULL_BEGIN
 			
 			exit(0);
 		});
-
+		
+		CFRunLoopWakeUp(runLoop);
+		
 		return nil;
 	}
 	

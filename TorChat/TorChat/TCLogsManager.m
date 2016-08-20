@@ -195,7 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
 	});
 }
 
-- (void)addBuddyLogWithBuddyIdentifier:(NSString *)identifier name:(NSString *)name kind:(TCLogKind)kind message:(NSString *)message, ...
+- (void)addBuddyLogWithBuddyIdentifier:(NSString *)identifier name:(nullable NSString *)name kind:(TCLogKind)kind message:(NSString *)message, ...
 {
 	va_list		ap;
 	NSString	*msg;
@@ -209,18 +209,27 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	// Add the alias
 	dispatch_async(_localQueue, ^{
-		[_names setObject:name forKey:identifier];
+		if (name)
+			[_names setObject:name forKey:identifier];
+		else
+			[_names removeObjectForKey:identifier];
 	});
-		
+	
 	// Add the rendered log.
 	[self addLogWithTimestamp:nil key:identifier kind:kind content:msg];
 }
 
-- (void)addBuddyLogWithBuddyIdentifier:(NSString *)identifier name:(NSString *)name info:(SMInfo *)info
+- (void)addBuddyLogWithBuddyIdentifier:(NSString *)identifier name:(nullable NSString *)name info:(SMInfo *)info
 {
+	NSAssert(identifier, @"identifier is nil");
+	NSAssert(info, @"info is nil");
+
 	// Add the alias
 	dispatch_async(_localQueue, ^{
-		[_names setObject:name forKey:identifier];
+		if (name)
+			[_names setObject:name forKey:identifier];
+		else
+			[_names removeObjectForKey:identifier];
 	});
 	
 	// Convert kind.

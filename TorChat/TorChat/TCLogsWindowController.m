@@ -234,7 +234,14 @@ NS_ASSUME_NONNULL_BEGIN
 		else if ([key isEqualToString:TCLogsGlobalKey])
 			return NSLocalizedString(@"logs_global_logs", @"");
 		else
-			return (id)[[TCLogsManager sharedManager] nameForKey:key];
+		{
+			NSString *name = [[TCLogsManager sharedManager] nameForKey:key];
+			
+			if (name)
+				return name;
+			else
+				return [NSString stringWithFormat:@"<%@>", key];
+		}
 	}
 	else if (aTableView == _logsView)
 	{
@@ -263,7 +270,14 @@ NS_ASSUME_NONNULL_BEGIN
 				if ([str isEqualToString:TCLogsGlobalKey])
 					return NSLocalizedString(@"logs_global_logs", @"");
 				else
-					return [NSString stringWithFormat:@"%@ (%@)", [[TCLogsManager sharedManager] nameForKey:str], str];
+				{
+					NSString *name = [[TCLogsManager sharedManager] nameForKey:str];
+					
+					if (name)
+						return [NSString stringWithFormat:@"%@ (%@)", name, str];
+					else
+						return [NSString stringWithFormat:@"<%@>", str];
+				}
 			}
 			else
 			{

@@ -47,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) TCCoreManager				*core;
 
 @property (strong, nonatomic) void (^reloadConfig)(dispatch_block_t doneHandler);
+@property (strong, nonatomic) void (^disableDisappearance)(BOOL disable);
 
 @end
 
@@ -64,6 +65,8 @@ NS_ASSUME_NONNULL_BEGIN
 	IBOutlet NSProgressIndicator	*_loadingIndicator;
 	
 	TCPrefView	*_currentCtrl;
+	
+	BOOL _disabledDisappearance;
 }
 
 @end
@@ -130,6 +133,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)windowWillClose:(NSNotification *)notification
 {
+	if (_disabledDisappearance)
+		return;
+	
 	id <TCConfigAppEncryptable> config = [[TCMainController sharedController] configuration];
 	TCCoreManager				*core = [[TCMainController sharedController] core];
 	
@@ -205,6 +211,26 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	viewCtrl.config = config;
 	viewCtrl.core = core;
+	viewCtrl.disableDisappearance = ^(BOOL disable) {
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			
+			// > Disable tool bar.
+			NSArray<__kindof NSToolbarItem *> *items = self.window.toolbar.items;
+			
+			for (NSToolbarItem *item in items)
+			{
+				item.autovalidates = !disable;
+				item.enabled = !disable;
+			}
+			
+			// > Disable close button.
+			[self.window standardWindowButton:NSWindowCloseButton].enabled = !disable;
+			
+			// > Set disable flag.
+			_disabledDisappearance = disable;
+		});
+	};
 	viewCtrl.reloadConfig = ^(dispatch_block_t doneHandler) {
 		
 		// Lock UI.

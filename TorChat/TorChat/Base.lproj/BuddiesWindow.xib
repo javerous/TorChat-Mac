@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11198.2" systemVersion="15G31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11198.2"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCBuddiesWindowController">
@@ -9,6 +9,7 @@
                 <outlet property="addIdentifierField" destination="73" id="zRo-ah-kyd"/>
                 <outlet property="addNameField" destination="69" id="92"/>
                 <outlet property="addNotesField" destination="172" id="247"/>
+                <outlet property="addOkButton" destination="81" id="a1Q-PN-S6t"/>
                 <outlet property="addWindow" destination="65" id="102"/>
                 <outlet property="barView" destination="h1G-x1-A2b" id="TsP-Q2-0Lu"/>
                 <outlet property="imAvatar" destination="219" id="221"/>
@@ -175,14 +176,13 @@
                                     </connections>
                                 </tableView>
                             </subviews>
-                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </clipView>
                         <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" controlSize="small" horizontal="YES" id="16">
                             <rect key="frame" x="-100" y="-100" width="192" height="15"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <scroller key="verticalScroller" verticalHuggingPriority="750" controlSize="small" horizontal="NO" id="15">
-                            <rect key="frame" x="270" y="1" width="11" height="235"/>
+                            <rect key="frame" x="267" y="1" width="14" height="235"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
@@ -336,7 +336,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="67">
-                        <rect key="frame" x="39" y="198" width="47" height="17"/>
+                        <rect key="frame" x="39" y="166" width="47" height="17"/>
                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Name: " usesSingleLineMode="YES" id="68">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -344,7 +344,7 @@
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="71">
-                        <rect key="frame" x="24" y="166" width="62" height="17"/>
+                        <rect key="frame" x="24" y="198" width="62" height="17"/>
                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Identifier:" usesSingleLineMode="YES" id="72">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -352,15 +352,15 @@
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="69">
-                        <rect key="frame" x="92" y="195" width="197" height="22"/>
+                        <rect key="frame" x="92" y="163" width="197" height="22"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="70">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="73">
-                        <rect key="frame" x="92" y="163" width="197" height="22"/>
+                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="73" customClass="TCValidatedTextField">
+                        <rect key="frame" x="92" y="195" width="197" height="22"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="74">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -380,7 +380,7 @@
                         <constraints>
                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="82" id="7kK-3q-Crj"/>
                         </constraints>
-                        <buttonCell key="cell" type="push" title="Add" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="82">
+                        <buttonCell key="cell" type="push" title="Add" bezelStyle="rounded" alignment="center" enabled="NO" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="82">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                             <string key="keyEquivalent" base64-UTF8="YES">
@@ -413,15 +413,13 @@ Gw
                             <rect key="frame" x="1" y="1" width="195" height="92"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <textView importsGraphics="NO" richText="NO" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="172">
+                                <textView importsGraphics="NO" richText="NO" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="172">
                                     <rect key="frame" x="0.0" y="0.0" width="195" height="92"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <size key="minSize" width="195" height="92"/>
                                     <size key="maxSize" width="463" height="10000000"/>
                                     <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                                    <size key="minSize" width="195" height="92"/>
-                                    <size key="maxSize" width="463" height="10000000"/>
                                 </textView>
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -434,7 +432,7 @@ Gw
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="170">
-                            <rect key="frame" x="182" y="1" width="16" height="12"/>
+                            <rect key="frame" x="180" y="1" width="16" height="0.0"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
@@ -444,22 +442,22 @@ Gw
                     <constraint firstItem="71" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="66" secondAttribute="leading" constant="20" symbolic="YES" id="7P8-b9-RYp"/>
                     <constraint firstAttribute="trailing" secondItem="73" secondAttribute="trailing" constant="20" symbolic="YES" id="9Z6-tm-sec"/>
                     <constraint firstItem="81" firstAttribute="leading" secondItem="83" secondAttribute="trailing" constant="12" symbolic="YES" id="APO-xB-pA4"/>
+                    <constraint firstItem="172" firstAttribute="top" secondItem="69" secondAttribute="bottom" constant="9" id="ARI-Jy-LF9"/>
+                    <constraint firstItem="69" firstAttribute="top" secondItem="73" secondAttribute="bottom" constant="10" symbolic="YES" id="AkE-iT-uk8"/>
                     <constraint firstItem="67" firstAttribute="centerY" secondItem="69" secondAttribute="centerY" id="JcG-CD-x1a"/>
                     <constraint firstItem="71" firstAttribute="centerY" secondItem="73" secondAttribute="centerY" id="KVQ-IH-qdm"/>
                     <constraint firstAttribute="trailing" secondItem="81" secondAttribute="trailing" constant="20" symbolic="YES" id="LHe-oS-caS"/>
                     <constraint firstItem="73" firstAttribute="leading" secondItem="66" secondAttribute="leading" constant="92" id="Mon-MB-W3G"/>
                     <constraint firstItem="67" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="66" secondAttribute="leading" constant="20" symbolic="YES" id="PQL-vJ-pCn"/>
-                    <constraint firstItem="169" firstAttribute="top" secondItem="73" secondAttribute="bottom" constant="8" symbolic="YES" id="Ty4-go-7St"/>
                     <constraint firstAttribute="trailing" secondItem="69" secondAttribute="trailing" constant="20" symbolic="YES" id="XEe-aC-nlr"/>
-                    <constraint firstItem="69" firstAttribute="top" secondItem="66" secondAttribute="top" constant="20" symbolic="YES" id="XmD-0c-rl7"/>
                     <constraint firstItem="73" firstAttribute="leading" secondItem="71" secondAttribute="trailing" constant="8" symbolic="YES" id="cA0-Hr-Dja"/>
                     <constraint firstItem="81" firstAttribute="top" secondItem="83" secondAttribute="top" id="fEl-PC-2ja"/>
+                    <constraint firstItem="73" firstAttribute="top" secondItem="66" secondAttribute="top" constant="20" symbolic="YES" id="jT0-Ih-axl"/>
                     <constraint firstAttribute="bottom" secondItem="83" secondAttribute="bottom" constant="20" symbolic="YES" id="kE0-K7-3Rh"/>
                     <constraint firstItem="169" firstAttribute="leading" secondItem="66" secondAttribute="leading" constant="92" id="ktY-de-e16"/>
                     <constraint firstItem="69" firstAttribute="leading" secondItem="67" secondAttribute="trailing" constant="8" symbolic="YES" id="nmR-pZ-oJt"/>
                     <constraint firstItem="169" firstAttribute="leading" secondItem="75" secondAttribute="trailing" constant="8" symbolic="YES" id="sGf-m3-zmp"/>
                     <constraint firstItem="83" firstAttribute="top" secondItem="169" secondAttribute="bottom" constant="20" symbolic="YES" id="uDV-On-JSD"/>
-                    <constraint firstItem="73" firstAttribute="top" secondItem="69" secondAttribute="bottom" constant="10" symbolic="YES" id="xPD-Yu-Xyl"/>
                     <constraint firstItem="75" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="66" secondAttribute="leading" constant="20" symbolic="YES" id="xmp-Uu-TwU"/>
                     <constraint firstAttribute="trailing" secondItem="169" secondAttribute="trailing" constant="20" symbolic="YES" id="yer-1b-Nqc"/>
                     <constraint firstItem="69" firstAttribute="leading" secondItem="66" secondAttribute="leading" constant="92" id="z7a-Kh-Jrd"/>
@@ -497,15 +495,13 @@ Gw
                             <rect key="frame" x="1" y="1" width="438" height="117"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <textView importsGraphics="NO" richText="NO" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="234">
+                                <textView importsGraphics="NO" richText="NO" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="234">
                                     <rect key="frame" x="0.0" y="0.0" width="438" height="117"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <size key="minSize" width="438" height="117"/>
                                     <size key="maxSize" width="542" height="10000000"/>
                                     <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                                    <size key="minSize" width="438" height="117"/>
-                                    <size key="maxSize" width="542" height="10000000"/>
                                 </textView>
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

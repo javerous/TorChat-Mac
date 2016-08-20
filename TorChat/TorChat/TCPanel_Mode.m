@@ -108,8 +108,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)panelDidAppear
 {
+	// Handle config.
 	_currentConfig = self.panelPreviousContent;
+		
+	if (!_currentConfig)
+	{
+		[self.panelProxy setDisableContinue:YES];
+		return;
+	}
 	
+	// Configure assitant.
 	[self.panelProxy setIsLastPanel:NO];
 	[self.panelProxy setNextPanelID:@"ac_bundled"];
 }

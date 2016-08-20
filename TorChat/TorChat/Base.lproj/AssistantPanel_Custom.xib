@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11198.2" systemVersion="15G31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11198.2"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCPanel_Custom">
@@ -45,7 +44,7 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7SE-iv-QXd">
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7SE-iv-QXd" customClass="TCValidatedTextField">
                     <rect key="frame" x="155" y="126" width="55" height="22"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="55" id="wFg-ZX-hQm"/>
@@ -56,7 +55,7 @@
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="PFh-zn-GSc">
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="PFh-zn-GSc" customClass="TCValidatedTextField">
                     <rect key="frame" x="155" y="158" width="245" height="22"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="localhost" drawsBackground="YES" id="iY6-So-IOG">
                         <font key="font" metaFont="system"/>
@@ -64,7 +63,7 @@
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GCY-ZD-Qpx">
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GCY-ZD-Qpx" customClass="TCValidatedTextField">
                     <rect key="frame" x="155" y="242" width="245" height="22"/>
                     <constraints>
                         <constraint firstAttribute="width" priority="250" constant="10000" id="QDc-dG-BOl"/>
@@ -83,7 +82,7 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xcW-WL-RhM">
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xcW-WL-RhM" customClass="TCValidatedTextField">
                     <rect key="frame" x="155" y="210" width="55" height="22"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="55" id="WFH-GI-N4y"/>

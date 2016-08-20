@@ -87,6 +87,7 @@
 		E8A6FE3517A995D100C4DEAB /* TCPanel_Custom.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A6FE3417A995D100C4DEAB /* TCPanel_Custom.m */; };
 		E8A6FE3817A995F100C4DEAB /* TCPanel_Bundled.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A6FE3717A995F100C4DEAB /* TCPanel_Bundled.m */; };
 		E8A7F6DE185D22F8002A4495 /* TCChatTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A7F6DD185D22F8002A4495 /* TCChatTableView.m */; };
+		E8AC361A1D68D829001F001C /* TCValidatedTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = E8AC36191D68D829001F001C /* TCValidatedTextField.m */; };
 		E8C1EFF312F7169400E24C42 /* TCImage.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C1EFF112F7169400E24C42 /* TCImage.m */; };
 		E8C6EC6D1C902187005F3634 /* TCConfigurationHelperController.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C6EC6C1C902187005F3634 /* TCConfigurationHelperController.m */; };
 		E8CC776F18ED50C5003AB0BF /* TCDragImage.m in Sources */ = {isa = PBXBuildFile; fileRef = E8CC776E18ED50C5003AB0BF /* TCDragImage.m */; };
@@ -278,6 +279,8 @@
 		E8A6FE3717A995F100C4DEAB /* TCPanel_Bundled.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCPanel_Bundled.m; sourceTree = "<group>"; };
 		E8A7F6DC185D22F8002A4495 /* TCChatTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCChatTableView.h; sourceTree = "<group>"; };
 		E8A7F6DD185D22F8002A4495 /* TCChatTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatTableView.m; sourceTree = "<group>"; };
+		E8AC36181D68D829001F001C /* TCValidatedTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCValidatedTextField.h; sourceTree = "<group>"; };
+		E8AC36191D68D829001F001C /* TCValidatedTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCValidatedTextField.m; sourceTree = "<group>"; };
 		E8C1EFF112F7169400E24C42 /* TCImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCImage.m; sourceTree = "<group>"; };
 		E8C1EFF212F7169400E24C42 /* TCImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCImage.h; sourceTree = "<group>"; };
 		E8C3DD081C23093600129415 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LocationView.strings; sourceTree = "<group>"; };
@@ -580,6 +583,8 @@
 				E8455D3C17A425F00046307B /* TCValue.m */,
 				E8CC776D18ED50C5003AB0BF /* TCDragImage.h */,
 				E8CC776E18ED50C5003AB0BF /* TCDragImage.m */,
+				E8AC36181D68D829001F001C /* TCValidatedTextField.h */,
+				E8AC36191D68D829001F001C /* TCValidatedTextField.m */,
 			);
 			name = Components;
 			sourceTree = "<group>";
@@ -1004,6 +1009,7 @@
 				E8C6EC6D1C902187005F3634 /* TCConfigurationHelperController.m in Sources */,
 				E82B7D7A125A08A800B7BA8A /* TCPreferencesWindowController.m in Sources */,
 				E80A357F1A67F61800896518 /* TCLocationViewController.m in Sources */,
+				E8AC361A1D68D829001F001C /* TCValidatedTextField.m in Sources */,
 				E8643D791A66DBF900B8C55F /* TCPrefView_General.m in Sources */,
 				E89E47051C8D905E004A5D72 /* SMSQLiteCryptoVFS.c in Sources */,
 				E852235217B504CA00C6F585 /* TCChatCellView.m in Sources */,

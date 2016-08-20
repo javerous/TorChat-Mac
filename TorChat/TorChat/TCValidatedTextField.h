@@ -1,5 +1,5 @@
 /*
- *  TCPrefView.h
+ *  TCValidatedTextField.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,44 +20,21 @@
  *
  */
 
-#import <Foundation/Foundation.h>
-
-#import "TCConfigAppEncryptable.h"
-
-
-NS_ASSUME_NONNULL_BEGIN
+#import <Cocoa/Cocoa.h>
 
 
 /*
-** Forward
+** TCValidatedTextField
 */
-#pragma mark - Forward
+#pragma mark - TCValidatedTextField
 
-@class TCCoreManager;
+@interface TCValidatedTextField : NSTextField
 
+// Validation.
+@property (nonatomic) NSCharacterSet *validCharacterSet;
+@property (nonatomic) BOOL (^validateContent)(NSString *newContent);
 
-
-/*
-** TCPrefsView
-*/
-#pragma mark - TCPrefsView
-
-@interface TCPrefView : NSViewController
-
-// Properties.
-@property (strong, nonatomic, readonly) id <TCConfigAppEncryptable>	config;
-@property (strong, nonatomic, readonly) TCCoreManager				*core;
-
-// Event.
-- (void)panelDidAppear;		// can be subclassed.
-- (void)panelDidDisappear;	// can be subclassed.
-
-// Tools.
-- (void)reloadConfigurationWithCompletionHandler:(dispatch_block_t)handler;
-
-- (void)disableDisappearance:(BOOL)disable;
+// Notification.
+@property (nonatomic) void (^textDidChange)(NSString *content);
 
 @end
-
-
-NS_ASSUME_NONNULL_END

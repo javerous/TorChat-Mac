@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11198.2" systemVersion="15G31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11198.2"/>
         <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
@@ -20,7 +20,7 @@
         <view translatesAutoresizingMaskIntoConstraints="NO" id="ta5-FT-idY" userLabel="Network">
             <rect key="frame" x="0.0" y="0.0" width="410" height="265"/>
             <subviews>
-                <box autoresizesSubviews="NO" title="TorChat" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="A4U-kf-1ju">
+                <box autoresizesSubviews="NO" borderType="line" title="TorChat" translatesAutoresizingMaskIntoConstraints="NO" id="A4U-kf-1ju">
                     <rect key="frame" x="17" y="112" width="376" height="92"/>
                     <view key="contentView" id="tFd-Aj-6To">
                         <rect key="frame" x="1" y="1" width="374" height="76"/>
@@ -34,7 +34,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9KL-LP-wRq">
+                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9KL-LP-wRq" customClass="TCValidatedTextField">
                                 <rect key="frame" x="127" y="44" width="229" height="22"/>
                                 <constraints>
                                     <constraint firstAttribute="width" priority="250" constant="10000" id="v7e-FM-RZN"/>
@@ -53,16 +53,12 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="n9v-m5-SDF">
+                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="n9v-m5-SDF" customClass="TCValidatedTextField">
                                 <rect key="frame" x="127" y="14" width="80" height="22"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="80" id="xsf-Sv-DQu"/>
                                 </constraints>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="11009" drawsBackground="YES" id="dN8-Yz-9b1">
-                                    <numberFormatter key="formatter" formatterBehavior="default10_4" localizesFormat="NO" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" id="ik0-lO-iu7">
-                                        <real key="minimum" value="1"/>
-                                        <real key="maximum" value="65235"/>
-                                    </numberFormatter>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="11 009" drawsBackground="YES" id="dN8-Yz-9b1">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -87,10 +83,8 @@
                         <constraint firstItem="9KL-LP-wRq" firstAttribute="top" secondItem="A4U-kf-1ju" secondAttribute="top" constant="25" id="xWA-Is-hGj"/>
                         <constraint firstItem="m1X-8x-GIO" firstAttribute="centerY" secondItem="n9v-m5-SDF" secondAttribute="centerY" id="zSG-4J-oFS"/>
                     </constraints>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
-                <box autoresizesSubviews="NO" title="Tor" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="GTq-S2-pwB">
+                <box autoresizesSubviews="NO" borderType="line" title="Tor" translatesAutoresizingMaskIntoConstraints="NO" id="GTq-S2-pwB">
                     <rect key="frame" x="17" y="16" width="376" height="92"/>
                     <view key="contentView" id="8ea-pM-CQj">
                         <rect key="frame" x="1" y="1" width="374" height="76"/>
@@ -112,22 +106,18 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wxv-gf-iWN">
+                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wxv-gf-iWN" customClass="TCValidatedTextField">
                                 <rect key="frame" x="140" y="15" width="80" height="22"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="80" id="HPD-Kk-hAX"/>
                                 </constraints>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="9050" drawsBackground="YES" id="ING-QQ-79i">
-                                    <numberFormatter key="formatter" formatterBehavior="default10_4" localizesFormat="NO" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" id="lKH-En-T3r">
-                                        <real key="minimum" value="1"/>
-                                        <real key="maximum" value="65235"/>
-                                    </numberFormatter>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="9 050" drawsBackground="YES" id="ING-QQ-79i">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="eFL-vX-f66">
+                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="eFL-vX-f66" customClass="TCValidatedTextField">
                                 <rect key="frame" x="140" y="44" width="216" height="22"/>
                                 <constraints>
                                     <constraint firstAttribute="width" priority="250" constant="10000" id="Mfp-ap-LaA"/>
@@ -156,8 +146,6 @@
                         <constraint firstItem="0nW-gC-87P" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="GTq-S2-pwB" secondAttribute="leading" constant="11" id="nmf-Wl-EbQ"/>
                         <constraint firstItem="sLC-d4-YEX" firstAttribute="centerY" secondItem="eFL-vX-f66" secondAttribute="centerY" id="rgp-a6-4b4"/>
                     </constraints>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bdK-yS-Gq3">
                     <rect key="frame" x="18" y="226" width="39" height="17"/>

@@ -464,7 +464,12 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	if (object == _aliasField)
 	{
-		[_buddy setAlias:[_aliasField stringValue]];
+		NSString *aliasString = _aliasField.stringValue;
+		
+		if (aliasString.length > 0)
+			[_buddy setAlias:aliasString];
+		else
+			[_buddy setAlias:nil];
 	}
 }
 

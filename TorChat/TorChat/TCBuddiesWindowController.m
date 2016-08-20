@@ -46,6 +46,7 @@
 #import "TCButton.h"
 #import "TCDropButton.h"
 #import "TCThreePartImageView.h"
+#import "TCValidatedTextField.h"
 
 // > Managers
 #import "TCLogsManager.h"
@@ -88,8 +89,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (strong, nonatomic) IBOutlet NSWindow				*addWindow;
 @property (strong, nonatomic) IBOutlet NSTextField			*addNameField;
-@property (strong, nonatomic) IBOutlet NSTextField			*addIdentifierField;
+@property (strong, nonatomic) IBOutlet TCValidatedTextField	*addIdentifierField;
 @property (strong, nonatomic) IBOutlet NSTextView			*addNotesField;
+@property (strong, nonatomic) IBOutlet NSButton				*addOkButton;
 
 @property (strong, nonatomic) IBOutlet NSWindow				*profileWindow;
 @property (strong, nonatomic) IBOutlet NSTextField			*profileName;
@@ -177,6 +179,17 @@ NS_ASSUME_NONNULL_BEGIN
 	_barView.startCap = (NSImage *)[NSImage imageNamed:@"bar"];
 	_barView.centerFill = (NSImage *)[NSImage imageNamed:@"bar"];
 	_barView.endCap = (NSImage *)[NSImage imageNamed:@"bar"];
+	
+	// Configure identifier field.
+	NSButton *okButton = _addOkButton;
+	
+	_addIdentifierField.validCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@"abcdefghijklmnopqrstuvwxyz0123456789"];
+	_addIdentifierField.validateContent = ^ BOOL (NSString *newContent) {
+		return (newContent.length <= 16);
+	};
+	_addIdentifierField.textDidChange = ^(NSString *content) {
+		okButton.enabled = (content.length == 16);
+	};
 }
 
 
@@ -412,90 +425,109 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)torchatManager:(TCCoreManager *)manager information:(SMInfo *)info
 {
 	// Action information
-	if (info.kind == SMInfoInfo)
+	switch (info.kind)
 	{
-		switch (info.code)
+		case SMInfoInfo:
 		{
-			case TCCoreEventStarted:
+			switch (info.code)
 			{
-				dispatch_async(dispatch_get_main_queue(), ^{
-					[_indicator stopAnimation:self];
-				});
-				
-				break;
+				case TCCoreEventStarted:
+				{
+					dispatch_async(dispatch_get_main_queue(), ^{
+						[_indicator stopAnimation:self];
+					});
+					
+					break;
+				}
+					
+				case TCCoreEventStatus:
+				{
+					TCStatus status = (TCStatus)[(NSNumber *)info.context intValue];
+					
+					dispatch_async(dispatch_get_main_queue(), ^{
+						[self updateStatusUI:status];
+					});
+					
+					break;
+				}
+					
+				case TCCoreEventProfileAvatar:
+				{
+					TCImage	*tcFinal = (TCImage *)info.context;
+					NSImage	*final = [tcFinal imageRepresentation];
+					
+					if (!final)
+						final = [NSImage imageNamed:NSImageNameUser];
+					
+					// Change image.
+					dispatch_async(dispatch_get_main_queue(), ^{
+						[_imAvatar setImage:final];
+					});
+					
+					break;
+				}
+					
+				case TCCoreEventProfileName:
+				{
+					// Update Title.
+					dispatch_async(dispatch_get_main_queue(), ^{
+						[self updateTitleUI];
+					});
+					
+					break;
+				}
+					
+				case TCCoreEventBuddyNew:
+				{
+					TCBuddy *buddy = (TCBuddy *)info.context;
+					
+					[buddy addObserver:self];
+					
+					dispatch_async(dispatch_get_main_queue(), ^{
+						[_buddies addObject:buddy];
+						[self _reloadBuddy:nil];
+					});
+					
+					break;
+				}
+					
+				case TCCoreEventBuddyRemove:
+				{
+					TCBuddy *buddy = info.context;
+					
+					[buddy removeObserver:self];
+					
+					dispatch_async(dispatch_get_main_queue(), ^{
+						[_buddies removeObjectIdenticalTo:buddy];
+						[_tableView reloadData];
+					});
+					
+					break;
+				}
+					
+				case TCCoreEventBuddyBlocked:
+				case TCCoreEventBuddyUnblocked:
+				{
+					[self reloadBuddies];
+					break;
+				}
 			}
-				
-			case TCCoreEventStatus:
-			{
-				TCStatus status = (TCStatus)[(NSNumber *)info.context intValue];
-				
-				dispatch_async(dispatch_get_main_queue(), ^{
-					[self updateStatusUI:status];
-				});
-				
-				break;
-			}
-				
-			case TCCoreEventProfileAvatar:
-			{
-				TCImage	*tcFinal = (TCImage *)info.context;
-				NSImage	*final = [tcFinal imageRepresentation];
-				
-				if (!final)
-					final = [NSImage imageNamed:NSImageNameUser];
-				
-				// Change image.
-				dispatch_async(dispatch_get_main_queue(), ^{
-					[_imAvatar setImage:final];
-				});
-				
-				break;
-			}
-				
-			case TCCoreEventProfileName:
-			{
-				// Update Title.
-				dispatch_async(dispatch_get_main_queue(), ^{
-					[self updateTitleUI];
-				});
-				
-				break;
-			}
-				
-			case TCCoreEventBuddyNew:
-			{
-				TCBuddy *buddy = (TCBuddy *)info.context;
-				
-				[buddy addObserver:self];
-				
-				dispatch_async(dispatch_get_main_queue(), ^{
-					[_buddies addObject:buddy];
-					[self _reloadBuddy:nil];
-				});
-				
-				break;
-			}
-				
-			case TCCoreEventBuddyRemove:
-			{
-				TCBuddy *buddy = info.context;
-				
-				[buddy removeObserver:self];
-				
-				dispatch_async(dispatch_get_main_queue(), ^{
-					[_buddies removeObjectIdenticalTo:buddy];
-					[_tableView reloadData];
-				});
+			
+			break;
+		}
+			
+		case SMInfoWarning:
+		{
+			break;
+		}
 
-				break;
-			}
-				
-			case TCCoreEventBuddyBlocked:
-			case TCCoreEventBuddyUnblocked:
-			{
-				[self reloadBuddies];
-				break;
-			}
+		case SMInfoError:
+		{
+			dispatch_async(dispatch_get_main_queue(), ^{
+				[_indicator stopAnimation:self];
+			});
+			
+			break;
 		}
 	}
 }
@@ -683,14 +715,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (IBAction)doAdd:(id)sender
 {
-	[_addNameField setStringValue:@""];
-	[_addIdentifierField setStringValue:@""];
+	_addIdentifierField.stringValue = @"";
+	_addNameField.stringValue = @"";
 	[[[_addNotesField textStorage] mutableString] setString:@""];
 	
-	[_addNameField becomeFirstResponder];
+	_addOkButton.enabled = NO;
 	
 	[_addWindow center];
 	[_addWindow makeKeyAndOrderFront:sender];
+	
+	[_addWindow makeFirstResponder:_addIdentifierField];
 }
 
 - (IBAction)doChat:(id)sender
@@ -768,10 +802,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (IBAction)doAddOk:(id)sender
 {
-	NSString *notes = [[_addNotesField textStorage] mutableString];
+	NSString *identifierString = _addIdentifierField.stringValue;
+	NSString *nameString = _addNameField.stringValue;
+	NSString *notesString = [[_addNotesField textStorage] mutableString];
 
-	// Add the buddy to the controller. Notification will add it on our interface.
-	[_core addBuddyWithIdentifier:[_addIdentifierField stringValue] name:[_addNameField stringValue] comment:notes];
+	if (nameString.length == 0)
+		nameString = nil;
+	
+	if (notesString.length == 0)
+		notesString = nil;
+	
+	[_core addBuddyWithIdentifier:identifierString name:nameString comment:notesString];
 	
 	[_addWindow orderOut:self];
 }
