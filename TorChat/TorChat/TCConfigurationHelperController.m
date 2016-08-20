@@ -77,6 +77,24 @@ NS_ASSUME_NONNULL_BEGIN
 	NSAssert(path, @"path is nil");
 	NSAssert(handler, @"handler is nil");
 	
+	[self openOrConvertConfigurationAtPath:path completionHandler:^(TCConfigurationHelperCompletionType type, id  _Nullable result) {
+		
+		// Import private key file.
+		NSError *error = nil;
+		
+		if (type == TCConfigurationHelperCompletionTypeDone && [self importPrivateKey:result error:&error] == NO)
+		{
+			handler(TCConfigurationHelperCompletionTypeError, error);
+			return;
+		}
+		
+		// Call original handler.
+		handler(type, result);
+	}];
+}
+
++ (void)openOrConvertConfigurationAtPath:(NSString *)path completionHandler:(TCConfigurationHelperCompletionHandler)handler
+{
 	// Check file existente.
 	if ([[NSFileManager defaultManager] fileExistsAtPath:path] == NO)
 	{
@@ -95,20 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 	
 	// Try to open as sqlite.
-	[TCSQLiteOpenWindowController openSQLiteConfigurationAtPath:path completionHandler:^(TCConfigurationHelperCompletionType type, id result) {
-		
-		// Import private key file.
-		NSError *error = nil;
-		
-		if (type == TCConfigurationHelperCompletionTypeDone && [self importPrivateKey:result error:&error] == NO)
-		{
-			handler(TCConfigurationHelperCompletionTypeError, error);
-			return;
-		}
-		
-		// Call original handler.
-		handler(type, result);
-	}];
+	[TCSQLiteOpenWindowController openSQLiteConfigurationAtPath:path completionHandler:handler];
 }
 
 + (BOOL)importPrivateKey:(nullable id <TCConfigAppEncryptable>)configuration error:(NSError **)error
