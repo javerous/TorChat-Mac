@@ -23,6 +23,9 @@
 #import <Cocoa/Cocoa.h>
 
 
+NS_ASSUME_NONNULL_BEGIN
+
+
 /*
 ** TCValidatedTextField
 */
@@ -38,3 +41,6 @@
 @property (nonatomic) void (^textDidChange)(NSString *content);
 
 @end
+
+
+NS_ASSUME_NONNULL_END
