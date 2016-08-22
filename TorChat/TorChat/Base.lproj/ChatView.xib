@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11198.2" systemVersion="15G31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11198.2"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCChatViewController">
             <connections>
-                <outlet property="backView" destination="Hwz-KV-tck" id="3DE-aF-khk"/>
                 <outlet property="lineView" destination="90" id="91"/>
                 <outlet property="transcriptView" destination="G3i-0Y-aMb" id="wTH-rN-hyu"/>
                 <outlet property="userField" destination="57" id="84"/>
@@ -19,21 +17,15 @@
         <customView translatesAutoresizingMaskIntoConstraints="NO" id="1">
             <rect key="frame" x="0.0" y="0.0" width="300" height="460"/>
             <subviews>
-                <box verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="90">
+                <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="90">
                     <rect key="frame" x="0.0" y="33" width="300" height="5"/>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                    <font key="titleFont" metaFont="system"/>
                 </box>
-                <customView translatesAutoresizingMaskIntoConstraints="NO" id="Hwz-KV-tck" userLabel="Back View" customClass="TCThreePartImageView">
-                    <rect key="frame" x="0.0" y="0.0" width="300" height="35"/>
-                </customView>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="57" customClass="TCChatTextField">
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="57" customClass="TCChatTextField">
                     <rect key="frame" x="13" y="7" width="274" height="22"/>
                     <constraints>
                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="Feg-ey-rk0"/>
                     </constraints>
-                    <textFieldCell key="cell" selectable="YES" editable="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="62">
+                    <textFieldCell key="cell" selectable="YES" editable="YES" state="on" borderStyle="bezel" focusRingType="none" drawsBackground="YES" id="62">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -47,17 +39,13 @@
                 </customView>
             </subviews>
             <constraints>
-                <constraint firstItem="Hwz-KV-tck" firstAttribute="top" secondItem="57" secondAttribute="top" constant="-6" id="5R6-cc-lCZ"/>
+                <constraint firstAttribute="bottom" secondItem="57" secondAttribute="bottom" constant="7" id="33i-d8-Lap"/>
                 <constraint firstItem="G3i-0Y-aMb" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="A20-K4-WLD"/>
                 <constraint firstAttribute="trailing" secondItem="G3i-0Y-aMb" secondAttribute="trailing" id="A7t-gg-CnW"/>
-                <constraint firstAttribute="trailing" secondItem="Hwz-KV-tck" secondAttribute="trailing" id="BuU-nq-dSY"/>
-                <constraint firstItem="Hwz-KV-tck" firstAttribute="trailing" secondItem="57" secondAttribute="trailing" constant="13" id="ITm-h8-Xn0"/>
-                <constraint firstItem="Hwz-KV-tck" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="La2-R2-7GF"/>
-                <constraint firstAttribute="bottom" secondItem="Hwz-KV-tck" secondAttribute="bottom" id="Nfp-IS-EY8"/>
-                <constraint firstItem="Hwz-KV-tck" firstAttribute="top" secondItem="90" secondAttribute="bottom" id="QrU-lv-iNe"/>
+                <constraint firstAttribute="trailing" secondItem="57" secondAttribute="trailing" constant="13" id="fAZ-WB-myw"/>
+                <constraint firstItem="57" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="13" id="fmS-Su-Qe0"/>
                 <constraint firstItem="G3i-0Y-aMb" firstAttribute="top" secondItem="1" secondAttribute="top" id="gEN-3f-vRX"/>
-                <constraint firstItem="Hwz-KV-tck" firstAttribute="bottom" secondItem="57" secondAttribute="bottom" constant="7" id="kn2-TB-X9Y"/>
-                <constraint firstItem="Hwz-KV-tck" firstAttribute="leading" secondItem="57" secondAttribute="leading" constant="-13" id="lp3-jc-xlh"/>
+                <constraint firstItem="57" firstAttribute="top" secondItem="90" secondAttribute="bottom" constant="6" id="gwR-8L-GTK"/>
                 <constraint firstAttribute="trailing" secondItem="90" secondAttribute="trailing" id="lz2-1U-0oE"/>
                 <constraint firstItem="90" firstAttribute="top" secondItem="G3i-0Y-aMb" secondAttribute="bottom" id="sDw-OD-Uzc"/>
                 <constraint firstItem="90" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="uIS-7w-piX"/>

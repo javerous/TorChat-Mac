@@ -322,19 +322,19 @@ NS_ASSUME_NONNULL_BEGIN
 				buddy = ((TCChatEntry *)_chatEntries[0]).buddy;
 		}
 		
-		if (!buddy)
-			return;
-		
 		[self _openChatWithBuddy:buddy select:select];
 	});
 }
 
-- (void)_openChatWithBuddy:(TCBuddy *)buddy select:(BOOL)select
+- (void)_openChatWithBuddy:(nullable TCBuddy *)buddy select:(BOOL)select
 {
 	// > main queue <
 	
 	// Show window.
 	[self showWindow:nil];
+	
+	if (!buddy)
+		return;
 	
 	// Add chat.
 	[self _addChatWithBuddy:buddy select:select];
@@ -343,6 +343,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_addChatWithBuddy:(TCBuddy *)buddy select:(BOOL)select
 {
 	// > main queue <
+	
+	NSAssert(buddy, @"buddy is nil");
 	
 	// Add view if necessary.
 	if ([self _chatEntryForBuddy:buddy index:nil] == nil)

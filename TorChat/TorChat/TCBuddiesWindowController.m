@@ -720,9 +720,8 @@ NS_ASSUME_NONNULL_BEGIN
 	[[[_addNotesField textStorage] mutableString] setString:@""];
 	
 	_addOkButton.enabled = NO;
-	
-	[_addWindow center];
-	[_addWindow makeKeyAndOrderFront:sender];
+
+	[self.window beginSheet:_addWindow completionHandler:nil];
 	
 	[_addWindow makeFirstResponder:_addIdentifierField];
 }
@@ -814,12 +813,12 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	[_core addBuddyWithIdentifier:identifierString name:nameString comment:notesString];
 	
-	[_addWindow orderOut:self];
+	[self.window endSheet:_addWindow];
 }
 
 - (IBAction)doAddCancel:(id)sender
 {
-	[_addWindow orderOut:self];
+	[self.window endSheet:_addWindow];
 }
 
 - (IBAction)doProfileOk:(id)sender

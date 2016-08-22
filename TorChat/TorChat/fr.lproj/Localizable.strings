@@ -148,19 +148,19 @@
 "core_bd_event_new_message" = "Réception d'un nouveau message";
 "core_bd_event_alias_changed" = "L'alias du contact a changé.";
 "core_bd_event_notes_changed" = "Les notes du contact ont changés.";
-"core_bd_event_new_version" = "Version du client reçus";
-"core_bd_event_new_client" = "Nom du client reçus";
+"core_bd_event_new_version" = "Version du client reçus.";
+"core_bd_event_new_client" = "Nom du client reçus.";
 "core_bd_event_file_send_start" = "Nouvelle session d'envoi de fichier.";
-"core_bd_event_file_chunk_send" = "Nouveau morceau de fichier envoyé";
+"core_bd_event_file_chunk_send" = "Nouveau morceau de fichier envoyé.";
 "core_bd_event_file_send_finish" = "Envoi d'un fichier terminé.";
 "core_bd_event_file_send_canceled" = "L'envoi d'un fichier a été annulé.";
 "core_bd_event_file_receive_start" = "Nouvelle session de réception d'un fichier.";
-"core_bd_event_file_chunk_receive" = "Nouveau morceau de fichier reçu";
+"core_bd_event_file_chunk_receive" = "Nouveau morceau de fichier reçu.";
 "core_bd_event_file_receive_finish" = "Réception d'un fichier terminé.";
 "core_bd_event_file_receive_stopped" = "La réception d'un fichier a été arrêté par l'hôte distant.";
-"core_bd_event_new_profile_text" = "Texte du profil du contact reçus";
-"core_bd_event_new_profile_name" = "Nom du profil du contact reçus";
-"core_bd_event_new_profile_avatar" = "Avatar du profil du contact reçus";
+"core_bd_event_new_profile_text" = "Texte du profil du contact reçus.";
+"core_bd_event_new_profile_name" = "Nom du profil du contact reçus.";
+"core_bd_event_new_profile_avatar" = "Avatar du profil du contact reçus.";
 
 "core_bd_error_tor_resolve" = "L'adresse SOCKS de tor ne peut pas être résolue.";
 "core_bd_error_tor_connect" = "Impossible de créer une connexion vers le SOCKS de tor.";

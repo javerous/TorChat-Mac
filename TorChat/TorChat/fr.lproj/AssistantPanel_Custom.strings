@@ -1,12 +1,12 @@
 
 /* Class = "NSTextFieldCell"; title = "Download Folder :"; ObjectID = "7U1-C2-uYZ"; */
-"7U1-C2-uYZ.title" = "Dossier de téléchargement :";
+"7U1-C2-uYZ.title" = "Dossier de téléchargement";
 
 /* Class = "NSTextFieldCell"; title = "Tor SOCKS address :"; ObjectID = "BFY-aa-rem"; */
-"BFY-aa-rem.title" = "Adresse SOCKS tor :";
+"BFY-aa-rem.title" = "Adresse SOCKS tor";
 
 /* Class = "NSTextFieldCell"; title = "TorChat port :"; ObjectID = "Noe-hl-LIA"; */
-"Noe-hl-LIA.title" = "Port TorChat :";
+"Noe-hl-LIA.title" = "Port TorChat";
 
 /* Class = "NSTextFieldCell"; title = "Specify your settings bellow."; ObjectID = "Qjw-dN-HSl"; */
 "Qjw-dN-HSl.title" = "Entrez vos réglages ci-dessous.";
@@ -15,13 +15,13 @@
 "S7p-Vp-REr.title" = "9050";
 
 /* Class = "NSTextFieldCell"; title = "Tor SOCKS port :"; ObjectID = "iPT-zo-mhb"; */
-"iPT-zo-mhb.title" = "Port SOCKS tor :";
+"iPT-zo-mhb.title" = "Port SOCKS tor";
 
 /* Class = "NSTextFieldCell"; title = "localhost"; ObjectID = "iY6-So-IOG"; */
 "iY6-So-IOG.title" = "localhost";
 
 /* Class = "NSTextFieldCell"; title = "TorChat Identifier :"; ObjectID = "jcZ-1Y-MeD"; */
-"jcZ-1Y-MeD.title" = "Identifiant TorChat :";
+"jcZ-1Y-MeD.title" = "Identifiant TorChat";
 
 /* Class = "NSTextFieldCell"; title = "11009"; ObjectID = "wF2-UR-Igx"; */
 "wF2-UR-Igx.title" = "11009";

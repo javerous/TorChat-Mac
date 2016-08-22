@@ -24,10 +24,10 @@
 "223.title" = "Profil";
 
 /* Class = "NSTextFieldCell"; title = "Profile Name:"; ObjectID = "228"; */
-"228.title" = "Nom de profil :";
+"228.title" = "Nom de profil";
 
 /* Class = "NSTextFieldCell"; title = "Profile Text:"; ObjectID = "230"; */
-"230.title" = "Texte du profil :";
+"230.title" = "Texte du profil";
 
 /* Class = "NSButtonCell"; title = "OK"; ObjectID = "238"; */
 "238.title" = "OK";
@@ -53,14 +53,14 @@
 /* Class = "NSWindow"; title = "Add Buddy"; ObjectID = "65"; */
 "65.title" = "Ajouter un contact";
 
-/* Class = "NSTextFieldCell"; title = "Name: "; ObjectID = "68"; */
-"68.title" = "Nom : ";
+/* Class = "NSTextFieldCell"; title = "Alias"; ObjectID = "68"; */
+"68.title" = "Alias";
 
-/* Class = "NSTextFieldCell"; title = "Identifier:"; ObjectID = "72"; */
-"72.title" = "Identifiant : ";
+/* Class = "NSTextFieldCell"; title = "Identifier"; ObjectID = "72"; */
+"72.title" = "Identifiant";
 
-/* Class = "NSTextFieldCell"; title = "Notes:"; ObjectID = "78"; */
-"78.title" = "Notes :";
+/* Class = "NSTextFieldCell"; title = "Notes"; ObjectID = "78"; */
+"78.title" = "Notes";
 
 /* Class = "NSButtonCell"; title = "Add"; ObjectID = "82"; */
 "82.title" = "Ajouter";

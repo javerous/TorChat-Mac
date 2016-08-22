@@ -2,17 +2,14 @@
 /* Class = "NSTextFieldCell"; title = "TorChat Client Version"; ObjectID = "Bhc-4g-w2A"; */
 "Bhc-4g-w2A.title" = "Version du client TorChat";
 
-/* Class = "NSBox"; title = "Transcripts"; ObjectID = "K20-FW-pk3"; */
-"K20-FW-pk3.title" = "Transcriptions";
-
-/* Class = "NSBox"; title = "Masquerade"; ObjectID = "RqU-qW-Fpu"; */
-"RqU-qW-Fpu.title" = "Camouflage";
-
 /* Class = "NSTextFieldCell"; title = "TorChat Client Name"; ObjectID = "Wbm-Mq-qe0"; */
 "Wbm-Mq-qe0.title" = "Nom du client TorChat";
 
 /* Class = "NSButtonCell"; title = "Save transcripts"; ObjectID = "hJZ-F5-GDn"; */
 "hJZ-F5-GDn.title" = "Sauvegarder les transcriptions";
 
-/* Class = "NSBox"; title = "Theme"; ObjectID = "hWm-UO-9el"; */
-"hWm-UO-9el.title" = "Thème";
+/* Class = "NSTextFieldCell"; title = "Theme"; ObjectID = "lyT-9N-B6k"; */
+"lyT-9N-B6k.title" = "Thème";
+
+/* Class = "NSTextFieldCell"; title = "Transcript"; ObjectID = "obh-ol-JMF"; */
+"obh-ol-JMF.title" = "Transcriptions";

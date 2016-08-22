@@ -122,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
 	{
 		config = [[TCConfigSQLite alloc] initWithFile:configPath password:nil error:&error];
 	}
-	
+		
 	if (!config)
 	{
 		[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:error.localizedDescription];

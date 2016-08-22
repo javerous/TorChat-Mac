@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TCPrefView ()
 
 @property (strong, nonatomic) id <TCConfigAppEncryptable>	config;
-@property (strong, nonatomic) TCCoreManager				*core;
+@property (strong, nonatomic) TCCoreManager					*core;
 
 @property (strong, nonatomic) void (^reloadConfig)(dispatch_block_t doneHandler);
 @property (strong, nonatomic) void (^disableDisappearance)(BOOL disable);
@@ -214,6 +214,9 @@ NS_ASSUME_NONNULL_BEGIN
 	viewCtrl.disableDisappearance = ^(BOOL disable) {
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
+			
+			if (disable == _disabledDisappearance)
+				return;
 			
 			// > Disable tool bar.
 			NSArray<__kindof NSToolbarItem *> *items = self.window.toolbar.items;

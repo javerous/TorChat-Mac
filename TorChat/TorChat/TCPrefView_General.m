@@ -102,9 +102,9 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	[themes enumerateObjectsUsingBlock:^(TCTheme * _Nonnull theme, NSUInteger idx, BOOL * _Nonnull stop) {
 		
-		NSString *localizdKey = [NSString stringWithFormat:@"pref_theme_%@", theme.identifier];
+		NSString *localizedKey = [NSString stringWithFormat:@"pref_theme_%@", theme.identifier];
 		
-		[_themesPopup addItemWithTitle:NSLocalizedString(localizdKey, @"")];
+		[_themesPopup addItemWithTitle:NSLocalizedString(localizedKey, @"")];
 		
 		if (themeID && [theme.identifier isEqualToString:themeID])
 			themeIndex = idx;

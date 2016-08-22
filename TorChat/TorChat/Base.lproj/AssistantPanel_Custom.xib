@@ -21,31 +21,31 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="quQ-6b-i5g">
-                    <rect key="frame" x="41" y="128" width="108" height="17"/>
-                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Tor SOCKS port :" usesSingleLineMode="YES" id="iPT-zo-mhb">
+                    <rect key="frame" x="41" y="128" width="100" height="17"/>
+                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Tor SOCKS port" usesSingleLineMode="YES" id="iPT-zo-mhb">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="swj-78-NTV">
-                    <rect key="frame" x="31" y="245" width="118" height="17"/>
-                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="TorChat Identifier :" usesSingleLineMode="YES" id="jcZ-1Y-MeD">
+                    <rect key="frame" x="31" y="245" width="110" height="17"/>
+                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="TorChat Identifier" usesSingleLineMode="YES" id="jcZ-1Y-MeD">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bm3-qS-N8O">
-                    <rect key="frame" x="18" y="161" width="131" height="17"/>
-                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Tor SOCKS address :" usesSingleLineMode="YES" id="BFY-aa-rem">
+                    <rect key="frame" x="18" y="161" width="123" height="17"/>
+                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Tor SOCKS address" usesSingleLineMode="YES" id="BFY-aa-rem">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7SE-iv-QXd" customClass="TCValidatedTextField">
-                    <rect key="frame" x="155" y="126" width="55" height="22"/>
+                    <rect key="frame" x="147" y="126" width="55" height="22"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="55" id="wFg-ZX-hQm"/>
                     </constraints>
@@ -56,7 +56,10 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="PFh-zn-GSc" customClass="TCValidatedTextField">
-                    <rect key="frame" x="155" y="158" width="245" height="22"/>
+                    <rect key="frame" x="147" y="158" width="253" height="22"/>
+                    <constraints>
+                        <constraint firstAttribute="width" priority="250" constant="10000" id="zXP-fT-POK"/>
+                    </constraints>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="localhost" drawsBackground="YES" id="iY6-So-IOG">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -64,7 +67,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GCY-ZD-Qpx" customClass="TCValidatedTextField">
-                    <rect key="frame" x="155" y="242" width="245" height="22"/>
+                    <rect key="frame" x="147" y="242" width="253" height="22"/>
                     <constraints>
                         <constraint firstAttribute="width" priority="250" constant="10000" id="QDc-dG-BOl"/>
                     </constraints>
@@ -75,15 +78,15 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4la-y6-j6W">
-                    <rect key="frame" x="60" y="213" width="89" height="17"/>
-                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="TorChat port :" usesSingleLineMode="YES" id="Noe-hl-LIA">
+                    <rect key="frame" x="59" y="213" width="82" height="17"/>
+                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="TorChat port" usesSingleLineMode="YES" id="Noe-hl-LIA">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xcW-WL-RhM" customClass="TCValidatedTextField">
-                    <rect key="frame" x="155" y="210" width="55" height="22"/>
+                    <rect key="frame" x="147" y="210" width="55" height="22"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="55" id="WFH-GI-N4y"/>
                     </constraints>
@@ -102,8 +105,8 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="05u-ZS-OlH">
-                    <rect key="frame" x="35" y="81" width="114" height="17"/>
-                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Download Folder :" usesSingleLineMode="YES" id="7U1-C2-uYZ">
+                    <rect key="frame" x="35" y="81" width="106" height="17"/>
+                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Download Folder" usesSingleLineMode="YES" id="7U1-C2-uYZ">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -135,14 +138,14 @@
                 <constraint firstItem="7SE-iv-QXd" firstAttribute="leading" secondItem="PFh-zn-GSc" secondAttribute="leading" id="bvN-hf-Wmu"/>
                 <constraint firstItem="bm3-qS-N8O" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="17S-E3-UYY" secondAttribute="leading" constant="20" symbolic="YES" id="gIB-MD-cUz"/>
                 <constraint firstItem="4la-y6-j6W" firstAttribute="centerY" secondItem="xcW-WL-RhM" secondAttribute="centerY" id="hJg-Vp-eUn"/>
-                <constraint firstAttribute="trailing" secondItem="PFh-zn-GSc" secondAttribute="trailing" constant="20" id="hQw-H0-Q7D"/>
+                <constraint firstAttribute="trailing" secondItem="PFh-zn-GSc" secondAttribute="trailing" constant="20" symbolic="YES" id="hQw-H0-Q7D"/>
                 <constraint firstItem="GCY-ZD-Qpx" firstAttribute="leading" secondItem="swj-78-NTV" secondAttribute="trailing" constant="8" symbolic="YES" id="ip3-bw-zxn"/>
                 <constraint firstItem="swj-78-NTV" firstAttribute="centerY" secondItem="GCY-ZD-Qpx" secondAttribute="centerY" constant="-0.5" id="kYO-nu-8Ec"/>
                 <constraint firstItem="GCY-ZD-Qpx" firstAttribute="leading" secondItem="xcW-WL-RhM" secondAttribute="leading" id="nYr-3a-PsP"/>
                 <constraint firstItem="05u-ZS-OlH" firstAttribute="trailing" secondItem="quQ-6b-i5g" secondAttribute="trailing" id="oMH-WX-VgI"/>
                 <constraint firstAttribute="trailing" secondItem="7w8-O8-ptE" secondAttribute="trailing" constant="20" symbolic="YES" id="oV3-aQ-hcV"/>
                 <constraint firstItem="PFh-zn-GSc" firstAttribute="leading" secondItem="xcW-WL-RhM" secondAttribute="leading" id="rzY-KQ-vxs"/>
-                <constraint firstAttribute="trailing" secondItem="GCY-ZD-Qpx" secondAttribute="trailing" constant="20" id="sQK-T8-96l"/>
+                <constraint firstAttribute="trailing" secondItem="GCY-ZD-Qpx" secondAttribute="trailing" constant="20" symbolic="YES" id="sQK-T8-96l"/>
                 <constraint firstItem="PFh-zn-GSc" firstAttribute="leading" secondItem="bm3-qS-N8O" secondAttribute="trailing" constant="8" symbolic="YES" id="tIN-9G-Z1s"/>
                 <constraint firstItem="GCY-ZD-Qpx" firstAttribute="top" secondItem="7w8-O8-ptE" secondAttribute="bottom" constant="26" id="tmZ-ru-4ma"/>
                 <constraint firstItem="7SE-iv-QXd" firstAttribute="top" secondItem="PFh-zn-GSc" secondAttribute="bottom" constant="10" symbolic="YES" id="xz4-DE-1vM"/>

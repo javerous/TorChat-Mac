@@ -5,8 +5,8 @@
 /* Class = "NSWindow"; title = "Add Blocked"; ObjectID = "EdI-Ur-HSK"; */
 "EdI-Ur-HSK.title" = "Ajout d'un blocage";
 
-/* Class = "NSBox"; title = "Block List"; ObjectID = "ZWE-9T-ybU"; */
-"ZWE-9T-ybU.title" = "Liste de blocage";
+/* Class = "NSTextFieldCell"; title = "Block List"; ObjectID = "ZLK-Qi-0I6"; */
+"ZLK-Qi-0I6.title" = "Liste de blocage";
 
 /* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "ikh-H4-coU"; */
 "ikh-H4-coU.title" = "Text Cell";

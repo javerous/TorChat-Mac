@@ -26,6 +26,8 @@
 
 #import "TCCoreManager.h"
 
+#import "TCValidatedTextField.h"
+
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -40,8 +42,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) IBOutlet NSTableView	*tableView;
 @property (strong, nonatomic) IBOutlet NSButton		*removeButton;
 
-@property (strong, nonatomic) IBOutlet NSWindow		*addBlockedWindow;
-@property (strong, nonatomic) IBOutlet NSTextField	*addBlockedField;
+@property (strong, nonatomic) IBOutlet NSWindow				*addBlockedWindow;
+@property (strong, nonatomic) IBOutlet TCValidatedTextField	*addBlockedField;
+@property (strong, nonatomic) IBOutlet NSButton				*addOkButton;
 
 - (IBAction)doAddBlockedUser:(id)sender;
 - (IBAction)doRemoveBlockedUser:(id)sender;
@@ -91,6 +94,18 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	// Monitor core info.
 	[self.core addObserver:self];
+	
+	// Identifier validation.
+	__weak TCPrefView_Buddies *weakSelf = self;
+	
+	_addBlockedField.validCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@"abcdefghijklmnopqrstuvwxyz0123456789"];
+	_addBlockedField.validateContent = ^ BOOL (NSString *newContent) {
+		return (newContent.length <= 16);
+	};
+	_addBlockedField.textDidChange = ^(NSString *content) {
+		weakSelf.addOkButton.enabled = (content.length == 16);
+	};
+	
 }
 
 - (void)panelDidDisappear
@@ -112,7 +127,8 @@ NS_ASSUME_NONNULL_BEGIN
 		return;
 	
 	// Show add window
-	[_addBlockedField setStringValue:@""];
+	_addBlockedField.stringValue = @"";
+	_addOkButton.enabled = NO;
 	
 	[self.view.window beginSheet:_addBlockedWindow completionHandler:nil];
 }

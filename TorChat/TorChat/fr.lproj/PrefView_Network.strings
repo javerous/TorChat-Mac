@@ -2,14 +2,8 @@
 /* Class = "NSTextFieldCell"; title = "Tor SOCKS address"; ObjectID = "0dS-RH-K0k"; */
 "0dS-RH-K0k.title" = "Adresse SOCKS tor";
 
-/* Class = "NSBox"; title = "TorChat"; ObjectID = "A4U-kf-1ju"; */
-"A4U-kf-1ju.title" = "TorChat";
-
 /* Class = "NSTextFieldCell"; title = "localhost"; ObjectID = "GPN-ID-gNJ"; */
 "GPN-ID-gNJ.title" = "localhost";
-
-/* Class = "NSBox"; title = "Tor"; ObjectID = "GTq-S2-pwB"; */
-"GTq-S2-pwB.title" = "Tor";
 
 /* Class = "NSTextFieldCell"; title = "9050"; ObjectID = "ING-QQ-79i"; */
 "ING-QQ-79i.title" = "9050";
@@ -23,6 +17,9 @@
 /* Class = "NSTextFieldCell"; title = "Mode"; ObjectID = "O9e-Yb-W4b"; */
 "O9e-Yb-W4b.title" = "Mode";
 
+/* Class = "NSTextFieldCell"; title = "Tor"; ObjectID = "b6K-j2-pWf"; */
+"b6K-j2-pWf.title" = "Tor";
+
 /* Class = "NSTextFieldCell"; title = "11009"; ObjectID = "dN8-Yz-9b1"; */
 "dN8-Yz-9b1.title" = "11009";
 
@@ -34,6 +31,9 @@
 
 /* Class = "NSTextFieldCell"; title = "TorChat identifier"; ObjectID = "lNd-8Q-NIB"; */
 "lNd-8Q-NIB.title" = "Identifiant TorChat";
+
+/* Class = "NSTextFieldCell"; title = "TorChat"; ObjectID = "qkt-4b-4Ic"; */
+"qkt-4b-4Ic.title" = "TorChat";
 
 /* Class = "NSMenuItem"; title = "Bundled Tor binary"; ObjectID = "txI-NC-DG8"; */
 "txI-NC-DG8.title" = "Binaire Tor préinclus";

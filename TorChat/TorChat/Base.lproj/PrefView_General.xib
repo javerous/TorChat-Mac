@@ -2,7 +2,6 @@
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11198.2" systemVersion="15G31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11198.2"/>
-        <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCPrefView_General">
@@ -17,121 +16,104 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <view translatesAutoresizingMaskIntoConstraints="NO" id="3GX-Gx-xOc" userLabel="General">
-            <rect key="frame" x="0.0" y="0.0" width="410" height="284"/>
+            <rect key="frame" x="0.0" y="0.0" width="410" height="189"/>
             <subviews>
-                <box autoresizesSubviews="NO" borderType="line" title="Masquerade" translatesAutoresizingMaskIntoConstraints="NO" id="RqU-qW-Fpu">
-                    <rect key="frame" x="17" y="171" width="376" height="93"/>
-                    <view key="contentView" id="NAS-RQ-0D4">
-                        <rect key="frame" x="1" y="1" width="374" height="77"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="JO7-1V-TFA">
-                                <rect key="frame" x="21" y="49" width="130" height="17"/>
-                                <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="TorChat Client Name" usesSingleLineMode="YES" id="Wbm-Mq-qe0">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="97Z-Ty-l16">
-                                <rect key="frame" x="157" y="46" width="199" height="22"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" priority="250" constant="10000" id="Owh-St-Uuu"/>
-                                </constraints>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="EY7-lD-U0B">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="q4e-aN-Vii">
-                                <rect key="frame" x="11" y="17" width="140" height="17"/>
-                                <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="TorChat Client Version" usesSingleLineMode="YES" id="Bhc-4g-w2A">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="aD4-Ie-0nq">
-                                <rect key="frame" x="157" y="14" width="199" height="22"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="C7Q-SO-Cxx">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                        </subviews>
-                    </view>
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="JO7-1V-TFA">
+                    <rect key="frame" x="28" y="150" width="130" height="17"/>
+                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="TorChat Client Name" usesSingleLineMode="YES" id="Wbm-Mq-qe0">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="97Z-Ty-l16">
+                    <rect key="frame" x="164" y="147" width="226" height="22"/>
                     <constraints>
-                        <constraint firstItem="aD4-Ie-0nq" firstAttribute="leading" secondItem="q4e-aN-Vii" secondAttribute="trailing" constant="8" symbolic="YES" id="7H1-iI-2qx"/>
-                        <constraint firstItem="q4e-aN-Vii" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="RqU-qW-Fpu" secondAttribute="leading" constant="11" id="8Nu-Hp-YmS"/>
-                        <constraint firstItem="97Z-Ty-l16" firstAttribute="leading" secondItem="JO7-1V-TFA" secondAttribute="trailing" constant="8" symbolic="YES" id="Bse-wF-b34"/>
-                        <constraint firstAttribute="height" constant="89" id="G6n-9G-MVQ"/>
-                        <constraint firstAttribute="trailing" secondItem="97Z-Ty-l16" secondAttribute="trailing" constant="16" id="JKM-X5-wRP"/>
-                        <constraint firstItem="aD4-Ie-0nq" firstAttribute="top" secondItem="97Z-Ty-l16" secondAttribute="bottom" constant="10" symbolic="YES" id="WCw-Vj-Hrd"/>
-                        <constraint firstItem="JO7-1V-TFA" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="RqU-qW-Fpu" secondAttribute="leading" constant="11" id="XLF-a5-ULT"/>
-                        <constraint firstItem="aD4-Ie-0nq" firstAttribute="leading" secondItem="97Z-Ty-l16" secondAttribute="leading" id="dUE-He-e51"/>
-                        <constraint firstAttribute="trailing" secondItem="aD4-Ie-0nq" secondAttribute="trailing" constant="16" id="jKj-TG-xeF"/>
-                        <constraint firstItem="97Z-Ty-l16" firstAttribute="top" secondItem="RqU-qW-Fpu" secondAttribute="top" constant="24" id="lJX-CH-eFh"/>
-                        <constraint firstItem="JO7-1V-TFA" firstAttribute="centerY" secondItem="97Z-Ty-l16" secondAttribute="centerY" constant="-0.5" id="nOZ-Cn-lYk"/>
-                        <constraint firstItem="q4e-aN-Vii" firstAttribute="centerY" secondItem="aD4-Ie-0nq" secondAttribute="centerY" id="oI2-3P-TG4"/>
+                        <constraint firstAttribute="width" priority="250" constant="10000" id="Owh-St-Uuu"/>
                     </constraints>
-                </box>
-                <box borderType="line" title="Transcripts" translatesAutoresizingMaskIntoConstraints="NO" id="K20-FW-pk3">
-                    <rect key="frame" x="17" y="95" width="376" height="70"/>
-                    <view key="contentView" id="eeK-u9-SFp">
-                        <rect key="frame" x="1" y="1" width="374" height="54"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button verticalHuggingPriority="1000" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vOC-Yo-IEm">
-                                <rect key="frame" x="18" y="18" width="120" height="18"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Save transcripts" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="hJZ-F5-GDn">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                            </button>
-                        </subviews>
-                    </view>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="EY7-lD-U0B">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="q4e-aN-Vii">
+                    <rect key="frame" x="18" y="118" width="140" height="17"/>
+                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="TorChat Client Version" usesSingleLineMode="YES" id="Bhc-4g-w2A">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="aD4-Ie-0nq">
+                    <rect key="frame" x="164" y="115" width="226" height="22"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="66" id="Lqo-Ma-r39"/>
+                        <constraint firstAttribute="width" priority="250" constant="10000" id="4q9-yc-TB1"/>
                     </constraints>
-                </box>
-                <box borderType="line" title="Theme" translatesAutoresizingMaskIntoConstraints="NO" id="hWm-UO-9el">
-                    <rect key="frame" x="17" y="16" width="376" height="70"/>
-                    <view key="contentView" id="QnW-Dg-5QZ">
-                        <rect key="frame" x="1" y="1" width="374" height="54"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7um-DX-iUq">
-                                <rect key="frame" x="18" y="17" width="37" height="26"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="uGK-iN-ax3">
-                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
-                                    <menu key="menu" id="Kim-JV-BLf"/>
-                                </popUpButtonCell>
-                            </popUpButton>
-                        </subviews>
-                    </view>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="66" id="vZ6-eQ-teK"/>
-                    </constraints>
-                </box>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="C7Q-SO-Cxx">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <button verticalHuggingPriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="vOC-Yo-IEm">
+                    <rect key="frame" x="162" y="69" width="120" height="18"/>
+                    <buttonCell key="cell" type="check" title="Save transcripts" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="hJZ-F5-GDn">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                </button>
+                <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7um-DX-iUq">
+                    <rect key="frame" x="162" y="17" width="37" height="26"/>
+                    <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="uGK-iN-ax3">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="menu"/>
+                        <menu key="menu" id="Kim-JV-BLf"/>
+                    </popUpButtonCell>
+                </popUpButton>
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0w6-bL-l8m">
+                    <rect key="frame" x="92" y="70" width="66" height="17"/>
+                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Transcript" usesSingleLineMode="YES" id="obh-ol-JMF">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Atm-Bo-ZKq">
+                    <rect key="frame" x="112" y="22" width="46" height="17"/>
+                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="Theme" usesSingleLineMode="YES" id="lyT-9N-B6k">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
             </subviews>
             <constraints>
-                <constraint firstItem="RqU-qW-Fpu" firstAttribute="top" secondItem="3GX-Gx-xOc" secondAttribute="top" constant="20" symbolic="YES" id="3TD-h4-VP6"/>
-                <constraint firstAttribute="height" constant="284" id="91f-6u-FaJ"/>
-                <constraint firstItem="RqU-qW-Fpu" firstAttribute="leading" secondItem="3GX-Gx-xOc" secondAttribute="leading" constant="20" symbolic="YES" id="Boo-uJ-vrT"/>
-                <constraint firstItem="K20-FW-pk3" firstAttribute="leading" secondItem="3GX-Gx-xOc" secondAttribute="leading" constant="20" symbolic="YES" id="Mq3-iB-V9i"/>
-                <constraint firstAttribute="trailing" secondItem="hWm-UO-9el" secondAttribute="trailing" constant="20" symbolic="YES" id="MzT-r4-m9K"/>
+                <constraint firstItem="JO7-1V-TFA" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="3GX-Gx-xOc" secondAttribute="leading" constant="20" symbolic="YES" id="1Bj-WN-mP8"/>
+                <constraint firstItem="97Z-Ty-l16" firstAttribute="leading" secondItem="JO7-1V-TFA" secondAttribute="trailing" constant="8" id="1Oc-vv-oQl"/>
+                <constraint firstAttribute="trailing" secondItem="aD4-Ie-0nq" secondAttribute="trailing" constant="20" symbolic="YES" id="1bx-XE-sQn"/>
+                <constraint firstItem="vOC-Yo-IEm" firstAttribute="centerY" secondItem="0w6-bL-l8m" secondAttribute="centerY" id="2Uv-z5-XuT"/>
+                <constraint firstItem="97Z-Ty-l16" firstAttribute="centerY" secondItem="JO7-1V-TFA" secondAttribute="centerY" id="4CZ-nA-ebA"/>
+                <constraint firstItem="aD4-Ie-0nq" firstAttribute="leading" secondItem="97Z-Ty-l16" secondAttribute="leading" id="4bL-in-Fyr"/>
+                <constraint firstAttribute="trailing" secondItem="97Z-Ty-l16" secondAttribute="trailing" constant="20" symbolic="YES" id="4mk-vM-XBx"/>
+                <constraint firstItem="aD4-Ie-0nq" firstAttribute="centerY" secondItem="q4e-aN-Vii" secondAttribute="centerY" id="6DR-e9-X3b"/>
+                <constraint firstItem="7um-DX-iUq" firstAttribute="top" secondItem="vOC-Yo-IEm" secondAttribute="bottom" constant="30" id="E7C-PE-NKR"/>
+                <constraint firstItem="q4e-aN-Vii" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="3GX-Gx-xOc" secondAttribute="leading" constant="20" symbolic="YES" id="FDd-Hz-aRv"/>
+                <constraint firstItem="97Z-Ty-l16" firstAttribute="top" secondItem="3GX-Gx-xOc" secondAttribute="top" constant="20" symbolic="YES" id="J2R-bb-3fp"/>
+                <constraint firstItem="vOC-Yo-IEm" firstAttribute="top" secondItem="aD4-Ie-0nq" secondAttribute="bottom" constant="30" id="Jzx-km-kUU"/>
+                <constraint firstItem="7um-DX-iUq" firstAttribute="leading" secondItem="vOC-Yo-IEm" secondAttribute="leading" id="Ljh-s0-Hmf"/>
+                <constraint firstItem="7um-DX-iUq" firstAttribute="centerY" secondItem="Atm-Bo-ZKq" secondAttribute="centerY" id="TKN-pn-LSD"/>
+                <constraint firstItem="0w6-bL-l8m" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="3GX-Gx-xOc" secondAttribute="leading" constant="20" symbolic="YES" id="Tnr-8N-wQC"/>
                 <constraint firstAttribute="width" constant="410" id="Xwg-98-MiR"/>
-                <constraint firstAttribute="trailing" secondItem="RqU-qW-Fpu" secondAttribute="trailing" constant="20" symbolic="YES" id="g2n-cS-rka"/>
-                <constraint firstAttribute="bottom" secondItem="hWm-UO-9el" secondAttribute="bottom" constant="20" symbolic="YES" id="grx-oB-wQN"/>
-                <constraint firstItem="K20-FW-pk3" firstAttribute="top" secondItem="RqU-qW-Fpu" secondAttribute="bottom" constant="10" id="oQd-LN-pz1"/>
-                <constraint firstAttribute="trailing" secondItem="K20-FW-pk3" secondAttribute="trailing" constant="20" symbolic="YES" id="oZL-wH-afJ"/>
-                <constraint firstItem="hWm-UO-9el" firstAttribute="leading" secondItem="3GX-Gx-xOc" secondAttribute="leading" constant="20" symbolic="YES" id="vja-JF-cpQ"/>
-                <constraint firstItem="hWm-UO-9el" firstAttribute="top" secondItem="eeK-u9-SFp" secondAttribute="bottom" constant="10" id="y8l-zg-afi"/>
+                <constraint firstAttribute="bottom" secondItem="7um-DX-iUq" secondAttribute="bottom" constant="20" symbolic="YES" id="aVK-KG-gxb"/>
+                <constraint firstItem="Atm-Bo-ZKq" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="3GX-Gx-xOc" secondAttribute="leading" constant="20" symbolic="YES" id="arY-jU-EdA"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="vOC-Yo-IEm" secondAttribute="trailing" constant="20" symbolic="YES" id="gtd-WH-9hH"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="7um-DX-iUq" secondAttribute="trailing" constant="20" symbolic="YES" id="jaE-Zn-Nz1"/>
+                <constraint firstItem="vOC-Yo-IEm" firstAttribute="leading" secondItem="0w6-bL-l8m" secondAttribute="trailing" constant="8" symbolic="YES" id="jfM-1Q-kel"/>
+                <constraint firstItem="aD4-Ie-0nq" firstAttribute="leading" secondItem="q4e-aN-Vii" secondAttribute="trailing" constant="8" id="kDo-uK-KZD"/>
+                <constraint firstItem="aD4-Ie-0nq" firstAttribute="top" secondItem="97Z-Ty-l16" secondAttribute="bottom" constant="10" id="kkS-Ie-CAS"/>
+                <constraint firstItem="vOC-Yo-IEm" firstAttribute="leading" secondItem="aD4-Ie-0nq" secondAttribute="leading" id="lU7-bk-lwe"/>
+                <constraint firstItem="7um-DX-iUq" firstAttribute="leading" secondItem="Atm-Bo-ZKq" secondAttribute="trailing" constant="8" symbolic="YES" id="rUU-bf-GO2"/>
             </constraints>
             <point key="canvasLocation" x="342" y="501"/>
         </view>

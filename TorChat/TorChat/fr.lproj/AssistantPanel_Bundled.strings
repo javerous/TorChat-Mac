@@ -1,6 +1,6 @@
 
 /* Class = "NSTextFieldCell"; title = "Download Folder :"; ObjectID = "099-Q4-nzo"; */
-"099-Q4-nzo.title" = "Dossier de téléchargement :";
+"099-Q4-nzo.title" = "Dossier de téléchargement";
 
 /* Class = "NSTextFieldCell"; title = "The file received from your buddies will be saved on this folder."; ObjectID = "KYR-YN-XaI"; */
 "KYR-YN-XaI.title" = "Les fichiers envoyés par vos contacts seront enregistrés dans ce dossier.";
