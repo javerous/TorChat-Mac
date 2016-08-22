@@ -582,19 +582,18 @@ NSMutableDictionary	*gThemeCache;
 
 	// Avatar.
 	// > 1x
-	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-REMOTE-AVATAR]" withString:[NSString stringWithFormat:@"tc-resource://avatar/%@", _remoteAvatarIdentifier]];
-	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-LOCAL-AVATAR]" withString:[NSString stringWithFormat:@"tc-resource://avatar/%@", _localAvatarIdentifier]];
+	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-REMOTE-AVATAR]" withString:[NSString stringWithFormat:@"tc-resource://medias/avatar/1x/%@", _remoteAvatarIdentifier]];
+	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-LOCAL-AVATAR]" withString:[NSString stringWithFormat:@"tc-resource://medias/avatar/1x/%@", _localAvatarIdentifier]];
 	
-	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-ERROR-BUTTON]" withString:@"tc-resource://error/button"];
+	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-ERROR-BUTTON]" withString:@"tc-resource://medias/error/1x/button"];
 
 	
 	// > 2x
-	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-REMOTE-AVATAR-2X]" withString:[NSString stringWithFormat:@"tc-resource://avatar/%@", _remoteAvatarIdentifier]];
-	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-LOCAL-AVATAR-2X]" withString:[NSString stringWithFormat:@"tc-resource://avatar/%@", _localAvatarIdentifier]];
+	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-REMOTE-AVATAR-2X]" withString:[NSString stringWithFormat:@"tc-resource://medias/avatar/2x/%@", _remoteAvatarIdentifier]];
+	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-LOCAL-AVATAR-2X]" withString:[NSString stringWithFormat:@"tc-resource://medias/avatar/2x/%@", _localAvatarIdentifier]];
 	
-	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-ERROR-BUTTON-2X]" withString:@"tc-resource://error/button-2x"];
+	cssSnippet = [cssSnippet stringByReplacingOccurrencesOfString:@"[URL-ERROR-BUTTON-2X]" withString:@"tc-resource://medias/error/2x/button"];
 
-	
 	[self _setStyle:cssSnippet];
 }
 
@@ -727,14 +726,9 @@ NSMutableDictionary	*gThemeCache;
 {
 	NSAssert(avatar, @"avatar is nil");
 	NSAssert(identifier, @"identifier is nil");
-
-	NSData *tiff = [avatar TIFFRepresentation];
-	
-	if (!tiff)
-		return;
 	
 	dispatch_barrier_async(gValuesQueue, ^{
-		gAvatarCache[identifier] = tiff;
+		gAvatarCache[identifier] = avatar;
 	});
 }
 
@@ -771,10 +765,8 @@ NSMutableDictionary	*gThemeCache;
 	NSURL		*url = self.request.URL;
 	NSString	*host = url.host;
 		
-	if ([host isEqualToString:@"avatar"])
-		[self handleAvatar];
-	else if ([host isEqualToString:@"error"])
-		[self handleError];
+	if ([host isEqualToString:@"medias"])
+		[self handleMedias];
 	else if ([host isEqualToString:@"theme"])
 		[self handleTheme];
 	else
@@ -792,46 +784,177 @@ NSMutableDictionary	*gThemeCache;
 */
 #pragma mark - TCURLProtocolInternal - Handlers
 
-- (void)handleAvatar
+- (void)handleMedias
 {
-	// Get parameters.
-	NSURL		*url = self.request.URL;
-	NSArray		*parameters = url.pathComponents;
-	NSString	*identifier = nil;
+	// Check parameters.
+	NSURL	*url = self.request.URL;
+	NSArray	*parameters = url.pathComponents;
 
-	if ([parameters count] < 2)
+	if ([parameters count] < 3)
 	{
 		[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Parameter error" code:0 userInfo:@{}]];
 		return;
 	}
 	
-	if (!url)
+	// Extract parameters.
+	NSString	*name = parameters[1];
+	NSString	*size = parameters[2];
+	
+	if ([name isEqualToString:@"avatar"])
 	{
-		[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Invalid URL" code:0 userInfo:@{}]];
-		return;
-	}
-	
-	identifier = parameters[1];
-	
-	// Send avatar.
-	dispatch_async(gValuesQueue, ^{
-		
-		NSData *data = gAvatarCache[identifier];
-		
-		if (!data)
+		if ([parameters count] < 4)
 		{
-			[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Avatar not found" code:0 userInfo:@{}]];
+			[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Parameter error" code:0 userInfo:@{}]];
 			return;
 		}
 		
-		// Build response.
-		NSURLResponse *response = [[NSURLResponse alloc] initWithURL:url MIMEType:@"image/tiff" expectedContentLength:(NSInteger)[data length] textEncodingName:nil];
+		NSString *identifier = parameters[3];
 		
-		// Send response + content.
-		[self.client URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
-		[self.client URLProtocol:self didLoadData:data];
-		[self.client URLProtocolDidFinishLoading:self];
-	});
+		// Send avatar.
+		dispatch_async(gValuesQueue, ^{
+			
+			// > Get avatar.
+			NSImage *avatar = gAvatarCache[identifier];
+			
+			if (!avatar)
+			{
+				[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Avatar not found" code:404 userInfo:@{}]];
+				return;
+			}
+			
+			// > Create image.
+			NSImage *result = nil;
+			
+			if ([size isEqualToString:@"1x"])
+			{
+				result = [NSImage imageWithSize:NSMakeSize(32, 32) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
+					[avatar drawInRect:NSMakeRect(0, 0, 32, 32) fromRect:NSZeroRect operation:NSCompositingOperationCopy fraction:1.0];
+					return YES;
+				}];
+			}
+			else if ([size isEqualToString:@"2x"])
+			{
+				result = [NSImage imageWithSize:NSMakeSize(64, 64) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
+					[avatar drawInRect:NSMakeRect(0, 0, 64, 64) fromRect:NSZeroRect operation:NSCompositingOperationCopy fraction:1.0];
+					return YES;
+				}];
+			}
+			else
+			{
+				[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"unknow media size" code:404 userInfo:@{}]];
+				return;
+			}
+			
+			// Generate TIFF.
+			NSData *data = [result TIFFRepresentation];
+			
+			if (!data)
+			{
+				[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"internal error" code:500 userInfo:@{}]];
+				return;
+			}
+			
+			// Build response.
+			NSURLResponse *response = [[NSURLResponse alloc] initWithURL:url MIMEType:@"image/tiff" expectedContentLength:(NSInteger)[data length] textEncodingName:nil];
+			
+			// Send response + content.
+			[self.client URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
+			[self.client URLProtocol:self didLoadData:data];
+			[self.client URLProtocolDidFinishLoading:self];
+		});
+	}
+	else if ([name isEqualToString:@"error"])
+	{
+		if ([parameters count] < 4)
+		{
+			[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Parameter error" code:0 userInfo:@{}]];
+			return;
+		}
+		
+		NSString *type = parameters[3];
+		
+		if ([type isEqualToString:@"button"])
+		{
+			// Handle name.
+			NSSize	targetSize = NSZeroSize;
+			CGFloat	targetFontSize = 0;
+			
+			if ([size isEqualToString:@"1x"])
+			{
+				targetSize = NSMakeSize(20, 20);
+				targetFontSize = 14;
+			}
+			else if ([size isEqualToString:@"2x"])
+			{
+				targetSize = NSMakeSize(40, 40);
+				targetFontSize = 28;
+			}
+			else
+			{
+				[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"unknow media size" code:404 userInfo:@{}]];
+				return;
+			}
+			
+			// Create image.
+			NSImage *image = [NSImage imageWithSize:NSMakeSize(targetSize.width, targetSize.height * 2.0) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
+				
+				// > Snippet to draw different versions.
+				void (^drawError)(NSColor *color, CGFloat position) = ^(NSColor *color, CGFloat yPosition) {
+					
+					NSDictionary *attributes = @{ NSFontAttributeName : [NSFont fontWithName:@"Georgia" size:targetFontSize], NSForegroundColorAttributeName : color };
+					
+					// > Circle
+					NSRect			circleRect = NSInsetRect(NSMakeRect(0, yPosition, targetSize.width, targetSize.height), 1.0, 1.0);
+					NSBezierPath	*circle = [NSBezierPath bezierPathWithOvalInRect:circleRect];
+					
+					circle.lineWidth = 0.5;
+					
+					[color set];
+					[circle stroke];
+					
+					// > @"!"
+					NSString	*exclamStr = @"!";
+					NSSize		exclamSize = [exclamStr sizeWithAttributes:attributes];
+					NSPoint		point;
+					
+					exclamSize.height -= exclamSize.height / 6.0;
+					
+					point.x = circleRect.origin.x + (circleRect.size.width - exclamSize.width) / 2.0;
+					point.y = circleRect.origin.y + (circleRect.size.height - exclamSize.height) / 2.0;
+					
+					[exclamStr drawAtPoint:point withAttributes:attributes];
+				};
+				
+				// Draw.
+				CGFloat hue = 1.0;
+				CGFloat saturation = 1.0;
+				CGFloat brightness = 1.0;
+				
+				drawError([NSColor colorWithHue:hue saturation:saturation brightness:brightness alpha:1.0], targetSize.height);
+				drawError([NSColor colorWithHue:hue saturation:saturation brightness:brightness * 0.65 alpha:1.0], 0);
+				
+				return YES;
+			}];
+			
+			NSData *data = [image TIFFRepresentation];
+			
+			// Build response.
+			NSURLResponse *response = [[NSURLResponse alloc] initWithURL:url MIMEType:@"image/tiff" expectedContentLength:(NSInteger)[data length] textEncodingName:nil];
+			
+			// Send response + content.
+			[[self client] URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageAllowedInMemoryOnly];
+			[[self client] URLProtocol:self didLoadData:data];
+			[[self client] URLProtocolDidFinishLoading:self];
+		}
+		else
+		{
+			[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Error type not found" code:0 userInfo:@{}]];
+		}
+	}
+	else
+	{
+		[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Media name not found" code:0 userInfo:@{}]];
+	}
 }
 
 - (void)handleTheme
@@ -847,12 +970,6 @@ NSMutableDictionary	*gThemeCache;
 		return;
 	}
 	
-	if (!url)
-	{
-		[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Invalid URL" code:0 userInfo:@{}]];
-		return;
-	}
-	
 	identifier = parameters[1];
 	resName = parameters[2];
 	
@@ -864,7 +981,7 @@ NSMutableDictionary	*gThemeCache;
 		
 		if (!theme)
 		{
-			[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Theme not found" code:0 userInfo:@{}]];
+			[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Theme not found" code:404 userInfo:@{}]];
 			return;
 		}
 		
@@ -874,7 +991,7 @@ NSMutableDictionary	*gThemeCache;
 		
 		if (!resource)
 		{
-			[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Resource not found" code:0 userInfo:@{}]];
+			[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Resource not found" code:404 userInfo:@{}]];
 			return;
 		}
 		
@@ -884,7 +1001,7 @@ NSMutableDictionary	*gThemeCache;
 		
 		if (!data || !mime)
 		{
-			[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Data not found" code:0 userInfo:@{}]];
+			[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Data not found" code:404 userInfo:@{}]];
 			return;
 		}
 		
@@ -896,99 +1013,6 @@ NSMutableDictionary	*gThemeCache;
 		[self.client URLProtocol:self didLoadData:data];
 		[self.client URLProtocolDidFinishLoading:self];
 	});
-}
-
-- (void)handleError
-{
-	// Get parameters.
-	NSURL		*url = self.request.URL;
-	NSArray		*parameters = url.pathComponents;
-	NSString	*name = nil;
-	
-	if ([parameters count] < 2)
-	{
-		[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Parameter error" code:0 userInfo:@{}]];
-		return;
-	}
-	
-	if (!url)
-	{
-		[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Invalid URL" code:0 userInfo:@{}]];
-		return;
-	}
-	
-	name = parameters[1];
-	
-	// Handle name.
-	NSSize	targetSize = NSZeroSize;
-	CGFloat	targetFontSize = 0;
-	
-	if ([name isEqualToString:@"button"])
-	{
-		targetSize = NSMakeSize(20, 20);
-		targetFontSize = 14;
-	}
-	else if ([name isEqualToString:@"button-2x"])
-	{
-		targetSize = NSMakeSize(40, 40);
-		targetFontSize = 28;
-	}
-	else
-	{
-		[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"unknow error request" code:404 userInfo:@{}]];
-		return;
-	}
-	
-	// Create image.
-	NSImage *image = [NSImage imageWithSize:NSMakeSize(targetSize.width, targetSize.height * 2.0) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
-		
-		// > Snippet to draw different versions.
-		void (^drawError)(NSColor *color, CGFloat position) = ^(NSColor *color, CGFloat yPosition) {
-		
-			NSDictionary *attributes = @{ NSFontAttributeName : [NSFont fontWithName:@"Georgia" size:targetFontSize], NSForegroundColorAttributeName : color };
-
-			// > Circle
-			NSRect			circleRect = NSInsetRect(NSMakeRect(0, yPosition, targetSize.width, targetSize.height), 1.0, 1.0);
-			NSBezierPath	*circle = [NSBezierPath bezierPathWithOvalInRect:circleRect];
-			
-			circle.lineWidth = 0.5;
-			
-			[color set];
-			[circle stroke];
-			
-			// > @"!"
-			NSString	*exclamStr = @"!";
-			NSSize		exclamSize = [exclamStr sizeWithAttributes:attributes];
-			NSPoint		point;
-
-			exclamSize.height -= exclamSize.height / 6.0;
-			
-			point.x = circleRect.origin.x + (circleRect.size.width - exclamSize.width) / 2.0;
-			point.y = circleRect.origin.y + (circleRect.size.height - exclamSize.height) / 2.0;
-			
-			[exclamStr drawAtPoint:point withAttributes:attributes];
-		};
-		
-		// Draw.
-		CGFloat hue = 1.0;
-		CGFloat saturation = 1.0;
-		CGFloat brightness = 1.0;
-
-		drawError([NSColor colorWithHue:hue saturation:saturation brightness:brightness alpha:1.0], targetSize.height);
-		drawError([NSColor colorWithHue:hue saturation:saturation brightness:brightness * 0.65 alpha:1.0], 0);
-
-		return YES;
-	}];
-	
-	NSData *data = [image TIFFRepresentation];
-	
-	// Build response.
-	NSURLResponse *response = [[NSURLResponse alloc] initWithURL:url MIMEType:@"image/tiff" expectedContentLength:(NSInteger)[data length] textEncodingName:nil];
-	
-	// Send response + content.
-	[[self client] URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageAllowedInMemoryOnly];
-	[[self client] URLProtocol:self didLoadData:data];
-	[[self client] URLProtocolDidFinishLoading:self];
 }
 
 @end

@@ -210,7 +210,7 @@ span.fromRemote {
 	}
 	
 	.mc-remote-sender {
-		-webkit-border-image: url([&quot;tc-resource://theme/[URL-THEME-ID]/left-balloon-2x&quot;]) 48% 30.769231% 48% 41.025641%;
+		-webkit-border-image: url(&quot;tc-resource://theme/[URL-THEME-ID]/left-balloon-2x&quot;) 48% 30.769231% 48% 41.025641%;
 	}
 	
 	div.icon-pres-remote
