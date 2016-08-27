@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSString (TCLayoutExtension)
 
-- (CGFloat)heightForDrawingWithFont:(NSFont *)font andWidth:(CGFloat)width;
+- (CGFloat)heightForDrawingWithFont:(NSFont *)font maxWidth:(CGFloat)width;
 
 @end
 

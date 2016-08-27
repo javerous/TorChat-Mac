@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
 	id <TCConfigApp> _configuration;
 	TCCoreManager	*_core;
 	
-	NSMutableArray	*_chatEntries;
+	NSMutableArray	<TCChatEntry *> *_chatEntries;
 	NSView			*_currentView;
 
 	__weak TCBuddy *_selectedBuddy;
@@ -101,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCChatWindowController - Instance
 
-+ (instancetype)sharedController
++ (TCChatWindowController*)sharedController
 {
 	static dispatch_once_t			onceToken;
 	static TCChatWindowController	*shr;
@@ -151,7 +151,7 @@ NS_ASSUME_NONNULL_BEGIN
 		[_core addObserver:self];
 		
 		// Get current buddies.
-		NSArray *buddies = [_core buddies];
+		NSArray *buddies = _core.buddies;
 		
 		for (TCBuddy *buddy in buddies)
 		{
@@ -227,7 +227,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	// Configure window.
 	[self.window center];
-	[self setWindowFrameAutosaveName:@"ChatWindow"];
+	self.windowFrameAutosaveName = @"ChatWindow";
 }
 
 
@@ -288,7 +288,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)windowDidBecomeMain:(NSNotification *)notification
 {
-	NSInteger index = [_userList selectedRow];
+	NSInteger index = _userList.selectedRow;
 	
 	if (index < 0 || index >= _chatEntries.count)
 		return;
@@ -319,7 +319,7 @@ NS_ASSUME_NONNULL_BEGIN
 			if (_selectedBuddy)
 				buddy = _selectedBuddy;
 			else if (_chatEntries.count > 0)
-				buddy = ((TCChatEntry *)_chatEntries[0]).buddy;
+				buddy = _chatEntries[0].buddy;
 		}
 		
 		[self _openChatWithBuddy:buddy select:select];
@@ -384,7 +384,7 @@ NS_ASSUME_NONNULL_BEGIN
 		{
 			NSUInteger nindex = index;
 			
-			if ([_chatEntries count] == 0)
+			if (_chatEntries.count == 0)
 			{
 				[self _showChatViewController:nil];
 				
@@ -395,7 +395,7 @@ NS_ASSUME_NONNULL_BEGIN
 				if (nindex >= _chatEntries.count)
 					nindex = _chatEntries.count - 1;
 				
-				[self _selectChatWithBuddy:((TCChatEntry *)_chatEntries[nindex]).buddy];
+				[self _selectChatWithBuddy:_chatEntries[nindex].buddy];
 			}
 		}
 		else
@@ -445,7 +445,7 @@ NS_ASSUME_NONNULL_BEGIN
 		rowContent[TCChatCellAvatarKey] = avatar;
 	
 	// > Name.
-	NSString *name = [buddy finalName];
+	NSString *name = buddy.finalName;
 	
 	if (name)
 		rowContent[TCChatCellNameKey] = name;
@@ -454,7 +454,7 @@ NS_ASSUME_NONNULL_BEGIN
 		rowContent[TCChatCellChatTextKey] = lastMessage;
 	
 	// > Set close button status.
-	NSPoint windowMouseLocation = [self.window mouseLocationOutsideOfEventStream];
+	NSPoint windowMouseLocation = self.window.mouseLocationOutsideOfEventStream;
 	NSPoint mouseLocation = [tableView convertPoint:windowMouseLocation fromView:nil];
 
 	rowContent[TCChatCellCloseKey] = @([tableView rowAtPoint:mouseLocation] == rowIndex);
@@ -485,7 +485,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
-	NSInteger rowIndex = [_userList selectedRow];
+	NSInteger rowIndex = _userList.selectedRow;
 
 	if (rowIndex < 0 || rowIndex >= _chatEntries.count)
 		return;
@@ -605,7 +605,7 @@ NS_ASSUME_NONNULL_BEGIN
 					[self _openChatWithBuddy:buddy select:(self.window.isVisible == NO)];
 					
 					// Show as unread if necessary.
-					if (buddy != _selectedBuddy || [self.window isKeyWindow] == NO)
+					if (buddy != _selectedBuddy || self.window.keyWindow == NO)
 					{
 						NSUInteger	index = NSNotFound;
 						TCChatEntry	*entry = [self _chatEntryForBuddy:buddy index:&index];
@@ -662,7 +662,7 @@ NS_ASSUME_NONNULL_BEGIN
 		entry.viewController = viewCtrl;
 		
 		 // > Configure view controller.
-		 NSImage *localAvatar = [[_core profileAvatar] imageRepresentation];
+		 NSImage *localAvatar = [_core.profileAvatar imageRepresentation];
 		 
 		 if (!localAvatar)
 			 localAvatar = [NSImage imageNamed:NSImageNameUser];
@@ -674,7 +674,7 @@ NS_ASSUME_NONNULL_BEGIN
 	_selectedBuddy = buddy;
 	
 	// Update selection.
-	if ([_userList selectedRow] != index)
+	if (_userList.selectedRow != index)
 		[_userList selectRowIndexes:[NSIndexSet indexSetWithIndex:index] byExtendingSelection:NO];
 	
 	// Show view.
@@ -696,9 +696,8 @@ NS_ASSUME_NONNULL_BEGIN
 	if (!viewCtrl)
 		return;
 	
-	// Load window if not loaded (else _chatView can eventually be nil).
-	[self window];
-	
+	NSAssert(_chatView, @"add a chat controller on a window not loaded");
+
 	// Add the new one
 	NSDictionary	*viewsDictionary;
 	NSView			*content = viewCtrl.view;

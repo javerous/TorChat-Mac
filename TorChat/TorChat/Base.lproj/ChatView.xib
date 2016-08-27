@@ -21,7 +21,7 @@
                     <rect key="frame" x="0.0" y="33" width="300" height="5"/>
                 </box>
                 <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="57" customClass="TCChatTextField">
-                    <rect key="frame" x="13" y="7" width="274" height="22"/>
+                    <rect key="frame" x="13" y="7" width="261" height="22"/>
                     <constraints>
                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="Feg-ey-rk0"/>
                     </constraints>
@@ -37,19 +37,38 @@
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="G3i-0Y-aMb" userLabel="Transcript View">
                     <rect key="frame" x="0.0" y="36" width="300" height="424"/>
                 </customView>
+                <button translatesAutoresizingMaskIntoConstraints="NO" id="plW-Ll-EqA">
+                    <rect key="frame" x="276" y="9" width="20" height="20"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="20" id="JCp-nP-RJM"/>
+                        <constraint firstAttribute="width" constant="20" id="ZkN-4K-268"/>
+                    </constraints>
+                    <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" image="button_upcontent" imagePosition="only" alignment="center" inset="2" id="OtN-7W-jVq">
+                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="doSendContent:" target="-2" id="jMz-Gi-Xlv"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="57" secondAttribute="bottom" constant="7" id="33i-d8-Lap"/>
                 <constraint firstItem="G3i-0Y-aMb" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="A20-K4-WLD"/>
                 <constraint firstAttribute="trailing" secondItem="G3i-0Y-aMb" secondAttribute="trailing" id="A7t-gg-CnW"/>
-                <constraint firstAttribute="trailing" secondItem="57" secondAttribute="trailing" constant="13" id="fAZ-WB-myw"/>
+                <constraint firstAttribute="trailing" secondItem="plW-Ll-EqA" secondAttribute="trailing" constant="4" id="PBG-y4-c0T"/>
+                <constraint firstItem="plW-Ll-EqA" firstAttribute="leading" secondItem="57" secondAttribute="trailing" constant="2" id="eda-tn-Mai"/>
                 <constraint firstItem="57" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="13" id="fmS-Su-Qe0"/>
                 <constraint firstItem="G3i-0Y-aMb" firstAttribute="top" secondItem="1" secondAttribute="top" id="gEN-3f-vRX"/>
                 <constraint firstItem="57" firstAttribute="top" secondItem="90" secondAttribute="bottom" constant="6" id="gwR-8L-GTK"/>
                 <constraint firstAttribute="trailing" secondItem="90" secondAttribute="trailing" id="lz2-1U-0oE"/>
                 <constraint firstItem="90" firstAttribute="top" secondItem="G3i-0Y-aMb" secondAttribute="bottom" id="sDw-OD-Uzc"/>
                 <constraint firstItem="90" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="uIS-7w-piX"/>
+                <constraint firstItem="plW-Ll-EqA" firstAttribute="bottom" secondItem="57" secondAttribute="bottom" constant="-2" id="yA0-iE-vQ6"/>
             </constraints>
         </customView>
     </objects>
+    <resources>
+        <image name="button_upcontent" width="16" height="16"/>
+    </resources>
 </document>

@@ -47,7 +47,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TCConfigSQLite : NSObject <TCConfigAppEncryptable>
 
 // -- Instance --
-- (nullable instancetype)initWithFile:(NSString *)filepath password:(nullable NSString *)password error:(NSError **)error;
+- (nullable instancetype)initWithFile:(NSString *)filepath password:(nullable NSString *)password error:(NSError **)error NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // -- Tools --
 + (BOOL)isEncryptedFile:(NSString *)filepath;

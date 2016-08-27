@@ -117,8 +117,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)selectChange:(id)sender
 {
 	NSMatrix	*mtr = sender;
-	NSCell		*obj = [mtr selectedCell];
-	NSInteger	tag = [obj tag];
+	NSCell		*obj = mtr.selectedCell;
+	NSInteger	tag = obj.tag;
 	
 	if (tag == 1)
 	{
@@ -144,11 +144,11 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	if ([openDlg runModal] == NSFileHandlingPanelOKButton)
 	{
-		NSArray			*urls = [openDlg URLs];
-		NSURL			*url = [urls objectAtIndex:0];
+		NSArray			*urls = openDlg.URLs;
+		NSURL			*url = urls[0];
 		
-		_configPath = [url path];
-		[_confPathField setStringValue:_configPath];
+		_configPath = url.path;
+		_confPathField.stringValue = _configPath;
 		
 		[self.panelProxy setDisableContinue:NO];
 	}

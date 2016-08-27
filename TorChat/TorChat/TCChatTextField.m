@@ -37,14 +37,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)awakeFromNib
 {
-	[self setPreferredMaxLayoutWidth:(self.frame.size.width - 8.0)];
+	self.preferredMaxLayoutWidth = (self.frame.size.width - 8.0);
 }
 
 - (void)setFrame:(NSRect)frameRect
 {
-	[super setFrame:frameRect];
+	super.frame = frameRect;
 	
-	[self setPreferredMaxLayoutWidth:(frameRect.size.width - 8.0)];
+	self.preferredMaxLayoutWidth = (frameRect.size.width - 8.0);
 }
 
 - (NSSize)intrinsicContentSize
@@ -52,14 +52,14 @@ NS_ASSUME_NONNULL_BEGIN
 	// We have to overwrite this method because preferredMaxLayoutWidth doesn't work on editable NSTextField.
 	// We dont use [self.cell cellSizeForBounds:] because this method doesn't handle text content when editing.
 
-	NSString *text = [self stringValue];
+	NSString *text = self.stringValue;
 	
-	if ([text length] == 0)
+	if (text.length == 0)
 		text = @" ";
 	
-	NSFont	*font = [self font];
-	CGFloat	width = [self preferredMaxLayoutWidth];
-	CGFloat	height = [text heightForDrawingWithFont:font andWidth:width];
+	NSFont	*font = self.font;
+	CGFloat	width = self.preferredMaxLayoutWidth;
+	CGFloat	height = [text heightForDrawingWithFont:font maxWidth:width];
 	
 	return NSMakeSize(width, height);
 }

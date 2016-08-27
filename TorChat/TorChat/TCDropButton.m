@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)awakeFromNib
 {
-	[self registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
+	[self registerForDraggedTypes:@[NSFilenamesPboardType]];
 	[self registerForDraggedTypes:[NSImage imageTypes]];
 }
 
@@ -58,11 +58,11 @@ NS_ASSUME_NONNULL_BEGIN
 	NSPasteboard *pboard = [sender draggingPasteboard];
 	id <TCDropButtonDelegate> delegate = _delegate;
 
-	if ([[pboard types] containsObject:NSFilenamesPboardType])
+	if ([pboard.types containsObject:NSFilenamesPboardType])
 	{
 		NSArray *files = [pboard propertyListForType:NSFilenamesPboardType];
 
-		if ([files count] != 1)
+		if (files.count != 1)
 			return NO;
 		
 		NSImage *img = [[NSImage alloc] initWithPasteboard:pboard];

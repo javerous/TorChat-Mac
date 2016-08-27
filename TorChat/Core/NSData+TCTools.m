@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation NSData (TCTools)
 
-- (NSArray *)explodeWithMaxFields:(NSUInteger)count withFieldSeparator:(const char *)separator
+- (NSArray *)explodeWithMaxFields:(NSUInteger)count fieldSeparator:(const char *)separator
 {
 	NSAssert(count > 0, @"count is zero");
 	NSAssert(separator, @"separator is NULL");
@@ -43,9 +43,9 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	NSAssert(sepSize > 0, @"sepSize is zero");
 
-	const void		*bytes = [self bytes];
+	const void		*bytes = self.bytes;
 	NSUInteger		lasti, i;
-	NSUInteger		length = [self length];
+	NSUInteger		length = self.length;
 	NSUInteger		fields = 0;
 	NSMutableArray	*result = [[NSMutableArray alloc] init];
 	
@@ -104,18 +104,18 @@ NS_ASSUME_NONNULL_BEGIN
 	if (str_len == replace_len && memcmp(str, replace, str_len) == 0)
 		return;
 	
-	const void	*bytes = [self bytes];
+	const void	*bytes = self.bytes;
 	NSUInteger	i = 0;
 	
-	while (i < [self length])
+	while (i < self.length)
 	{
-		if (i + str_len > [self length])
+		if (i + str_len > self.length)
 			break;
 		
 		if (memcmp(bytes + i, str, str_len) == 0)
 		{
 			[self replaceBytesInRange:NSMakeRange(i, str_len) withBytes:replace length:replace_len];
-			bytes = [self bytes];
+			bytes = self.bytes;
 			i += replace_len;
 		}
 		else

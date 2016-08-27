@@ -152,7 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
 	NSRegularExpression					*regExp = [NSRegularExpression regularExpressionWithPattern:@"-----BEGIN RSA PRIVATE KEY-----(.*)-----END RSA PRIVATE KEY-----" options:(NSRegularExpressionCaseInsensitive | NSRegularExpressionDotMatchesLineSeparators) error:nil];
 	NSArray <NSTextCheckingResult *>	*match = [regExp matchesInString:privateKeyString options:0 range:NSMakeRange(0, privateKeyString.length)];
 	
-	if (match.count == 0 || [match[0] numberOfRanges] < 2)
+	if (match.count == 0 || match[0].numberOfRanges < 2)
 	{
 		if (error)
 			*error = [self errorWithCode:12 localizedMessage:@"conf_helper_error_cant_extract_private_key", privateKeyPath];
@@ -524,7 +524,7 @@ NS_ASSUME_NONNULL_BEGIN
 	{
 		NSNumber *cryptoError = error.userInfo[TCConfigSMCryptoFileErrorKey];
 		
-		if (cryptoError && [cryptoError intValue] == SMCryptoFileErrorPassword)
+		if (cryptoError && cryptoError.intValue == SMCryptoFileErrorPassword)
 		{
 			passwordField.enabled = NO;
 			openButton.enabled = NO;
@@ -576,7 +576,7 @@ NS_ASSUME_NONNULL_BEGIN
 	static float durationOfShake = 0.25f;
 	static float vigourOfShake = 0.05f;
 	
-	CGRect frame = [self.window frame];
+	CGRect frame = self.window.frame;
 	
 	// Create shake path.
 	CGMutablePathRef shakePath = CGPathCreateMutable();

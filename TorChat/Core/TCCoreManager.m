@@ -138,11 +138,11 @@ NS_ASSUME_NONNULL_BEGIN
 		_mstatus = TCStatusAvailable;
 
 		// Get profile avatar.
-		_profileAvatar = [config profileAvatar];
+		_profileAvatar = config.profileAvatar;
 
 		// Get profile name & text.
-		_profileName = [config profileName];
-		_profileText = [config profileText];
+		_profileName = config.profileName;
+		_profileText = config.profileText;
 		
 		// Queues.
 		_localQueue = dispatch_queue_create("com.torchat.core.controller.local", DISPATCH_QUEUE_SERIAL);
@@ -176,7 +176,7 @@ NS_ASSUME_NONNULL_BEGIN
 		
 		for (TCBuddy *buddy in _buddies)
 		{
-			if ([[buddy identifier] isEqualToString:_selfIdentifier])
+			if ([buddy.identifier isEqualToString:_selfIdentifier])
 			{
 				found = true;
 				break;
@@ -322,7 +322,7 @@ NS_ASSUME_NONNULL_BEGIN
 		[buddy start];
 	
 	// Give the status
-	[self setStatus:_mstatus];
+	self.status = _mstatus;
 	
 	// Notify
 	[self _notify:TCCoreEventStarted];
@@ -458,7 +458,7 @@ NS_ASSUME_NONNULL_BEGIN
 		_profileAvatar = avatar;
 		
 		// Store avatar
-		[_config setProfileAvatar:_profileAvatar];
+		_config.profileAvatar = _profileAvatar;
 		
 		// Give this avatar to buddy list
 		for (TCBuddy *buddy in _buddies)
@@ -490,7 +490,7 @@ NS_ASSUME_NONNULL_BEGIN
 		_profileName = name;
 		
 		// Store the name
-		[_config setProfileName:name];
+		_config.profileName = name;
 		
 		// Give this name to buddy list
 		for (TCBuddy *buddy in _buddies)
@@ -521,7 +521,7 @@ NS_ASSUME_NONNULL_BEGIN
 		_profileText = text;
 		
 		// Store the text
-		[_config setProfileText:text];
+		_config.profileText = text;
 		
 		// Give this text to buddy list
 		for (TCBuddy *buddy in _buddies)
@@ -597,14 +597,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 	dispatch_async(_localQueue, ^{
 		
-		NSUInteger	i, cnt = [_buddies count];
+		NSUInteger	i, cnt = _buddies.count;
 		
 		// Search the buddy.
 		for (i = 0; i < cnt; i++)
 		{
 			TCBuddy *buddy = _buddies[i];
 			
-			if ([[buddy identifier] isEqualToString:identifier])
+			if ([buddy.identifier isEqualToString:identifier])
 			{
 				// Stop and release.
 				[buddy stopWithCompletionHandler:nil];
@@ -633,7 +633,7 @@ NS_ASSUME_NONNULL_BEGIN
         
 		for (TCBuddy *buddy in _buddies)
 		{
-			if ([[buddy identifier] isEqualToString:identifier])
+			if ([buddy.identifier isEqualToString:identifier])
 			{
 				result = buddy;
 				break;
@@ -654,7 +654,7 @@ NS_ASSUME_NONNULL_BEGIN
 		
 		for (TCBuddy *buddy in _buddies)
 		{
-			if ([[buddy random] isEqualToString:random])
+			if ([buddy.random isEqualToString:random])
             {
                 result = buddy;
                 break;
@@ -718,7 +718,7 @@ NS_ASSUME_NONNULL_BEGIN
 		return;
 	
 	NSArray	*blocked = [_config blockedBuddies];
-	size_t	i, cnt = [blocked count];
+	size_t	i, cnt = blocked.count;
 	
 	[buddy setBlocked:NO];
 	
@@ -727,7 +727,7 @@ NS_ASSUME_NONNULL_BEGIN
 	{
 		NSString *identifier = blocked[i];
 		
-		if ([identifier isEqualToString:[buddy identifier]])
+		if ([identifier isEqualToString:buddy.identifier])
 		{
 			[buddy setBlocked:YES];
 			[buddy stopWithCompletionHandler:nil];
@@ -770,7 +770,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	TCBuddy *abuddy = [self buddyWithIdentifier:identifier];
 	
-	if ([abuddy blocked])
+	if (abuddy.blocked)
 	{
 		[self removeConnection:connection];
 		return;
@@ -790,7 +790,7 @@ NS_ASSUME_NONNULL_BEGIN
 	// if someone is pinging us with our own identifier and the
 	// random value is not from us, then someone is definitely
 	// trying to fake and we can close.
-	if ([identifier isEqualToString:_selfIdentifier] && abuddy && [[abuddy random] isEqualToString:random] == NO)
+	if ([identifier isEqualToString:_selfIdentifier] && abuddy && [abuddy.random isEqualToString:random] == NO)
 	{
 		[self _error:TCCoreErrorClientMasquerade fatal:NO];
 		[self removeConnection:connection];
@@ -824,7 +824,7 @@ NS_ASSUME_NONNULL_BEGIN
 	if (buddy)
 	{
 		// Check blocked list
-		if ([buddy blocked])
+		if (buddy.blocked)
 		{
 			// Stop buddy
 			[buddy stopWithCompletionHandler:nil];
@@ -868,7 +868,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	// > socketQueue <
 	
-	TCConnection *client = [[TCConnection alloc] initWithDelegate:self andSocket:csock];
+	TCConnection *client = [[TCConnection alloc] initWithDelegate:self socket:csock];
 	
 	[_connections addObject:client];
 	
@@ -992,7 +992,7 @@ NS_ASSUME_NONNULL_BEGIN
 								
 								NSString *status = @"-";
 								
-								switch ([context intValue])
+								switch (context.intValue)
 								{
 									case TCStatusOffline:	status = NSLocalizedString(@"bd_status_offline", @""); break;
 									case TCStatusAvailable: status = NSLocalizedString(@"bd_status_available", @""); break;

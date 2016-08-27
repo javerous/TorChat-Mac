@@ -36,8 +36,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TCFileSend ()
 {
+	// Real file send.
 	FILE		*_file;
+	
+	// Virtual file send.
+	NSData		*_data;
+	NSUInteger	_dataOffset;
 
+	// Context.
 	uint64_t	_validatedOffset;
 }
 
@@ -64,12 +70,13 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	if (self)
 	{
-		// Init vars.
 		_validatedOffset = (uint64_t)-1;
-		_filePath = filePath;
+		_blockSize = 8192;
+
+		_uuid = [NSUUID UUID].UUIDString;
 		
 		// Open the file.
-		_file = fopen([_filePath UTF8String], "r");
+		_file = fopen(filePath.UTF8String, "r");
 		
 		if (!_file)
 			return nil;
@@ -87,15 +94,31 @@ NS_ASSUME_NONNULL_BEGIN
 			return nil;
 
 		_fileSize = (uint64_t)tl;
-				
-		// BLock size.
+		_fileName = filePath.lastPathComponent;
+		_filePath = filePath;
+	}
+	
+	return self;
+}
+
+- (instancetype)initWithFileData:(NSData *)data fileName:(NSString *)fileName
+{
+	self = [super init];
+	
+	if (self)
+	{
+		_validatedOffset = (uint64_t)-1;
 		_blockSize = 8192;
 		
-		// UUID.
-		_uuid = [[NSUUID UUID] UUIDString];
+		_uuid = [NSUUID UUID].UUIDString;
+
+		// Handle info.
+		_fileSize = data.length;
+		_fileName = fileName;
+		_filePath = nil;
 		
-		// Filename.
-		_fileName = [_filePath lastPathComponent];
+		_data = data;
+		_dataOffset = 0;
 	}
 	
 	return self;
@@ -122,26 +145,54 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	NSAssert(bytes, @"bytes is NULL");
 
-	// Get the current file position.
-	long tl = ftell(_file);
+	if (_file)
+	{
+		// Get the current file position.
+		long tl = ftell(_file);
+		
+		if (tl < 0)
+			return nil;
+		
+		// Read a chunk of data.
+		size_t size = fread(bytes, 1, _blockSize, _file);
+		
+		if (size <= 0)
+			return nil;
+		
+		if (chunkSize)
+			*chunkSize = size;
+		
+		if (fileOffset)
+			*fileOffset = (uint64_t)tl;
+		
+		// Return the chunk MD5.
+		return hashMD5([NSData dataWithBytesNoCopy:bytes length:size freeWhenDone:NO]);
+	}
+	else if (_data)
+	{
+		if (_dataOffset >= _data.length)
+			return nil;
+		
+		NSUInteger size = MIN(_data.length - _dataOffset, _blockSize);
+		
+		if (size <= 0)
+			return nil;
+		
+		[_data getBytes:bytes range:NSMakeRange(_dataOffset, size)];
+		
+		if (chunkSize)
+			*chunkSize = size;
+		
+		if (fileOffset)
+			*fileOffset = _dataOffset;
+		
+		_dataOffset += size;
+		
+		// Return the chunk MD5.
+		return hashMD5([NSData dataWithBytesNoCopy:bytes length:size freeWhenDone:NO]);
+	}
 	
-	if (tl < 0)
-		return nil;
-
-	// Read a chunk of data.
-	size_t sz = fread(bytes, 1, _blockSize, _file);
-	
-	if (sz <= 0)
-		return nil;
-
-	if (chunkSize)
-		*chunkSize = sz;
-	
-	if (fileOffset)
-		*fileOffset = (uint64_t)tl;
-	
-	// Return the chunk MD5.
-	return hashMD5([NSData dataWithBytesNoCopy:bytes length:sz freeWhenDone:NO]);
+	return nil;
 }
 
 - (void)setNextChunkOffset:(uint64_t)offset
@@ -150,7 +201,10 @@ NS_ASSUME_NONNULL_BEGIN
 		return;
 	
 	// Set the file cursor
-	fseek(_file, (long)offset, SEEK_SET);
+	if (_file)
+		fseek(_file, (long)offset, SEEK_SET);
+	else if (_data)
+		_dataOffset = offset;
 }
 
 - (BOOL)isFinished
@@ -159,7 +213,6 @@ NS_ASSUME_NONNULL_BEGIN
 		return NO;
 	
 	return ((_validatedOffset + _blockSize) >= _fileSize);
-
 }
 
 - (uint64_t)validatedSize
@@ -177,12 +230,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (uint64_t)readSize
 {
-	long tl = ftell(_file);
+	if (_file)
+	{
+		long tl = ftell(_file);
 	
-	if (tl >= 0)
-		return (uint64_t)tl;
-	else
-		return 0;
+		if (tl >= 0)
+			return (uint64_t)tl;
+		else
+			return 0;
+	}
+	else if (_data)
+	{
+		return _dataOffset;
+	}
+	
+	return 0;
 }
 
 - (void)setValidatedOffset:(uint64_t)offset

@@ -108,7 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
 		CFRelease(pasteboard);
 		
 		// Return path.
-		return [url absoluteString];
+		return url.absoluteString;
 	}
 	
 	return nil;
@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSData *)pngImage
 {
-	CGImageRef			ref = [[self image] CGImageForProposedRect:NULL context:nil hints:nil];
+	CGImageRef			ref = [self.image CGImageForProposedRect:NULL context:nil hints:nil];
 	NSBitmapImageRep	*imp;
 	NSData				*png;
 	

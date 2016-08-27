@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 		NSDraggingImageComponent *component = [NSDraggingImageComponent draggingImageComponentWithKey:NSDraggingImageComponentIconKey];
 		
 		component.frame = dragFrame;
-		component.contents = [self image];
+		component.contents = self.image;
 				
 		return @[ component ];
 	};

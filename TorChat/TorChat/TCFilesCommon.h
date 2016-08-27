@@ -28,22 +28,18 @@
 */
 #pragma mark - Types
 
-// == File transfert way ==
-typedef enum
-{
-	tcfile_upload,
-	tcfile_download
-} tcfile_way;
+typedef NS_ENUM(unsigned int, TCFileTransferDirection) {
+	TCFileTransferDirectionUpload,
+	TCFileTransferDirectionDownload
+};
 
-// == File transfert status ==
-typedef enum
-{
-	tcfile_status_running,
-	tcfile_status_finish,
-	tcfile_status_cancel,
-	tcfile_status_stopped,
-	tcfile_status_error,
-} tcfile_status;
+typedef NS_ENUM(unsigned int, TCFileTransferStatus) {
+	TCFileTransferStatusRunning,
+	TCFileTransferStatusFinish,
+	TCFileTransferStatusCancel,
+	TCFileTransferStatusStopped,
+	TCFileTransferStatusError,
+};
 
 
 
@@ -52,12 +48,14 @@ typedef enum
 */
 #pragma mark - File Dictionary Keys
 
-#define TCFileFilePathKey		@"filepath"
-#define TCFileBuddyIdentifierKey @"buddy_identifier"
-#define TCFileBuddyNameKey		@"buddy_name"
-#define TCFileWayKey			@"way"
-#define TCFileStatusTextKey		@"status_txt"
-#define TCFileIconKey			@"icon"
-#define TCFileSizeKey			@"size"
-#define TCFileCompletedKey		@"completed"
-#define TCFileRemainingTimeKey	@"remaining_time"
+#define TCFileFilePathKey			@"filepath"
+#define TCFileFileNameKey			@"filename"
+#define TCFileBuddyIdentifierKey	@"buddy_identifier"
+#define TCFileBuddyNameKey			@"buddy_name"
+#define TCFileIconKey				@"icon"
+#define TCFileSizeKey				@"size"
+
+#define TCFileTransferDirectionKey		@"xdirection"
+#define TCFileTransferStatusTextKey		@"xstatus_txt"
+#define TCFileTransferCompletedKey		@"xcompleted"
+#define TCFileTransferRemainingTimeKey	@"xremaining_time"

@@ -95,6 +95,7 @@ NSMutableDictionary	*gThemeCache;
 	id <NSObject>	_didScrollObserver;
 }
 
+
 @end
 
 
@@ -114,7 +115,7 @@ NSMutableDictionary	*gThemeCache;
 
 - (instancetype)initWithTheme:(TCTheme *)theme
 {
-    self = [super init];
+    self = [super initWithNibName:nil bundle:nil];
 	
     if (self)
 	{
@@ -177,16 +178,16 @@ NSMutableDictionary	*gThemeCache;
 	
 	[_webView setTranslatesAutoresizingMaskIntoConstraints:NO];
 	
-	[_webView setUIDelegate:self];
-	[_webView setFrameLoadDelegate:self];
-	[_webView setPolicyDelegate:self];
+	_webView.UIDelegate = self;
+	_webView.frameLoadDelegate = self;
+	_webView.policyDelegate = self;
 	
 	[_webView setDrawsBackground:YES];
 
 	// Load empty HTML structure.
 	NSString *html = [NSString stringWithFormat:@"<html><head><style></style></head><body></body></html>"];
 	
-	[[_webView mainFrame] loadHTMLString:html baseURL:nil];
+	[_webView.mainFrame loadHTMLString:html baseURL:nil];
 	
 	// Hold a the controlled view.
 	self.view = _webView;
@@ -221,8 +222,8 @@ NSMutableDictionary	*gThemeCache;
 	// Activate elasticity.
 	NSScrollView *scrollView = documentView.enclosingScrollView;
 	
-	[scrollView setVerticalScrollElasticity:NSScrollElasticityAllowed];
-    [scrollView setHorizontalScrollElasticity:NSScrollElasticityNone];
+	scrollView.verticalScrollElasticity = NSScrollElasticityAllowed;
+    scrollView.horizontalScrollElasticity = NSScrollElasticityNone;
 		
 	// Stuck scroll position.
 	__weak TCChatTranscriptViewController *weakSelf = self;
@@ -267,8 +268,8 @@ NSMutableDictionary	*gThemeCache;
 	}];
 	
 	// Set pending content.
-	[[self _styleNode] setInnerHTML:_tmpStyle];
-	[[self _bodyNode] setInnerHTML:_tmpBody];
+	[self _styleNode].innerHTML = _tmpStyle;
+	[self _bodyNode].innerHTML = _tmpBody;
 
 	_isViewReady = YES;
 
@@ -276,7 +277,7 @@ NSMutableDictionary	*gThemeCache;
 	_tmpStyle = nil;
 	
 	// Add invisible anchor node.
-	DOMDocument *document = [[_webView mainFrame] DOMDocument];
+	DOMDocument *document = _webView.mainFrame.DOMDocument;
 	
 	_anchorElement = (DOMHTMLElement *)[document createElement:@"div"];
 
@@ -354,7 +355,7 @@ NSMutableDictionary	*gThemeCache;
 							NSString *snippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatSnippetLocalErrorKey];
 							NSString *message = msg.message;
 							
-							message = [message stringByEscapingXMLEntities];
+							message = message.escapedXMLEntities;
 							snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:message];
 							snippet = [snippet stringByReplacingOccurrencesOfString:@"[HREF-ERROR]" withString:[NSString stringWithFormat:@"tc-action://error/%lld", msg.messageID]];
 							snippet = [snippet stringByReplacingOccurrencesOfString:@"[URL-ERROR-BUTTON]" withString:@"tc-resource://error/button"];
@@ -367,7 +368,7 @@ NSMutableDictionary	*gThemeCache;
 							NSString *snippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatSnippetLocalMessageKey];
 							NSString *message = msg.message;
 							
-							message = [message stringByEscapingXMLEntities];
+							message = message.escapedXMLEntities;
 							snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:message];
 							snippet = [snippet stringByReplacingOccurrencesOfString:@"[URL-THEME-ID]" withString:_themeIdentifier];
 
@@ -384,7 +385,7 @@ NSMutableDictionary	*gThemeCache;
 						NSString *snippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatSnippetRemoteMessageKey];
 						NSString *message = msg.message;
 						
-						message = [message stringByEscapingXMLEntities];
+						message = message.escapedXMLEntities;
 						snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:message];
 						
 						[result addObject:@{ @"html" : snippet }];
@@ -402,7 +403,7 @@ NSMutableDictionary	*gThemeCache;
 				NSString	*snippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatSnippetStatusKey];
 				NSString	*status = stat.status;
 				
-				status = [status stringByEscapingXMLEntities];
+				status = status.escapedXMLEntities;
 				snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:status];
 				
 				[result addObject:@{ @"html" : snippet }];
@@ -480,7 +481,7 @@ NSMutableDictionary	*gThemeCache;
 	if (!minHeight)
 		return 0;
 	
-	return (NSUInteger)ceil(height / [minHeight doubleValue]);
+	return (NSUInteger)ceil(height / minHeight.doubleValue);
 }
 
 - (CGFloat)maxHeightForMessagesCount:(NSUInteger)count
@@ -490,7 +491,7 @@ NSMutableDictionary	*gThemeCache;
 	if (!minHeight)
 		return 0;
 	
-	return (CGFloat)count * [minHeight doubleValue];
+	return (CGFloat)count * minHeight.doubleValue;
 }
 
 
@@ -504,7 +505,7 @@ NSMutableDictionary	*gThemeCache;
 	// Create a new node.
 	if (_isViewReady)
 	{
-		DOMDocument *document = [[_webView mainFrame] DOMDocument];
+		DOMDocument *document = _webView.mainFrame.DOMDocument;
 		DOMNode		*firstChild = document.body.firstChild;
 		
 		for (NSDictionary *item in items)
@@ -515,9 +516,9 @@ NSMutableDictionary	*gThemeCache;
 			DOMHTMLElement *newNode = (DOMHTMLElement *)[document createElement:@"div"];
 			
 			if (divID)
-				[newNode setAttribute:@"id" value:[NSString stringWithFormat:@"item_%lld", [divID longLongValue]]];
+				[newNode setAttribute:@"id" value:[NSString stringWithFormat:@"item_%lld", divID.longLongValue]];
 			
-			[newNode setInnerHTML:html];
+			newNode.innerHTML = html;
 			
 			if (endOfTranscript)
 				[document.body appendChild:newNode];
@@ -537,7 +538,7 @@ NSMutableDictionary	*gThemeCache;
 			NSNumber *divID = item[@"id"];
 			
 			if (divID)
-				[bunch appendFormat:@"<div id=\"item_%lld\">%@</div>", [divID longLongValue], html];
+				[bunch appendFormat:@"<div id=\"item_%lld\">%@</div>", divID.longLongValue, html];
 			else
 				[bunch appendFormat:@"<div>%@</div>", html];
 		}
@@ -553,7 +554,7 @@ NSMutableDictionary	*gThemeCache;
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		DOMDocument			*document = [[_webView mainFrame] DOMDocument];
+		DOMDocument			*document = _webView.mainFrame.DOMDocument;
 		NSString			*expression = [NSString stringWithFormat:@"/html/body/div[@id='item_%lld']", itemID];
 		DOMXPathExpression  *xPath = [document createExpression:expression resolver:nil];
 		DOMXPathResult		*result =  [xPath evaluate:document type:DOM_ANY_TYPE inResult:nil];
@@ -604,7 +605,7 @@ NSMutableDictionary	*gThemeCache;
 {
 	// > main queue <
 
-	if ([style length] == 0)
+	if (style.length == 0)
 		return;
 	
 	if (_isViewReady)
@@ -612,7 +613,7 @@ NSMutableDictionary	*gThemeCache;
 		// Search style node.
 		DOMHTMLElement *styleNode = [self _styleNode];
 		
-		[styleNode setInnerHTML:style];
+		styleNode.innerHTML = style;
 		
 		// Set need display.
 		[_webView setNeedsDisplay:YES];
@@ -627,13 +628,13 @@ NSMutableDictionary	*gThemeCache;
 {
 	// > main queue <
 
-	DOMDocument *document = [[_webView mainFrame] DOMDocument];
+	DOMDocument *document = _webView.mainFrame.DOMDocument;
 	
 	// Search head.
 	DOMNodeList		*headList = [document getElementsByTagName:@"head"];
 	DOMHTMLElement	*headNode;
 	
-	if ([headList length] == 0)
+	if (headList.length == 0)
 		return nil;
 	
 	headNode = (DOMHTMLElement *)[headList item:0];
@@ -641,7 +642,7 @@ NSMutableDictionary	*gThemeCache;
 	// Search style.
 	DOMNodeList *styleList = [headNode getElementsByTagName:@"style"];
 	
-	if ([styleList length] == 0)
+	if (styleList.length == 0)
 		return nil;
 	
 	// Return style node.
@@ -652,7 +653,7 @@ NSMutableDictionary	*gThemeCache;
 {
 	// > main queue <
 
-	DOMDocument *document = [[_webView mainFrame] DOMDocument];
+	DOMDocument *document = _webView.mainFrame.DOMDocument;
 
 	return document.body;
 }
@@ -790,7 +791,7 @@ NSMutableDictionary	*gThemeCache;
 	NSURL	*url = self.request.URL;
 	NSArray	*parameters = url.pathComponents;
 
-	if ([parameters count] < 3)
+	if (parameters.count < 3)
 	{
 		[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Parameter error" code:0 userInfo:@{}]];
 		return;
@@ -802,7 +803,7 @@ NSMutableDictionary	*gThemeCache;
 	
 	if ([name isEqualToString:@"avatar"])
 	{
-		if ([parameters count] < 4)
+		if (parameters.count < 4)
 		{
 			[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Parameter error" code:0 userInfo:@{}]];
 			return;
@@ -846,7 +847,7 @@ NSMutableDictionary	*gThemeCache;
 			}
 			
 			// Generate TIFF.
-			NSData *data = [result TIFFRepresentation];
+			NSData *data = result.TIFFRepresentation;
 			
 			if (!data)
 			{
@@ -855,7 +856,7 @@ NSMutableDictionary	*gThemeCache;
 			}
 			
 			// Build response.
-			NSURLResponse *response = [[NSURLResponse alloc] initWithURL:url MIMEType:@"image/tiff" expectedContentLength:(NSInteger)[data length] textEncodingName:nil];
+			NSURLResponse *response = [[NSURLResponse alloc] initWithURL:url MIMEType:@"image/tiff" expectedContentLength:(NSInteger)data.length textEncodingName:nil];
 			
 			// Send response + content.
 			[self.client URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
@@ -865,7 +866,7 @@ NSMutableDictionary	*gThemeCache;
 	}
 	else if ([name isEqualToString:@"error"])
 	{
-		if ([parameters count] < 4)
+		if (parameters.count < 4)
 		{
 			[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Parameter error" code:0 userInfo:@{}]];
 			return;
@@ -936,15 +937,15 @@ NSMutableDictionary	*gThemeCache;
 				return YES;
 			}];
 			
-			NSData *data = [image TIFFRepresentation];
+			NSData *data = image.TIFFRepresentation;
 			
 			// Build response.
-			NSURLResponse *response = [[NSURLResponse alloc] initWithURL:url MIMEType:@"image/tiff" expectedContentLength:(NSInteger)[data length] textEncodingName:nil];
+			NSURLResponse *response = [[NSURLResponse alloc] initWithURL:url MIMEType:@"image/tiff" expectedContentLength:(NSInteger)data.length textEncodingName:nil];
 			
 			// Send response + content.
-			[[self client] URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageAllowedInMemoryOnly];
-			[[self client] URLProtocol:self didLoadData:data];
-			[[self client] URLProtocolDidFinishLoading:self];
+			[self.client URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageAllowedInMemoryOnly];
+			[self.client URLProtocol:self didLoadData:data];
+			[self.client URLProtocolDidFinishLoading:self];
 		}
 		else
 		{
@@ -964,7 +965,7 @@ NSMutableDictionary	*gThemeCache;
 	NSString	*identifier = nil;
 	NSString	*resName = nil;
 
-	if ([parameters count] < 3)
+	if (parameters.count < 3)
 	{
 		[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:@"Parameter error" code:0 userInfo:@{}]];
 		return;
@@ -1006,7 +1007,7 @@ NSMutableDictionary	*gThemeCache;
 		}
 		
 		// > Build response.
-		NSURLResponse *response = [[NSURLResponse alloc] initWithURL:url MIMEType:mime expectedContentLength:(NSInteger)[data length] textEncodingName:nil];
+		NSURLResponse *response = [[NSURLResponse alloc] initWithURL:url MIMEType:mime expectedContentLength:(NSInteger)data.length textEncodingName:nil];
 		
 		// Send response + content.
 		[self.client URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];

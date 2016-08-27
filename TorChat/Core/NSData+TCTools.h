@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSData (TCTools)
 
-- (NSArray *)explodeWithMaxFields:(NSUInteger)count withFieldSeparator:(const char *)separator;
+- (NSArray *)explodeWithMaxFields:(NSUInteger)count fieldSeparator:(const char *)separator;
 
 @end
 

@@ -101,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
 	// Set name.
 	NSString *name = content[TCChatCellNameKey];
 
-	if ([name length] > 0)
+	if (name.length > 0)
 		self.textField.stringValue = name;
 	else
 		self.textField.stringValue = @"-";
@@ -109,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
 	// Set text.
 	NSString *text = content[TCChatCellChatTextKey];
 	
-	if ([text length] > 0)
+	if (text.length > 0)
 		_unreadField.stringValue = text;
 	else
 		_unreadField.stringValue = @"";
@@ -117,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
 	// Set close button (NSTrackingArea seem to be boggus on this).
 	BOOL closeButton = [content[TCChatCellCloseKey] boolValue];
 	
-	[_closeButton setHidden:(closeButton == NO)];
+	_closeButton.hidden = (closeButton == NO);
 }
 
 
@@ -146,9 +146,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setBackgroundStyle:(NSBackgroundStyle)style
 {
-    [super setBackgroundStyle:style];
+    super.backgroundStyle = style;
 
-	[[_unreadField cell] setBackgroundStyle:NSBackgroundStyleLight];
+	_unreadField.cell.backgroundStyle = NSBackgroundStyleLight;
 }
 
 @end

@@ -95,9 +95,6 @@ static BOOL isNumber(NSString *str);
 
 - (void)panelDidAppear
 {
-	// Load view.
-	[self view];
-	
 	// Load configuration.
 	[self _reloadConfiguration];
 	
@@ -210,9 +207,9 @@ static BOOL isNumber(NSString *str);
 	else if (index == 1)
 	{		
 		_imIdentifierField.stringValue = _customIMIdentifier;
-		_imPortField. stringValue = [_customIMPort description];
+		_imPortField. stringValue = _customIMPort.description;
 		_torAddressField.stringValue =  _customTorAddress;
-		_torPortField.stringValue = [_customTorPort description];
+		_torPortField.stringValue = _customTorPort.description;
 		
 		_imIdentifierField.enabled = YES;
 		_imPortField.enabled = YES;
@@ -232,7 +229,7 @@ static BOOL isNumber(NSString *str);
 {
 	// > main queue <
 	
-	TCConfigMode mode = [self.config mode];
+	TCConfigMode mode = self.config.mode;
 	
 	// Set mode.
 	if (mode == TCConfigModeBundled)
@@ -256,9 +253,9 @@ static BOOL isNumber(NSString *str);
 	
 	// Set value field.
 	_imIdentifierField.stringValue = self.config.selfIdentifier;
-	_imPortField. stringValue = [@(self.config.selfPort) description];
+	_imPortField. stringValue = @(self.config.selfPort).description;
 	_torAddressField.stringValue = self.config.torAddress;
-	_torPortField.stringValue = [@(self.config.torPort) description];
+	_torPortField.stringValue = @(self.config.torPort).description;
 }
 
 - (void)validateContent
@@ -318,7 +315,7 @@ static BOOL isNumber(NSString *str);
 
 static BOOL isNumber(NSString *str)
 {
-	return (str.length > 0) && ([str rangeOfCharacterFromSet:[[NSCharacterSet decimalDigitCharacterSet] invertedSet]].location == NSNotFound);
+	return (str.length > 0) && ([str rangeOfCharacterFromSet:[NSCharacterSet decimalDigitCharacterSet].invertedSet].location == NSNotFound);
 }
 
 

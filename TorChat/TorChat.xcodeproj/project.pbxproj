@@ -50,6 +50,19 @@
 		E84CBD3A1C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = E84CBD391C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.m */; };
 		E852235217B504CA00C6F585 /* TCChatCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E852235117B504CA00C6F585 /* TCChatCellView.m */; };
 		E85923F7120A9E060035C420 /* FilesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E85923F5120A9E060035C420 /* FilesWindow.xib */; };
+		E85A18791D6F896500E5E143 /* TCChatContentController.m in Sources */ = {isa = PBXBuildFile; fileRef = E85A18781D6F896500E5E143 /* TCChatContentController.m */; };
+		E85A187C1D6F899100E5E143 /* TCMediaCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E85A187B1D6F899100E5E143 /* TCMediaCellView.m */; };
+		E85A187F1D6F89FE00E5E143 /* TCKVOHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = E85A187E1D6F89FE00E5E143 /* TCKVOHelper.m */; };
+		E85A18821D6F8A1A00E5E143 /* TCDropZoneView.m in Sources */ = {isa = PBXBuildFile; fileRef = E85A18811D6F8A1A00E5E143 /* TCDropZoneView.m */; };
+		E85A18851D6F8A8000E5E143 /* TCColoredView.m in Sources */ = {isa = PBXBuildFile; fileRef = E85A18841D6F8A8000E5E143 /* TCColoredView.m */; };
+		E85A18881D6F8AD000E5E143 /* ChatContentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E85A18861D6F8AD000E5E143 /* ChatContentView.xib */; };
+		E85A188A1D6F8B1E00E5E143 /* Chat.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E85A18891D6F8B1E00E5E143 /* Chat.xcassets */; };
+		E85A188D1D6F8CB600E5E143 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E85A188C1D6F8CB600E5E143 /* AVFoundation.framework */; };
+		E85A188F1D6F8CCB00E5E143 /* MediaLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E85A188E1D6F8CCB00E5E143 /* MediaLibrary.framework */; };
+		E85A18921D6F8D8100E5E143 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E85A18911D6F8D8100E5E143 /* CoreMedia.framework */; };
+		E85A18941D6F904900E5E143 /* Buddies.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E85A18931D6F904900E5E143 /* Buddies.xcassets */; };
+		E85A18961D6F90A800E5E143 /* Files.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E85A18951D6F90A800E5E143 /* Files.xcassets */; };
+		E85A18981D6F90E300E5E143 /* Preferences.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E85A18971D6F90E300E5E143 /* Preferences.xcassets */; };
 		E8643D731A66D9C100B8C55F /* TCPrefView_Buddies.m in Sources */ = {isa = PBXBuildFile; fileRef = E8643D721A66D9C100B8C55F /* TCPrefView_Buddies.m */; };
 		E8643D761A66D9D300B8C55F /* TCPrefView.m in Sources */ = {isa = PBXBuildFile; fileRef = E8643D751A66D9D300B8C55F /* TCPrefView.m */; };
 		E8643D791A66DBF900B8C55F /* TCPrefView_General.m in Sources */ = {isa = PBXBuildFile; fileRef = E8643D781A66DBF900B8C55F /* TCPrefView_General.m */; };
@@ -185,6 +198,25 @@
 		E852235117B504CA00C6F585 /* TCChatCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatCellView.m; sourceTree = "<group>"; };
 		E85903B011EC9877005CE53F /* TCTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCTools.m; sourceTree = "<group>"; };
 		E85903B111EC9877005CE53F /* TCTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCTools.h; sourceTree = "<group>"; };
+		E85A18771D6F896500E5E143 /* TCChatContentController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCChatContentController.h; sourceTree = "<group>"; };
+		E85A18781D6F896500E5E143 /* TCChatContentController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatContentController.m; sourceTree = "<group>"; };
+		E85A187A1D6F899100E5E143 /* TCMediaCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCMediaCellView.h; sourceTree = "<group>"; };
+		E85A187B1D6F899100E5E143 /* TCMediaCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCMediaCellView.m; sourceTree = "<group>"; };
+		E85A187D1D6F89FE00E5E143 /* TCKVOHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCKVOHelper.h; sourceTree = "<group>"; };
+		E85A187E1D6F89FE00E5E143 /* TCKVOHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCKVOHelper.m; sourceTree = "<group>"; };
+		E85A18801D6F8A1A00E5E143 /* TCDropZoneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCDropZoneView.h; sourceTree = "<group>"; };
+		E85A18811D6F8A1A00E5E143 /* TCDropZoneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCDropZoneView.m; sourceTree = "<group>"; };
+		E85A18831D6F8A8000E5E143 /* TCColoredView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCColoredView.h; sourceTree = "<group>"; };
+		E85A18841D6F8A8000E5E143 /* TCColoredView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCColoredView.m; sourceTree = "<group>"; };
+		E85A18871D6F8AD000E5E143 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/ChatContentView.xib; sourceTree = "<group>"; };
+		E85A18891D6F8B1E00E5E143 /* Chat.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Chat.xcassets; sourceTree = "<group>"; };
+		E85A188C1D6F8CB600E5E143 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		E85A188E1D6F8CCB00E5E143 /* MediaLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaLibrary.framework; path = System/Library/Frameworks/MediaLibrary.framework; sourceTree = SDKROOT; };
+		E85A18911D6F8D8100E5E143 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		E85A18931D6F904900E5E143 /* Buddies.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Buddies.xcassets; sourceTree = "<group>"; };
+		E85A18951D6F90A800E5E143 /* Files.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Files.xcassets; sourceTree = "<group>"; };
+		E85A18971D6F90E300E5E143 /* Preferences.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Preferences.xcassets; sourceTree = "<group>"; };
+		E85A18A21D71116700E5E143 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ChatContentView.strings; sourceTree = "<group>"; };
 		E8643D441A66C7EB00B8C55F /* TCConfigApp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TCConfigApp.h; sourceTree = "<group>"; };
 		E8643D711A66D9C100B8C55F /* TCPrefView_Buddies.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCPrefView_Buddies.h; sourceTree = "<group>"; };
 		E8643D721A66D9C100B8C55F /* TCPrefView_Buddies.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCPrefView_Buddies.m; sourceTree = "<group>"; };
@@ -327,6 +359,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E85A18921D6F8D8100E5E143 /* CoreMedia.framework in Frameworks */,
+				E85A188F1D6F8CCB00E5E143 /* MediaLibrary.framework in Frameworks */,
+				E85A188D1D6F8CB600E5E143 /* AVFoundation.framework in Frameworks */,
 				E845A34D1CC6B8B100B98398 /* QuartzCore.framework in Frameworks */,
 				E845A34B1CC6B87400B98398 /* libsqlite3.dylib in Frameworks */,
 				E809B1A51859CC4B001664E1 /* WebKit.framework in Frameworks */,
@@ -404,6 +439,9 @@
 				E80414CA17A57722008220C9 /* Security.framework */,
 				E809B1A41859CC4B001664E1 /* WebKit.framework */,
 				E845A34C1CC6B8B100B98398 /* QuartzCore.framework */,
+				E85A188C1D6F8CB600E5E143 /* AVFoundation.framework */,
+				E85A188E1D6F8CCB00E5E143 /* MediaLibrary.framework */,
+				E85A18911D6F8D8100E5E143 /* CoreMedia.framework */,
 				E844C4A91C77EAE700D3AB2D /* SMAssistant.framework */,
 				E844C49E1C77E68600D3AB2D /* SMFoundation.framework */,
 				E844C49F1C77E68600D3AB2D /* SMTor.framework */,
@@ -605,6 +643,12 @@
 			children = (
 				E889F0AD12531D62000C36B2 /* TCChatWindowController.h */,
 				E889F0AE12531D62000C36B2 /* TCChatWindowController.m */,
+				E8D5E26914DAD3E200973297 /* TCChatViewController.h */,
+				E8D5E26A14DAD3E200973297 /* TCChatViewController.m */,
+				E809B1431859C593001664E1 /* TCChatTranscriptViewController.h */,
+				E809B1441859C593001664E1 /* TCChatTranscriptViewController.m */,
+				E85A18771D6F896500E5E143 /* TCChatContentController.h */,
+				E85A18781D6F896500E5E143 /* TCChatContentController.m */,
 				E870BD8417A8491200DFA076 /* Views */,
 				E870BD8817A849B200DFA076 /* Resources */,
 			);
@@ -627,16 +671,14 @@
 		E870BD8417A8491200DFA076 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				E8D5E26914DAD3E200973297 /* TCChatViewController.h */,
-				E8D5E26A14DAD3E200973297 /* TCChatViewController.m */,
-				E809B1431859C593001664E1 /* TCChatTranscriptViewController.h */,
-				E809B1441859C593001664E1 /* TCChatTranscriptViewController.m */,
 				E8A7F6DC185D22F8002A4495 /* TCChatTableView.h */,
 				E8A7F6DD185D22F8002A4495 /* TCChatTableView.m */,
 				E852235017B504CA00C6F585 /* TCChatCellView.h */,
 				E852235117B504CA00C6F585 /* TCChatCellView.m */,
 				E8127AA71854CB1100FEDA7F /* TCChatTextField.h */,
 				E8127AA81854CB1100FEDA7F /* TCChatTextField.m */,
+				E85A187A1D6F899100E5E143 /* TCMediaCellView.h */,
+				E85A187B1D6F899100E5E143 /* TCMediaCellView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -653,7 +695,9 @@
 		E870BD8717A8498400DFA076 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				E870BD9117A84A9600DFA076 /* XIB */,
+				E85A18931D6F904900E5E143 /* Buddies.xcassets */,
+				E85923FC120A9E4D0035C420 /* BuddiesWindow.xib */,
+				E87CB85112508F7A00A75686 /* BuddyInfoWindow.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -661,7 +705,10 @@
 		E870BD8817A849B200DFA076 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				E870BD8D17A84A3B00DFA076 /* XIB */,
+				E85A18891D6F8B1E00E5E143 /* Chat.xcassets */,
+				E85923FA120A9E460035C420 /* ChatWindow.xib */,
+				E8D5E26314DACFA200973297 /* ChatView.xib */,
+				E85A18861D6F8AD000E5E143 /* ChatContentView.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -669,7 +716,8 @@
 		E870BD8A17A849F200DFA076 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				E870BD9317A84AC500DFA076 /* XIB */,
+				E85923F5120A9E060035C420 /* FilesWindow.xib */,
+				E85A18951D6F90A800E5E143 /* Files.xcassets */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -685,6 +733,7 @@
 		E870BD8C17A84A0A00DFA076 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				E85A18971D6F90E300E5E143 /* Preferences.xcassets */,
 				E82B7D7B125A098000B7BA8A /* PreferencesWindow.xib */,
 				E849BDAF1A66EEA60040E294 /* PrefView_General.xib */,
 				E8D717F31A66EF8600304109 /* PrefView_Network.xib */,
@@ -695,15 +744,6 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
-		E870BD8D17A84A3B00DFA076 /* XIB */ = {
-			isa = PBXGroup;
-			children = (
-				E85923FA120A9E460035C420 /* ChatWindow.xib */,
-				E8D5E26314DACFA200973297 /* ChatView.xib */,
-			);
-			name = XIB;
-			sourceTree = "<group>";
-		};
 		E870BD8F17A84A6900DFA076 /* XIB */ = {
 			isa = PBXGroup;
 			children = (
@@ -712,23 +752,6 @@
 				E878984517B05C0B00DB7709 /* AssistantPanel_Mode.xib */,
 				E878984317B05C0B00DB7709 /* AssistantPanel_Bundled.xib */,
 				E878984117B05C0B00DB7709 /* AssistantPanel_Custom.xib */,
-			);
-			name = XIB;
-			sourceTree = "<group>";
-		};
-		E870BD9117A84A9600DFA076 /* XIB */ = {
-			isa = PBXGroup;
-			children = (
-				E85923FC120A9E4D0035C420 /* BuddiesWindow.xib */,
-				E87CB85112508F7A00A75686 /* BuddyInfoWindow.xib */,
-			);
-			name = XIB;
-			sourceTree = "<group>";
-		};
-		E870BD9317A84AC500DFA076 /* XIB */ = {
-			isa = PBXGroup;
-			children = (
-				E85923F5120A9E060035C420 /* FilesWindow.xib */,
 			);
 			name = XIB;
 			sourceTree = "<group>";
@@ -744,6 +767,10 @@
 				E8D5E26114DAA0B400973297 /* TCSplitView.m */,
 				E8A2CC47185CC2AF00624448 /* TCThreePartImageView.h */,
 				E8A2CC48185CC2AF00624448 /* TCThreePartImageView.m */,
+				E85A18831D6F8A8000E5E143 /* TCColoredView.h */,
+				E85A18841D6F8A8000E5E143 /* TCColoredView.m */,
+				E85A18801D6F8A1A00E5E143 /* TCDropZoneView.h */,
+				E85A18811D6F8A1A00E5E143 /* TCDropZoneView.m */,
 				E8A6FE2917A993A700C4DEAB /* Assistant */,
 			);
 			name = Views;
@@ -858,6 +885,8 @@
 				E89E47101C8DA17C004A5D72 /* TCConfigurationCopy.m */,
 				E8D08F331C92229700552DEA /* TCFileHelper.h */,
 				E8D08F311C92228400552DEA /* TCFileHelper.m */,
+				E85A187D1D6F89FE00E5E143 /* TCKVOHelper.h */,
+				E85A187E1D6F89FE00E5E143 /* TCKVOHelper.m */,
 			);
 			name = Tools;
 			sourceTree = "<group>";
@@ -928,12 +957,15 @@
 				E826208E1C90391500DC6806 /* SQLiteConfigurationConvertWindow.xib in Resources */,
 				E81FD9FD11E7259B000614D5 /* InfoPlist.strings in Resources */,
 				E81FDA0211E7259C000614D5 /* MainMenu.xib in Resources */,
+				E85A188A1D6F8B1E00E5E143 /* Chat.xcassets in Resources */,
 				E812A5BF1D661F2B009D69A6 /* ThemeFlat.plist in Resources */,
 				E8CCEF231C909C2B00B2D9A8 /* PrefView_Security.xib in Resources */,
 				E82FA258121583A400106C47 /* BuddiesWindow.xib in Resources */,
 				E8D717F61A66EF8600304109 /* PrefView_Locations.xib in Resources */,
+				E85A18881D6F8AD000E5E143 /* ChatContentView.xib in Resources */,
 				E812A5BD1D661F24009D69A6 /* ThemeAqua.plist in Resources */,
 				E85923F7120A9E060035C420 /* FilesWindow.xib in Resources */,
+				E85A18981D6F90E300E5E143 /* Preferences.xcassets in Resources */,
 				E82FA25A121583B300106C47 /* ChatWindow.xib in Resources */,
 				E878983A17B05BC800DB7709 /* AssistantPanel_Welcome.xib in Resources */,
 				E878984717B05C0B00DB7709 /* AssistantPanel_Custom.xib in Resources */,
@@ -946,9 +978,11 @@
 				E878984817B05C0B00DB7709 /* AssistantPanel_Bundled.xib in Resources */,
 				E878984917B05C0B00DB7709 /* AssistantPanel_Mode.xib in Resources */,
 				E807B4B2124FB52700FDC769 /* LogsWindow.xib in Resources */,
+				E85A18941D6F904900E5E143 /* Buddies.xcassets in Resources */,
 				E87CB85312508F7A00A75686 /* BuddyInfoWindow.xib in Resources */,
 				E82B7D7D125A098000B7BA8A /* PreferencesWindow.xib in Resources */,
 				E8D717F71A66EF8600304109 /* PrefView_Network.xib in Resources */,
+				E85A18961D6F90A800E5E143 /* Files.xcassets in Resources */,
 				E809B1E71859F186001664E1 /* Images.xcassets in Resources */,
 				E8D5E26514DACFA200973297 /* ChatView.xib in Resources */,
 			);
@@ -983,11 +1017,14 @@
 				E837DAE311E7739D004BC524 /* TCCoreManager.m in Sources */,
 				E88AE83711EDE9D50037D808 /* TCConnection.m in Sources */,
 				E8CCCD7211FEE70E00C8EEFF /* TCFileSend.m in Sources */,
+				E85A18851D6F8A8000E5E143 /* TCColoredView.m in Sources */,
 				E809B1451859C593001664E1 /* TCChatTranscriptViewController.m in Sources */,
 				E8CCCD7511FEE72500C8EEFF /* TCFileReceive.m in Sources */,
+				E85A18791D6F896500E5E143 /* TCChatContentController.m in Sources */,
 				E8F16D3411FF7E9700DFA05F /* TCParser.m in Sources */,
 				E844C4911C77E60900D3AB2D /* TCTools.m in Sources */,
 				E8CCEF1C1C909A3700B2D9A8 /* TCPrefView_Security.m in Sources */,
+				E85A18821D6F8A1A00E5E143 /* TCDropZoneView.m in Sources */,
 				E889F09712531CFB000C36B2 /* NSString+TCLayoutExtension.m in Sources */,
 				E8A6FE3817A995F100C4DEAB /* TCPanel_Bundled.m in Sources */,
 				E8127AA91854CB1100FEDA7F /* TCChatTextField.m in Sources */,
@@ -1017,6 +1054,7 @@
 				E8742543199B682F002A34DD /* NSString+TCPathExtension.m in Sources */,
 				E809B1481859C5BC001664E1 /* NSImage+TCExtension.m in Sources */,
 				E80E0A3B1CA9A370001E64F9 /* TCChatStatus.m in Sources */,
+				E85A187F1D6F89FE00E5E143 /* TCKVOHelper.m in Sources */,
 				E8742546199B6A61002A34DD /* NSString+TCXMLExtension.m in Sources */,
 				E89E47021C8D904D004A5D72 /* SMCryptoFile.c in Sources */,
 				E82B7D8F125A115400B7BA8A /* TCMainController.m in Sources */,
@@ -1041,6 +1079,7 @@
 				E8455D4617A4386C0046307B /* NSData+TCTools.m in Sources */,
 				E86B5A1817AE7C6C00C715CA /* TCFileCellView.m in Sources */,
 				E80414C917A557B7008220C9 /* NSArray+TCTools.m in Sources */,
+				E85A187C1D6F899100E5E143 /* TCMediaCellView.m in Sources */,
 				E89E470D1C8D966F004A5D72 /* TCConfigSQLite.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1148,6 +1187,15 @@
 				E87E205A17B1084A00FAB545 /* fr */,
 			);
 			name = BuddiesWindow.xib;
+			sourceTree = "<group>";
+		};
+		E85A18861D6F8AD000E5E143 /* ChatContentView.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E85A18871D6F8AD000E5E143 /* Base */,
+				E85A18A21D71116700E5E143 /* fr */,
+			);
+			name = ChatContentView.xib;
 			sourceTree = "<group>";
 		};
 		E878983817B05BC800DB7709 /* AssistantPanel_Welcome.xib */ = {
@@ -1317,7 +1365,6 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 			};
@@ -1379,7 +1426,6 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				SDKROOT = macosx;
 				STRIP_STYLE = debugging;
 			};
@@ -1401,6 +1447,7 @@
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/system",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.SourceMac.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = TorChat;
 				WRAPPER_EXTENSION = app;
@@ -1422,6 +1469,7 @@
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/system",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				OTHER_LDFLAGS = "-Wl,-sectcreate,__RESTRICT,__restrict,/dev/null";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.SourceMac.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = TorChat;

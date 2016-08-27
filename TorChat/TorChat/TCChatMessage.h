@@ -31,11 +31,10 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - Types
 
-typedef enum
-{
+typedef NS_ENUM(unsigned int, TCChatMessageSide) {
 	TCChatMessageSideLocal = 0,
 	TCChatMessageSideRemote = 1,
-} TCChatMessageSide;
+};
 
 
 

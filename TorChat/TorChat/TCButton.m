@@ -74,6 +74,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)drawRect:(NSRect)dirtyRect
 {
+	if (_actionHandler == nil)
+	{
+		[_image drawInRect:self.bounds];
+		return;
+	}
+	
 	if (_context.isOver)
 	{
 		if (_context.isPushed)
@@ -189,12 +195,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)handleEvent:(NSEvent *)event
 {
-	if (self.window == nil || [self.window isKeyWindow] == NO)
+	if (self.window == nil || self.window.keyWindow == NO)
 		return NO;
 	
-	NSPoint windowMouseLocation = [self.window mouseLocationOutsideOfEventStream];
+	NSPoint windowMouseLocation = self.window.mouseLocationOutsideOfEventStream;
 	NSPoint mouseLocation = [self convertPoint:windowMouseLocation fromView:nil];
-	BOOL	isOver = NSPointInRect(mouseLocation, [self bounds]);
+	BOOL	isOver = NSPointInRect(mouseLocation, self.bounds);
 
 	BOOL needUpdate = NO;
 	BOOL captureEvent = NO;

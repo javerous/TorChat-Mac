@@ -100,7 +100,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, readonly, nonatomic) TCBuddy	*buddy;
 
 // -- Instance --
-- (instancetype)initWithWindowsController:(TCBuddyInfoWindowsController *)windowsController buddy:(TCBuddy *)buddy coreManager:(TCCoreManager *)coreManager;
+- (instancetype)initWithWindowsController:(TCBuddyInfoWindowsController *)windowsController buddy:(TCBuddy *)buddy coreManager:(TCCoreManager *)coreManager NS_DESIGNATED_INITIALIZER;
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
+- (instancetype)initWithWindow:(nullable NSWindow *)window NS_UNAVAILABLE;
 
 // -- IBAction --
 - (IBAction)doToolBar:(id)sender;
@@ -185,11 +188,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 	dispatch_async(_localQueue, ^{
 		
-		NSUInteger i, cnt = [_windowsControllers count];
+		NSUInteger i, cnt = _windowsControllers.count;
 		
 		for (i = 0; i < cnt; i++)
 		{
-			TCBuddyInfoWindowController *ctrl = [_windowsControllers objectAtIndex:i];
+			TCBuddyInfoWindowController *ctrl = _windowsControllers[i];
 			
 			if (ctrl.buddy == buddy)
 			{
@@ -244,13 +247,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithWindowsController:(TCBuddyInfoWindowsController *)windowsController buddy:(TCBuddy *)buddy coreManager:(TCCoreManager *)coreManager
 {
-	self = [super initWithWindowNibName:@"BuddyInfoWindow"];
-	
+	self = [super initWithWindow:nil];
+
 	if (self)
 	{
 		NSAssert(windowsController, @"windowsController is nil");
 		NSAssert(buddy, @"buddy is nil");
-		
+
+		// Hold parameters.
 		_windowsController = windowsController;
 		_buddy = buddy;
 		_coreManager = coreManager;
@@ -262,8 +266,8 @@ NS_ASSUME_NONNULL_BEGIN
 		// Date formatter.
 		_dateFormatter = [[NSDateFormatter alloc] init];
 		
-		[_dateFormatter setDateStyle:NSDateFormatterShortStyle];
-		[_dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
+		_dateFormatter.dateStyle = NSDateFormatterShortStyle;
+		_dateFormatter.timeStyle = NSDateFormatterMediumStyle;
 		
 		// Register for logs.
 		[[TCLogsManager sharedManager] addObserver:self forKey:_buddy.identifier];
@@ -293,6 +297,23 @@ NS_ASSUME_NONNULL_BEGIN
 	_notesField.delegate = nil;
 }
 
+
+
+/*
+** TCBuddyInfoWindowController - NSWindowController
+*/
+#pragma mark - TCBuddyInfoWindowController - Instance
+
+- (nullable NSString *)windowNibName
+{
+	return @"BuddyInfoWindow";
+}
+
+- (id)owner
+{
+	return self;
+}
+
 - (void)windowDidLoad
 {
     [super windowDidLoad];
@@ -300,7 +321,7 @@ NS_ASSUME_NONNULL_BEGIN
 	// -- Configure Window --
 	self.window.delegate = self;
 	[self.window center];
-	[self setWindowFrameAutosaveName:@"InfoWindow"];
+	self.windowFrameAutosaveName = @"InfoWindow";
 
 	// -- Configure content --
 	// Name.
@@ -309,32 +330,32 @@ NS_ASSUME_NONNULL_BEGIN
 	[self setInfo:name withKey:BICInfoProfileName];
 	
 	// Avatar.
-	TCImage *tcImage = [_buddy profileAvatar];
+	TCImage *tcImage = _buddy.profileAvatar;
 	NSImage *image = [tcImage imageRepresentation];
 	
 	if (!image)
 		image = [NSImage imageNamed:NSImageNameUser];
 	
-	[_avatarView setImage:image];
-	[_avatarView setName:_buddy.identifier];
+	_avatarView.image = image;
+	_avatarView.name = _buddy.identifier;
 
 	// Identifier.
-	[_identifierField setStringValue:_buddy.identifier];
+	_identifierField.stringValue = _buddy.identifier;
 	
 	// Alias.
 	NSString *alias = _buddy.alias;
 	
 	if (alias)
-		[_aliasField setStringValue:_buddy.alias];
+		_aliasField.stringValue = _buddy.alias;
 	
 	if (name)
-		[_aliasField.cell setPlaceholderString:name];
+		_aliasField.placeholderString = name;
 	
 	// Notes.
 	NSString *notes = _buddy.notes;
 	
 	if (notes)
-		[[_notesField.textStorage mutableString] setString:notes];
+		[_notesField.textStorage.mutableString setString:notes];
 	
 	[self updateStatus:_buddy.status];
 	
@@ -346,7 +367,7 @@ NS_ASSUME_NONNULL_BEGIN
 	[self setInfo:_buddy.peerVersion withKey:BICInfoPeerVersion];
 	
 	// Blocked.
-	if ([_buddy blocked])
+	if (_buddy.blocked)
 		[self setInfo:NSLocalizedString(@"bdi_yes", @"") withKey:BICInfoIsBlocked];
 	else
 		[self setInfo:NSLocalizedString(@"bdi_no", @"") withKey:BICInfoIsBlocked];
@@ -365,7 +386,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (IBAction)doToolBar:(id)sender
 {
-	NSInteger index = [_toolBar selectedSegment];
+	NSInteger index = _toolBar.selectedSegment;
 			
 	[_views selectTabViewItemAtIndex:index];
 }
@@ -380,7 +401,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateToolbar
 {
 	NSSize		sz = self.window.frame.size;
-	NSInteger	i, count = [_toolBar segmentCount];
+	NSInteger	i, count = _toolBar.segmentCount;
 	CGFloat		swidth = sz.width / count;
 	
 	for (i = 0; i < count; i++)
@@ -415,15 +436,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {	
-	return (NSInteger)[_logs count];
+	return (NSInteger)_logs.count;
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {	
-	if (rowIndex < 0 || rowIndex >= [_logs count])
+	if (rowIndex < 0 || rowIndex >= _logs.count)
 		return nil;
 	
-	TCLogEntry	*entry = [_logs objectAtIndex:(NSUInteger)rowIndex];
+	TCLogEntry	*entry = _logs[(NSUInteger)rowIndex];
 	NSString	*identifier = aTableColumn.identifier;
 
 	if ([identifier isEqualToString:@"kind"])
@@ -460,14 +481,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)controlTextDidChange:(NSNotification *)aNotification
 {
-	id object = [aNotification object];
+	id object = aNotification.object;
 	
 	if (object == _aliasField)
 	{
 		NSString *aliasString = _aliasField.stringValue;
 		
 		if (aliasString.length > 0)
-			[_buddy setAlias:aliasString];
+			_buddy.alias = aliasString;
 		else
 			[_buddy setAlias:nil];
 	}
@@ -475,23 +496,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)textDidChange:(NSNotification *)aNotification
 {
-	id object = [aNotification object];
+	id object = aNotification.object;
 	
 	if (object == _notesField)
 	{
-		NSTextStorage *textStorage = [_notesField textStorage];
+		NSTextStorage *textStorage = _notesField.textStorage;
 		
 		if (textStorage)
-			[_buddy setNotes:[textStorage mutableString]];
+			_buddy.notes = textStorage.mutableString;
 	}
 }
 
 - (void)setInfo:(nullable NSString *)info withKey:(NSString *)key
 {
-	if ([key length] == 0)
+	if (key.length == 0)
 		return;
 
-	if ([info length] == 0)
+	if (info.length == 0)
 	{
 		[_infos removeObjectForKey:key];
 		return;
@@ -506,32 +527,32 @@ NS_ASSUME_NONNULL_BEGIN
 	NSString	*value;
 
 	// Add profile name
-	value = [_infos objectForKey:BICInfoProfileName];
+	value = _infos[BICInfoProfileName];
 	if (value)
-		[keyed addLineWithKey:NSLocalizedString(@"bdi_profile_name", @"") andContent:value];
+		[keyed addLineWithKey:NSLocalizedString(@"bdi_profile_name", @"") content:value];
 	
 	// Add peer client
-	value = [_infos objectForKey:BICInfoPeerClient];
+	value = _infos[BICInfoPeerClient];
 	if (value)
-		[keyed addLineWithKey:NSLocalizedString(@"bdi_peer_client", @"") andContent:value];
+		[keyed addLineWithKey:NSLocalizedString(@"bdi_peer_client", @"") content:value];
 	
 	// Add peer version
-	value = [_infos objectForKey:BICInfoPeerVersion];
+	value = _infos[BICInfoPeerVersion];
 	if (value)
-		[keyed addLineWithKey:NSLocalizedString(@"bdi_peer_version", @"") andContent:value];
+		[keyed addLineWithKey:NSLocalizedString(@"bdi_peer_version", @"") content:value];
 	
 	// Add profile text
-	value = [_infos objectForKey:BICInfoProfileText];
+	value = _infos[BICInfoProfileText];
 	if (value)
-		[keyed addLineWithKey:NSLocalizedString(@"bdi_profile_text", @"") andContent:value];
+		[keyed addLineWithKey:NSLocalizedString(@"bdi_profile_text", @"") content:value];
 	
 	// Add blocked text
-	value = [_infos objectForKey:BICInfoIsBlocked];
+	value = _infos[BICInfoIsBlocked];
 	if (value)
-		[keyed addLineWithKey:NSLocalizedString(@"bdi_isblocked", @"") andContent:value];
+		[keyed addLineWithKey:NSLocalizedString(@"bdi_isblocked", @"") content:value];
 
 	// Show table
-	[[_infoView textStorage] setAttributedString:[keyed renderedText]];
+	[_infoView.textStorage setAttributedString:[keyed renderedText]];
 }
 	 
 - (void)updateStatus:(TCStatus)status
@@ -539,19 +560,19 @@ NS_ASSUME_NONNULL_BEGIN
 	switch (status)
 	{
 		case TCStatusAvailable:
-			[_statusView setImage:[NSImage imageNamed:@"stat_online"]];
+			_statusView.image = [NSImage imageNamed:@"stat_online"];
 			break;
 			
 		case TCStatusAway:
-			[_statusView setImage:[NSImage imageNamed:@"stat_away"]];
+			_statusView.image = [NSImage imageNamed:@"stat_away"];
 			break;
 			
 		case TCStatusOffline:
-			[_statusView setImage:[NSImage imageNamed:@"stat_offline"]];
+			_statusView.image = [NSImage imageNamed:@"stat_offline"];
 			break;
 			
 		case TCStatusXA:
-			[_statusView setImage:[NSImage imageNamed:@"stat_xa"]];
+			_statusView.image = [NSImage imageNamed:@"stat_xa"];
 			break;
 	}
 }
@@ -562,7 +583,7 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCBuddyInfoWindowController - TCLogsObserver
 
-- (void)logManager:(TCLogsManager *)manager updateForKey:(NSString *)key withEntries:(NSArray *)entries
+- (void)logManager:(TCLogsManager *)manager updatedKey:(NSString *)key updatedEntries:(NSArray *)entries
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[_logs addObjectsFromArray:entries];
@@ -592,7 +613,7 @@ NS_ASSUME_NONNULL_BEGIN
 					break;
 				
 				dispatch_async(dispatch_get_main_queue(), ^{
-					[_avatarView setImage:avatar];
+					_avatarView.image = avatar;
 				});
 				
 				break;
@@ -610,7 +631,7 @@ NS_ASSUME_NONNULL_BEGIN
 					[self setInfo:name withKey:BICInfoProfileName];
 					[self updateInfoView];
 					
-					[[_aliasField cell] setPlaceholderString:name];
+					_aliasField.placeholderString = name;
 				});
 				
 				break;
@@ -642,7 +663,7 @@ NS_ASSUME_NONNULL_BEGIN
 				
 			case TCBuddyEventStatus:
 			{
-				TCStatus status = (TCStatus)[(NSNumber *)info.context intValue];
+				TCStatus status = (TCStatus)((NSNumber *)info.context).intValue;
 				
 				dispatch_async(dispatch_get_main_queue(), ^{
 					[self updateStatus:status];

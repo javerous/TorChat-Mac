@@ -34,7 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TCDragImage : NSObject < NSPasteboardWriting>
 
 // -- Instance --
-- (instancetype)initWithImage:(NSImage *)image name:(NSString *)name;
+- (instancetype)initWithImage:(NSImage *)image name:(NSString *)name NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // -- Properties --
 @property (strong, nonatomic, readonly) NSImage		*image;

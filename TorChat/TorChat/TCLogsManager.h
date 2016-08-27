@@ -52,12 +52,11 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - Types
 
-typedef enum
-{
+typedef NS_ENUM(unsigned int, TCLogKind) {
 	TCLogError,
 	TCLogWarning,
 	TCLogInfo
-} TCLogKind;
+};
 
 
 
@@ -66,7 +65,7 @@ typedef enum
 */
 @protocol TCLogsObserver <NSObject>
 
-- (void)logManager:(TCLogsManager *)manager updateForKey:(NSString *)key withEntries:(NSArray *)entries;
+- (void)logManager:(TCLogsManager *)manager updatedKey:(NSString *)key updatedEntries:(NSArray *)entries;
 
 @end
 

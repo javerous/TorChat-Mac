@@ -33,8 +33,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TCChatStatus : NSObject
 
-- (instancetype)initWithStatus:(NSString *)status;
+// -- Instance --
+- (instancetype)initWithStatus:(NSString *)status NS_DESIGNATED_INITIALIZER;
 
+- (instancetype)init NS_UNAVAILABLE;
+
+// -- Properties --
 @property (atomic) NSString *status;
 
 @end

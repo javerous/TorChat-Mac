@@ -36,6 +36,9 @@ NS_ASSUME_NONNULL_BEGIN
 // -- Singleton --
 + (TCPreferencesWindowController *)sharedController;
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
+- (instancetype)initWithWindow:(nullable NSWindow *)window NS_UNAVAILABLE;
+
 @end
 
 

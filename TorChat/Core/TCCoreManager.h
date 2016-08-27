@@ -55,8 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Types
 
 // == Info Code ==
-typedef enum
-{
+typedef NS_ENUM(unsigned int, TCCoreEvent) {
 	TCCoreEventStarted,
 	TCCoreEventStopped,
 	TCCoreEventStatus,			// context: NSNumber (TCStatus)
@@ -73,10 +72,9 @@ typedef enum
 
 	TCCoreEventClientStarted,
 	TCCoreEventClientStopped,
-} TCCoreEvent;
+};
 
-typedef enum
-{
+typedef NS_ENUM(unsigned int, TCCoreError) {
 	TCCoreErrorServAccept,
 	TCCoreErrorServAcceptAsync,
 	
@@ -110,7 +108,7 @@ typedef enum
 	TCCoreErrorClientCmdFileDataError,		// context: NSString (<parser_error>)
 	TCCoreErrorClientCmdFileStopSending,	// context: NSString (<parser_error>)
 	TCCoreErrorClientCmdFileStopReceiving,	// context: NSString (<parser_error>)
-} TCCoreError;
+};
 
 // -- Observer --
 @protocol TCCoreManagerObserver <NSObject>
@@ -129,9 +127,11 @@ typedef enum
 
 @interface TCCoreManager : NSObject
 
-
 // -- Instance --
-- (nullable instancetype)initWithConfiguration:(id <TCConfigCore>)config;
+- (nullable instancetype)initWithConfiguration:(id <TCConfigCore>)config NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
 
 // -- Life --
 - (void)start;

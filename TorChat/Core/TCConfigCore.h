@@ -40,31 +40,28 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - Types
 
-typedef enum
-{
+typedef NS_ENUM(unsigned int, TCConfigGet) {
 	TCConfigGetDefault,	// Value used when the item was never set
 	TCConfigGetDefined,	// Value used when the item was set
 	TCConfigGetReal		// Value to use in standard case (eg. defined / default automatic choise)
-} TCConfigGet;
+};
 
 
 
 // -- Paths --
-typedef enum
-{
+typedef NS_ENUM(unsigned int, TCConfigPathComponent) {
 	TCConfigPathComponentReferral,		// Path used as referral.
 	TCConfigPathComponentTorBinary,		// Path to the tor binary (and its dependancies) directory.
 	TCConfigPathComponentTorData,		// Path to the tor data directory.
 	TCConfigPathComponentTorIdentity,	// Path to tor hidden service (buddy identifier) - Obsolete: identity is now included directely in settings (selfPrivateKey). Kept only for importation.
 	TCConfigPathComponentDownloads,		// Path to the downloads directory.
-} TCConfigPathComponent;
+};
 
-typedef enum
-{
+typedef NS_ENUM(unsigned int, TCConfigPathType) {
 	TCConfigPathTypeReferral,	// Path is relative to referral.
 	TCConfigPathTypeStandard,	// Path is relative to standard OS X directories in ~.
 	TCConfigPathTypeAbsolute,	// Path is absolute.
-} TCConfigPathType;
+};
 
 
 
@@ -97,7 +94,8 @@ typedef enum
 - (void)setClientName:(nullable NSString *)name;
 
 // -- Buddies --
-- (NSArray *)buddiesIdentifiers; // Array of buddy identifier.
+@property (atomic, readonly, copy) NSArray * buddiesIdentifiers; // Array of buddy identifier.
+
 - (void)addBuddyWithIdentifier:(NSString *)identifier alias:(nullable NSString *)alias notes:(nullable NSString *)notes;
 - (void)removeBuddyWithIdentifier:(NSString *)identifier;
 
@@ -114,7 +112,8 @@ typedef enum
 - (nullable TCImage *)buddyLastAvatarForBuddyIdentifier:(NSString *)identifier;
 
 // -- Blocked --
-- (NSArray *)blockedBuddies;
+@property (atomic, readonly, copy) NSArray *blockedBuddies;
+
 - (void)addBlockedBuddyWithIdentifier:(NSString *)identifier;
 - (void)removeBlockedBuddyWithIdentifier:(NSString *)identifier;
 

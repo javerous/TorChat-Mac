@@ -89,9 +89,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)panelDidAppear
 {
-	// Load view.
-	[self view];
-	
 	// Monitor core info.
 	[self.core addObserver:self];
 	
@@ -144,7 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
 	if (!self.config)
 		return;
 	
-	NSString *identifier = [_addBlockedField stringValue];
+	NSString *identifier = _addBlockedField.stringValue;
 	
 	// Add on blocked list.
 	[self.core addBlockedBuddyWithIdentifier:identifier];
@@ -162,9 +159,9 @@ NS_ASSUME_NONNULL_BEGIN
 		return;
 	
 	NSArray			*blocked = [self.config blockedBuddies];
-	NSIndexSet		*set = [_tableView selectedRowIndexes];
-	NSMutableArray	*removes = [NSMutableArray arrayWithCapacity:[set count]];
-	NSUInteger		index = [set firstIndex];
+	NSIndexSet		*set = _tableView.selectedRowIndexes;
+	NSMutableArray	*removes = [NSMutableArray arrayWithCapacity:set.count];
+	NSUInteger		index = set.firstIndex;
 	
 	// Resolve indexes.
 	while (index != NSNotFound)
@@ -214,7 +211,7 @@ NS_ASSUME_NONNULL_BEGIN
 	if (!self.config)
 		return 0;
 	
-	return (NSInteger)[[self.config blockedBuddies] count];
+	return (NSInteger)[self.config blockedBuddies].count;
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
@@ -224,7 +221,7 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	NSArray *blocked = [self.config blockedBuddies];
 	
-	if (rowIndex < 0 || rowIndex >= [blocked count])
+	if (rowIndex < 0 || rowIndex >= blocked.count)
 		return nil;
 	
 	return blocked[(NSUInteger)rowIndex];
@@ -232,9 +229,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
-	NSIndexSet *set = [_tableView selectedRowIndexes];
+	NSIndexSet *set = _tableView.selectedRowIndexes;
 	
-	if ([set count] > 0)
+	if (set.count > 0)
 		[_removeButton setEnabled:YES];
 	else
 		[_removeButton setEnabled:NO];

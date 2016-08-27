@@ -63,48 +63,48 @@ NS_ASSUME_NONNULL_BEGIN
 	NSAssert(buddy, @"buddy is nil");
 	
 	// Status.
-	if ([buddy blocked])
-		[_statusView setImage:[NSImage imageNamed:@"blocked_buddy"]];
+	if (buddy.blocked)
+		_statusView.image = [NSImage imageNamed:@"blocked_buddy"];
 	else
 	{
-		switch ([buddy status])
+		switch (buddy.status)
 		{
 			case TCStatusOffline:
-				[_statusView setImage:[NSImage imageNamed:@"stat_offline"]];
+				_statusView.image = [NSImage imageNamed:@"stat_offline"];
 				break;
 				
 			case TCStatusAvailable:
-				[_statusView setImage:[NSImage imageNamed:@"stat_online"]];
+				_statusView.image = [NSImage imageNamed:@"stat_online"];
 				break;
 				
 			case TCStatusAway:
-				[_statusView setImage:[NSImage imageNamed:@"stat_away"]];
+				_statusView.image = [NSImage imageNamed:@"stat_away"];
 				break;
 			case TCStatusXA:
-				[_statusView setImage:[NSImage imageNamed:@"stat_xa"]];
+				_statusView.image = [NSImage imageNamed:@"stat_xa"];
 				break;
 		}
 	}
 	
 	// Name.
-	NSString *name = [buddy finalName];
+	NSString *name = buddy.finalName;
 	
 	if (name)
-		[self.textField setStringValue:name];
+		self.textField.stringValue = name;
 	else
-		[self.textField setStringValue:@""];
+		self.textField.stringValue = @"";
 	
 	// Identifier.
-	[_identifierField setStringValue:[buddy identifier]];
+	_identifierField.stringValue = buddy.identifier;
 	
 	// Avatar.
-	TCImage *tcImage = [buddy profileAvatar];
+	TCImage *tcImage = buddy.profileAvatar;
 	NSImage *image = [tcImage imageRepresentation];
 
 	if (image)
-		[_avatarView setImage:image];
+		_avatarView.image = image;
 	else
-		[_avatarView setImage:[NSImage imageNamed:NSImageNameUser]];
+		_avatarView.image = [NSImage imageNamed:NSImageNameUser];
 }
 
 
@@ -116,17 +116,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setBackgroundStyle:(NSBackgroundStyle)style
 {
-    [super setBackgroundStyle:style];
+    super.backgroundStyle = style;
 	
     switch (style)
 	{
         case NSBackgroundStyleLight:
-			[_identifierField setTextColor:[NSColor grayColor]];
+			_identifierField.textColor = [NSColor grayColor];
             break;
 			
         case NSBackgroundStyleDark:
         default:
-			[_identifierField setTextColor:[NSColor whiteColor]];
+			_identifierField.textColor = [NSColor whiteColor];
             break;
     }
 }

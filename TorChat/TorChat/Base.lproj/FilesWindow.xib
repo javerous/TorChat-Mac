@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11198.2" systemVersion="15G31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11198.2"/>
+        <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCFilesWindowController">
@@ -53,7 +54,7 @@
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveColumns="NO" rowHeight="70" viewBased="YES" id="36">
-                                    <rect key="frame" x="0.0" y="0.0" width="480" height="0.0"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="480" height="243"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <size key="intercellSpacing" width="3" height="2"/>
                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -96,20 +97,6 @@
                                                         <progressIndicator wantsLayer="YES" maxValue="1" controlSize="small" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="FHg-Eb-qac">
                                                             <rect key="frame" x="63" y="18" width="352" height="12"/>
                                                         </progressIndicator>
-                                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="JWq-l4-URn" userLabel="Cancel Button" customClass="TCButton">
-                                                            <rect key="frame" x="423" y="17" width="14" height="14"/>
-                                                            <constraints>
-                                                                <constraint firstAttribute="width" constant="14" id="PQt-Vx-bPf"/>
-                                                                <constraint firstAttribute="height" constant="14" id="Q37-h6-ntr"/>
-                                                            </constraints>
-                                                        </customView>
-                                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="quK-fY-gEQ" userLabel="Show Button" customClass="TCButton">
-                                                            <rect key="frame" x="443" y="17" width="14" height="14"/>
-                                                            <constraints>
-                                                                <constraint firstAttribute="width" constant="14" id="C32-im-odd"/>
-                                                                <constraint firstAttribute="height" constant="14" id="rtS-xG-ybJ"/>
-                                                            </constraints>
-                                                        </customView>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9YV-Gv-0CT">
                                                             <rect key="frame" x="61" y="5" width="53" height="13"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Uploading..." id="x9y-Jx-b7n">
@@ -125,24 +112,49 @@
                                                                 <constraint firstAttribute="height" constant="50" id="S25-4q-wz0"/>
                                                             </constraints>
                                                         </customView>
+                                                        <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="6" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="S4N-S0-fRb">
+                                                            <rect key="frame" x="423" y="17" width="34" height="14"/>
+                                                            <subviews>
+                                                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="JWq-l4-URn" userLabel="Cancel Button" customClass="TCButton">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="14" height="14"/>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="width" constant="14" id="PQt-Vx-bPf"/>
+                                                                        <constraint firstAttribute="height" constant="14" id="Q37-h6-ntr"/>
+                                                                    </constraints>
+                                                                </customView>
+                                                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="quK-fY-gEQ" userLabel="Show Button" customClass="TCButton">
+                                                                    <rect key="frame" x="20" y="0.0" width="14" height="14"/>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="width" constant="14" id="C32-im-odd"/>
+                                                                        <constraint firstAttribute="height" constant="14" id="rtS-xG-ybJ"/>
+                                                                    </constraints>
+                                                                </customView>
+                                                            </subviews>
+                                                            <visibilityPriorities>
+                                                                <integer value="1000"/>
+                                                                <integer value="1000"/>
+                                                            </visibilityPriorities>
+                                                            <customSpacing>
+                                                                <real value="3.4028234663852886e+38"/>
+                                                                <real value="3.4028234663852886e+38"/>
+                                                            </customSpacing>
+                                                        </stackView>
                                                     </subviews>
                                                     <constraints>
                                                         <constraint firstItem="JJP-tg-TNf" firstAttribute="top" secondItem="taV-6t-lMn" secondAttribute="bottom" constant="3" id="0i9-Gb-00v"/>
+                                                        <constraint firstItem="S4N-S0-fRb" firstAttribute="centerY" secondItem="FHg-Eb-qac" secondAttribute="centerY" id="Al2-yl-XIq"/>
                                                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="JJP-tg-TNf" secondAttribute="trailing" constant="20" symbolic="YES" id="CEj-pa-uWl"/>
                                                         <constraint firstItem="ABe-2X-CZZ" firstAttribute="centerY" secondItem="oNF-Rj-bf9" secondAttribute="centerY" id="CWc-oE-68b"/>
                                                         <constraint firstItem="FHg-Eb-qac" firstAttribute="leading" secondItem="ABe-2X-CZZ" secondAttribute="trailing" constant="8" symbolic="YES" id="Efs-7h-T1m"/>
                                                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="9YV-Gv-0CT" secondAttribute="trailing" constant="20" symbolic="YES" id="GQs-2i-lyB"/>
-                                                        <constraint firstItem="JWq-l4-URn" firstAttribute="centerY" secondItem="FHg-Eb-qac" secondAttribute="centerY" id="J0D-2M-2FL"/>
                                                         <constraint firstItem="taV-6t-lMn" firstAttribute="top" secondItem="oNF-Rj-bf9" secondAttribute="top" constant="4" id="LNP-u6-r40"/>
+                                                        <constraint firstItem="S4N-S0-fRb" firstAttribute="leading" secondItem="FHg-Eb-qac" secondAttribute="trailing" constant="8" symbolic="YES" id="LzS-Hl-ks5"/>
                                                         <constraint firstItem="9YV-Gv-0CT" firstAttribute="top" secondItem="FHg-Eb-qac" secondAttribute="bottom" id="PC5-e6-w3H"/>
-                                                        <constraint firstItem="JWq-l4-URn" firstAttribute="leading" secondItem="FHg-Eb-qac" secondAttribute="trailing" constant="8" symbolic="YES" id="Q7E-lm-o62"/>
-                                                        <constraint firstAttribute="trailing" secondItem="quK-fY-gEQ" secondAttribute="trailing" constant="20" symbolic="YES" id="S85-ho-iq2"/>
                                                         <constraint firstItem="FHg-Eb-qac" firstAttribute="leading" secondItem="taV-6t-lMn" secondAttribute="leading" id="Ugb-FL-4A4"/>
                                                         <constraint firstItem="FHg-Eb-qac" firstAttribute="leading" secondItem="9YV-Gv-0CT" secondAttribute="leading" id="cOb-EL-jVi"/>
+                                                        <constraint firstAttribute="trailing" secondItem="S4N-S0-fRb" secondAttribute="trailing" constant="20" symbolic="YES" id="e52-dA-I2v"/>
                                                         <constraint firstItem="FHg-Eb-qac" firstAttribute="leading" secondItem="JJP-tg-TNf" secondAttribute="leading" id="fmm-jo-Dpf"/>
-                                                        <constraint firstItem="quK-fY-gEQ" firstAttribute="leading" secondItem="JWq-l4-URn" secondAttribute="trailing" constant="6" id="mZr-lH-txy"/>
                                                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="taV-6t-lMn" secondAttribute="trailing" constant="20" symbolic="YES" id="nuF-4E-nr8"/>
-                                                        <constraint firstItem="quK-fY-gEQ" firstAttribute="centerY" secondItem="JWq-l4-URn" secondAttribute="centerY" id="sfW-EO-zIm"/>
                                                         <constraint firstItem="FHg-Eb-qac" firstAttribute="top" secondItem="JJP-tg-TNf" secondAttribute="bottom" constant="3" id="ujo-rd-LK6"/>
                                                         <constraint firstItem="ABe-2X-CZZ" firstAttribute="leading" secondItem="oNF-Rj-bf9" secondAttribute="leading" constant="5" id="zfV-A8-cc9"/>
                                                     </constraints>
@@ -236,7 +248,6 @@
                                     </connections>
                                 </tableView>
                             </subviews>
-                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </clipView>
                         <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="35">
                             <rect key="frame" x="1" y="119" width="223" height="15"/>
@@ -262,6 +273,7 @@
                     <constraint firstItem="15" firstAttribute="top" secondItem="32" secondAttribute="bottom" constant="4" id="zAZ-dS-ZIA"/>
                 </constraints>
             </view>
+            <point key="canvasLocation" x="140" y="82"/>
         </window>
     </objects>
 </document>

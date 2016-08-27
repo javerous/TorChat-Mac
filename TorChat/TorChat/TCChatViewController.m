@@ -25,10 +25,9 @@
 #import "TCChatViewController.h"
 
 #import "TCChatTranscriptViewController.h"
+#import "TCChatContentController.h"
 
 #import "TCThemesManager.h"
-
-#import "TCThreePartImageView.h"
 
 #import "TCChatMessage.h"
 #import "TCChatStatus.h"
@@ -67,10 +66,9 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 // -- Properties --
-@property (strong, nonatomic) IBOutlet NSView				*transcriptView;
-@property (strong, nonatomic) IBOutlet NSTextField			*userField;
-@property (strong, nonatomic) IBOutlet NSBox				*lineView;
-@property (strong, nonatomic) IBOutlet TCThreePartImageView	*backView;
+@property (strong, nonatomic) IBOutlet NSView		*transcriptView;
+@property (strong, nonatomic) IBOutlet NSTextField	*userField;
+@property (strong, nonatomic) IBOutlet NSBox		*lineView;
 
 @property (strong, nonatomic) NSString *name;
 
@@ -96,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCChatViewController - Instance
 
-+ (TCChatViewController *)chatViewWithBuddy:(TCBuddy *)buddy configuration:(id <TCConfigApp>)config
++ (instancetype)chatViewWithBuddy:(TCBuddy *)buddy configuration:(id <TCConfigApp>)config
 {
 	return [[TCChatViewController alloc] initWithBuddy:buddy configuration:config];
 }
@@ -128,7 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
 		{
 			NSArray *themes = [[TCThemesManager sharedManager] themes];
 						
-			theme = [themes firstObject];
+			theme = themes.firstObject;
 		}
 		
 		// Create trasncript controller.
@@ -192,15 +190,10 @@ NS_ASSUME_NONNULL_BEGIN
 	[_transcriptView setNeedsLayout:YES];
 	
 	// Set remote avatar.
-	NSImage *remoteAvatar = [[_buddy profileAvatar] imageRepresentation];
+	NSImage *remoteAvatar = [_buddy.profileAvatar imageRepresentation];
 	
 	if (remoteAvatar)
 		[_chatTranscript setRemoteAvatar:remoteAvatar];
-	
-	// Configure back.
-	_backView.startCap = (NSImage *)[NSImage imageNamed:@"back_send_field"];
-	_backView.centerFill = (NSImage *)[NSImage imageNamed:@"back_send_field"];
-	_backView.endCap = (NSImage *)[NSImage imageNamed:@"back_send_field"];
 	
 	// Handle error action.
 	__weak TCChatViewController	*weakSelf = self;
@@ -280,6 +273,74 @@ NS_ASSUME_NONNULL_BEGIN
 	[self handleLocalMessage:message];
 }
 
+- (IBAction)doSendContent:(NSButton *)sender
+{
+	TCChatContentController	*mediaCtrl = [[TCChatContentController alloc] initWithConfiguration:_configuration];
+	NSPopover				*popover = [[NSPopover alloc] init];
+	
+	// Configure chat content controller.
+	__weak NSPopover *weakPopover = popover;
+	
+	mediaCtrl.resizeHandler = ^(NSSize size) {
+		weakPopover.contentSize = size;
+	};
+	
+	mediaCtrl.contentHandler = ^(NSArray <NSDictionary *> *contents) {
+		
+		TCBuddy *buddy = _buddy;
+		
+		if (!buddy)
+			return;
+		
+		for (NSDictionary *content in contents)
+		{
+			NSString *contentKind = content[TCChatContentControllerTypeKey];
+			
+			if ([contentKind isEqualToString:TCChatContentControllerTypeFileKey])
+			{
+				NSString *path = content[TCChatContentControllerContentKey];
+				
+				[buddy sendFileAtPath:path];
+			}
+			else if ([contentKind isEqualToString:TCChatContentControllerTypeRawKey])
+			{
+				NSString	*filename = content[TCChatContentControllerNameKey];
+				NSData		*data = content[TCChatContentControllerContentKey];
+				NSNumber	*saveFile = content[TCChatContentControllerSaveKey];
+				
+				if (saveFile.boolValue)
+				{
+					NSString *downloadPath = [_configuration pathForComponent:TCConfigPathComponentDownloads fullPath:YES];
+					NSString *subDownloadPath = [downloadPath stringByAppendingPathComponent:buddy.identifier];
+					NSString *filePath = [subDownloadPath stringByAppendingPathComponent:filename];
+					
+					[[NSFileManager defaultManager] createDirectoryAtPath:subDownloadPath withIntermediateDirectories:YES attributes:nil error:nil];
+
+					if ([data writeToFile:filePath atomically:YES])
+						[buddy sendFileAtPath:filePath];
+					else
+					{
+						NSBeep();
+						[buddy sendFileWithData:data filename:filename];
+					}
+				}
+				else
+				{
+					[buddy sendFileWithData:data filename:filename];
+				}
+			}
+		}
+	};
+	
+	// Show popover.
+	popover.animates = YES;
+	popover.behavior = NSPopoverBehaviorSemitransient;
+	popover.contentViewController = mediaCtrl;
+	popover.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
+
+	[popover showRelativeToRect:NSZeroRect ofView:sender preferredEdge:NSRectEdgeMinY];
+}
+
 
 
 /*
@@ -308,7 +369,7 @@ NS_ASSUME_NONNULL_BEGIN
 				
 			case TCBuddyEventStatus:
 			{
-				TCStatus		status = (TCStatus)[(NSNumber *)info.context intValue];
+				TCStatus		status = (TCStatus)((NSNumber *)info.context).intValue;
 				TCChatStatus	*chatStatus = [[TCChatStatus alloc] initWithStatus:@""];
 				
 				// Render status.
@@ -360,7 +421,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSUInteger)messagesCount
 {
-	return [_chatTranscript messagesCount];
+	return _chatTranscript.messagesCount;
 }
 
 
@@ -507,7 +568,7 @@ NS_ASSUME_NONNULL_BEGIN
 		// >> Add timestamp if necessary.
 		if (lastTimestamp)
 		{
-			if (msg.timestamp - [lastTimestamp doubleValue] >= TCMessageDeltaTimestamp)
+			if (msg.timestamp - lastTimestamp.doubleValue >= TCMessageDeltaTimestamp)
 				insertTimestamp(msg.timestamp, NSNotFound);
 		}
 		
@@ -518,14 +579,14 @@ NS_ASSUME_NONNULL_BEGIN
 	}];
 	
 	// > Handle top & bottom join timestamp.
-	TCChatMessage *firstMsg = [messages firstObject];
-	TCChatMessage *lastMsg = [messages lastObject];
+	TCChatMessage *firstMsg = messages.firstObject;
+	TCChatMessage *lastMsg = messages.lastObject;
 	
 	if (endOfTranscript == YES)
 	{
 		if (_bottomMessageTimestamp)
 		{
-			if (firstMsg.timestamp - [_bottomMessageTimestamp doubleValue] >= TCMessageDeltaTimestamp)
+			if (firstMsg.timestamp - _bottomMessageTimestamp.doubleValue >= TCMessageDeltaTimestamp)
 				insertTimestamp(firstMsg.timestamp, 0);
 		}
 		
@@ -538,8 +599,8 @@ NS_ASSUME_NONNULL_BEGIN
 	{
 		if (_topMessageTimestamp)
 		{
-			if ([_topMessageTimestamp doubleValue] - lastMsg.timestamp >= TCMessageDeltaTimestamp)
-				insertTimestamp([_topMessageTimestamp doubleValue], NSNotFound);
+			if (_topMessageTimestamp.doubleValue - lastMsg.timestamp >= TCMessageDeltaTimestamp)
+				insertTimestamp(_topMessageTimestamp.doubleValue, NSNotFound);
 		}
 		
 		_topMessageTimestamp = @(firstMsg.timestamp);
@@ -577,7 +638,7 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 	
 	// Check if we need to fetch messages.
-	NSUInteger currentMsgCount = [_chatTranscript messagesCount];
+	NSUInteger currentMsgCount = _chatTranscript.messagesCount;
 	NSUInteger fillMsgCount = [_chatTranscript maxMessagesCountToFillHeight:_transcriptView.frame.size.height];
 	NSUInteger fetchLimit = 0;
 	
@@ -612,7 +673,7 @@ NS_ASSUME_NONNULL_BEGIN
 				return;
 			
 			// > Handle top message.
-			TCChatMessage *topMsg = [messages firstObject];
+			TCChatMessage *topMsg = messages.firstObject;
 			
 			_topFetchedMsgID = topMsg.messageID;
 

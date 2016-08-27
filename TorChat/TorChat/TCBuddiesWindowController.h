@@ -49,6 +49,9 @@ NS_ASSUME_NONNULL_BEGIN
 // -- Instance --
 + (TCBuddiesWindowController *)sharedController;
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
+- (instancetype)initWithWindow:(nullable NSWindow *)window NS_UNAVAILABLE;
+
 // -- IBAction --
 - (IBAction)doShowInfo:(id)sender;
 - (IBAction)doRemove:(id)sender;
@@ -58,8 +61,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)doToggleBlock:(id)sender;
 - (IBAction)doEditProfile:(id)sender;
 
-// -- Tools --
-- (nullable TCBuddy *)selectedBuddy;
+// -- Selection --
+@property (nullable, nonatomic, readonly) TCBuddy *selectedBuddy;
 
 // -- Running --
 - (void)startWithConfiguration:(id <TCConfigAppEncryptable>)configuration coreManager:(TCCoreManager *)coreMananager completionHandler:(dispatch_block_t)handler;

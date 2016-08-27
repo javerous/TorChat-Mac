@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSString *)stringByCanonizingPath
 {
-	const char	*path = [self UTF8String];
+	const char	*path = self.UTF8String;
 	char		*rpath;
 	NSString	*result;
 	
@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 	if (!rpath)
 		return nil;
 	
-	result = [NSString stringWithUTF8String:rpath];
+	result = @(rpath);
 	
 	free(rpath);
 	
@@ -59,22 +59,22 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	// Code by Hilton Campbell / http://stackoverflow.com/questions/6539273/objective-c-code-to-generate-a-relative-path-given-a-file-and-a-directory
 	
-	NSArray *pathComponents = [self pathComponents];
-	NSArray *anchorComponents = [anchorPath pathComponents];
+	NSArray *pathComponents = self.pathComponents;
+	NSArray *anchorComponents = anchorPath.pathComponents;
 	
 	NSUInteger componentsInCommon = MIN([pathComponents count], [anchorComponents count]);
 	
 	for (NSUInteger i = 0, n = componentsInCommon; i < n; i++)
 	{
-		if (![[pathComponents objectAtIndex:i] isEqualToString:[anchorComponents objectAtIndex:i]])
+		if (![pathComponents[i] isEqualToString:anchorComponents[i]])
 		{
 			componentsInCommon = i;
 			break;
 		}
 	}
 	
-	NSUInteger numberOfParentComponents = [anchorComponents count] - componentsInCommon;
-	NSUInteger numberOfPathComponents = [pathComponents count] - componentsInCommon;
+	NSUInteger numberOfParentComponents = anchorComponents.count - componentsInCommon;
+	NSUInteger numberOfPathComponents = pathComponents.count - componentsInCommon;
 	
 	NSMutableArray *relativeComponents = [NSMutableArray arrayWithCapacity:numberOfParentComponents + numberOfPathComponents];
 	

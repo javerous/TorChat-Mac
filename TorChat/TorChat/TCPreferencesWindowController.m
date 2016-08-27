@@ -136,8 +136,8 @@ NS_ASSUME_NONNULL_BEGIN
 	if (_disabledDisappearance)
 		return;
 	
-	id <TCConfigAppEncryptable> config = [[TCMainController sharedController] configuration];
-	TCCoreManager				*core = [[TCMainController sharedController] core];
+	id <TCConfigAppEncryptable> config = [TCMainController sharedController].configuration;
+	TCCoreManager				*core = [TCMainController sharedController].core;
 	
 	_currentCtrl.config = config;
 	_currentCtrl.core = core;
@@ -161,7 +161,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)doToolbarItem:(id)sender
 {
 	NSToolbarItem	*item = sender;
-	NSString		*identifier = [item itemIdentifier];
+	NSString		*identifier = item.itemIdentifier;
 	
 	[self loadViewIdentifier:identifier animated:YES];
 }
@@ -176,8 +176,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)loadViewIdentifier:(NSString *)identifier animated:(BOOL)animated
 {
 	TCPrefView *viewCtrl = nil;
-	id <TCConfigAppEncryptable> config = [[TCMainController sharedController] configuration];
-	TCCoreManager *core = [[TCMainController sharedController] core];
+	id <TCConfigAppEncryptable> config = [TCMainController sharedController].configuration;
+	TCCoreManager *core = [TCMainController sharedController].core;
 
 	if ([identifier isEqualToString:@"general"])
 		viewCtrl = [[TCPrefView_General alloc] init];
@@ -196,8 +196,8 @@ NS_ASSUME_NONNULL_BEGIN
 	[[NSUserDefaults standardUserDefaults] setValue:identifier forKey:@"preference_id"];
 	
 	// Check if the toolbar item is well selected
-	if ([[[self.window toolbar] selectedItemIdentifier] isEqualToString:identifier] == NO)
-		[[self.window toolbar] setSelectedItemIdentifier:identifier];
+	if ([self.window.toolbar.selectedItemIdentifier isEqualToString:identifier] == NO)
+		self.window.toolbar.selectedItemIdentifier = identifier;
 	
 	// Save current view config.
 	_currentCtrl.config = config;
@@ -287,14 +287,14 @@ NS_ASSUME_NONNULL_BEGIN
 		}];
 	};
 	
-	[viewCtrl panelDidAppear];
-		
 	NSView *view = viewCtrl.view;
+
+	[viewCtrl panelDidAppear];
 	
 	// Compute target rect.
-	NSRect	rect = [self.window frame];
-	NSSize	csize = [[self.window contentView] frame].size;
-	NSSize	size = [view frame].size;
+	NSRect	rect = self.window.frame;
+	NSSize	csize = self.window.contentView.frame.size;
+	NSSize	size = view.frame.size;
 	CGFloat	previous = rect.size.height;
 	
 	rect.size.width = (rect.size.width - csize.width) + size.width;
@@ -307,9 +307,9 @@ NS_ASSUME_NONNULL_BEGIN
 	{
 		[NSAnimationContext beginGrouping];
 		{
-			[[NSAnimationContext currentContext] setDuration:0.125];
+			[NSAnimationContext currentContext].duration = 0.125;
 			
-			[[[self.window contentView] animator] replaceSubview:_currentCtrl.view with:view];
+			[[self.window.contentView animator] replaceSubview:_currentCtrl.view with:view];
 			[[self.window animator] setFrame:rect display:YES];
 		}
 		[NSAnimationContext endGrouping];
@@ -317,7 +317,7 @@ NS_ASSUME_NONNULL_BEGIN
 	else
 	{
 		[_currentCtrl.view removeFromSuperview];
-		[[self.window contentView] addSubview:view];
+		[self.window.contentView addSubview:view];
 		[self.window setFrame:rect display:YES];
 	}
 	
@@ -330,7 +330,7 @@ NS_ASSUME_NONNULL_BEGIN
 	// > main queue <
 
 	[_loadingWindow setFrame:self.window.frame display:NO];
-	[_loadingWindow setBackgroundColor:[NSColor colorWithWhite:1.0 alpha:0.5]];
+	_loadingWindow.backgroundColor = [NSColor colorWithWhite:1.0 alpha:0.5];
 	[_loadingIndicator startAnimation:nil];
 	
 	[self.window addChildWindow:_loadingWindow ordered:NSWindowAbove];

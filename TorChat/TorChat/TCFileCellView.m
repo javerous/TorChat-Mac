@@ -87,17 +87,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 	_content = content;
 	
-	NSImage		*icon = [content objectForKey:TCFileIconKey];
-	NSString	*path = [content objectForKey:TCFileFilePathKey];
-	NSString	*buddyName = [content objectForKey:TCFileBuddyNameKey];
-	NSString	*buddyIdentifier = [content objectForKey:TCFileBuddyIdentifierKey];
-	NSString	*txtStatus = [content objectForKey:TCFileStatusTextKey];
-	tcfile_way	way = (tcfile_way)[[content objectForKey:TCFileWayKey] intValue];
-	uint64_t	fileSize = [[content objectForKey:TCFileSizeKey] unsignedLongLongValue];
-	uint64_t	fileCompletedSize = [[content objectForKey:TCFileCompletedKey] unsignedLongLongValue];
-	double		fileDone = (double)fileCompletedSize / (double)fileSize;
+	NSNumber				*transferRemainingTime = content[TCFileTransferRemainingTimeKey];
+	uint64_t				transferCompletedSize = [content[TCFileTransferCompletedKey] unsignedLongLongValue];
+	NSString				*transferStatusText = content[TCFileTransferStatusTextKey];
+	TCFileTransferDirection	transferDirection = (TCFileTransferDirection)[content[TCFileTransferDirectionKey] intValue];
+
+	
+	NSImage		*icon = content[TCFileIconKey];
+	NSString	*fileName = content[TCFileFileNameKey];
+	NSString	*buddyName = content[TCFileBuddyNameKey];
+	NSString	*buddyIdentifier = content[TCFileBuddyIdentifierKey];
+	uint64_t	fileSize = [content[TCFileSizeKey] unsignedLongLongValue];
+	double		fileDone = (double)transferCompletedSize / (double)fileSize;
 	NSColor		*txtColor = nil;
 	
+
 	// Icon.
 	_iconButton.image = icon;
 	_iconButton.pushImage = [NSImage imageWithSize:icon.size flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
@@ -114,12 +118,10 @@ NS_ASSUME_NONNULL_BEGIN
 	}];
 	
 	// Name.
-	NSString *name = [path lastPathComponent];
-	
-	[_fileNameField setStringValue:name];
+	_fileNameField.stringValue = fileName;
 	
 	// Indicator.
-	[_transferIndicator setDoubleValue:fileDone];
+	_transferIndicator.doubleValue = fileDone;
 	
 	// Status.
 	NSString *statusText;
@@ -127,33 +129,32 @@ NS_ASSUME_NONNULL_BEGIN
 	// > Build direction.
 	NSString *directionText = nil;
 
-	if (way == tcfile_upload)
+	if (transferDirection == TCFileTransferDirectionUpload)
 		directionText = NSLocalizedString(@"file_progress_to", @"");
-	else if (way == tcfile_download)
+	else if (transferDirection == TCFileTransferDirectionDownload)
 		directionText = NSLocalizedString(@"file_progress_from", @"");
 	
 	// > Build progress.
 	NSString *progressText = nil;
-	NSNumber *remainingTime = content[TCFileRemainingTimeKey];
-	NSString *completedStr = SMStringFromBytesAmount(fileCompletedSize);
+	NSString *completedStr = SMStringFromBytesAmount(transferCompletedSize);
 	NSString *totalStr = SMStringFromBytesAmount(fileSize);
 	
-	if (!remainingTime || [remainingTime doubleValue] == -2.0 || [remainingTime doubleValue] == 0)
+	if (!transferRemainingTime || transferRemainingTime.doubleValue == -2.0 || transferRemainingTime.doubleValue == 0)
 		progressText = [NSString stringWithFormat:NSLocalizedString(@"file_progress", @""), completedStr, totalStr];
-	else if ([remainingTime doubleValue] == -1.0)
+	else if (transferRemainingTime.doubleValue == -1.0)
 		progressText = [NSString stringWithFormat:NSLocalizedString(@"file_progress_stalled", @""), completedStr, totalStr];
 	else
-		progressText = [NSString stringWithFormat:NSLocalizedString(@"file_progress_remaining", @""), completedStr, totalStr, SMStringFromSecondsAmount([remainingTime doubleValue])];
+		progressText = [NSString stringWithFormat:NSLocalizedString(@"file_progress_remaining", @""), completedStr, totalStr, SMStringFromSecondsAmount(transferRemainingTime.doubleValue)];
 
 	// > Build final status.
 	statusText = [NSString stringWithFormat:@"%@ %@ (%@) - %@", directionText, buddyName, buddyIdentifier, progressText];
 
-	[_transferStatusField setTextColor:txtColor];
-	[_transferStatusField setStringValue:statusText];
+	_transferStatusField.textColor = txtColor;
+	_transferStatusField.stringValue = statusText;
 	
 	// Status.
-	[_transferDirectionField setTextColor:[NSColor grayColor]];
-	[_transferDirectionField setStringValue:txtStatus];
+	_transferDirectionField.textColor = [NSColor grayColor];
+	_transferDirectionField.stringValue = transferStatusText;
 }
 
 
@@ -165,17 +166,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setBackgroundStyle:(NSBackgroundStyle)style
 {
-    [super setBackgroundStyle:style];
+    super.backgroundStyle = style;
 	
     switch (style)
 	{
         case NSBackgroundStyleLight:
-			[_transferDirectionField setTextColor:[NSColor grayColor]];
+			_transferDirectionField.textColor = [NSColor grayColor];
             break;
 			
         case NSBackgroundStyleDark:
         default:
-			[_transferDirectionField setTextColor:[NSColor whiteColor]];
+			_transferDirectionField.textColor = [NSColor whiteColor];
             break;
     }
 }

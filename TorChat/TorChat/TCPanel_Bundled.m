@@ -177,8 +177,8 @@ NS_ASSUME_NONNULL_BEGIN
 			{
 				if (info.code == SMTorEventStartServiceID)
 				{
-					[imIdentifierField setStringValue:info.context];
-					[_currentConfig setSelfIdentifier:info.context];
+					imIdentifierField.stringValue = info.context;
+					_currentConfig.selfIdentifier = info.context;
 					
 					serviceIDDone = YES;
 					
@@ -188,7 +188,7 @@ NS_ASSUME_NONNULL_BEGIN
 				}
 				else if (info.code == SMTorEventStartServicePrivateKey)
 				{
-					[_currentConfig setSelfPrivateKey:info.context];
+					_currentConfig.selfPrivateKey = info.context;
 
 					servicePrivateKeyDone = YES;
 					

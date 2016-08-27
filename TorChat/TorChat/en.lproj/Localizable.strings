@@ -50,6 +50,10 @@
 "main_ctrl_conf_error_tor_manager" =  "Can't create Tor manager - check your configuration file.";
 "main_ctrl_conf_error_core_manager" =  "Can't create Core manager - check your configuration file.";
 
+"main_ctrl_fatal_error" = "Fatal Error";
+"main_ctrl_fatal_error_message" = "A fatal error happened with bundled tor binary: %@";
+"main_ctrl_fatal_quit" = "Quit";
+
 
 /* Configuration Helper */
 "conf_helper_info_import_sucess" = "Private key imported with success.";
@@ -119,6 +123,10 @@
 "chat_error_send_blocked" = "This message couldn't be sent because the user was blocked. Do you want to resend it ?";
 "chat_send_resend" = "Resend";
 "chat_send_cancel" = "Cancel";
+
+"chat_media_audio" = "Audio";
+"chat_media_images" = "Images";
+"chat_media_movies" = "Movies";
 
 
 /* Logs */

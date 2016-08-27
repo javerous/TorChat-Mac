@@ -90,9 +90,9 @@ NS_ASSUME_NONNULL_BEGIN
 	[mutableLine replaceCStr:"\\/" withCStr:"\\"];
 	
 	// Eplode the line from spaces.
-	NSArray *items = [mutableLine explodeWithMaxFields:1 withFieldSeparator:" "];
+	NSArray *items = [mutableLine explodeWithMaxFields:1 fieldSeparator:" "];
 	
-	if ([items count] == 0)
+	if (items.count == 0)
 		return;
 	
 	[self parseCommand:items];
@@ -100,13 +100,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)parseCommand:(NSArray *)items
 {
-	if ([items count] == 0)
+	if (items.count == 0)
         return;
     
     NSString	*command = [[NSString alloc] initWithData:items[0] encoding:NSASCIIStringEncoding];
 	NSData		*parameters = nil;
 	
-	if ([items count] > 1)
+	if (items.count > 1)
 		parameters = items[1];
 		
     // Dispatch command
@@ -157,10 +157,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)parsePing:(NSData *)parameters
 {
-	NSArray *args = [parameters explodeWithMaxFields:2 withFieldSeparator:" "];
+	NSArray *args = [parameters explodeWithMaxFields:2 fieldSeparator:" "];
 	
 	// Check args.
-	if ([args count] != 2)
+	if (args.count != 2)
     {
 		[self parserError:TCParserErrorCmdPing withString:@"Bad ping argument"];
         return;
@@ -188,7 +188,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)parsePong:(NSData *)parameters
 {
 	// Check args.
-	if ([parameters length] == 0)
+	if (parameters.length == 0)
     {
 		[self parserError:TCParserErrorCmdPong withString:@"Bad pong argument"];
         return;
@@ -215,7 +215,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)parseStatus:(NSData *)parameters
 {
 	// Check args.
-	if ([parameters length] == 0)
+	if (parameters.length == 0)
     {
 		[self parserError:TCParserErrorCmdStatus withString:@"Bad status argument"];
         return;
@@ -242,7 +242,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)parseVersion:(NSData *)parameters
 {
 	// Check args.
-	if ([parameters length] == 0)
+	if (parameters.length == 0)
     {
 		[self parserError:TCParserErrorCmdVersion withString:@"Bad version argument"];
         return;
@@ -269,7 +269,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)parseClient:(NSData *)parameters
 {
 	// Check args.
-	if ([parameters length] == 0)
+	if (parameters.length == 0)
 	{
 		[self parserError:TCParserErrorCmdClient withString:@"Empty client argument"];
         return;
@@ -366,7 +366,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)parseMessage:(NSData *)parameters
 {
 	// Check args.
-	if ([parameters length] == 0)
+	if (parameters.length == 0)
 	{
 		[self parserError:TCParserErrorCmdMessage withString:@"Empty message content"];
         return;
@@ -415,9 +415,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)parseFileName:(NSData *)parameters
 {
 	// Check args.
-	NSArray *args = [parameters explodeWithMaxFields:3 withFieldSeparator:" "];
+	NSArray *args = [parameters explodeWithMaxFields:3 fieldSeparator:" "];
 	
-	if ([args count] != 4)
+	if (args.count != 4)
     {
 		[self parserError:TCParserErrorCmdFileName withString:@"Bad filename argument"];
         return;
@@ -447,9 +447,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)parseFileData:(NSData *)parameters
 {
 	// Check args.
-	NSArray *args = [parameters explodeWithMaxFields:3 withFieldSeparator:" "];
+	NSArray *args = [parameters explodeWithMaxFields:3 fieldSeparator:" "];
 	
-	if ([args count] != 4)
+	if (args.count != 4)
     {
 		[self parserError:TCParserErrorCmdFileData withString:@"Bad filedata argument"];
         return;
@@ -479,9 +479,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)parseFileDataOk:(NSData *)parameters
 {
 	// Check args.
-	NSArray *args = [parameters explodeWithMaxFields:2 withFieldSeparator:" "];
+	NSArray *args = [parameters explodeWithMaxFields:2 fieldSeparator:" "];
 	
-	if ([args count] != 2)
+	if (args.count != 2)
     {
 		[self parserError:TCParserErrorCmdFileDataOk withString:@"Bad filedataok argument"];
         return;
@@ -509,9 +509,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)parseFileDataError:(NSData *)parameters
 {
 	// Check args.
-	NSArray *args = [parameters explodeWithMaxFields:2 withFieldSeparator:" "];
+	NSArray *args = [parameters explodeWithMaxFields:2 fieldSeparator:" "];
 
-	if ([args count] != 2)
+	if (args.count != 2)
     {
 		[self parserError:TCParserErrorCmdFileDataError withString:@"Bad filedataerror argument"];
         return;
@@ -539,7 +539,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)parseFileStopSending:(NSData *)parameters
 {
 	// Check args.
-	if ([parameters length] == 0)
+	if (parameters.length == 0)
     {
 		[self parserError:TCParserErrorCmdFileStopSending withString:@"Bad filestopsending argument"];
         return;
@@ -566,7 +566,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)parseFileStopReceiving:(NSData *)parameters
 {
 	// Check args.
-	if ([parameters length] == 0)
+	if (parameters.length == 0)
     {
 		[self parserError:TCParserErrorCmdFileStopReceiving withString:@"Bad filestopreceiving argument"];
         return;
@@ -601,7 +601,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	id <TCParserDelegate> delegate = _delegate;
 	
-	[delegate parser:self errorWithCode:errorCode andInformation:string];
+	[delegate parser:self errorWithErrorCode:errorCode errorInformation:string];
 }
 
 @end

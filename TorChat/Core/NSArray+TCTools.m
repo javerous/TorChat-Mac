@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSData *)joinFromIndex:(NSUInteger)index withCStr:(const char *)str
 {
 	NSMutableData	*result = [[NSMutableData alloc] init];
-	NSUInteger		i, count = [self count];
+	NSUInteger		i, count = self.count;
 	size_t			str_len = 0;
 	
 	if (str)
@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	for (i = index; i < count; i++)
 	{
-		id object = [self objectAtIndex:i];
+		id object = self[i];
 		
 		if ([object isKindOfClass:[NSString class]])
 			object = [object dataUsingEncoding:NSUTF8StringEncoding];
@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 		if ([object isKindOfClass:[NSData class]] == NO)
 			continue;
 		
-		if ([result length] > 0 && str_len > 0)
+		if (result.length > 0 && str_len > 0)
 			[result appendBytes:str length:str_len];
 		
 		[result appendData:object];

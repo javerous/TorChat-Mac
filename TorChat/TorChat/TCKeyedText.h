@@ -34,12 +34,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TCKeyedText : NSObject
 
-- (instancetype)initWithKeySize:(NSUInteger)ksize;
+// -- Instance --
+- (instancetype)initWithKeySize:(NSUInteger)ksize NS_DESIGNATED_INITIALIZER;
 
-- (void)addLineWithKey:(NSString *)key andContent:(NSString *)content;
-- (void)addAttributedLineWithKey:(NSAttributedString *)key andContent:(NSAttributedString *)content;
+- (instancetype)init NS_UNAVAILABLE;
 
-- (NSAttributedString *)renderedText;
+
+// -- Content --
+- (void)addLineWithKey:(NSString *)key content:(NSString *)content;
+- (void)addAttributedLineWithKey:(NSAttributedString *)key content:(NSAttributedString *)content;
+
+@property (nonatomic, readonly, copy) NSAttributedString *renderedText;
 
 @end
 

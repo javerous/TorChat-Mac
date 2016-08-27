@@ -96,15 +96,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable id)panelContent
 {
 	// Obtain launch context.
-	NSString	*bundlePath = [[NSBundle mainBundle] bundlePath];
-	NSString	*directoryPath = [[[bundlePath stringByDeletingLastPathComponent] stringByStandardizingPath] stringByAppendingString:@"/"];
+	NSString	*bundlePath = [NSBundle mainBundle].bundlePath;
+	NSString	*directoryPath = [bundlePath.stringByDeletingLastPathComponent.stringByStandardizingPath stringByAppendingString:@"/"];
 	BOOL		isApplication = [directoryPath hasPrefix:@"/Applications/"];
 	
 	// Compose path.
 	NSString *configPath;
  
 	if (isApplication)
-		configPath = [@"~/Library/Preferences/torchat.conf" stringByExpandingTildeInPath]; // TorChat is launched from Application directory : everything at the standard places.
+		configPath = @"~/Library/Preferences/torchat.conf".stringByExpandingTildeInPath; // TorChat is launched from Application directory : everything at the standard places.
 	else
 		configPath = [directoryPath stringByAppendingPathComponent:@"torchat.conf"]; // TorChat is launched from anywhere else : everything at the same place.
 	

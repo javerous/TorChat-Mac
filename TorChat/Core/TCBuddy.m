@@ -85,18 +85,16 @@ struct sockrep
 };
 
 // -- Socks State --
-typedef enum
-{
+typedef NS_ENUM(unsigned int, socks_state) {
 	socks_nostate,
 	socks_running,
 	socks_finish,
-} socks_state;
+};
 
 // -- Socks trame type --
-typedef enum
-{
+typedef NS_ENUM(unsigned int, socks_trame) {
 	socks_v4_reply,
-} socks_trame;
+};
 
 
 
@@ -253,7 +251,7 @@ static char gLocalQueueContext;
 		
 		// Create parser.
 		_parser = [[TCParser alloc] initWithParsingResult:self];
-		[_parser setDelegate:self];
+		_parser.delegate = self;
 		
 		// Init status
 		_socksstate = socks_nostate;
@@ -659,7 +657,7 @@ static char gLocalQueueContext;
 */
 #pragma mark - Files Info
 
-- (nullable NSString *)fileNameForUUID:(NSString *)uuid way:(TCBuddyFileWay)way
+- (nullable NSString *)fileNameForTransferUUID:(NSString *)uuid transferDirection:(TCBuddyFileTransferDirection)direction
 {
 	NSAssert(uuid, @"uuid is nil");
 	
@@ -667,26 +665,26 @@ static char gLocalQueueContext;
 	
 	dispatch_sync(_localQueue, ^{
 		
-		if (way == TCBuddyFileSend)
+		if (direction == TCBuddyFileTransferDirectionSend)
 		{
 			TCFileSend *file = _fsend[uuid];
 			
 			if (file)
-				res = [file fileName];
+				res = file.fileName;
 		}
-		else if (way == TCBuddyFileReceive)
+		else if (direction == TCBuddyFileTransferDirectionReceive)
 		{
 			TCFileReceive *file = _freceive[uuid];
 			
 			if (file)
-				res = [file fileName];
+				res = file.fileName;
 		}
 	});
 	
 	return res;
 }
 
-- (nullable NSString *)filePathForUUID:(NSString *)uuid way:(TCBuddyFileWay)way
+- (nullable NSString *)filePathForTransferUUID:(NSString *)uuid transferDirection:(TCBuddyFileTransferDirection)direction
 {
 	NSAssert(uuid, @"uuid is nil");
 	
@@ -694,25 +692,25 @@ static char gLocalQueueContext;
 	
 	dispatch_sync(_localQueue, ^{
 		
-		if (way == TCBuddyFileSend)
+		if (direction == TCBuddyFileTransferDirectionSend)
 		{
 			TCFileSend *file = _fsend[uuid];
 			
-			res = [file filePath];
+			res = file.filePath;
 		}
-		else if (way == TCBuddyFileReceive)
+		else if (direction == TCBuddyFileTransferDirectionReceive)
 		{
 			TCFileReceive *file = _freceive[uuid];
 			
 			if (file)
-				res = [file filePath];
+				res = file.filePath;
 		}
 	});
 	
 	return res;
 }
 
-- (BOOL)fileStatForUUID:(NSString *)uuid way:(TCBuddyFileWay)way done:(uint64_t *)done total:(uint64_t *)total
+- (BOOL)transferStatForTransferUUID:(NSString *)uuid transferDirection:(TCBuddyFileTransferDirection)direction done:(uint64_t *)done total:(uint64_t *)total
 {
 	NSAssert(uuid, @"uuid is nil");
 	
@@ -722,7 +720,7 @@ static char gLocalQueueContext;
 	
 	dispatch_sync(_localQueue, ^{
 		
-		if (way == TCBuddyFileSend)
+		if (direction == TCBuddyFileTransferDirectionSend)
 		{
 			// Search the file send
 			TCFileSend *file = _fsend[uuid];
@@ -730,19 +728,19 @@ static char gLocalQueueContext;
 			if (file)
 			{
 				rdone = [file validatedSize];
-				rtotal = [file fileSize];
+				rtotal = file.fileSize;
 				
 				result = true;
 			}
 		}
-		else if (way == TCBuddyFileReceive)
+		else if (direction == TCBuddyFileTransferDirectionReceive)
 		{
 			TCFileReceive *file = _freceive[uuid];
 			
 			if (file)
 			{
 				rdone = [file receivedSize];
-				rtotal = [file fileSize];
+				rtotal = file.fileSize;
 				
 				result = true;
 			}
@@ -760,13 +758,13 @@ static char gLocalQueueContext;
 	return result;
 }
 
-- (void)fileCancelOfUUID:(NSString *)uuid way:(TCBuddyFileWay)way
+- (void)cancelTransferForTransferUUID:(NSString *)uuid transferDirection:(TCBuddyFileTransferDirection)direction
 {
 	NSAssert(uuid, @"uuid is nil");
 	
 	dispatch_async(_localQueue, ^{
 		
-		if (way == TCBuddyFileSend)
+		if (direction == TCBuddyFileTransferDirectionSend)
 		{
 			// Search the file send
 			TCFileSend *file = _fsend[uuid];
@@ -785,7 +783,7 @@ static char gLocalQueueContext;
 				[_fsend removeObjectForKey:uuid];
 			}
 		}
-		else if (way == TCBuddyFileReceive)
+		else if (direction == TCBuddyFileTransferDirectionReceive)
 		{
 			TCFileReceive *file = _freceive[uuid];
 			
@@ -904,51 +902,74 @@ static char gLocalQueueContext;
 	});
 }
 
-- (void)sendFile:(NSString *)filepath
+- (void)sendFileAtPath:(NSString *)filepath
 {
 	NSAssert(filepath, @"filepath is nil");
 
 	dispatch_async(_localQueue, ^{
 		
-		// Send file only if we sent pong and we are ponged
-		if (_ponged)
+		// Create a file to send.
+		TCFileSend *file = [[TCFileSend alloc] initWithFilePath:filepath];
+		
+		if (!file)
 		{
-			if (!_blocked)
-			{
-				TCFileSend *file;
-				
-				// Try to open the file for send
-				file = [[TCFileSend alloc] initWithFilePath:filepath];
-				
-				if (!file)
-				{
-					[self _error:TCBuddyErrorSendFile context:filepath];
-					return;
-				}
-				
-				// Insert the new file session
-				_fsend[[file uuid]] = file;
-				
-				// Notify
-				TCFileInfo *info = [[TCFileInfo alloc] initWithFileSend:file];
-				
-				[self _notify:TCBuddyEventFileSendStart context:info];
-				
-				// Start the file session
-				[self _sendFileName:file];
-				
-				// Send the first block to start the send
-				[self _sendFileData:file];
-			}
-			else
-				[self _error:TCBuddyErrorFileBlocked context:filepath];
-
+			[self _error:TCBuddyErrorSendFile context:filepath];
+			return;
 		}
-		else
-		{
-			[self _error:TCBuddyErrorFileOffline context:filepath];
-		}
+		
+		// Send file.
+		[self _sendFile:file];
 	});
+}
+
+- (void)sendFileWithData:(NSData *)data filename:(NSString *)filename
+{
+	NSAssert(data, @"data is nil");
+	NSAssert(filename, @"filename is nil");
+
+	dispatch_async(_localQueue, ^{
+		
+		// Create a virtual file to send.
+		TCFileSend *file = [[TCFileSend alloc] initWithFileData:data fileName:filename];
+		
+		// Send file.
+		[self _sendFile:file];
+	});
+}
+
+- (void)_sendFile:(TCFileSend *)file
+{
+	// > localQueue <
+	
+	NSAssert(file, @"file is nil");
+	
+	// Don't send file if buddy is not ponged.
+	if (!_ponged)
+	{
+		[self _error:TCBuddyErrorFileOffline context:file.fileName];
+		return;
+	}
+	
+	// Don't send file if buddy is blocked.
+	if (_blocked)
+	{
+		[self _error:TCBuddyErrorFileBlocked context:file.fileName];
+		return;
+	}
+	
+	// Insert the new file session
+	_fsend[file.uuid] = file;
+	
+	// Notify
+	TCFileInfo *info = [[TCFileInfo alloc] initWithFileSend:file];
+	
+	[self _notify:TCBuddyEventFileSendStart context:info];
+	
+	// Start the file session
+	[self _sendFileName:file];
+	
+	// Send the first block to start the send
+	[self _sendFileData:file];
 }
 
 
@@ -998,7 +1019,7 @@ static char gLocalQueueContext;
 			_inSocket = sock;
 			_inSocket.delegate = self;
 			
-			[_inSocket setGlobalOperation:SMSocketOperationLine withSize:0 andTag:0];
+			[_inSocket setGlobalOperation:SMSocketOperationLine size:0 tag:0];
 			
 			// Notify that we are ready
 			[self _notify:TCBuddyEventIdentified];
@@ -1047,7 +1068,7 @@ static char gLocalQueueContext;
 		{
 			// Get the reply
 			NSData			*data = content;
-			struct sockrep	*thisrep = (struct sockrep *)([data bytes]);
+			struct sockrep	*thisrep = (struct sockrep *)(data.bytes);
 			
 			// Check result
 			switch (thisrep->result)
@@ -1056,7 +1077,7 @@ static char gLocalQueueContext;
 				{
 					_socksstate = socks_finish;
 					
-					[_outSocket setGlobalOperation:SMSocketOperationLine withSize:0 andTag:0];
+					[_outSocket setGlobalOperation:SMSocketOperationLine size:0 tag:0];
 					
 					// Notify connected.
 					[self _notify:TCBuddyEventConnectedBuddy];
@@ -1302,7 +1323,7 @@ static char gLocalQueueContext;
 	
 	[[NSFileManager defaultManager] createDirectoryAtPath:downPath withIntermediateDirectories:YES attributes:nil error:nil];
 	
-	if ([[downPath lastPathComponent] isEqualToString:@"Downloads"])
+	if ([downPath.lastPathComponent isEqualToString:@"Downloads"])
 		[[NSData data] writeToFile:[downPath stringByAppendingPathComponent:@".localized"] atomically:NO];
 	
 	// Parse values
@@ -1320,7 +1341,7 @@ static char gLocalQueueContext;
 	}
 	
 	// Add it to the list
-	_freceive[[file uuid]] = file;
+	_freceive[file.uuid] = file;
 		
 	TCFileInfo *info = [[TCFileInfo alloc] initWithFileReceive:file];
 		
@@ -1354,7 +1375,7 @@ static char gLocalQueueContext;
 	{
 		uint64_t offset = strtoull([start cStringUsingEncoding:NSASCIIStringEncoding], NULL, 10);
 		
-		if ([file writeChunk:[data bytes] chunkSize:[data length] hash:hash offset:&offset])
+		if ([file writeChunk:data.bytes chunkSize:data.length hash:hash offset:&offset])
 		{
 			// Send that this chunk is okay
 			[self _sendFileDataOk:uuid start:offset];
@@ -1500,7 +1521,7 @@ static char gLocalQueueContext;
 	[_freceive removeObjectForKey:uuid];
 }
 
-- (void)parser:(TCParser *)parser errorWithCode:(TCParserError)error andInformation:(NSString *)information
+- (void)parser:(TCParser *)parser errorWithErrorCode:(TCParserError)error errorInformation:(NSString *)information
 {
 	if (_blocked)
 		return;
@@ -1538,7 +1559,7 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	if ([random length] == 0)
+	if (random.length == 0)
 		return;
 	
 	[self _sendCommand:@"pong" string:random channel:TCBuddyChannelOut];
@@ -1657,16 +1678,16 @@ static char gLocalQueueContext;
 	NSMutableArray *items = [[NSMutableArray alloc] init];
 		
 	// Add the uuid
-	[items addObject:[file uuid]];
+	[items addObject:file.uuid];
 	
 	// Add the file size
-	[items addObject:[NSString stringWithFormat:@"%llu", [file fileSize]]];
+	[items addObject:[NSString stringWithFormat:@"%llu", file.fileSize]];
 	
 	// Add the block size
-	[items addObject:[NSString stringWithFormat:@"%u", [file blockSize]]];
+	[items addObject:[NSString stringWithFormat:@"%u", file.blockSize]];
 	
 	// Add the filename
-	[items addObject:[file fileName]];
+	[items addObject:file.fileName];
 
 	// Send the command
 	[self _sendCommand:@"filename" array:items channel:TCBuddyChannelIn];
@@ -1678,10 +1699,10 @@ static char gLocalQueueContext;
 	
 	NSAssert(file, @"file is nil");
 	
-	if ([file readSize] >= [file fileSize])
+	if ([file readSize] >= file.fileSize)
 		return;
 	
-	uint8_t		*chunk = malloc([file blockSize]);
+	uint8_t		*chunk = malloc(file.blockSize);
 	uint64_t	chunksz = 0;
 	uint64_t	offset = 0;
 	NSString	*md5;
@@ -1699,7 +1720,7 @@ static char gLocalQueueContext;
 	NSMutableArray *items = [[NSMutableArray alloc] init];
 	
 	// > Add UUID
-	[items addObject:[file uuid]];
+	[items addObject:file.uuid];
 	
 	// > Add the offset
 	[items addObject:[NSString stringWithFormat:@"%llu", offset]];
@@ -1819,7 +1840,7 @@ static char gLocalQueueContext;
 	
 	[part appendData:commandData];
 	
-	if ([data length] > 0)
+	if (data.length > 0)
 	{
 		[part appendBytes:" " length:1];
 		[part appendData:(NSData *)data];
@@ -1843,7 +1864,7 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	return [self _sendBytes:[data bytes] length:[data length] channel:channel];
+	return [self _sendBytes:data.bytes length:data.length channel:channel];
 }
 
 - (BOOL)_sendBytes:(const void *)bytes length:(NSUInteger)length channel:(TCBuddyChannel)channel
@@ -1854,9 +1875,9 @@ static char gLocalQueueContext;
 	NSAssert(length > 0, @"length is zero");
 	
 	if (channel == TCBuddyChannelIn && _inSocket)
-		[_inSocket sendBytes:bytes ofSize:length copy:YES];
+		[_inSocket sendBytes:bytes size:length copy:YES];
 	else if (channel == TCBuddyChannelOut && _outSocket)
-		[_outSocket sendBytes:bytes ofSize:length copy:YES];
+		[_outSocket sendBytes:bytes size:length copy:YES];
 	else
 		return NO;
 	
@@ -1892,7 +1913,7 @@ static char gLocalQueueContext;
 	hints.ai_socktype = SOCK_STREAM;
 	
 	// > Try to resolve and connect to the given address
-	error = getaddrinfo([[_config torAddress] UTF8String], sport, &hints, &res0);
+	error = getaddrinfo(_config.torAddress.UTF8String, sport, &hints, &res0);
 	
 	if (error)
 	{
@@ -1938,7 +1959,7 @@ static char gLocalQueueContext;
 	
 	// > Get the target connexion informations
 	NSString	*host = [_identifier stringByAppendingString:@".onion"];
-	const char	*c_host = [host UTF8String];
+	const char	*c_host = host.UTF8String;
 	
 	// > Check data size
 	datalen = sizeof(struct sockreq) + strlen(user) + 1;
@@ -1963,7 +1984,7 @@ static char gLocalQueueContext;
 	strcpy(pos, c_host);
 	
 	// > Set the next input operation
-	[_outSocket scheduleOperation:SMSocketOperationData withSize:sizeof(struct sockrep) andTag:socks_v4_reply];
+	[_outSocket scheduleOperation:SMSocketOperationData size:sizeof(struct sockrep) tag:socks_v4_reply];
 	
 	// > Send the request
 	if ([self _sendBytes:buffer length:datalen channel:TCBuddyChannelOut])
@@ -1982,7 +2003,7 @@ static char gLocalQueueContext;
 	// > localQueue <
 	
 	// Send ping.
-	NSString *selfIdentifier = [_config selfIdentifier];
+	NSString *selfIdentifier = _config.selfIdentifier;
 
 	if (selfIdentifier && _random)
 		[self _sendPing:selfIdentifier random:_random];
@@ -2023,7 +2044,7 @@ static char gLocalQueueContext;
 	{
 		TCFileSend *file = _fsend[uuid];
 		
-		if (([file readSize] - [file validatedSize]) >= 16 * [file blockSize])
+		if (([file readSize] - [file validatedSize]) >= 16 * file.blockSize)
 			continue;
 		
 		[self _sendFileData:file];
@@ -2054,19 +2075,19 @@ static char gLocalQueueContext;
 	
 	// Profile.
 	// > Name.
-	NSString *profileName = [coreManager profileName];
+	NSString *profileName = coreManager.profileName;
 	
 	if (profileName)
 		[self _sendProfileName:profileName];
 	
 	// > Text.
-	NSString *profileText = [coreManager profileText];
+	NSString *profileText = coreManager.profileText;
 
 	if (profileText)
 		[self _sendProfileText:profileText];
 
 	// > Avatar
-	TCImage *img = [coreManager profileAvatar];
+	TCImage *img = coreManager.profileAvatar;
 
 	if (img)
 		[self _sendAvatar:img];
@@ -2075,7 +2096,7 @@ static char gLocalQueueContext;
 	[self _sendAddMe];
 	
 	// Status.
-	[self _sendStatus:[coreManager status]];
+	[self _sendStatus:coreManager.status];
 }
 
 
@@ -2235,7 +2256,7 @@ static char gLocalQueueContext;
 									 
 								NSString *status = @"-";
 									 
-								switch ([context intValue])
+								switch (context.intValue)
 								{
 									case TCStatusOffline:	status = NSLocalizedString(@"bd_status_offline", @""); break;
 									case TCStatusAvailable: status = NSLocalizedString(@"bd_status_available", @""); break;
@@ -2438,11 +2459,11 @@ static char gLocalQueueContext;
 							SMInfoNameKey : @"TCBuddyErrorSocks",
 							SMInfoDynTextKey : ^ NSString *(NSNumber *context) {
 								
-								if ([context intValue] == 91)
+								if (context.intValue == 91)
 									return @"core_bd_error_socks_91";
-								else if ([context intValue] == 92)
+								else if (context.intValue == 92)
 									return @"core_bd_error_socks_92";
-								else if ([context intValue] == 93)
+								else if (context.intValue == 93)
 									return @"core_bd_error_socks_93";
 								else
 									return @"core_bd_error_socks_unknown";
@@ -2586,17 +2607,21 @@ static char gLocalQueueContext;
 
 - (NSString *)uuid
 {
+	NSAssert(_receiver || _sender, @"need a receiver or a sender");
+	
 	if (_receiver)
-		return [_receiver uuid];
+		return _receiver.uuid;
 	
 	if (_sender)
-		return [_sender uuid];
+		return _sender.uuid;
 	
-	return @"";
+	return nil;
 }
 
 - (uint64_t)fileSizeCompleted
 {
+	NSAssert(_receiver || _sender, @"need a receiver or a sender");
+
 	if (_receiver)
 		return [_receiver receivedSize];
 	
@@ -2608,35 +2633,41 @@ static char gLocalQueueContext;
 
 - (uint64_t)fileSizeTotal
 {
+	NSAssert(_receiver || _sender, @"need a receiver or a sender");
+
 	if (_receiver)
-		return [_receiver fileSize];
+		return _receiver.fileSize;
 	
 	if (_sender)
-		return [_sender fileSize];
+		return _sender.fileSize;
 	
 	return 0;
 }
 
 - (NSString *)fileName
 {
+	NSAssert(_receiver || _sender, @"need a receiver or a sender");
+
 	if (_receiver)
-		return [_receiver fileName];
+		return _receiver.fileName;
 	
 	if (_sender)
-		return [_sender fileName];
+		return _sender.fileName;
 	
-	return @"";
+	return nil;
 }
 
-- (NSString *)filePath
+- (nullable NSString *)filePath
 {
+	NSAssert(_receiver || _sender, @"need a receiver or a sender");
+
 	if (_receiver)
-		return [_receiver filePath];
+		return _receiver.filePath;
 	
 	if (_sender)
-		return [_sender filePath];
+		return _sender.filePath;
 	
-	return @"";
+	return nil;
 }
 
 @end

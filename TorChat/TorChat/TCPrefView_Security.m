@@ -80,10 +80,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)panelDidAppear
 {
-	// Load view.
-	[self view];
-	
-	// Update view.
 	[self updateConfig];
 }
 

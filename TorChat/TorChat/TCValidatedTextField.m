@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	if (_validCharacterSet)
 	{
-		if ([newString rangeOfCharacterFromSet:[_validCharacterSet invertedSet]].location != NSNotFound)
+		if ([newString rangeOfCharacterFromSet:_validCharacterSet.invertedSet].location != NSNotFound)
 			return NO;
 	}
 	

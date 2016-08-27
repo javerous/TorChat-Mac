@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 	[self registerInfoDescriptors];
 }
 
-- (instancetype)initWithDelegate:(id <TCConnectionDelegate>)delegate andSocket:(int)sock
+- (instancetype)initWithDelegate:(id <TCConnectionDelegate>)delegate socket:(int)socketFD
 {
 	self = [super init];
 	
@@ -108,13 +108,13 @@ NS_ASSUME_NONNULL_BEGIN
 		_running = false;
 		
 		// Hold socket.
-		_sockd = sock;
+		_sockd = socketFD;
 		_sock = NULL;
 		
 		// Create parser.
 		_parser = [[TCParser alloc] initWithParsingResult:self];
 		
-		[_parser setDelegate:self];
+		_parser.delegate = self;
 	}
 	
 	return self;
@@ -145,8 +145,8 @@ NS_ASSUME_NONNULL_BEGIN
 			// Build a socket
 			_sock = [[SMSocket alloc] initWithSocket:_sockd];
 
-			[_sock setDelegate:self];
-			[_sock scheduleOperation:SMSocketOperationLine withSize:1 andTag:0];
+			_sock.delegate = self;
+			[_sock scheduleOperation:SMSocketOperationLine size:1 tag:0];
 			
 			// Notify
 			[self notify:TCCoreEventClientStarted];
@@ -196,16 +196,16 @@ NS_ASSUME_NONNULL_BEGIN
 	// > localQueue <
 
 	// Reschedule a line read.
-	[_sock scheduleOperation:SMSocketOperationLine withSize:1 andTag:0];
+	[_sock scheduleOperation:SMSocketOperationLine size:1 tag:0];
 	
 	// Little security check to detect mass pings with faked host names over the same connection.
-	if ([_lastPingIdentifier length] != 0)
+	if (_lastPingIdentifier.length != 0)
 	{
 		if ([identifier isEqualToString:_lastPingIdentifier] == NO)
 		{
 			// DEBUG
-			fprintf(stderr, "(1) Possible Attack: in-connection sent fake identifier '%s'\n", [identifier UTF8String]);
-			fprintf(stderr, "(1) Will disconnect incoming connection from fake '%s'\n", [identifier UTF8String]);
+			fprintf(stderr, "(1) Possible Attack: in-connection sent fake identifier '%s'\n", identifier.UTF8String);
+			fprintf(stderr, "(1) Will disconnect incoming connection from fake '%s'\n", identifier.UTF8String);
 			
 			// Notify
 			[self error:TCCoreErrorClientCmdPing fatal:YES];
@@ -245,7 +245,7 @@ NS_ASSUME_NONNULL_BEGIN
 	});
 }
 
-- (void)parser:(TCParser *)parser errorWithCode:(TCParserError)error andInformation:(NSString *)information
+- (void)parser:(TCParser *)parser errorWithErrorCode:(TCParserError)error errorInformation:(NSString *)information
 {
 	TCCoreError nerr = TCCoreErrorClientCmdUnknownCommand;
 	

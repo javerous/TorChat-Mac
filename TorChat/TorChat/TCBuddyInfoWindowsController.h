@@ -47,7 +47,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TCBuddyInfoWindowsController : NSObject
 
 // -- Instance --
-- (instancetype)initWithCoreManager:(TCCoreManager *)coreManager;
+- (instancetype)initWithCoreManager:(TCCoreManager *)coreManager NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // -- Tools --
 - (void)showInfoForBuddy:(TCBuddy *)buddy;

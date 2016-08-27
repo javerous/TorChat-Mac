@@ -97,9 +97,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)panelDidAppear
 {
-	// Load view.
-	[self view];
-
 	// Load configuration.
 	[self reloadConfiguration];
 	
@@ -127,7 +124,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (IBAction)doSelectReferral:(id)sender
 {
-	NSUInteger flags = [[[NSApplication sharedApplication] currentEvent] modifierFlags];
+	NSUInteger flags = [NSApplication sharedApplication].currentEvent.modifierFlags;
 	
 	if (flags & NSAlternateKeyMask)
 	{
@@ -150,7 +147,7 @@ NS_ASSUME_NONNULL_BEGIN
 				
 				// > Compose a default path.
 				NSBundle *bundle = [NSBundle mainBundle];
-				NSString *path = [[bundle bundlePath] stringByDeletingLastPathComponent];
+				NSString *path = bundle.bundlePath.stringByDeletingLastPathComponent;
 
 				// > Replace current value.
 				[self.config setPathForComponent:TCConfigPathComponentReferral pathType:TCConfigPathTypeAbsolute path:path];
@@ -212,8 +209,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	NSString *refPath = [self.config pathForComponent:TCConfigPathComponentReferral fullPath:YES];
 	
-	[referralTextField setStringValue:refPath];
-	[configPath setURL:[[NSURL fileURLWithPath:refPath] URLByAppendingPathComponent:@"torchat.conf"]];
+	referralTextField.stringValue = refPath;
+	configPath.URL = [[NSURL fileURLWithPath:refPath] URLByAppendingPathComponent:@"torchat.conf"];
 }
 
 @end

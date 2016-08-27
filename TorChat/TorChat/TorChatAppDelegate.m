@@ -223,7 +223,7 @@ NS_ASSUME_NONNULL_BEGIN
 	{
 		TCBuddy *buddy = [[TCBuddiesWindowController sharedController] selectedBuddy];
 		
-		if ([buddy blocked])
+		if (buddy.blocked)
 			[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_unblock_buddy", @"")];
 		else
 			[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_block_buddy", @"")];

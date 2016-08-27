@@ -210,7 +210,7 @@ NS_ASSUME_NONNULL_BEGIN
 	__block NSString *value;
  
 	dispatch_sync(_localQueue, ^{
-		value = [_fcontent objectForKey:TCCONF_KEY_TOR_ADDRESS];
+		value = _fcontent[TCCONF_KEY_TOR_ADDRESS];
 	});
 	
 	if (value)
@@ -225,7 +225,7 @@ NS_ASSUME_NONNULL_BEGIN
 		return;
 	
 	dispatch_barrier_async(_localQueue, ^{
-		[_fcontent setObject:address forKey:TCCONF_KEY_TOR_ADDRESS];
+		_fcontent[TCCONF_KEY_TOR_ADDRESS] = address;
 		[self _markDirty];
 	});
 }
@@ -235,11 +235,11 @@ NS_ASSUME_NONNULL_BEGIN
 	__block NSNumber *value;
  
 	dispatch_sync(_localQueue, ^{
-		value = [_fcontent objectForKey:TCCONF_KEY_TOR_PORT];
+		value = _fcontent[TCCONF_KEY_TOR_PORT];
 	});
 	
 	if (value)
-		return [value unsignedShortValue];
+		return value.unsignedShortValue;
 	else
 		return 9050;
 }
@@ -247,7 +247,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setTorPort:(uint16_t)port
 {
 	dispatch_barrier_async(_localQueue, ^{
-		[_fcontent setObject:@(port) forKey:TCCONF_KEY_TOR_PORT];
+		_fcontent[TCCONF_KEY_TOR_PORT] = @(port);
 		[self _markDirty];
 	});
 }
@@ -271,7 +271,7 @@ NS_ASSUME_NONNULL_BEGIN
 	__block NSString *value;
  
 	dispatch_sync(_localQueue, ^{
-		value = [_fcontent objectForKey:TCCONF_KEY_IM_IDENTIFIER];
+		value = _fcontent[TCCONF_KEY_IM_IDENTIFIER];
 	});
 	
 	return value;
@@ -282,7 +282,7 @@ NS_ASSUME_NONNULL_BEGIN
 	dispatch_barrier_async(_localQueue, ^{
 		
 		if (identifier)
-			[_fcontent setObject:identifier forKey:TCCONF_KEY_IM_IDENTIFIER];
+			_fcontent[TCCONF_KEY_IM_IDENTIFIER] = identifier;
 		else
 			[_fcontent removeObjectForKey:TCCONF_KEY_IM_IDENTIFIER];
 		
@@ -295,11 +295,11 @@ NS_ASSUME_NONNULL_BEGIN
 	__block NSNumber *value;
  
 	dispatch_sync(_localQueue, ^{
-		value = [_fcontent objectForKey:TCCONF_KEY_IM_PORT];
+		value = _fcontent[TCCONF_KEY_IM_PORT];
 	});
 	
 	if (value)
-		return [value unsignedShortValue];
+		return value.unsignedShortValue;
 	else
 		return 11009;
 }
@@ -307,7 +307,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setSelfPort:(uint16_t)selfPort
 {
 	dispatch_barrier_async(_localQueue, ^{
-		[_fcontent setObject:@(selfPort) forKey:TCCONF_KEY_IM_PORT];
+		_fcontent[TCCONF_KEY_IM_PORT] = @(selfPort);
 		[self _markDirty];
 	});
 }
@@ -319,7 +319,7 @@ NS_ASSUME_NONNULL_BEGIN
 	__block NSString *value;
  
 	dispatch_sync(_localQueue, ^{
-		value = [_fcontent objectForKey:TCCONF_KEY_PROFILE_NAME];
+		value = _fcontent[TCCONF_KEY_PROFILE_NAME];
 	});
 
 	return value;
@@ -330,7 +330,7 @@ NS_ASSUME_NONNULL_BEGIN
 	dispatch_barrier_async(_localQueue, ^{
 		
 		if (name)
-			[_fcontent setObject:name forKey:TCCONF_KEY_PROFILE_NAME];
+			_fcontent[TCCONF_KEY_PROFILE_NAME] = name;
 		else
 			[_fcontent removeObjectForKey:TCCONF_KEY_PROFILE_NAME];
 			
@@ -343,7 +343,7 @@ NS_ASSUME_NONNULL_BEGIN
 	__block NSString *value;
  
 	dispatch_sync(_localQueue, ^{
-		value = [_fcontent objectForKey:TCCONF_KEY_PROFILE_TEXT];
+		value = _fcontent[TCCONF_KEY_PROFILE_TEXT];
 	});
 	
 	return value;
@@ -354,7 +354,7 @@ NS_ASSUME_NONNULL_BEGIN
 	dispatch_barrier_async(_localQueue, ^{
 		
 		if (text)
-			[_fcontent setObject:text forKey:TCCONF_KEY_PROFILE_TEXT];
+			_fcontent[TCCONF_KEY_PROFILE_TEXT] = text;
 		else
 			[_fcontent removeObjectForKey:TCCONF_KEY_PROFILE_TEXT];
 
@@ -367,29 +367,29 @@ NS_ASSUME_NONNULL_BEGIN
 	__block id avatar;
  
 	dispatch_sync(_localQueue, ^{
-		avatar = [_fcontent objectForKey:TCCONF_KEY_PROFILE_AVATAR];
+		avatar = _fcontent[TCCONF_KEY_PROFILE_AVATAR];
 	});
 	
 	if ([avatar isKindOfClass:[NSDictionary class]])
 	{
 		NSDictionary *describe = avatar;
 		
-		NSNumber		*width = [describe objectForKey:@"width"];
-		NSNumber		*height = [describe objectForKey:@"width"];
-		NSData			*bitmap = [describe objectForKey:@"bitmap"];
-		NSData			*bitmapAlpha = [describe objectForKey:@"bitmap_alpha"];
+		NSNumber		*width = describe[@"width"];
+		NSNumber		*height = describe[@"width"];
+		NSData			*bitmap = describe[@"bitmap"];
+		NSData			*bitmapAlpha = describe[@"bitmap_alpha"];
 		
-		if ([width unsignedIntValue] == 0 || [height unsignedIntValue] == 0)
+		if (width.unsignedIntValue == 0 || height.unsignedIntValue == 0)
 			return nil;
 		
 		// Build TorChat core image
-		TCImage *image = [[TCImage alloc] initWithWidth:[width unsignedIntValue] height:[height unsignedIntValue]];
+		TCImage *image = [[TCImage alloc] initWithWidth:width.unsignedIntValue height:height.unsignedIntValue];
 		
 		[image setBitmap:bitmap];
 		[image setBitmapAlpha:bitmapAlpha];
 				
 		if (image)
-			[self setProfileAvatar:image]; // Replace by the new format.
+			self.profileAvatar = image; // Replace by the new format.
 		
 		return image;
 	}
@@ -424,7 +424,7 @@ NS_ASSUME_NONNULL_BEGIN
 		return;
 	
 	// Create PNG representation.
-	NSData *tiffData = [image TIFFRepresentation];
+	NSData *tiffData = image.TIFFRepresentation;
 	NSData *pngData;
 	
 	if (!tiffData)
@@ -436,7 +436,7 @@ NS_ASSUME_NONNULL_BEGIN
 		return;
 
 	dispatch_barrier_async(_localQueue, ^{
-		[_fcontent setObject:pngData forKey:TCCONF_KEY_PROFILE_AVATAR];
+		_fcontent[TCCONF_KEY_PROFILE_AVATAR] = pngData;
 		[self _markDirty];
 	});
 }
@@ -458,7 +458,7 @@ NS_ASSUME_NONNULL_BEGIN
 			__block NSString *value;
 			
 			dispatch_sync(_localQueue, ^{
-				value = [_fcontent objectForKey:TCCONF_KEY_CLIENT_VERSION];
+				value = _fcontent[TCCONF_KEY_CLIENT_VERSION];
 			});
 			
 			return value;
@@ -468,7 +468,7 @@ NS_ASSUME_NONNULL_BEGIN
 		{
 			NSString *value = [self clientVersion:TCConfigGetDefined];
 			
-			if ([value length] == 0)
+			if (value.length == 0)
 				value = [self clientVersion:TCConfigGetDefault];
 			
 			return value;
@@ -483,7 +483,7 @@ NS_ASSUME_NONNULL_BEGIN
 	dispatch_barrier_async(_localQueue, ^{
 		
 		if (version)
-			[_fcontent setObject:version forKey:TCCONF_KEY_CLIENT_VERSION];
+			_fcontent[TCCONF_KEY_CLIENT_VERSION] = version;
 		else
 			[_fcontent removeObjectForKey:TCCONF_KEY_CLIENT_VERSION];
 			
@@ -505,7 +505,7 @@ NS_ASSUME_NONNULL_BEGIN
 			__block NSString *value;
 			
 			dispatch_sync(_localQueue, ^{
-				value = [_fcontent objectForKey:TCCONF_KEY_CLIENT_NAME];
+				value = _fcontent[TCCONF_KEY_CLIENT_NAME];
 			});
 			
 			return value;
@@ -515,7 +515,7 @@ NS_ASSUME_NONNULL_BEGIN
 		{
 			NSString *value = [self clientName:TCConfigGetDefined];
 			
-			if ([value length] == 0)
+			if (value.length == 0)
 				value = [self clientName:TCConfigGetDefault];
 			
 			return value;
@@ -530,7 +530,7 @@ NS_ASSUME_NONNULL_BEGIN
 	dispatch_barrier_async(_localQueue, ^{
 		
 		if (name)
-			[_fcontent setObject:name forKey:TCCONF_KEY_CLIENT_NAME];
+			_fcontent[TCCONF_KEY_CLIENT_NAME] = name;
 		else
 			[_fcontent removeObjectForKey:TCCONF_KEY_CLIENT_NAME];
 			
@@ -547,7 +547,7 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	dispatch_sync(_localQueue, ^{
 		
-		NSArray *buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		NSArray *buddies = _fcontent[TCCONF_KEY_BUDDIES];
 		
 		for (NSDictionary *buddy in buddies)
 		{
@@ -569,24 +569,24 @@ NS_ASSUME_NONNULL_BEGIN
 	dispatch_barrier_async(_localQueue, ^{
 		
 		// Get buddies list.
-		NSMutableArray *buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		NSMutableArray *buddies = _fcontent[TCCONF_KEY_BUDDIES];
 		
 		if (!buddies)
 		{
 			buddies = [[NSMutableArray alloc] init];
-			[_fcontent setObject:buddies forKey:TCCONF_KEY_BUDDIES];
+			_fcontent[TCCONF_KEY_BUDDIES] = buddies;
 		}
 		
 		// Create buddy entry.
 		NSMutableDictionary *buddy = [[NSMutableDictionary alloc] init];
 		
-		[buddy setObject:identifier forKey:TCConfigBuddyIdentifier];
+		buddy[TCConfigBuddyIdentifier] = identifier;
 		
 		if (alias)
-			[buddy setObject:alias forKey:TCConfigBuddyAlias];
+			buddy[TCConfigBuddyAlias] = alias;
 		
 		if (notes)
-			[buddy setObject:notes forKey:TCConfigBuddyNotes];
+			buddy[TCConfigBuddyNotes] = notes;
 		
 		[buddies addObject:buddy];
 		
@@ -600,14 +600,14 @@ NS_ASSUME_NONNULL_BEGIN
 	dispatch_barrier_async(_localQueue, ^{
 		
 		// Remove from Cocoa version.
-		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-		NSUInteger		i, cnt = [array count];
+		NSMutableArray	*array = _fcontent[TCCONF_KEY_BUDDIES];
+		NSUInteger		i, cnt = array.count;
 		
 		for (i = 0; i < cnt; i++)
 		{
-			NSDictionary *buddy = [array objectAtIndex:i];
+			NSDictionary *buddy = array[i];
 			
-			if ([[buddy objectForKey:TCConfigBuddyIdentifier] isEqualToString:identifier])
+			if ([buddy[TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
 				[array removeObjectAtIndex:i];
 				break;
@@ -627,17 +627,17 @@ NS_ASSUME_NONNULL_BEGIN
 	dispatch_barrier_async(_localQueue, ^{
 		
 		// Change from Cocoa version.
-		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-		NSUInteger		i, cnt = [array count];
+		NSMutableArray	*array = _fcontent[TCCONF_KEY_BUDDIES];
+		NSUInteger		i, cnt = array.count;
 		
 		for (i = 0; i < cnt; i++)
 		{
-			NSMutableDictionary *buddy = [array objectAtIndex:i];
+			NSMutableDictionary *buddy = array[i];
 			
-			if ([[buddy objectForKey:TCConfigBuddyIdentifier] isEqualToString:identifier])
+			if ([buddy[TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
 				if (alias)
-					[buddy setObject:alias forKey:TCConfigBuddyAlias];
+					buddy[TCConfigBuddyAlias] = alias;
 				else
 					[buddy removeObjectForKey:TCConfigBuddyAlias];
 					
@@ -658,17 +658,17 @@ NS_ASSUME_NONNULL_BEGIN
 	dispatch_barrier_async(_localQueue, ^{
 	
 		// Change from Cocoa version.
-		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-		NSUInteger		i, cnt = [array count];
+		NSMutableArray	*array = _fcontent[TCCONF_KEY_BUDDIES];
+		NSUInteger		i, cnt = array.count;
 		
 		for (i = 0; i < cnt; i++)
 		{
-			NSMutableDictionary *buddy = [array objectAtIndex:i];
+			NSMutableDictionary *buddy = array[i];
 			
-			if ([[buddy objectForKey:TCConfigBuddyIdentifier] isEqualToString:identifier])
+			if ([buddy[TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
 				if (notes)
-					[buddy setObject:notes forKey:TCConfigBuddyNotes];
+					buddy[TCConfigBuddyNotes] = notes;
 				else
 					[buddy removeObjectForKey:TCConfigBuddyNotes];
 				
@@ -689,17 +689,17 @@ NS_ASSUME_NONNULL_BEGIN
 	dispatch_barrier_async(_localQueue, ^{
 		
 		// Change from Cocoa version
-		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-		NSUInteger		i, cnt = [array count];
+		NSMutableArray	*array = _fcontent[TCCONF_KEY_BUDDIES];
+		NSUInteger		i, cnt = array.count;
 		
 		for (i = 0; i < cnt; i++)
 		{
-			NSMutableDictionary *buddy = [array objectAtIndex:i];
+			NSMutableDictionary *buddy = array[i];
 			
-			if ([[buddy objectForKey:TCConfigBuddyIdentifier] isEqualToString:identifier])
+			if ([buddy[TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
 				if (lastName)
-					[buddy setObject:lastName forKey:TCConfigBuddyLastName];
+					buddy[TCConfigBuddyLastName] = lastName;
 				else
 					[buddy removeObjectForKey:TCConfigBuddyLastName];
 					
@@ -720,17 +720,17 @@ NS_ASSUME_NONNULL_BEGIN
 	dispatch_barrier_async(_localQueue, ^{
 		
 		// Change from Cocoa version
-		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-		NSUInteger		i, cnt = [array count];
+		NSMutableArray	*array = _fcontent[TCCONF_KEY_BUDDIES];
+		NSUInteger		i, cnt = array.count;
 		
 		for (i = 0; i < cnt; i++)
 		{
-			NSMutableDictionary *buddy = [array objectAtIndex:i];
+			NSMutableDictionary *buddy = array[i];
 			
-			if ([[buddy objectForKey:TCConfigBuddyIdentifier] isEqualToString:identifier])
+			if ([buddy[TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
 				if (lastText)
-					[buddy setObject:lastText forKey:TCConfigBuddyLastText];
+					buddy[TCConfigBuddyLastText] = lastText;
 				else
 					[buddy removeObjectForKey:TCConfigBuddyLastText];
 
@@ -750,7 +750,7 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	// Create PNG representation.
 	NSImage *image = [lastAvatar imageRepresentation];
-	NSData	*tiffData = [image TIFFRepresentation];
+	NSData	*tiffData = image.TIFFRepresentation;
 	NSData	*pngData;
 	
 	if (tiffData)
@@ -759,17 +759,17 @@ NS_ASSUME_NONNULL_BEGIN
 	// Change item.
 	dispatch_barrier_async(_localQueue, ^{
 		
-		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
-		NSUInteger		i, cnt = [array count];
+		NSMutableArray	*array = _fcontent[TCCONF_KEY_BUDDIES];
+		NSUInteger		i, cnt = array.count;
 		
 		for (i = 0; i < cnt; i++)
 		{
-			NSMutableDictionary *buddy = [array objectAtIndex:i];
+			NSMutableDictionary *buddy = array[i];
 			
-			if ([[buddy objectForKey:TCConfigBuddyIdentifier] isEqualToString:identifier])
+			if ([buddy[TCConfigBuddyIdentifier] isEqualToString:identifier])
 			{
 				if (pngData)
-					[buddy setObject:pngData forKey:TCConfigBuddyLastAvatar];
+					buddy[TCConfigBuddyLastAvatar] = pngData;
 				else
 					[buddy removeObjectForKey:TCConfigBuddyLastAvatar];
 				
@@ -791,7 +791,7 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	dispatch_sync(_localQueue, ^{
 		
-		NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		NSArray	*buddies = _fcontent[TCCONF_KEY_BUDDIES];
 		
 		for (NSDictionary *buddy in buddies)
 		{
@@ -815,7 +815,7 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	dispatch_sync(_localQueue, ^{
 		
-		NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		NSArray	*buddies = _fcontent[TCCONF_KEY_BUDDIES];
 		
 		for (NSDictionary *buddy in buddies)
 		{
@@ -839,7 +839,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 	dispatch_sync(_localQueue, ^{
 		
-		NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		NSArray	*buddies = _fcontent[TCCONF_KEY_BUDDIES];
 		
 		for (NSDictionary *buddy in buddies)
 		{
@@ -862,7 +862,7 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	dispatch_sync(_localQueue, ^{
 		
-		NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		NSArray	*buddies = _fcontent[TCCONF_KEY_BUDDIES];
 		
 		for (NSDictionary *buddy in buddies)
 		{
@@ -884,7 +884,7 @@ NS_ASSUME_NONNULL_BEGIN
 	__block NSData *result = nil;
 	
 	dispatch_sync(_localQueue, ^{
-		NSArray	*buddies = [_fcontent objectForKey:TCCONF_KEY_BUDDIES];
+		NSArray	*buddies = _fcontent[TCCONF_KEY_BUDDIES];
 		
 		for (NSDictionary *buddy in buddies)
 		{
@@ -918,7 +918,7 @@ NS_ASSUME_NONNULL_BEGIN
 	__block NSArray *result;
 	
 	dispatch_sync(_localQueue, ^{
-		result = [[_fcontent objectForKey:TCCONF_KEY_BLOCKED] copy];
+		result = [_fcontent[TCCONF_KEY_BLOCKED] copy];
 	});
 	
 	return result;
@@ -929,7 +929,7 @@ NS_ASSUME_NONNULL_BEGIN
 	dispatch_barrier_sync(_localQueue, ^{
 		
 		// Add to cocoa version
-		NSMutableArray *list = [_fcontent objectForKey:TCCONF_KEY_BLOCKED];
+		NSMutableArray *list = _fcontent[TCCONF_KEY_BLOCKED];
 		
 		if (list && [list indexOfObject:identifier] != NSNotFound)
 			return;
@@ -937,7 +937,7 @@ NS_ASSUME_NONNULL_BEGIN
 		if (!list)
 		{
 			list = [[NSMutableArray alloc] init];
-			[_fcontent setObject:list forKey:TCCONF_KEY_BLOCKED];
+			_fcontent[TCCONF_KEY_BLOCKED] = list;
 		}
 		
 		[list addObject:identifier];
@@ -952,12 +952,12 @@ NS_ASSUME_NONNULL_BEGIN
 	dispatch_barrier_sync(_localQueue, ^{
 		
 		// Remove from Cocoa version.
-		NSMutableArray	*array = [_fcontent objectForKey:TCCONF_KEY_BLOCKED];
-		NSUInteger		i, cnt = [array count];
+		NSMutableArray	*array = _fcontent[TCCONF_KEY_BLOCKED];
+		NSUInteger		i, cnt = array.count;
 		
 		for (i = 0; i < cnt; i++)
 		{
-			NSString *buddy = [array objectAtIndex:i];
+			NSString *buddy = array[i];
 			
 			if ([buddy isEqualToString:identifier])
 			{
@@ -993,7 +993,7 @@ NS_ASSUME_NONNULL_BEGIN
 				return;
 			
 			// Prepare move.
-			NSString *configFileName = [_fpath lastPathComponent];
+			NSString *configFileName = _fpath.lastPathComponent;
 			NSString *newPath = [path stringByAppendingPathComponent:configFileName];
 			
 			// Move.
@@ -1081,7 +1081,7 @@ NS_ASSUME_NONNULL_BEGIN
 		case TCConfigPathComponentReferral:
 		{
 			if (fullPath)
-				return [_fpath stringByDeletingLastPathComponent];
+				return _fpath.stringByDeletingLastPathComponent;
 			else
 				return nil;
 		}
@@ -1144,7 +1144,7 @@ NS_ASSUME_NONNULL_BEGIN
 			{
 				NSString *path = [self _pathForComponent:TCConfigPathComponentReferral fullPath:YES];
 				
-				return [[path stringByAppendingPathComponent:subPath] stringByStandardizingPath];
+				return [path stringByAppendingPathComponent:subPath].stringByStandardizingPath;
 			}
 			else
 				return subPath;
@@ -1179,7 +1179,7 @@ NS_ASSUME_NONNULL_BEGIN
 				if (!url)
 					return nil;
 				
-				return [[url path] stringByStandardizingPath];
+				return url.path.stringByStandardizingPath;
 			}
 			else
 				return standardSubPath;
@@ -1188,7 +1188,7 @@ NS_ASSUME_NONNULL_BEGIN
 		case TCConfigPathTypeAbsolute:
 		{
 			if (fullPath)
-				return [componentPath stringByStandardizingPath];
+				return componentPath.stringByStandardizingPath;
 			else
 				return componentPath;
 		}
@@ -1408,12 +1408,12 @@ NS_ASSUME_NONNULL_BEGIN
 	__block NSNumber *value;
  
 	dispatch_sync(_localQueue, ^{
-		value = [_fcontent objectForKey:TCCONF_KEY_MODE];
+		value = _fcontent[TCCONF_KEY_MODE];
 	});
 	
 	if (value)
 	{
-		int mode = [value unsignedShortValue];
+		int mode = value.unsignedShortValue;
 		
 		if (mode == TCConfigModeCustom)
 			return TCConfigModeCustom;
@@ -1429,7 +1429,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setMode:(TCConfigMode)mode
 {
 	dispatch_barrier_async(_localQueue, ^{
-		[_fcontent setObject:@(mode) forKey:TCCONF_KEY_MODE];
+		_fcontent[TCCONF_KEY_MODE] = @(mode);
 		[self _markDirty];
 	});
 }
@@ -1442,19 +1442,19 @@ NS_ASSUME_NONNULL_BEGIN
 	__block NSNumber *value;
  
 	dispatch_barrier_sync(_localQueue, ^{
-		value = [_fcontent objectForKey:TCCONF_KEY_UI_TITLE];
+		value = _fcontent[TCCONF_KEY_UI_TITLE];
 	});
 	
 	if (!value)
 		return TCConfigTitleIdentifier;
 	
-	return (TCConfigTitle)[value unsignedShortValue];
+	return (TCConfigTitle)value.unsignedShortValue;
 }
 
 - (void)setModeTitle:(TCConfigTitle)mode
 {
 	dispatch_barrier_async(_localQueue, ^{
-		[_fcontent setObject:@(mode) forKey:TCCONF_KEY_UI_TITLE];
+		_fcontent[TCCONF_KEY_UI_TITLE] = @(mode);
 		[self _markDirty];
 	});
 }
@@ -1525,6 +1525,21 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 
+#pragma mark General
+
+- (void)setGeneralSettingValue:(id)value forKey:(NSString *)key
+{
+	// Not implemented.
+}
+
+- (nullable id)generalSettingValueForKey:(NSString *)key
+{
+	// Not implemented.
+	
+	return nil;
+}
+
+
 
 /*
 ** TCConfigPlist - Helpers
@@ -1561,7 +1576,7 @@ NS_ASSUME_NONNULL_BEGIN
 		if (!fileVersion)
 			fileVersion = @(TCConfigVersion1);
 		
-		switch ([fileVersion intValue])
+		switch (fileVersion.intValue)
 		{
 			case TCConfigVersion1:
 			{
@@ -1579,7 +1594,7 @@ NS_ASSUME_NONNULL_BEGIN
 					NSMutableDictionary *componentConfig = [[NSMutableDictionary alloc] init];
 					
 					componentConfig[TCCONF_KEY_PATH_TYPE] = TCCONF_VALUE_PATH_TYPE_ABSOLUTE;
-					componentConfig[TCCONF_KEY_PATH_SUBPATH] = [oldTorData stringByExpandingTildeInPath];
+					componentConfig[TCCONF_KEY_PATH_SUBPATH] = oldTorData.stringByExpandingTildeInPath;
 
 					paths[TCCONF_KEY_PATH_TOR_DATA] = componentConfig;
 					
@@ -1603,7 +1618,7 @@ NS_ASSUME_NONNULL_BEGIN
 					NSMutableDictionary *componentConfig = [[NSMutableDictionary alloc] init];
 					
 					componentConfig[TCCONF_KEY_PATH_TYPE] = TCCONF_VALUE_PATH_TYPE_ABSOLUTE;
-					componentConfig[TCCONF_KEY_PATH_SUBPATH] = [oldTorHidden stringByExpandingTildeInPath];
+					componentConfig[TCCONF_KEY_PATH_SUBPATH] = oldTorHidden.stringByExpandingTildeInPath;
 					
 					paths[TCCONF_KEY_PATH_TOR_IDENTITY] = componentConfig;
 				}
@@ -1625,7 +1640,7 @@ NS_ASSUME_NONNULL_BEGIN
 					NSMutableDictionary *componentConfig = [[NSMutableDictionary alloc] init];
 					
 					componentConfig[TCCONF_KEY_PATH_TYPE] = TCCONF_VALUE_PATH_TYPE_ABSOLUTE;
-					componentConfig[TCCONF_KEY_PATH_SUBPATH] = [oldDownload stringByExpandingTildeInPath];
+					componentConfig[TCCONF_KEY_PATH_SUBPATH] = oldDownload.stringByExpandingTildeInPath;
 					
 					paths[TCCONF_KEY_PATH_DOWNLOADS] = componentConfig;
 					

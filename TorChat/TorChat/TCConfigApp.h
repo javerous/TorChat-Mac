@@ -33,17 +33,15 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - Types
 
-typedef enum
-{
+typedef NS_ENUM(unsigned int, TCConfigTitle) {
 	TCConfigTitleIdentifier	= 0,
 	TCConfigTitleName		= 1
-} TCConfigTitle;
+};
 
-typedef enum
-{
+typedef NS_ENUM(unsigned int, TCConfigMode) {
 	TCConfigModeCustom,
 	TCConfigModeBundled
-} TCConfigMode;
+};
 
 
 /*
@@ -74,6 +72,10 @@ typedef enum
 - (void)transcriptRemoveMessageForID:(int64_t)msgID;
 
 - (BOOL)transcriptMessagesIDBoundariesForBuddyIdentifier:(NSString *)identifier firstMessageID:(int64_t *)firstID lastMessageID:(int64_t *)lastID;
+
+// -- General --
+- (void)setGeneralSettingValue:(id)value forKey:(NSString *)key;
+- (nullable id)generalSettingValueForKey:(NSString *)key;
 
 @end
 

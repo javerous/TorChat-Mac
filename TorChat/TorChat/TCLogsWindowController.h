@@ -33,8 +33,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TCLogsWindowController : NSWindowController
 
-// -- Singleton --
+// -- Instance --
 + (TCLogsWindowController *)sharedController;
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
+- (instancetype)initWithWindow:(nullable NSWindow *)window NS_UNAVAILABLE;
 
 @end
 

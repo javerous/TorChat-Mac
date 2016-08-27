@@ -34,23 +34,27 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TCFileSend : NSObject
 
 // -- Properties --
-@property (strong, nonatomic, readonly) NSString	*uuid;
-@property (assign, nonatomic, readonly) uint64_t	fileSize;
-@property (assign, nonatomic, readonly) uint16_t	blockSize;
-@property (strong, nonatomic, readonly) NSString	*fileName;
-@property (strong, nonatomic, readonly) NSString	*filePath;
+@property (nonatomic, readonly) NSString *uuid;
+
+@property (assign, nonatomic, readonly)		uint64_t	fileSize;
+@property (nonatomic, readonly)				NSString	*fileName;
+@property (nullable, nonatomic, readonly)	NSString	*filePath;
+
+@property (nonatomic, getter=isFinished, readonly) BOOL finished;
+
+@property (nonatomic, readonly) uint16_t blockSize;
+@property (nonatomic, readonly) uint64_t validatedSize;
+@property (nonatomic, readonly) uint64_t readSize;
 
 // -- Instance --
-- (nullable instancetype)initWithFilePath:(NSString *)filePath;
+- (nullable instancetype)initWithFilePath:(NSString *)filePath NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithFileData:(NSData *)data fileName:(NSString *)fileName NS_DESIGNATED_INITIALIZER;
 
-// -- Tools --
+- (instancetype)init NS_UNAVAILABLE;
+
+// -- Content --
 - (nullable NSString *)readChunk:(void *)bytes chunkSize:(uint64_t *)chunkSize fileOffset:(uint64_t *)fileOffset;
 - (void)setNextChunkOffset:(uint64_t)offset;
-
-- (BOOL)isFinished;
-- (uint64_t)validatedSize;
-- (uint64_t)readSize;
-
 - (void)setValidatedOffset:(uint64_t)offset;
 
 @end

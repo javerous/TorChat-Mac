@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCThemesManager - Instance
 
-+ (instancetype)sharedManager
++ (TCThemesManager*)sharedManager
 {
 	static dispatch_once_t	onceToken;
 	static TCThemesManager	*shr;

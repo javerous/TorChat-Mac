@@ -153,11 +153,11 @@ NS_ASSUME_NONNULL_BEGIN
 			NSString		*path = nil;
 
 			NSArray *defaultSearchPaths = @[
-				[[[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"torchat.conf"], // config in same folder of the app (autonomous USB-key, DMG, etc.) - best to be first.
-				[@"~/torchat.conf" stringByExpandingTildeInPath],						// visible config in home directory.
-				[@"~/.torchat.conf" stringByExpandingTildeInPath],						// hidden config in home directory.
-				[@"~/.config/torchat.conf" stringByExpandingTildeInPath],				// visible config in config directory.
-				[@"~/Library/Preferences/torchat.conf" stringByExpandingTildeInPath],	// visible config in OS X Preferences directory.
+				[[NSBundle mainBundle].bundlePath.stringByDeletingLastPathComponent stringByAppendingPathComponent:@"torchat.conf"], // config in same folder of the app (autonomous USB-key, DMG, etc.) - best to be first.
+				@"~/torchat.conf".stringByExpandingTildeInPath,						// visible config in home directory.
+				@"~/.torchat.conf".stringByExpandingTildeInPath,						// hidden config in home directory.
+				@"~/.config/torchat.conf".stringByExpandingTildeInPath,				// visible config in config directory.
+				@"~/Library/Preferences/torchat.conf".stringByExpandingTildeInPath,	// visible config in OS X Preferences directory.
 			];
 			
 			for (NSString *tryPath in defaultSearchPaths)
@@ -349,7 +349,7 @@ NS_ASSUME_NONNULL_BEGIN
 	[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
 		
 		// Start tor only in bundled mode.
-		if ([configuration mode] != TCConfigModeBundled)
+		if (configuration.mode != TCConfigModeBundled)
 		{
 			ctrl(SMOperationsControlContinue);
 			return;
@@ -367,7 +367,7 @@ NS_ASSUME_NONNULL_BEGIN
 			return;
 		}
 		
-		torManager.logHandler = ^(SMTorLogKind kind, NSString *log) {
+		torManager.logHandler = ^(SMTorLogKind kind, NSString *log, BOOL fatalLog) {
 			
 			switch (kind)
 			{
@@ -378,6 +378,27 @@ NS_ASSUME_NONNULL_BEGIN
 				case SMTorLogError:
 					[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"tor_error_log", log];
 					break;
+			}
+			
+			if (fatalLog)
+			{
+				CFRunLoopRef runLoop = CFRunLoopGetMain();
+				
+				CFRunLoopPerformBlock(runLoop, kCFRunLoopCommonModes, ^{
+
+					NSAlert *alert = [[NSAlert alloc] init];
+					
+					alert.messageText = NSLocalizedString(@"main_ctrl_fatal_error", @"");
+					alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"main_ctrl_fatal_error_message", @""), log];
+					
+					[alert addButtonWithTitle:NSLocalizedString(@"main_ctrl_fatal_quit", @"")];
+					
+					[alert runModal];
+					
+					exit(0);
+				});
+				
+				CFRunLoopWakeUp(runLoop);
 			}
 		};
 
@@ -433,7 +454,7 @@ NS_ASSUME_NONNULL_BEGIN
 	// -- Update Tor if necessary --
 	[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
 		
-		if ([configuration mode] != TCConfigModeBundled)
+		if (configuration.mode != TCConfigModeBundled)
 		{
 			ctrl(SMOperationsControlContinue);
 			return;
@@ -481,7 +502,7 @@ NS_ASSUME_NONNULL_BEGIN
 		[core addObserver:self];
 		
 		// Handle current buddies.
-		NSArray *buddies = [core buddies];
+		NSArray *buddies = core.buddies;
 		
 		for (TCBuddy *buddy in buddies)
 		{
@@ -673,7 +694,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)buddy:(TCBuddy *)buddy information:(SMInfo *)info
 {
-	[[TCLogsManager sharedManager] addBuddyLogWithBuddyIdentifier:[buddy identifier] name:[buddy finalName] info:info];
+	// Skip spammy logs.
+	if ([info.domain isEqualToString:TCBuddyInfoDomain] && info.kind == SMInfoInfo && (info.code == TCBuddyEventFileReceiveRunning || info.code == TCBuddyEventFileSendRunning))
+		return;
+	
+	[[TCLogsManager sharedManager] addBuddyLogWithBuddyIdentifier:buddy.identifier name:buddy.finalName info:info];
 }
 
 

@@ -40,14 +40,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic, readonly) NSString	*fileName;
 @property (strong, nonatomic, readonly) NSString	*filePath;
 
+@property (nonatomic, getter=isFinished, readonly) BOOL finished;
+@property (nonatomic, readonly) uint64_t receivedSize;
+
 // -- Instance --
-- (nullable instancetype)initWithUUID:(NSString *)uuid folder:(NSString *)folder fileName:(NSString *)fileName fileSize:(uint64_t)fileSize blockSiz:(uint64_t)blockSize;
+- (nullable instancetype)initWithUUID:(NSString *)uuid folder:(NSString *)folder fileName:(NSString *)fileName fileSize:(uint64_t)fileSize blockSiz:(uint64_t)blockSize NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // -- Tools --
 - (BOOL)writeChunk:(const void *)bytes chunkSize:(uint64_t)chunkSize hash:(NSString *)hash offset:(uint64_t *)offset;
-
-- (BOOL)isFinished;
-- (uint64_t)receivedSize;
 
 @end
 

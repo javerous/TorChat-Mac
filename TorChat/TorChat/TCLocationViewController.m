@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 	IBOutlet NSTextField	*subPathField;
 	IBOutlet NSPathControl	*pathView;
 	
-	id <TCConfigCore>			_configuration;
+	id <TCConfigCore>		_configuration;
 	TCConfigPathComponent	_component;
 	
 	id _pathObserver;
@@ -99,8 +99,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (IBAction)doChangePlace:(id)sender
 {
-	NSInteger			index = [placePopupButton indexOfSelectedItem];
-	TCConfigPathType		pathType;
+	NSInteger			index = placePopupButton.indexOfSelectedItem;
+	TCConfigPathType	pathType;
 
 	// Compute domain & new path.
 	NSString *path = nil;
@@ -142,7 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
 		return;
 	}
 	
-	NSUInteger flags = [[[NSApplication sharedApplication] currentEvent] modifierFlags];
+	NSUInteger flags = [NSApplication sharedApplication].currentEvent.modifierFlags;
 	
 	if (flags & NSAlternateKeyMask)
 	{
@@ -268,7 +268,7 @@ NS_ASSUME_NONNULL_BEGIN
 	if (!fullPath)
 		fullPath = @"";
 	
-	[pathView setURL:[NSURL fileURLWithPath:fullPath]];
+	pathView.URL = [NSURL fileURLWithPath:fullPath];
 	
 	// Show subpath.
 	NSString *subPath = [_configuration pathForComponent:_component fullPath:NO];
@@ -276,7 +276,7 @@ NS_ASSUME_NONNULL_BEGIN
 	if (!subPath)
 		subPath = @"";
 	
-	[subPathField setStringValue:subPath];
+	subPathField.stringValue = subPath;
 	
 	// Show place.
 	TCConfigPathType pathType = [_configuration pathTypeForComponent:_component];
@@ -308,21 +308,21 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	// Code from "Hilton Campbell" ( http://stackoverflow.com/questions/6539273/objective-c-code-to-generate-a-relative-path-given-a-file-and-a-directory )
 	
-	NSArray *pathComponents = [path pathComponents];
-	NSArray *anchorComponents = [anchorPath pathComponents];
+	NSArray *pathComponents = path.pathComponents;
+	NSArray *anchorComponents = anchorPath.pathComponents;
 	
 	NSUInteger componentsInCommon = MIN([pathComponents count], [anchorComponents count]);
 	
 	for (NSUInteger i = 0, n = componentsInCommon; i < n; i++)
 	{
-		if (![[pathComponents objectAtIndex:i] isEqualToString:[anchorComponents objectAtIndex:i]]) {
+		if (![pathComponents[i] isEqualToString:anchorComponents[i]]) {
 			componentsInCommon = i;
 			break;
 		}
 	}
 	
-	NSUInteger numberOfParentComponents = [anchorComponents count] - componentsInCommon;
-	NSUInteger numberOfPathComponents = [pathComponents count] - componentsInCommon;
+	NSUInteger numberOfParentComponents = anchorComponents.count - componentsInCommon;
+	NSUInteger numberOfPathComponents = pathComponents.count - componentsInCommon;
 	
 	NSMutableArray *relativeComponents = [NSMutableArray arrayWithCapacity:
 										  numberOfParentComponents + numberOfPathComponents];

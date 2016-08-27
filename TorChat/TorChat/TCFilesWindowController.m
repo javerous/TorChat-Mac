@@ -40,10 +40,9 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Defines
 
 // Private file keys
-#define TCFileUUIDKey			@"uuid"
-#define TCFileStatusKey			@"status"
-#define TCFilePercentKey		@"percent"
-#define TCFileSpeedHelperKey	@"speed_helper"
+#define TCFileTransferUUIDKey			@"xuuid"
+#define TCFileTransferSpeedHelperKey	@"xspeed_helper"
+#define TCFileTransferStatusKey			@"xstatus"
 
 #define TCFileIconContextKey	@"icon_ctx"
 #define TCFileCancelContextKey	@"cancel_ctx"
@@ -134,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
 		[_core addObserver:self];
 		
 		// Handle current buddies.
-		NSArray *buddies = [_core buddies];
+		NSArray *buddies = _core.buddies;
 		
 		for (TCBuddy *buddy in buddies)
 		{
@@ -243,7 +242,7 @@ NS_ASSUME_NONNULL_BEGIN
 					return;
 				
 				// Add the file transfert to the controller
-				[self startFileTransfert:[finfo uuid] withFilePath:[finfo filePath] buddyIdentifier:[buddy identifier] buddyName:[buddy finalName] transfertWay:tcfile_upload fileSize:[finfo fileSizeTotal]];
+				[self startFileTransferUUID:finfo.uuid filePath:finfo.filePath fileName:finfo.fileName buddyIdentifier:buddy.identifier buddyName:buddy.finalName transferDirection:TCFileTransferDirectionUpload fileSize:finfo.fileSizeTotal];
 				
 				break;
 			}
@@ -256,7 +255,7 @@ NS_ASSUME_NONNULL_BEGIN
 					return;
 				
 				// Update bytes received
-				[self setCompleted:[finfo fileSizeCompleted] forFileTransfert:[finfo uuid] withWay:tcfile_upload];
+				[self updateFileTransferUUID:finfo.uuid transferDirection:TCFileTransferDirectionUpload completedSize:finfo.fileSizeCompleted];
 				
 				break;
 			}
@@ -269,7 +268,7 @@ NS_ASSUME_NONNULL_BEGIN
 					return;
 				
 				// Update status
-				[self setStatus:tcfile_status_finish andTextStatus:NSLocalizedString(@"file_upload_done", @"") forFileTransfert:[finfo uuid] withWay:tcfile_upload];
+				[self updateFileTransferUUID:finfo.uuid transferDirection:TCFileTransferDirectionUpload transferStatus:TCFileTransferStatusFinish transferTextStatus:NSLocalizedString(@"file_upload_done", @"")];
 				
 				break;
 			}
@@ -282,7 +281,7 @@ NS_ASSUME_NONNULL_BEGIN
 					return;
 				
 				// Update status
-				[self setStatus:tcfile_status_stopped andTextStatus:NSLocalizedString(@"file_upload_stopped", @"") forFileTransfert:[finfo uuid] withWay:tcfile_upload];
+				[self updateFileTransferUUID:finfo.uuid transferDirection:TCFileTransferDirectionUpload transferStatus:TCFileTransferStatusStopped transferTextStatus:NSLocalizedString(@"file_upload_stopped", @"")];
 				
 				break;
 			}
@@ -295,7 +294,7 @@ NS_ASSUME_NONNULL_BEGIN
 					return;
 				
 				// Add the file transfert to the controller
-				[self startFileTransfert:[finfo uuid] withFilePath:[finfo filePath] buddyIdentifier:[buddy identifier] buddyName:[buddy finalName] transfertWay:tcfile_download fileSize:[finfo fileSizeTotal]];
+				[self startFileTransferUUID:finfo.uuid filePath:finfo.filePath fileName:finfo.fileName buddyIdentifier:buddy.identifier buddyName:buddy.finalName transferDirection:TCFileTransferDirectionDownload fileSize:finfo.fileSizeTotal];
 				
 				break;
 			}
@@ -308,8 +307,8 @@ NS_ASSUME_NONNULL_BEGIN
 					return;
 				
 				// Update bytes received
-				[self setCompleted:[finfo fileSizeCompleted] forFileTransfert:[finfo uuid] withWay:tcfile_download];
-				
+				[self updateFileTransferUUID:finfo.uuid transferDirection:TCFileTransferDirectionDownload completedSize:finfo.fileSizeCompleted];
+
 				break;
 			}
 				
@@ -321,8 +320,8 @@ NS_ASSUME_NONNULL_BEGIN
 					return;
 				
 				// Update status
-				[self setStatus:tcfile_status_finish andTextStatus:NSLocalizedString(@"file_download_done", @"") forFileTransfert:[finfo uuid] withWay:tcfile_download];
-				
+				[self updateFileTransferUUID:finfo.uuid transferDirection:TCFileTransferDirectionDownload transferStatus:TCFileTransferStatusFinish transferTextStatus:NSLocalizedString(@"file_download_done", @"")];
+
 				break;
 			}
 				
@@ -334,8 +333,8 @@ NS_ASSUME_NONNULL_BEGIN
 					return;
 				
 				// Update status
-				[self setStatus:tcfile_status_stopped andTextStatus:NSLocalizedString(@"file_download_stopped", @"") forFileTransfert:[finfo uuid] withWay:tcfile_download];
-				
+				[self updateFileTransferUUID:finfo.uuid transferDirection:TCFileTransferDirectionDownload transferStatus:TCFileTransferStatusStopped transferTextStatus:NSLocalizedString(@"file_download_stopped", @"")];
+
 				break;
 			}
 		}
@@ -353,13 +352,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	NSInteger row = [_filesView rowForView:sender];
 	
-	if (row < 0 || row >= [_files count])
+	if (row < 0 || row >= _files.count)
 		return;
 	
 	NSDictionary	*file = _files[(NSUInteger)row];
 	NSString		*path = file[TCFileFilePathKey];
-		
-	[[NSWorkspace sharedWorkspace] selectFile:path inFileViewerRootedAtPath:@""];
+	
+	if (path)
+		[[NSWorkspace sharedWorkspace] selectFile:path inFileViewerRootedAtPath:@""];
 }
 
 - (IBAction)doCancelTransfer:(id)sender
@@ -367,28 +367,29 @@ NS_ASSUME_NONNULL_BEGIN
 	// Get transfert info.
 	NSInteger row = [_filesView rowForView:sender];
 	
-	if (row < 0 || row >= [_files count])
+	if (row < 0 || row >= _files.count)
 		return;
 	
 	NSDictionary *file = _files[(NSUInteger)row];
 
 	// Search the buddy associated with this transfert.
-	NSString	*uuid = file[TCFileUUIDKey];
 	NSString	*identifier = file[TCFileBuddyIdentifierKey];
-	tcfile_way	way = (tcfile_way)[file[TCFileWayKey] intValue];
+	NSString	*transferUUID = file[TCFileTransferUUIDKey];
+	TCFileTransferDirection transferDirection = (TCFileTransferDirection)[file[TCFileTransferDirectionKey] intValue];
+	
 	
 	for (TCBuddy *buddy in _buddies)
 	{
-		if ([[buddy identifier] isEqualToString:identifier])
+		if ([buddy.identifier isEqualToString:identifier])
 		{
 			// > Change the file status.
-			[self setStatus:tcfile_status_cancel andTextStatus:NSLocalizedString(@"file_canceling", @"") forFileTransfert:uuid withWay:way];
+			[self updateFileTransferUUID:transferUUID transferDirection:transferDirection transferStatus:TCFileTransferStatusCancel transferTextStatus:NSLocalizedString(@"file_canceling", @"")];
 			
 			// > Cancel the transfert.
-			if (way == tcfile_upload)
-				[buddy fileCancelOfUUID:uuid way:TCBuddyFileSend];
-			else if (way == tcfile_download)
-				[buddy fileCancelOfUUID:uuid way:TCBuddyFileReceive];
+			if (transferDirection == TCFileTransferDirectionUpload)
+				[buddy cancelTransferForTransferUUID:transferUUID transferDirection:TCBuddyFileTransferDirectionSend];
+			else if (transferDirection == TCFileTransferDirectionDownload)
+				[buddy cancelTransferForTransferUUID:transferUUID transferDirection:TCBuddyFileTransferDirectionReceive];
 			
 			return;
 		}
@@ -399,26 +400,27 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	NSInteger row = [_filesView rowForView:sender];
 	
-	if (row < 0 || row >= [_files count])
+	if (row < 0 || row >= _files.count)
 		return;
 	
 	NSDictionary	*file = _files[(NSUInteger)row];
 	NSString		*path = file[TCFileFilePathKey];
-			
-	[[NSWorkspace sharedWorkspace] openFile:path];
+	
+	if (path)
+		[[NSWorkspace sharedWorkspace] openFile:path];
 }
 
 - (IBAction)doClear:(id)sender
 {
 	NSMutableIndexSet	*indSet = [NSMutableIndexSet indexSet];
-	NSUInteger			i, cnt = [_files count];
+	NSUInteger			i, cnt = _files.count;
 	
 	for (i = 0; i < cnt; i++)
 	{
-		NSDictionary	*file = [_files objectAtIndex:i];
-		tcfile_status	status = (tcfile_status)[file[TCFileStatusKey] intValue];
+		NSDictionary			*file = _files[i];
+		TCFileTransferStatus	status = (TCFileTransferStatus)[file[TCFileTransferStatusKey] intValue];
 
-		if (status != tcfile_status_running)
+		if (status != TCFileTransferStatusRunning)
 			[indSet addIndex:i];
 	}
 	
@@ -437,23 +439,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {	
-	return (NSInteger)[_files count];
+	return (NSInteger)_files.count;
 }
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)rowIndex
 {
 	// Get cell.
-	TCFileCellView	*cellView = nil;
-	NSDictionary	*file = [_files objectAtIndex:(NSUInteger)rowIndex];
-	tcfile_status	status = (tcfile_status)[file[TCFileStatusKey] intValue];
+	TCFileCellView			*cellView = nil;
+	NSDictionary			*file = _files[(NSUInteger)rowIndex];
+	TCFileTransferStatus	status = (TCFileTransferStatus)[file[TCFileTransferStatusKey] intValue];
 
-	if (status == tcfile_status_running)
+	if (status == TCFileTransferStatusRunning)
 		cellView = [tableView makeViewWithIdentifier:@"transfers_progress" owner:self];
 	else
 		cellView = [tableView makeViewWithIdentifier:@"transfers_end" owner:self];
 
 	// Set content.
-	[cellView setContent:file];
+	cellView.content = file;
 	
 	// Set actions.
 	__weak TCFilesWindowController *weakSelf = self;
@@ -472,7 +474,11 @@ NS_ASSUME_NONNULL_BEGIN
 		};
 	}
 	
-	if (cellView.iconButton.actionHandler == nil)
+	if (file[TCFileFilePathKey] == nil)
+	{
+		cellView.iconButton.actionHandler = nil;
+	}
+	else if (cellView.iconButton.actionHandler == nil)
 	{
 		cellView.iconButton.actionHandler = ^(TCButton *button) {
 			[weakSelf doOpenTransfer:button];
@@ -483,28 +489,31 @@ NS_ASSUME_NONNULL_BEGIN
 	cellView.iconButton.context = (TCButtonContext *)file[TCFileIconContextKey];
 	cellView.cancelButton.context = (TCButtonContext *)file[TCFileCancelContextKey];
 	cellView.showButton.context = (TCButtonContext *)file[TCFileShowContextKey];
+	
+	// Set button visibility.
+	cellView.showButton.hidden = (file[TCFileFilePathKey] == nil);
 
 	return cellView;
 }
 
 - (BOOL)doDeleteKeyInTableView:(NSTableView *)aTableView
 {
-	NSIndexSet			*set = [_filesView selectedRowIndexes];
+	NSIndexSet			*set = _filesView.selectedRowIndexes;
 	NSMutableIndexSet	*final = [NSMutableIndexSet indexSet];
-    NSUInteger			currentIndex = [set firstIndex];
+    NSUInteger			currentIndex = set.firstIndex;
 	
     while (currentIndex != NSNotFound)
 	{
-		NSDictionary	*file = [_files objectAtIndex:currentIndex];
-		tcfile_status	status = (tcfile_status)[file[TCFileStatusKey] intValue];
+		NSDictionary			*file = _files[currentIndex];
+		TCFileTransferStatus	status = (TCFileTransferStatus)[file[TCFileTransferStatusKey] intValue];
 
-		if (status != tcfile_status_running)
+		if (status != TCFileTransferStatusRunning)
 			[final addIndex:currentIndex];
 
         currentIndex = [set indexGreaterThanIndex:currentIndex];
     }
 	
-	if ([final count] == 0)
+	if (final.count == 0)
 		return NO;
 	
 	// Remove items from array
@@ -524,10 +533,10 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCFilesWindowController - Helpers
 
-- (void)startFileTransfert:(NSString *)uuid withFilePath:(NSString *)filePath buddyIdentifier:(NSString *)identifier buddyName:(NSString *)name transfertWay:(tcfile_way)way fileSize:(uint64_t)size
+- (void)startFileTransferUUID:(NSString *)uuid filePath:(nullable NSString *)filePath fileName:(NSString *)fileName buddyIdentifier:(NSString *)identifier buddyName:(NSString *)name transferDirection:(TCFileTransferDirection)transferDirection fileSize:(uint64_t)size
 {
 	NSAssert(uuid, @"uuid is nil");
-	NSAssert(filePath, @"filePath is nil");
+	NSAssert(filePath || transferDirection == TCFileTransferDirectionUpload, @"filePath is nil while file download");
 	NSAssert(name, @"name is nil");
 	NSAssert(identifier, @"identifier is nil");
 	
@@ -535,16 +544,16 @@ NS_ASSUME_NONNULL_BEGIN
 	NSMutableDictionary *item = [[NSMutableDictionary alloc] init];
 	
 	// > Set icon.
-	NSImage *icon = [[NSWorkspace sharedWorkspace] iconForFileType:[filePath pathExtension]];
+	NSImage *icon = [[NSWorkspace sharedWorkspace] iconForFileType:fileName.pathExtension];
 	
-	[icon setSize:NSMakeSize(50, 50)];
+	icon.size = NSMakeSize(50, 50);
 	[icon lockFocus];
 	{
 		NSImage *badge = nil;
 		
-		if (way == tcfile_upload)
+		if (transferDirection == TCFileTransferDirectionUpload)
 			badge = [NSImage imageNamed:@"file_up"];
-		else if (way == tcfile_download)
+		else if (transferDirection == TCFileTransferDirectionDownload)
 			badge = [NSImage imageNamed:@"file_down"];
 		
 		if (badge)
@@ -554,46 +563,47 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	item[TCFileIconKey] = icon;
 	
-	// > Set speed helper.
+	// > Create speed helper.
 	SMSpeedHelper *speedHelper = [[SMSpeedHelper alloc] initWithCompleteAmount:size];
 
 	speedHelper.updateHandler = ^(NSTimeInterval remainingTime) {
 		dispatch_async(dispatch_get_main_queue(), ^{
 			
 			NSUInteger			idx = NSNotFound;
-			NSMutableDictionary *file = [self _fileForUUID:uuid way:way index:&idx];
+			NSMutableDictionary *file = [self _fileInfoForTransferUUID:uuid transferDirection:transferDirection index:&idx];
 			
 			if (!file)
 				return;
 			
-			file[TCFileRemainingTimeKey] = @(remainingTime);
+			file[TCFileTransferRemainingTimeKey] = @(remainingTime);
 			[_filesView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:idx] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 		});
 	};
-	
-	item[TCFileSpeedHelperKey] = speedHelper;
 	
 	// > Set button context.
 	item[TCFileIconContextKey] = [TCButton createEmptyContext];
 	item[TCFileCancelContextKey] = [TCButton createEmptyContext];
 	item[TCFileShowContextKey] = [TCButton createEmptyContext];
 	
-	// > Set general stuff.
-	item[TCFileUUIDKey] = uuid;
-	item[TCFileFilePathKey] = filePath;
+	// > Set general info.
+	item[TCFileTransferUUIDKey] = uuid;
+	if (filePath)
+		item[TCFileFilePathKey] = filePath;
+	item[TCFileFileNameKey] = fileName;
 	item[TCFileBuddyIdentifierKey] = identifier;
 	item[TCFileBuddyNameKey] = name;
-	item[TCFileWayKey] = @(way);
-	item[TCFileStatusKey] = @(tcfile_status_running);
-	item[TCFilePercentKey] = @0.0;
 	item[TCFileSizeKey] = @(size);
-	item[TCFileCompletedKey] = @0;
-	item[TCFileSpeedHelperKey] = speedHelper;
 	
-	if (way == tcfile_upload)
-		item[TCFileStatusTextKey] = NSLocalizedString(@"file_uploading", @"");
-	else if (way == tcfile_download)
-		item[TCFileStatusTextKey] = NSLocalizedString(@"file_downloading", @"");
+	// > Set transfer info.
+	item[TCFileTransferSpeedHelperKey] = speedHelper;
+	item[TCFileTransferDirectionKey] = @(transferDirection);
+	item[TCFileTransferStatusKey] = @(TCFileTransferStatusRunning);
+	item[TCFileTransferCompletedKey] = @0;
+
+	if (transferDirection == TCFileTransferDirectionUpload)
+		item[TCFileTransferStatusTextKey] = NSLocalizedString(@"file_uploading", @"");
+	else if (transferDirection == TCFileTransferDirectionDownload)
+		item[TCFileTransferStatusTextKey] = NSLocalizedString(@"file_downloading", @"");
 	
 	// Update things.
 	dispatch_async(dispatch_get_main_queue(), ^{
@@ -610,32 +620,32 @@ NS_ASSUME_NONNULL_BEGIN
 	});
 }
 
-- (void)setStatus:(tcfile_status)status andTextStatus:(NSString *)txtStatus forFileTransfert:(NSString *)uuid withWay:(tcfile_way)way
+- (void)updateFileTransferUUID:(NSString *)uuid transferDirection:(TCFileTransferDirection)direction transferStatus:(TCFileTransferStatus)status transferTextStatus:(NSString *)textStatus
 {
-	NSAssert(txtStatus, @"txtStatus is nil");
+	NSAssert(textStatus, @"txtStatus is nil");
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		// Search file.
 		NSUInteger			idx = NSNotFound;
-		NSMutableDictionary	*file = [self _fileForUUID:uuid way:way index:&idx];
+		NSMutableDictionary	*file = [self _fileInfoForTransferUUID:uuid transferDirection:direction index:&idx];
 		
 		if (!file)
 			return;
 		
 		// Update status.
-		file[TCFileStatusKey] = @(status);
-		file[TCFileStatusTextKey] = txtStatus;
+		file[TCFileTransferStatusKey] = @(status);
+		file[TCFileTransferStatusTextKey] = textStatus;
 
 		// Remove speed updater.
-		if (status != tcfile_status_running)
-		{			
-			SMSpeedHelper *speedHelper = file[TCFileSpeedHelperKey];
+		if (status != TCFileTransferStatusRunning)
+		{
+			SMSpeedHelper *speedHelper = file[TCFileTransferSpeedHelperKey];
 			
 			speedHelper.updateHandler = nil;
 			
-			[file removeObjectForKey:TCFileSpeedHelperKey];
-			[file removeObjectForKey:TCFileRemainingTimeKey];
+			[file removeObjectForKey:TCFileTransferSpeedHelperKey];
+			[file removeObjectForKey:TCFileTransferRemainingTimeKey];
 		}
 		
 		// Reload table.
@@ -644,22 +654,22 @@ NS_ASSUME_NONNULL_BEGIN
 	});
 }
 
-- (void)setCompleted:(uint64_t)size forFileTransfert:(NSString *)uuid withWay:(tcfile_way)way
+- (void)updateFileTransferUUID:(NSString *)uuid transferDirection:(TCFileTransferDirection)direction completedSize:(uint64_t)size
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
 		// Search file.
 		NSUInteger			idx = NSNotFound;
-		NSMutableDictionary *file = [self _fileForUUID:uuid way:way index:&idx];
+		NSMutableDictionary *file = [self _fileInfoForTransferUUID:uuid transferDirection:direction index:&idx];
 		
 		if (!file)
 			return;
 		
 		// Update completed.
-		file[TCFileCompletedKey] = @(size);
+		file[TCFileTransferCompletedKey] = @(size);
 		
 		// Update speed helper.
-		SMSpeedHelper *speedHelper = file[TCFileSpeedHelperKey];
+		SMSpeedHelper *speedHelper = file[TCFileTransferSpeedHelperKey];
 		
 		if (speedHelper)
 			[speedHelper setCurrentAmount:size];
@@ -674,66 +684,66 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	// > main queue <
 	
-	unsigned count_up = 0;
-	unsigned count_down = 0;
-	unsigned count_run = 0;
-	unsigned count_unrun = 0;
+	unsigned countUpload = 0;
+	unsigned countDownload = 0;
+	unsigned coutRunning = 0;
+	unsigned countNotRunning = 0;
 	
 	for (NSDictionary *file in _files)
 	{
-		tcfile_status	status = (tcfile_status)[file[TCFileStatusKey] intValue];
-		tcfile_way		way = (tcfile_way)[file[TCFileWayKey] intValue];
+		TCFileTransferStatus		transferStatus = (TCFileTransferStatus)[file[TCFileTransferStatusKey] intValue];
+		TCFileTransferDirection		transferDirection = (TCFileTransferDirection)[file[TCFileTransferDirectionKey] intValue];
 		
-		if (status == tcfile_status_running)
-			count_run++;
+		if (transferStatus == TCFileTransferStatusRunning)
+			coutRunning++;
 		else
-			count_unrun++;
+			countNotRunning++;
 		
-		if (way == tcfile_upload)
-			count_up++;
-		else if (way == tcfile_download)
-			count_down++;
+		if (transferDirection == TCFileTransferDirectionUpload)
+			countUpload++;
+		else if (transferDirection == TCFileTransferDirectionDownload)
+			countDownload++;
 	}
 	
 	// Activate items
-	[_clearButton setEnabled:(count_unrun > 0)];
-	[_countField setHidden:([_files count] == 0)];
+	_clearButton.enabled = (countNotRunning > 0);
+	_countField.hidden = (_files.count == 0);
 
 	NSString *key;
 
 	// Build up string
-	NSString *txt_up = nil;
+	NSString *textUpload = nil;
 	
 	key = NSLocalizedString(@"file_uploads", @"");
 	
-	if (count_up > 1)
-		txt_up = [NSString stringWithFormat:key, count_up];
-	else if (count_up > 0)
-		txt_up = NSLocalizedString(@"file_one_upload", @"");
+	if (countUpload > 1)
+		textUpload = [NSString stringWithFormat:key, countUpload];
+	else if (countUpload > 0)
+		textUpload = NSLocalizedString(@"file_one_upload", @"");
 	
 	// Build down string
-	NSString *txt_down = nil;
+	NSString *textDownload = nil;
 	
 	key = NSLocalizedString(@"file_downloads", @"");
 
-	if (count_down > 1)
-		txt_down = [NSString stringWithFormat:key, count_up];
-	else if (count_down > 0)
-		txt_down = NSLocalizedString(@"file_one_download", @"");
+	if (countDownload > 1)
+		textDownload = [NSString stringWithFormat:key, countDownload];
+	else if (countDownload > 0)
+		textDownload = NSLocalizedString(@"file_one_download", @"");
 
 	// Show the final string
-	if (txt_up && txt_down)
-		[_countField setStringValue:[NSString stringWithFormat:@"%@ — %@", txt_down, txt_up]];
+	if (textUpload && textDownload)
+		_countField.stringValue = [NSString stringWithFormat:@"%@ — %@", textDownload, textUpload];
 	else
 	{
-		if (txt_up)
-			[_countField setStringValue:txt_up];
-		else if (txt_down)
-			[_countField setStringValue:txt_down];
+		if (textUpload)
+			_countField.stringValue = textUpload;
+		else if (textDownload)
+			_countField.stringValue = textDownload;
 	}
 }
 
-- (NSMutableDictionary *)_fileForUUID:(NSString *)uuid way:(tcfile_way)way index:(NSUInteger *)index
+- (NSMutableDictionary *)_fileInfoForTransferUUID:(NSString *)uuid transferDirection:(TCFileTransferDirection)direction index:(NSUInteger *)index
 {
 	// > main queue <
 	
@@ -741,10 +751,10 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	[_files enumerateObjectsUsingBlock:^(NSMutableDictionary * _Nonnull file, NSUInteger idx, BOOL * _Nonnull stop) {
 		
-		NSString	*auuid = file[TCFileUUIDKey];
-		tcfile_way	away = (tcfile_way)[file[TCFileWayKey] intValue];
+		NSString	*auuid = file[TCFileTransferUUIDKey];
+		TCFileTransferDirection	adirection = (TCFileTransferDirection)[file[TCFileTransferDirectionKey] intValue];
 		
-		if (away != way || [auuid isEqualToString:uuid] == NO)
+		if (adirection != direction || [auuid isEqualToString:uuid] == NO)
 			return;
 		
 		result = file;

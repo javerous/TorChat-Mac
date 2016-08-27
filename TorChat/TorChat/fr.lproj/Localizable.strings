@@ -50,6 +50,10 @@
 "main_ctrl_conf_error_tor_manager" =  "Impossible de créer le gestionnaire Tor - veuillez vérifier votre fichier de configuration.";
 "main_ctrl_conf_error_core_manager" =  "Impossible de créer le gestionnaire Core - veuillez vérifier votre fichier de configuration.";
 
+"main_ctrl_fatal_error" = "Erreur fatale";
+"main_ctrl_fatal_error_message" = "Une erreur fatale est survenue avec le binaire tor préinclus : %@";
+"main_ctrl_fatal_quit" = "Quitter";
+
 
 /* Configuration Helper */
 "conf_helper_info_import_sucess" = "Clef privée importé avec succès.";
@@ -119,6 +123,10 @@
 "chat_error_send_blocked" = "Ce message n'a pas pu être envoyé parce que le contact était bloqué. Voulez-vous le réenvoyer ?";
 "chat_send_resend" = "Réenvoyer";
 "chat_send_cancel" = "Annuler";
+
+"chat_media_audio" = "Audio";
+"chat_media_images" = "Images";
+"chat_media_movies" = "Vidéos";
 
 
 /* Logs */

@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) NSImage *pushImage;
 
 // Action.
-@property (strong, nonatomic) void (^actionHandler)(TCButton *button);
+@property (nullable, strong, nonatomic) void (^actionHandler)(TCButton *button);
 
 @end
 

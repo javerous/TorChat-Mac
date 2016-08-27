@@ -314,7 +314,7 @@ NS_ASSUME_NONNULL_BEGIN
 		const char *uriPath;
 
 		_dtbUUID = SMSQLiteCryptoVFSSettingsAdd(_dtbPassword, SMCryptoFileKeySize256);
-		uriPath = [[NSString stringWithFormat:@"file://%@?crypto-uuid=%s", _dtbPath, _dtbUUID] UTF8String];
+		uriPath = [NSString stringWithFormat:@"file://%@?crypto-uuid=%s", _dtbPath, _dtbUUID].UTF8String;
 		
 		result = sqlite3_open_v2(uriPath, &_dtb, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_URI, SMSQLiteCryptoVFSName());
 		
@@ -557,9 +557,9 @@ NS_ASSUME_NONNULL_BEGIN
 		NSNumber *val = value;
 		
 		if (strcmp(val.objCType, @encode(float)) == 0 || strcmp(val.objCType, @encode(double)) == 0 || strcmp(val.objCType, @encode(long double)) == 0)
-			sqlite3_bind_double(stmt, index, [val doubleValue]);
+			sqlite3_bind_double(stmt, index, val.doubleValue);
 		else
-			sqlite3_bind_int64(stmt, index, [val integerValue]);
+			sqlite3_bind_int64(stmt, index, val.integerValue);
 	}
 	else if ([value isKindOfClass:[NSData class]])
 	{
@@ -736,7 +736,7 @@ NS_ASSUME_NONNULL_BEGIN
 	NSNumber *result = [self settingForKey:TCConfigTorSocksPortKey];
 
 	if (result)
-		return [result unsignedShortValue];
+		return result.unsignedShortValue;
 
 	return 9050;
 }
@@ -774,7 +774,7 @@ NS_ASSUME_NONNULL_BEGIN
 	NSNumber *result = [self settingForKey:TCConfigSelfPortKey];
 	
 	if (result)
-		return [result unsignedShortValue];
+		return result.unsignedShortValue;
 	
 	return 11009;
 }
@@ -833,7 +833,7 @@ NS_ASSUME_NONNULL_BEGIN
 			return;
 		
 		// Create PNG representation.
-		NSData *tiffData = [image TIFFRepresentation];
+		NSData *tiffData = image.TIFFRepresentation;
 		NSData *pngData;
 		
 		if (!tiffData)
@@ -1073,7 +1073,7 @@ NS_ASSUME_NONNULL_BEGIN
 		
 		// Create PNG representation.
 		NSImage *image = [lastAvatar imageRepresentation];
-		NSData	*tiffData = [image TIFFRepresentation];
+		NSData	*tiffData = image.TIFFRepresentation;
 		NSData	*pngData = nil;
 		
 		if (tiffData)
@@ -1268,7 +1268,7 @@ NS_ASSUME_NONNULL_BEGIN
 				return;
 			
 			// Prepare move.
-			NSString *configFileName = [_dtbPath lastPathComponent];
+			NSString *configFileName = _dtbPath.lastPathComponent;
 			NSString *newPath = [path stringByAppendingPathComponent:configFileName];
 			
 			[self _closeDatabase];
@@ -1350,7 +1350,7 @@ NS_ASSUME_NONNULL_BEGIN
 		case TCConfigPathComponentReferral:
 		{
 			if (fullPath)
-				return [_dtbPath stringByDeletingLastPathComponent];
+				return _dtbPath.stringByDeletingLastPathComponent;
 			else
 				return nil;
 		}
@@ -1434,7 +1434,7 @@ NS_ASSUME_NONNULL_BEGIN
 			{
 				NSString *path = [self _pathForComponent:TCConfigPathComponentReferral fullPath:YES];
 				
-				return [[path stringByAppendingPathComponent:subPath] stringByStandardizingPath];
+				return [path stringByAppendingPathComponent:subPath].stringByStandardizingPath;
 			}
 			else
 				return subPath;
@@ -1469,7 +1469,7 @@ NS_ASSUME_NONNULL_BEGIN
 				if (!url)
 					return nil;
 				
-				return [[url path] stringByStandardizingPath];
+				return url.path.stringByStandardizingPath;
 			}
 			else
 				return standardSubPath;
@@ -1478,7 +1478,7 @@ NS_ASSUME_NONNULL_BEGIN
 		case TCConfigPathTypeAbsolute:
 		{
 			if (fullPath)
-				return [componentPath stringByStandardizingPath];
+				return componentPath.stringByStandardizingPath;
 			else
 				return componentPath;
 		}
@@ -1714,7 +1714,7 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 	
 	if (result)
 	{
-		int mode = [result unsignedShortValue];
+		int mode = result.unsignedShortValue;
 		
 		if (mode == TCConfigModeCustom)
 			return TCConfigModeCustom;
@@ -1742,7 +1742,7 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 	if (!result)
 		return TCConfigTitleIdentifier;
 	
-	return (TCConfigTitle)[result unsignedShortValue];
+	return (TCConfigTitle)result.unsignedShortValue;
 }
 
 - (void)setModeTitle:(TCConfigTitle)mode
@@ -1891,7 +1891,7 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 		sqlite3_bind_int64(_stmtSelectMsgTranscript, 1, buddyID);
 		
 		if (msgId)
-			sqlite3_bind_int64(_stmtSelectMsgTranscript, 2, [msgId longLongValue]);
+			sqlite3_bind_int64(_stmtSelectMsgTranscript, 2, msgId.longLongValue);
 		else
 			sqlite3_bind_int64(_stmtSelectMsgTranscript, 2, LONG_MAX);
 
@@ -2019,6 +2019,24 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 }
 
 
+#pragma mark General
+
+- (void)setGeneralSettingValue:(id)value forKey:(NSString *)key
+{
+	NSAssert(value, @"value is nil");
+	NSAssert(key, @"key is nil");
+	
+	[self setSetting:value forKey:[NSString stringWithFormat:@"general-%@", key]];
+}
+
+- (nullable id)generalSettingValueForKey:(NSString *)key
+{
+	NSAssert(key, @"key is nil");
+
+	return [self settingForKey:[NSString stringWithFormat:@"general-%@", key]];
+}
+
+
 
 /*
 ** TCConfigSQLite - TCConfigEncryptable
@@ -2109,7 +2127,7 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 			const char *uriPath;
 			
 			odtbUUID = SMSQLiteCryptoVFSSettingsAdd(_dtbPassword, SMCryptoFileKeySize256);
-			uriPath = [[NSString stringWithFormat:@"file://%@?crypto-uuid=%s", tpath, odtbUUID] UTF8String];
+			uriPath = [NSString stringWithFormat:@"file://%@?crypto-uuid=%s", tpath, odtbUUID].UTF8String;
 			
 			sres = sqlite3_open_v2(uriPath, &odtb, SQLITE_OPEN_READONLY | SQLITE_OPEN_URI, SMSQLiteCryptoVFSName());
 			
@@ -2295,7 +2313,7 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 			const char *uriPath;
 			
 			ndtbUUID = SMSQLiteCryptoVFSSettingsAdd(ndtbPassword, SMCryptoFileKeySize256);
-			uriPath = [[NSString stringWithFormat:@"file://%@?crypto-uuid=%s", _dtbPath, ndtbUUID] UTF8String];
+			uriPath = [NSString stringWithFormat:@"file://%@?crypto-uuid=%s", _dtbPath, ndtbUUID].UTF8String;
 			
 			sres = sqlite3_open_v2(uriPath, &ndtb, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_URI, SMSQLiteCryptoVFSName());
 			

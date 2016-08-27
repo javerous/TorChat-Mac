@@ -144,7 +144,7 @@ static BOOL isNumber(NSString *str);
 	// Configure assistant.
 	[self.panelProxy setDisableContinue:YES];
 	
-	[_currentConfig setMode:TCConfigModeCustom];
+	_currentConfig.mode = TCConfigModeCustom;
 	
 	// Add view to configure download path.
 	_torDownloadsLocation = [[TCLocationViewController alloc] initWithConfiguration:_currentConfig component:TCConfigPathComponentDownloads];
@@ -260,7 +260,7 @@ static BOOL isNumber(NSString *str);
 
 static BOOL isNumber(NSString *str)
 {
-	return (str.length > 0) && ([str rangeOfCharacterFromSet:[[NSCharacterSet decimalDigitCharacterSet] invertedSet]].location == NSNotFound);
+	return (str.length > 0) && ([str rangeOfCharacterFromSet:[NSCharacterSet decimalDigitCharacterSet].invertedSet].location == NSNotFound);
 }
 
 

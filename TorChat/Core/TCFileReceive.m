@@ -78,20 +78,20 @@ NS_ASSUME_NONNULL_BEGIN
 		_blockSize = blockSize;
 		
 		// Check that the file already exist
-		if (stat([fullPath UTF8String], &st) != 0)
+		if (stat(fullPath.UTF8String, &st) != 0)
 		{
 			_filePath = fullPath;
 			_fileName = fileName;
 			
-			_file = fopen([fullPath UTF8String], "w");
+			_file = fopen(fullPath.UTF8String, "w");
 			
 			if (!_file)
 				return nil;
 		}
 		else
 		{
-			NSString	*ext = [fileName pathExtension];
-			NSString	*name = [fileName stringByDeletingPathExtension];
+			NSString	*ext = fileName.pathExtension;
+			NSString	*name = fileName.stringByDeletingPathExtension;
 			NSUInteger	idx = 1;
 
 			// Search for a good name
@@ -100,19 +100,19 @@ NS_ASSUME_NONNULL_BEGIN
 				NSString *tempName;
 				NSString *tempPath;
 				
-				if ([ext length] > 0)
+				if (ext.length > 0)
 					tempName = [NSString stringWithFormat:@"%@-%lu.%@", name, (unsigned long)idx, ext];
 				else
 					tempName = [NSString stringWithFormat:@"%@-%lu", name, (unsigned long)idx];
 
 				tempPath = [folder stringByAppendingPathComponent:tempName];
 								
-				if (stat([tempPath UTF8String], &st) != 0)
+				if (stat(tempPath.UTF8String, &st) != 0)
 				{
 					_filePath = tempPath;
 					_fileName = tempName;
 					
-					_file = fopen([tempPath UTF8String], "w");
+					_file = fopen(tempPath.UTF8String, "w");
 					
 					if (!_file)
 						return nil;

@@ -160,8 +160,8 @@ NS_ASSUME_NONNULL_BEGIN
 		// Date formatter.
 		_dateFormatter = [[NSDateFormatter alloc] init];
 		
-		[_dateFormatter setDateStyle:NSDateFormatterShortStyle];
-		[_dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
+		_dateFormatter.dateStyle = NSDateFormatterShortStyle;
+		_dateFormatter.timeStyle = NSDateFormatterMediumStyle;
 		
 		// Add logs observer.
 		[[TCLogsManager sharedManager] addObserver:self forKey:nil];
@@ -188,24 +188,24 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	if (aTableView == _entriesView)
 	{
-		return (NSInteger)[_klogs count];
+		return (NSInteger)_klogs.count;
 	}
 	else if (aTableView == _logsView)
 	{
-		NSInteger kindex = [_entriesView selectedRow];
+		NSInteger kindex = _entriesView.selectedRow;
 		
-		if (kindex < 0 || kindex >= [_klogs count])
+		if (kindex < 0 || kindex >= _klogs.count)
 			return 0;
 			
-		NSString *key = [_klogs objectAtIndex:(NSUInteger)kindex];
+		NSString *key = _klogs[(NSUInteger)kindex];
 		
 		if ([key isEqualToString:TCLogsAllKey])
 		{
-			return (NSInteger)[_allLogs count];
+			return (NSInteger)_allLogs.count;
 		}
 		else if ([key isEqualToString:TCLogsGlobalKey])
 		{
-			return (NSInteger)[[_logs objectForKey:TCLogsGlobalKey] count];
+			return (NSInteger)[_logs[TCLogsGlobalKey] count];
 		}
 		else if ([key isEqualToString:TCLogsSeparatorKey])
 		{
@@ -213,7 +213,7 @@ NS_ASSUME_NONNULL_BEGIN
 		}
 		else
 		{
-			return (NSInteger)[[_logs objectForKey:key] count];
+			return (NSInteger)[_logs[key] count];
 		}
 	}
 	
@@ -224,10 +224,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	if (aTableView == _entriesView)
 	{
-		if (rowIndex < 0 || rowIndex > [_klogs count])
+		if (rowIndex < 0 || rowIndex > _klogs.count)
 			return nil;
 		
-		NSString *key = [_klogs objectAtIndex:(NSUInteger)rowIndex];
+		NSString *key = _klogs[(NSUInteger)rowIndex];
 		
 		if ([key isEqualToString:TCLogsAllKey])
 			return NSLocalizedString(@"logs_all_logs", @"");
@@ -245,27 +245,27 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 	else if (aTableView == _logsView)
 	{
-		NSInteger kindex = [_entriesView selectedRow];
+		NSInteger kindex = _entriesView.selectedRow;
 		NSString *identifier = aTableColumn.identifier;
 
-		if (kindex < 0 || kindex >= [_klogs count])
+		if (kindex < 0 || kindex >= _klogs.count)
 			return nil;
 		
-		NSString	*key = [_klogs objectAtIndex:(NSUInteger)kindex];
+		NSString	*key = _klogs[(NSUInteger)kindex];
 		TCLogEntry *entry;
 		
 		// Select the content to show.
 		if ([key isEqualToString:TCLogsAllKey])
 		{
-			if (rowIndex < 0 || rowIndex >= [_allLogs count])
+			if (rowIndex < 0 || rowIndex >= _allLogs.count)
 				return nil;
 			
-			NSDictionary *item = [_allLogs objectAtIndex:(NSUInteger)rowIndex];
+			NSDictionary *item = _allLogs[(NSUInteger)rowIndex];
 			
-			if ([[item objectForKey:TCLogsTitleKey] boolValue])
+			if ([item[TCLogsTitleKey] boolValue])
 			{
 				// Handle title case.
-				NSString *str = [item objectForKey:TCLogsTextKey];
+				NSString *str = item[TCLogsTextKey];
 
 				if ([str isEqualToString:TCLogsGlobalKey])
 					return NSLocalizedString(@"logs_global_logs", @"");
@@ -282,29 +282,29 @@ NS_ASSUME_NONNULL_BEGIN
 			else
 			{
 				// Use entry.
-				entry = [item objectForKey:TCLogsEntryKey];
+				entry = item[TCLogsEntryKey];
 			}
 		}
 		else if ([key isEqualToString:TCLogsGlobalKey])
 		{
-			NSArray *array = [_logs objectForKey:TCLogsGlobalKey];
+			NSArray *array = _logs[TCLogsGlobalKey];
 			
-			if (rowIndex < 0 || rowIndex >= [array count])
+			if (rowIndex < 0 || rowIndex >= array.count)
 				return nil;
 
-			entry = [array objectAtIndex:(NSUInteger)rowIndex];
+			entry = array[(NSUInteger)rowIndex];
 		}
 		else if ([key isEqualToString:TCLogsSeparatorKey])
 		{
 		}
 		else
 		{
-			NSArray *array = [_logs objectForKey:key];
+			NSArray *array = _logs[key];
 			
-			if (rowIndex < 0 || rowIndex >= [array count])
+			if (rowIndex < 0 || rowIndex >= array.count)
 				return nil;
 			
-			entry = [array objectAtIndex:(NSUInteger)rowIndex];
+			entry = array[(NSUInteger)rowIndex];
 		}
 		
 		// Show content.
@@ -336,20 +336,20 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	if (tableView == _logsView)
 	{
-		NSInteger	kindex = [_entriesView selectedRow];
+		NSInteger	kindex = _entriesView.selectedRow;
 		NSString	*key;
 		
-		if (kindex < 0 || kindex >= [_klogs count])
+		if (kindex < 0 || kindex >= _klogs.count)
 			return NO;
 		
-		key = [_klogs objectAtIndex:(NSUInteger)kindex];
+		key = _klogs[(NSUInteger)kindex];
 		
 		if ([key isEqualToString:TCLogsAllKey] == NO)
 			return NO;
 		
-		NSDictionary *item = [_allLogs objectAtIndex:(NSUInteger)rowIndex];
+		NSDictionary *item = _allLogs[(NSUInteger)rowIndex];
 		
-		return [[item objectForKey:TCLogsTitleKey] boolValue];
+		return [item[TCLogsTitleKey] boolValue];
 	}
 	
 	return NO;
@@ -361,16 +361,16 @@ NS_ASSUME_NONNULL_BEGIN
 	{
 		NSString *key;
 		
-		if (rowIndex < 0 || rowIndex >= [_klogs count])
-			return [tableView rowHeight];
+		if (rowIndex < 0 || rowIndex >= _klogs.count)
+			return tableView.rowHeight;
 		
-		key = [_klogs objectAtIndex:(NSUInteger)rowIndex];
+		key = _klogs[(NSUInteger)rowIndex];
 		
 		if ([key isEqualToString:TCLogsSeparatorKey])
 			return 2;
 	}
 	
-	return [tableView rowHeight];
+	return tableView.rowHeight;
 }
 
 - (NSCell *)tableView:(NSTableView *)tableView dataCellForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)rowIndex
@@ -378,7 +378,7 @@ NS_ASSUME_NONNULL_BEGIN
 	if (tableView == _entriesView)
 	{
 		// Handle row styles.
-		NSString *key = [_klogs objectAtIndex:(NSUInteger)rowIndex];
+		NSString *key = _klogs[(NSUInteger)rowIndex];
 		
 		if ([key isEqualToString:TCLogsSeparatorKey])
 			return _separatorCell;
@@ -387,20 +387,20 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 	else if (tableView == _logsView)
 	{
-		NSInteger	kindex = [_entriesView selectedRow];
-		NSString	*key = [_klogs objectAtIndex:(NSUInteger)kindex];
+		NSInteger	kindex = _entriesView.selectedRow;
+		NSString	*key = _klogs[(NSUInteger)kindex];
 		
 		// Handle title case.
 		if ([key isEqualToString:TCLogsAllKey])
 		{
-			NSDictionary *item = [_allLogs objectAtIndex:(NSUInteger)rowIndex];
+			NSDictionary *item = _allLogs[(NSUInteger)rowIndex];
 			
-			if ([[item objectForKey:TCLogsTitleKey] boolValue])
+			if ([item[TCLogsTitleKey] boolValue])
 				return _textCell;
 		}
 	}
 
-	return [tableColumn dataCell];
+	return tableColumn.dataCell;
 }
 
 - (BOOL)tableView:(NSTableView *)aTableView shouldEditTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
@@ -414,32 +414,32 @@ NS_ASSUME_NONNULL_BEGIN
 	{
 		NSString *key;
 		
-		if (rowIndex < 0 || rowIndex >= [_klogs count])
+		if (rowIndex < 0 || rowIndex >= _klogs.count)
 			return YES;
 		
-		key = [_klogs objectAtIndex:(NSUInteger)rowIndex];
+		key = _klogs[(NSUInteger)rowIndex];
 		
 		if ([key isEqualToString:TCLogsSeparatorKey])
 			return NO;
 	}
 	else if (aTableView == _logsView)
 	{
-		NSInteger	kindex = [_entriesView selectedRow];
+		NSInteger	kindex = _entriesView.selectedRow;
 		NSString	*key;
 		
-		if (kindex < 0 || kindex > [_klogs count])
+		if (kindex < 0 || kindex > _klogs.count)
 			return YES;
 		
-		key = [_klogs objectAtIndex:(NSUInteger)kindex];
+		key = _klogs[(NSUInteger)kindex];
 		
 		if ([key isEqualToString:TCLogsAllKey])
 		{
-			if (rowIndex < 0 || rowIndex >= [_allLogs count])
+			if (rowIndex < 0 || rowIndex >= _allLogs.count)
 				return YES;
 			
-			NSDictionary *item = [_allLogs objectAtIndex:(NSUInteger)rowIndex];
+			NSDictionary *item = _allLogs[(NSUInteger)rowIndex];
 			
-			return ![[item objectForKey:TCLogsTitleKey] boolValue];
+			return ![item[TCLogsTitleKey] boolValue];
 		}
 	}
 	
@@ -448,7 +448,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {	
-	id object = [aNotification object];
+	id object = aNotification.object;
 	
 	if ([object isKindOfClass:[NSTableView class]])
 	{
@@ -465,7 +465,7 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCLogsWindowController - TCLogsObserver
 
-- (void)logManager:(TCLogsManager *)manager updateForKey:(NSString *)key withEntries:(NSArray *)entries
+- (void)logManager:(TCLogsManager *)manager updatedKey:(NSString *)key updatedEntries:(NSArray *)entries
 {
 	[self addLogEntries:entries forKey:key];
 }
@@ -482,20 +482,20 @@ NS_ASSUME_NONNULL_BEGIN
 	// Hold it
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		NSMutableArray *array = [_logs objectForKey:key];
+		NSMutableArray *array = _logs[key];
 		
 		// Build logs array for this key
 		if (!array)
 		{
 			array = [[NSMutableArray alloc] init];
 			
-			[_logs setObject:array forKey:key];
+			_logs[key] = array;
 			
 			// Add the if not global (already added)
 			if ([key isEqualToString:TCLogsGlobalKey] == NO)
 			{
 				// Add separator
-				if ([_klogs count] == 2)
+				if (_klogs.count == 2)
 					[_klogs addObject:TCLogsSeparatorKey];
 				
 				// Add the object
@@ -505,7 +505,7 @@ NS_ASSUME_NONNULL_BEGIN
 		
 		// -- Add the log in the array --
 		// > Remove first item if more than 500
-		if ([array count] > 500)
+		if (array.count > 500)
 			[array removeObjectAtIndex:0];
 		
 		// > Add
@@ -514,15 +514,15 @@ NS_ASSUME_NONNULL_BEGIN
 		
 		// -- Add the item in the full log --
 		// > Remove the first item (and item until we reach a title) if more than 2000
-		if ([_allLogs count] > 2000)
+		if (_allLogs.count > 2000)
 		{
 			[_allLogs removeObjectAtIndex:0];
 			
-			while ([_allLogs count] > 0)
+			while (_allLogs.count > 0)
 			{
-				NSNumber *title = [[_allLogs objectAtIndex:0] objectForKey:TCLogsTitleKey];
+				NSNumber *title = _allLogs[0][TCLogsTitleKey];
 				
-				if ([title boolValue])
+				if (title.boolValue)
 					break;
 				else
 					[_allLogs removeObjectAtIndex:0];

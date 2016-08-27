@@ -157,18 +157,18 @@ NS_ASSUME_NONNULL_BEGIN
 		TCLogEntry *entry = [TCLogEntry logEntryWithTimestamp:timestamp kind:kind message:content];
 		
 		// Build logs array for this key
-		NSMutableArray *logs = [_logs objectForKey:key];
+		NSMutableArray *logs = _logs[key];
 
 		if (!logs)
 		{
 			logs = [[NSMutableArray alloc] init];
 			
-			[_logs setObject:logs forKey:key];
+			_logs[key] = logs;
 		}
 		
 		// Add the log in the array.
 		// > Remove first item if more than 500.
-		if ([logs count] > 500)
+		if (logs.count > 500)
 			[logs removeObjectAtIndex:0];
 		
 		// > Add.
@@ -181,7 +181,7 @@ NS_ASSUME_NONNULL_BEGIN
 		if (kobserver)
 		{
 			dispatch_sync(_observerQueue, ^{
-				[kobserver logManager:self updateForKey:key withEntries:@[entry]];
+				[kobserver logManager:self updatedKey:key updatedEntries:@[entry]];
 			});
 		}
 		
@@ -189,7 +189,7 @@ NS_ASSUME_NONNULL_BEGIN
 		for (id <TCLogsObserver> observer in _allObserver)
 		{
 			dispatch_sync(_observerQueue, ^{
-				[observer logManager:self updateForKey:key withEntries:@[entry]];
+				[observer logManager:self updatedKey:key updatedEntries:@[entry]];
 			});
 		}
 	});
@@ -210,7 +210,7 @@ NS_ASSUME_NONNULL_BEGIN
 	// Add the alias
 	dispatch_async(_localQueue, ^{
 		if (name)
-			[_names setObject:name forKey:identifier];
+			_names[identifier] = name;
 		else
 			[_names removeObjectForKey:identifier];
 	});
@@ -227,7 +227,7 @@ NS_ASSUME_NONNULL_BEGIN
 	// Add the alias
 	dispatch_async(_localQueue, ^{
 		if (name)
-			[_names setObject:name forKey:identifier];
+			_names[identifier] = name;
 		else
 			[_names removeObjectForKey:identifier];
 	});
@@ -300,7 +300,7 @@ NS_ASSUME_NONNULL_BEGIN
 	__block NSArray *result = nil;
 	
 	dispatch_sync(_localQueue, ^{
-		result = [_logs allKeys];
+		result = _logs.allKeys;
 	});
 	
 	return result;
@@ -362,12 +362,12 @@ NS_ASSUME_NONNULL_BEGIN
 		// Give the current content
 		if (key)
 		{
-			NSArray *items = [[_logs objectForKey:(NSString *)key] copy];
+			NSArray *items = [_logs[(NSString *)key] copy];
 		
 			if (items)
 			{
 				dispatch_async(_observerQueue, ^{
-					[observer logManager:self updateForKey:(NSString *)key withEntries:items];
+					[observer logManager:self updatedKey:(NSString *)key updatedEntries:items];
 				});
 			}
 		}
@@ -375,10 +375,10 @@ NS_ASSUME_NONNULL_BEGIN
 		{
 			for (NSString *akey in _logs)
 			{
-				NSArray *items = [[_logs objectForKey:akey] copy];
+				NSArray *items = [_logs[akey] copy];
 		
 				dispatch_async(_observerQueue, ^{
-					[observer logManager:self updateForKey:akey withEntries:items];
+					[observer logManager:self updatedKey:akey updatedEntries:items];
 				});
 			}
 		}

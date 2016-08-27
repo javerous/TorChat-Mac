@@ -34,7 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TCConfigPlist : NSObject <TCConfigApp>
 
 // -- Instance --
-- (nullable instancetype)initWithFile:(NSString *)filepath;
+- (nullable instancetype)initWithFile:(NSString *)filepath NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

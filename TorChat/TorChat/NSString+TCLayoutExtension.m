@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation NSString (TCLayoutExtension)
 
 // == Compute string height ==
-- (CGFloat)heightForDrawingWithFont:(NSFont *)font andWidth:(CGFloat)width
+- (CGFloat)heightForDrawingWithFont:(NSFont *)font maxWidth:(CGFloat)width
 {
 	// http://developer.apple.com/mac/library/documentation/Cocoa/Conceptual/TextLayout/Tasks/StringHeight.html
 	
@@ -45,9 +45,9 @@ NS_ASSUME_NONNULL_BEGIN
 	[layoutManager addTextContainer:textContainer];
 	[textStorage addLayoutManager:layoutManager];
 	
-	[textStorage addAttribute:NSFontAttributeName value:font range:NSMakeRange(0, [textStorage length])];
-	[textContainer setLineFragmentPadding:0];
-	[layoutManager setTypesetterBehavior:NSTypesetterLatestBehavior];
+	[textStorage addAttribute:NSFontAttributeName value:font range:NSMakeRange(0, textStorage.length)];
+	textContainer.lineFragmentPadding = 0;
+	layoutManager.typesetterBehavior = NSTypesetterLatestBehavior;
 	
 	(void) [layoutManager glyphRangeForTextContainer:textContainer];
 	
@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 	[layoutManager addTextContainer:textContainer];
 	[textStorage addLayoutManager:layoutManager];
 	
-	[textContainer setLineFragmentPadding:0];
+	textContainer.lineFragmentPadding = 0;
 	//[layoutManager setTypesetterBehavior:NSTypesetterBehavior_10_2_WithCompatibility] ;
 	
 	(void) [layoutManager glyphRangeForTextContainer:textContainer];

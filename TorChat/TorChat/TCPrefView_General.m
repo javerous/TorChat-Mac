@@ -80,18 +80,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)panelDidAppear
 {
-	// Load view.
-	[self view];
-		
 	// Client info.
-	[[_clientNameField cell] setPlaceholderString:([self.config clientName:TCConfigGetDefault] ?: @"")];
-	[[_clientVersionField cell] setPlaceholderString:([self.config clientVersion:TCConfigGetDefault] ?: @"")];
+	_clientNameField.placeholderString = ([self.config clientName:TCConfigGetDefault] ?: @"");
+	_clientVersionField.placeholderString = ([self.config clientVersion:TCConfigGetDefault] ?: @"");
 	
-	[_clientNameField setStringValue:([self.config clientName:TCConfigGetDefined] ?: @"")];
-	[_clientVersionField setStringValue:([self.config clientVersion:TCConfigGetDefined] ?: @"")];
+	_clientNameField.stringValue = ([self.config clientName:TCConfigGetDefined] ?: @"");
+	_clientVersionField.stringValue = ([self.config clientVersion:TCConfigGetDefined] ?: @"");
 	
 	// Transcripts.
-	[_saveTranscriptCheckBox setState:(self.config.saveTranscript ? NSOnState : NSOffState)];
+	_saveTranscriptCheckBox.state = (self.config.saveTranscript ? NSOnState : NSOffState);
 	
 	// Themes.
 	NSArray		*themes = [[TCThemesManager sharedManager] themes];
@@ -122,7 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	// CLient info.
 	// > name.
-	NSString *clientName = [_clientNameField stringValue];
+	NSString *clientName = _clientNameField.stringValue;
 	
 	if (clientName.length > 0)
 		[self.config setClientName:clientName];
@@ -130,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
 		[self.config setClientName:nil];
 
 	// > version.
-	NSString *clientVersion = [_clientVersionField stringValue];
+	NSString *clientVersion = _clientVersionField.stringValue;
 	
 	if (clientVersion.length > 0)
 		[self.config setClientVersion:clientVersion];
@@ -138,10 +135,10 @@ NS_ASSUME_NONNULL_BEGIN
 		[self.config setClientVersion:nil];
 	
 	// Transcript.
-	[self.config setSaveTranscript:(_saveTranscriptCheckBox.state == NSOnState)];
+	self.config.saveTranscript = (_saveTranscriptCheckBox.state == NSOnState);
 	
 	// Themes.
-	NSInteger	themeIndex = [_themesPopup indexOfSelectedItem];
+	NSInteger	themeIndex = _themesPopup.indexOfSelectedItem;
 	NSArray		*themes = [[TCThemesManager sharedManager] themes];
 
 	if (themeIndex >= 0 && themeIndex < themes.count)

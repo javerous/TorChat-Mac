@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol TCConfigAppEncryptable <TCConfigApp>
 
-- (BOOL)isEncrypted;
+@property (atomic, getter=isEncrypted, readonly) BOOL encrypted;
 
 - (void)changePassword:(nullable NSString *)newPassword completionHandler:(nullable void (^)(NSError * _Nullable error))handler;
 

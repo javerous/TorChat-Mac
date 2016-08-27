@@ -40,8 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - Types
 
-typedef enum
-{
+typedef NS_ENUM(unsigned int, TCParserError) {
 	TCParserErrorUnknownCommand,
 	TCParserErrorCmdPing,
 	TCParserErrorCmdPong,
@@ -61,7 +60,7 @@ typedef enum
 	TCParserErrorCmdFileDataError,
 	TCParserErrorCmdFileStopSending,
 	TCParserErrorCmdFileStopReceiving
-} TCParserError;
+};
 
 
 /*
@@ -95,7 +94,7 @@ typedef enum
 
 @protocol TCParserDelegate <NSObject>
 
-- (void)parser:(TCParser *)parser errorWithCode:(TCParserError)error andInformation:(NSString *)information;
+- (void)parser:(TCParser *)parser errorWithErrorCode:(TCParserError)error errorInformation:(NSString *)information;
 
 @end
 
@@ -112,7 +111,9 @@ typedef enum
 @property (weak, atomic) id <TCParserDelegate> delegate;
 
 // -- Instance --
-- (instancetype)initWithParsingResult:(id <TCParserCommand>)receiver;
+- (instancetype)initWithParsingResult:(id <TCParserCommand>)receiver NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // -- Parsing --
 - (void)parseLine:(NSData *)line;

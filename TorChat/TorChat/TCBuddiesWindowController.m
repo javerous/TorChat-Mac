@@ -172,8 +172,8 @@ NS_ASSUME_NONNULL_BEGIN
 	[self.window setFrameAutosaveName:@"BuddiesWindow"];
 	
 	// Configure table view.
-	[_tableView setTarget:self];
-	[_tableView setDoubleAction:@selector(tableViewDoubleClick:)];
+	_tableView.target = self;
+	_tableView.doubleAction = @selector(tableViewDoubleClick:);
 	
 	// Configura bar.
 	_barView.startCap = (NSImage *)[NSImage imageNamed:@"bar"];
@@ -228,28 +228,28 @@ NS_ASSUME_NONNULL_BEGIN
 		[self updateTitleUI];
 		
 		// > Init status
-		[self updateStatusUI:[_core status]];
+		[self updateStatusUI:_core.status];
 		
 		// > Init avatar.
-		NSImage *avatar = [[_core profileAvatar] imageRepresentation];
+		NSImage *avatar = [_core.profileAvatar imageRepresentation];
 				
-		if ([[avatar representations] count] > 0)
-			[_imAvatar setImage:avatar];
+		if (avatar.representations.count > 0)
+			_imAvatar.image = avatar;
 		else
 		{
 			NSImage *img = [NSImage imageNamed:NSImageNameUser];
 			
-			[img setSize:NSMakeSize(64, 64)];
+			img.size = NSMakeSize(64, 64);
 		 
-			[_imAvatar setImage:img];
+			_imAvatar.image = img;
 		}
 		
 		// > Init table file drag.
-		[_tableView registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
+		[_tableView registerForDraggedTypes:@[NSFilenamesPboardType]];
 		[_tableView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:NO];
 		
 		// > Redirect avatar drop.
-		[_imAvatar setDelegate:self];
+		_imAvatar.delegate = self;
 		
 		// Create windows info controller.
 		_infoWindowsController = [[TCBuddyInfoWindowsController alloc] initWithCoreManager:coreMananager];
@@ -258,7 +258,7 @@ NS_ASSUME_NONNULL_BEGIN
 		[_core addObserver:self];
 		
 		// Add current buddies.
-		NSArray *buddies = [_core buddies];
+		NSArray *buddies = _core.buddies;
 		
 		for (TCBuddy *buddy in buddies)
 		{
@@ -326,16 +326,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
-	return (NSInteger)[_buddies count];
+	return (NSInteger)_buddies.count;
 }
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)rowIndex
 {
 	TCBuddyCellView	*cellView = nil;
-	TCBuddy			*buddy = [_buddies objectAtIndex:(NSUInteger)rowIndex];
-	NSString		*name = [buddy finalName];
+	TCBuddy			*buddy = _buddies[(NSUInteger)rowIndex];
+	NSString		*name = buddy.finalName;
 	
-	if ([name length] > 0)
+	if (name.length > 0)
 		cellView = [tableView makeViewWithIdentifier:@"buddy_name" owner:self];
 	else
 		cellView = [tableView makeViewWithIdentifier:@"buddy_identifier" owner:self];
@@ -347,27 +347,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
-	NSInteger row = [_tableView selectedRow];
+	NSInteger row = _tableView.selectedRow;
 	
-	[_imRemove setEnabled:(row >= 0)];
+	_imRemove.enabled = (row >= 0);
 
 	// Hold current selection (not perfect).
-	if (row >= 0 && row < [_buddies count])
-		_lastSelected = [_buddies objectAtIndex:(NSUInteger)row];
+	if (row >= 0 && row < _buddies.count)
+		_lastSelected = _buddies[(NSUInteger)row];
 	else
 		_lastSelected = nil;
 }
 
 - (void)tableViewDoubleClick:(id)sender
 {
-	NSInteger	row = [_tableView clickedRow];
+	NSInteger	row = _tableView.clickedRow;
 	TCBuddy		*buddy;
 
 	// Get the double-clicked button
-	if (row < 0 || row >= [_buddies count])
+	if (row < 0 || row >= _buddies.count)
 		return;
 	
-	buddy = [_buddies objectAtIndex:(NSUInteger)row];
+	buddy = _buddies[(NSUInteger)row];
 	
 	// Open a chat window.
 	[self startChatForBuddy:buddy];
@@ -384,12 +384,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)tableView:(NSTableView *)aTableView acceptDrop:(id < NSDraggingInfo >)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation
 {
-	if (row < 0 || row >= [_buddies count])
+	if (row < 0 || row >= _buddies.count)
 		return NO;
 	
-	TCBuddy			*buddy = [_buddies objectAtIndex:(NSUInteger)row];
+	TCBuddy			*buddy = _buddies[(NSUInteger)row];
 	NSPasteboard	*pboard = [info draggingPasteboard];
-	NSArray			*types = [pboard types];
+	NSArray			*types = pboard.types;
 	
 	if ([types containsObject:NSFilenamesPboardType])
 	{
@@ -405,7 +405,7 @@ NS_ASSUME_NONNULL_BEGIN
 				if (isDirectory)
 					continue;
 				
-				[buddy sendFile:fileName];
+				[buddy sendFileAtPath:fileName];
 			}
 		}
 		
@@ -442,7 +442,7 @@ NS_ASSUME_NONNULL_BEGIN
 					
 				case TCCoreEventStatus:
 				{
-					TCStatus status = (TCStatus)[(NSNumber *)info.context intValue];
+					TCStatus status = (TCStatus)((NSNumber *)info.context).intValue;
 					
 					dispatch_async(dispatch_get_main_queue(), ^{
 						[self updateStatusUI:status];
@@ -461,7 +461,7 @@ NS_ASSUME_NONNULL_BEGIN
 					
 					// Change image.
 					dispatch_async(dispatch_get_main_queue(), ^{
-						[_imAvatar setImage:final];
+						_imAvatar.image = final;
 					});
 					
 					break;
@@ -598,7 +598,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	TCImage *image = [[TCImage alloc] initWithImage:avatar];
 	
-	[_core setProfileAvatar:image];
+	_core.profileAvatar = image;
 }
 
 
@@ -611,22 +611,22 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)doStatus:(id)sender
 {
 	// Change status
-	switch ([_imStatus selectedTag])
+	switch (_imStatus.selectedTag)
 	{
 		case 0:
-			[_core setStatus:TCStatusOffline];
+			_core.status = TCStatusOffline;
 			break;
 			
 		case 1:
-			[_core setStatus:TCStatusAvailable];
+			_core.status = TCStatusAvailable;
 			break;
 			
 		case 2:
-			[_core setStatus:TCStatusAway];
+			_core.status = TCStatusAway;
 			break;
 			
 		case 3:
-			[_core setStatus:TCStatusXA];
+			_core.status = TCStatusXA;
 			break;
 	}
 }
@@ -645,8 +645,8 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	if ([openDlg runModal] == NSModalResponseOK)
 	{
-		NSArray	*urls = [openDlg URLs];
-		NSImage *avatar = [[NSImage alloc] initWithContentsOfURL:[urls objectAtIndex:0]];
+		NSArray	*urls = openDlg.URLs;
+		NSImage *avatar = [[NSImage alloc] initWithContentsOfURL:urls[0]];
 
 		[self dropButton:_imAvatar doppedImage:avatar];
 	}
@@ -654,8 +654,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (IBAction)doTitle:(id)sender
 {
-	NSMenuItem	*selected = [_imTitle selectedItem];
-	NSInteger	tag = [selected tag];
+	NSMenuItem	*selected = _imTitle.selectedItem;
+	NSInteger	tag = selected.tag;
 	
 	if (!selected)
 	{
@@ -666,11 +666,11 @@ NS_ASSUME_NONNULL_BEGIN
 	switch (tag)
 	{
 		case 0:
-			[_configuration setModeTitle:TCConfigTitleName];
+			_configuration.modeTitle = TCConfigTitleName;
 			break;
 			
 		case 1:
-			[_configuration setModeTitle:TCConfigTitleIdentifier];
+			_configuration.modeTitle = TCConfigTitleIdentifier;
 			break;
 			
 		case 3:
@@ -698,16 +698,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (IBAction)doRemove:(id)sender
 {
-	NSInteger	row = [_tableView selectedRow];
+	NSInteger	row = _tableView.selectedRow;
 	TCBuddy		*buddy;
 	NSString	*identifier;
 	
-	if (row < 0 || row >= [_buddies count])
+	if (row < 0 || row >= _buddies.count)
 		return;
 	
 	// Get the buddy identifier.
-	buddy = [_buddies objectAtIndex:(NSUInteger)row];
-	identifier = [buddy identifier];
+	buddy = _buddies[(NSUInteger)row];
+	identifier = buddy.identifier;
 
 	// Remove the buddy from the controller.
 	[_core removeBuddyWithIdentifier:identifier];
@@ -717,7 +717,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	_addIdentifierField.stringValue = @"";
 	_addNameField.stringValue = @"";
-	[[[_addNotesField textStorage] mutableString] setString:@""];
+	[_addNotesField.textStorage.mutableString setString:@""];
 	
 	_addOkButton.enabled = NO;
 
@@ -728,26 +728,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (IBAction)doChat:(id)sender
 {
-	NSInteger	row = [_tableView selectedRow];
+	NSInteger	row = _tableView.selectedRow;
 	TCBuddy		*buddy;
 	
-	if (row < 0 || row >= [_buddies count])
+	if (row < 0 || row >= _buddies.count)
 		return;
 
-	buddy = [_buddies objectAtIndex:(NSUInteger)row];
+	buddy = _buddies[(NSUInteger)row];
 	
 	[self startChatForBuddy:buddy];
 }
 
 - (IBAction)doSendFile:(id)sender
 {
-	NSInteger	row = [_tableView selectedRow];
+	NSInteger	row = _tableView.selectedRow;
 	TCBuddy		*buddy;
 	
-	if (row < 0 || row >= [_buddies count])
+	if (row < 0 || row >= _buddies.count)
 		return;
 	
-	buddy = [_buddies objectAtIndex:(NSUInteger)row];
+	buddy = _buddies[(NSUInteger)row];
 	
 	// Show dialog to select files to send
 	NSOpenPanel	*openDlg = [NSOpenPanel openPanel];
@@ -760,41 +760,41 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	if ([openDlg runModal] == NSModalResponseOK)
 	{
-		NSArray *urls = [openDlg URLs];
+		NSArray *urls = openDlg.URLs;
 
 		for (NSURL *url in urls)
 		{
 			NSString *path = url.path;
 			
 			if (path)
-				[buddy sendFile:path];
+				[buddy sendFileAtPath:path];
 		}
 	}
 }
 
 - (IBAction)doToggleBlock:(id)sender
 {
-	NSInteger	row = [_tableView selectedRow];
+	NSInteger	row = _tableView.selectedRow;
 	TCBuddy		*buddy;
 	
-	if (row < 0 || row >= [_buddies count])
+	if (row < 0 || row >= _buddies.count)
 		return;
 	
-	buddy = [_buddies objectAtIndex:(NSUInteger)row];
+	buddy = _buddies[(NSUInteger)row];
 		
-	if ([buddy blocked])
-		[_core removeBlockedBuddyWithIdentifier:[buddy identifier]];
+	if (buddy.blocked)
+		[_core removeBlockedBuddyWithIdentifier:buddy.identifier];
 	else
-		[_core addBlockedBuddyWithIdentifier:[buddy identifier]];
+		[_core addBlockedBuddyWithIdentifier:buddy.identifier];
 }
 
 - (IBAction)doEditProfile:(id)sender
 {
-	NSString *tname = [_core profileName];
-	NSString *ttext = [_core profileText];
+	NSString *tname = _core.profileName;
+	NSString *ttext = _core.profileText;
 	
-	[_profileName setStringValue:(tname ?: @"")];
-	[[[_profileText textStorage] mutableString] setString:(ttext ?: @"")];
+	_profileName.stringValue = (tname ?: @"");
+	[_profileText.textStorage.mutableString setString:(ttext ?: @"")];
 	
 	[self.window beginSheet:_profileWindow completionHandler:nil];
 }
@@ -803,7 +803,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	NSString *identifierString = _addIdentifierField.stringValue;
 	NSString *nameString = _addNameField.stringValue;
-	NSString *notesString = [[_addNotesField textStorage] mutableString];
+	NSString *notesString = _addNotesField.textStorage.mutableString;
 
 	if (nameString.length == 0)
 		nameString = nil;
@@ -827,14 +827,14 @@ NS_ASSUME_NONNULL_BEGIN
 	[_profileWindow orderOut:self];
 	
 	// -- Hold name --
-	NSString *name = [_profileName stringValue];
+	NSString *name = _profileName.stringValue;
 	
-	[_core setProfileName:name];
+	_core.profileName = name;
 	
 	// -- Hold text --
-	NSString *text = [[_profileText textStorage] mutableString];
+	NSString *text = _profileText.textStorage.mutableString;
 	
-	[_core setProfileText:text];
+	_core.profileText = text;
 }
 
 - (IBAction)doProfileCancel:(id)sender
@@ -855,7 +855,7 @@ NS_ASSUME_NONNULL_BEGIN
 	dispatch_async(dispatch_get_main_queue(), ^{
 
 		// Sort buddies by status.
-		NSUInteger		i, cnt = [_buddies count];
+		NSUInteger		i, cnt = _buddies.count;
 		NSMutableArray	*temp_block = [[NSMutableArray alloc] initWithCapacity:cnt];
 		NSMutableArray	*temp_off = [[NSMutableArray alloc] initWithCapacity:cnt];
 		NSMutableArray	*temp_av = [[NSMutableArray alloc] initWithCapacity:cnt];
@@ -864,13 +864,13 @@ NS_ASSUME_NONNULL_BEGIN
 		
 		for (i = 0; i < cnt; i++)
 		{
-			TCBuddy *buddy = [_buddies objectAtIndex:i];
+			TCBuddy *buddy = _buddies[i];
 			
-			if ([buddy blocked])
+			if (buddy.blocked)
 				[temp_block addObject:buddy];
 			else
 			{
-				switch ([buddy status])
+				switch (buddy.status)
 				{
 					case TCStatusOffline:
 						[temp_off addObject:buddy];
@@ -893,7 +893,7 @@ NS_ASSUME_NONNULL_BEGIN
 		
 		// Subsort by names.
 		NSComparisonResult (^sortBuddy)(id _Nonnull, id  _Nonnull) = ^NSComparisonResult(TCBuddy * _Nonnull buddy1, TCBuddy *  _Nonnull buddy2) {
-			return [[buddy1 finalName] compare:[buddy2 finalName]];
+			return [buddy1.finalName compare:buddy2.finalName];
 		};
 		
 		[temp_av sortUsingComparator:sortBuddy];
@@ -925,19 +925,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable TCBuddy *)selectedBuddy
 {
-	NSInteger row = [_tableView selectedRow];
+	NSInteger row = _tableView.selectedRow;
 	
-	if (row < 0 || row >= [_buddies count])
+	if (row < 0 || row >= _buddies.count)
 		return nil;
 	
-	return [_buddies objectAtIndex:(NSUInteger)row];
+	return _buddies[(NSUInteger)row];
 }
 
 - (void)updateStatusUI:(TCStatus)status
 {
 	// Unselect old item
-	for (NSMenuItem *item in [_imStatus itemArray])
-		[item setState:NSOffState];
+	for (NSMenuItem *item in _imStatus.itemArray)
+		item.state = NSOffState;
 	
 	// Select the new item
 	NSInteger index = [_imStatus indexOfItemWithTag:status];
@@ -947,10 +947,10 @@ NS_ASSUME_NONNULL_BEGIN
 		NSMenuItem *select = [_imStatus itemAtIndex:index];
 		NSMenuItem *title = [_imStatus itemAtIndex:0];
 		
-		[title setTitle:[select title]];
-		[select setState:NSOnState];
+		title.title = select.title;
+		select.state = NSOnState;
 		
-		[_imStatusImage setImage:[select image]];
+		_imStatusImage.image = select.image;
 	}
 }
 
@@ -961,24 +961,24 @@ NS_ASSUME_NONNULL_BEGIN
 	if (_configuration)
 	{
 		// Check the title to show
-		switch ([_configuration modeTitle])
+		switch (_configuration.modeTitle)
 		{
 			case TCConfigTitleIdentifier:
 			{
-				content = [_configuration selfIdentifier];
+				content = _configuration.selfIdentifier;
 				
-				[[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:0]] setState:NSOffState];
-				[[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:1]] setState:NSOnState];
+				[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:0]].state = NSOffState;
+				[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:1]].state = NSOnState;
 				
 				break;
 			}
 				
 			case TCConfigTitleName:
 			{
-				content = [_core profileName];
+				content = _core.profileName;
 								
-				[[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:0]] setState:NSOnState];
-				[[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:1]] setState:NSOffState];
+				[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:0]].state = NSOnState;
+				[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:1]].state = NSOffState;
 				
 				break;
 			}
@@ -986,15 +986,15 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 	else
 	{
-		[[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:0]] setState:NSOffState];
-		[[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:1]] setState:NSOffState];
+		[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:0]].state = NSOffState;
+		[_imTitle itemAtIndex:[_imTitle indexOfItemWithTag:1]].state = NSOffState;
 	}
 	
 	// Update popup-title
 	if (content.length == 0)
 		content = @"-";
 	
-	[[_imTitle itemAtIndex:0] setTitle:content];
+	[_imTitle itemAtIndex:0].title = content;
 }
 
 - (void)_reloadBuddy:(nullable TCBuddy *)buddy
@@ -1012,7 +1012,7 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 	else
 	{
-		NSInteger index = [_tableView selectedRow];
+		NSInteger index = _tableView.selectedRow;
 		
 		[_tableView reloadData];
 		

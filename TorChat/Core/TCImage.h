@@ -40,12 +40,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TCImage : NSObject <NSCopying>
 
 // -- Instance --
-- (instancetype)initWithWidth:(NSUInteger)width height:(NSUInteger)height;
+- (instancetype)initWithWidth:(NSUInteger)width height:(NSUInteger)height NS_DESIGNATED_INITIALIZER;
 #if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-- (nullable instancetype)initWithImage:(UIImage *)image;
+- (nullable instancetype)initWithImage:(UIImage *)image NS_DESIGNATED_INITIALIZER;
 #else
-- (nullable instancetype)initWithImage:(NSImage *)image;
+- (nullable instancetype)initWithImage:(NSImage *)image NS_DESIGNATED_INITIALIZER;
 #endif
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // -- Content --
 - (BOOL)setBitmap:(NSData *)bitmap;
@@ -54,17 +56,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSData *)bitmap;
 - (NSData *)bitmapAlpha;
 
-- (nullable NSData *)bitmapMixed;
+@property (nullable, nonatomic, readonly, copy) NSData *bitmapMixed;
 
 // -- Properties --
-- (NSUInteger)width;
-- (NSUInteger)height;
+@property (nonatomic, readonly) NSUInteger width;
+@property (nonatomic, readonly) NSUInteger height;
 
 // -- Representation --
 #if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-- (nullable UIImage *)imageRepresentation;
+@property (nullable, nonatomic, readonly, copy) UIImage *imageRepresentation;
 #else
-- (nullable NSImage *)imageRepresentation;
+@property (nullable, nonatomic, readonly, copy) NSImage *imageRepresentation;
 #endif
 @end
 

@@ -71,8 +71,8 @@ NS_ASSUME_NONNULL_BEGIN
 		_nline = [[NSAttributedString alloc] initWithString:@"\n"];
 		
 		// Configure
-		[_table setNumberOfColumns:2];
-		[_table setLayoutAlgorithm:NSTextTableAutomaticLayoutAlgorithm];
+		_table.numberOfColumns = 2;
+		_table.layoutAlgorithm = NSTextTableAutomaticLayoutAlgorithm;
 		[_table setHidesEmptyCells:YES];
 
 		// Hold arguments
@@ -89,15 +89,15 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCKeyedText - Public
 
-- (void)addLineWithKey:(NSString *)key andContent:(NSString *)content
+- (void)addLineWithKey:(NSString *)key content:(NSString *)content
 {
 	NSAttributedString	*akey = [[NSAttributedString alloc] initWithString:key];
 	NSAttributedString	*acontent = [[NSAttributedString alloc] initWithString:content];
 	
-	[self addAttributedLineWithKey:akey andContent:acontent];
+	[self addAttributedLineWithKey:akey content:acontent];
 }
 
-- (void)addAttributedLineWithKey:(NSAttributedString *)key andContent:(NSAttributedString *)content;
+- (void)addAttributedLineWithKey:(NSAttributedString *)key content:(NSAttributedString *)content
 {
 	[self addValue:key color:[NSColor grayColor] row:_rowIndex column:0 alignment:NSRightTextAlignment];
 	[self addValue:content color:nil row:_rowIndex column:1 alignment:NSLeftTextAlignment];
@@ -107,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSAttributedString *)renderedText
 {
-	return _result;
+	return [_result copy];
 }
 
 
@@ -121,10 +121,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	NSTextTableBlock		*block = [[NSTextTableBlock alloc] initWithTable:_table startingRow:(NSInteger)row rowSpan:1 startingColumn:(NSInteger)column columnSpan:1];
 	NSMutableParagraphStyle	*style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-	NSUInteger				textLength = [_result length];
+	NSUInteger				textLength = _result.length;
 	
 	// Configure the text block
-	[block setVerticalAlignment:NSTextBlockTopAlignment];
+	block.verticalAlignment = NSTextBlockTopAlignment;
 	
 	[block setWidth:5.0f type:NSTextBlockAbsoluteValueType forLayer:NSTextBlockPadding edge:NSMinYEdge];
 	[block setWidth:5.0f type:NSTextBlockAbsoluteValueType forLayer:NSTextBlockPadding edge:NSMaxYEdge];
@@ -136,10 +136,10 @@ NS_ASSUME_NONNULL_BEGIN
 		[block setValue:_keySize type:NSTextBlockAbsoluteValueType forDimension:NSTextBlockWidth];
 	
 	// Configure the style with the block
-	[style setTextBlocks:[NSArray arrayWithObject:block]];
+	style.textBlocks = @[block];
 	
 	// Set the text aligment in the style
-	[style setAlignment:alignment];
+	style.alignment = alignment;
 	
 	// Add the value on the result string
 	[_result appendAttributedString:value];
@@ -147,10 +147,10 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	// Apply color
 	if (color)
-		[_result addAttribute:NSForegroundColorAttributeName value:(id)color range:NSMakeRange(textLength, [_result length] - textLength)];
+		[_result addAttribute:NSForegroundColorAttributeName value:(id)color range:NSMakeRange(textLength, _result.length - textLength)];
 	
 	// Apply style
-	[_result addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(textLength, [_result length] - textLength)];
+	[_result addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(textLength, _result.length - textLength)];
 }
 
 @end

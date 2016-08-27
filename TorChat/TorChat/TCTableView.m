@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)keyDown:(NSEvent *)theEvent
 {
-	unichar key = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
+	unichar key = [theEvent.charactersIgnoringModifiers characterAtIndex:0];
 	
 	if (key == NSDeleteCharacter || key == NSDeleteFunctionKey || key == NSBackspaceCharacter)
 	{

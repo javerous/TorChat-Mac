@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation NSString (TCXMLExtension)
 
-- (NSString *)stringByEscapingXMLEntities
+- (NSString *)escapedXMLEntities
 {
 	return (__bridge_transfer NSString *)CFXMLCreateStringByEscapingEntities(kCFAllocatorDefault, (__bridge CFStringRef)self, NULL);
 }

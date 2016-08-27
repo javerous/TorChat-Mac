@@ -73,7 +73,7 @@ NSString * hashMD5(NSData *data)
 	// Compute MD5.
 	CC_MD5_Init(&state);
 
-	CC_MD5_Update(&state, [data bytes], (CC_LONG)[data length]);
+	CC_MD5_Update(&state, data.bytes, (CC_LONG)data.length);
 	
 	CC_MD5_Final(digest, &state);
 	

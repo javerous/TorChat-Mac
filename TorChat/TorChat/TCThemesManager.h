@@ -64,10 +64,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TCThemesManager : NSObject
 
 // -- Instance --
-+ (instancetype)sharedManager;
++ (TCThemesManager*)sharedManager;
 
 // -- Themes --
-- (NSArray *)themes;
+@property (nonatomic, readonly) NSArray *themes;
 - (nullable TCTheme *)themeForIdentifier:(NSString *)identifier;
 
 @end

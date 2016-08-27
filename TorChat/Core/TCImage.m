@@ -110,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
 		
 		// Compute output rect.
 		CGRect	outRect;
-		CGSize	selfSize = [image size];
+		CGSize	selfSize = image.size;
 		
 		if (selfSize.width > selfSize.height)
 		{
@@ -205,10 +205,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id)copyWithZone:(nullable NSZone *)zone
 {
-	TCImage *copy = [[TCImage allocWithZone:zone] init];
+	TCImage *copy = [[TCImage allocWithZone:zone] initWithWidth:_width height:_height];
 	
-	copy->_width = _width;
-	copy->_height = _height;
 	copy->_bitmap = _bitmap;
 	copy->_bitmapAlpha = _bitmapAlpha;
 	copy->_mixedBitmap = _mixedBitmap;
@@ -226,7 +224,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)setBitmap:(NSData *)bitmap
 {
-	if ([bitmap length] == 0)
+	if (bitmap.length == 0)
 		return NO;
 	
 	// Clean mixed cache.
@@ -240,7 +238,7 @@ NS_ASSUME_NONNULL_BEGIN
 	_bitmap = nil;
 	
 	// Copy data
-	if ([bitmap length] == _width * _height * BytesPerPixel)
+	if (bitmap.length == _width * _height * BytesPerPixel)
 	{
 		_bitmap = bitmap;
 		return YES;
@@ -259,7 +257,7 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 	
 	// Copy data.
-	if ([bitmap length] == _width * _height * BytesPerPixelAlpha)
+	if (bitmap.length == _width * _height * BytesPerPixelAlpha)
 	{
 		_bitmapAlpha = bitmap;
 		return YES;
@@ -287,8 +285,8 @@ NS_ASSUME_NONNULL_BEGIN
 		return nil;
 	
 	size_t			i, size = (_width * _height * BytesPerPixel) + (_width * _height * BytesPerPixelAlpha);
-	const uint8_t	*rBitmap = (uint8_t *)[_bitmap bytes];
-	const uint8_t	*rABitmap = (uint8_t *)[_bitmapAlpha bytes];
+	const uint8_t	*rBitmap = (uint8_t *)_bitmap.bytes;
+	const uint8_t	*rABitmap = (uint8_t *)_bitmapAlpha.bytes;
 	
 	// FIXME: use BytesPerPixel & BytesPerPixelAlpha to know channel pixel size
 	

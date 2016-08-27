@@ -42,12 +42,11 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - Types
 
-typedef enum
-{
+typedef NS_ENUM(unsigned int, TCConfigurationHelperCompletionType) {
 	TCConfigurationHelperCompletionTypeCanceled,	// result = nil
 	TCConfigurationHelperCompletionTypeError,		// result = NSError
 	TCConfigurationHelperCompletionTypeDone,		// result = <TCConfigAppEncryptable>
-} TCConfigurationHelperCompletionType;
+};
 
 typedef void (^TCConfigurationHelperCompletionHandler)(TCConfigurationHelperCompletionType type, id _Nullable result);
 

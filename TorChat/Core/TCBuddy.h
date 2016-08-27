@@ -57,17 +57,15 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Types
 
 // == Status ==
-typedef enum
-{
+typedef NS_ENUM(unsigned int, TCStatus) {
 	TCStatusOffline,
 	TCStatusAvailable,
 	TCStatusAway,
 	TCStatusXA,
-} TCStatus;
+};
 
 // == Info Codes ==
-typedef enum
-{
+typedef NS_ENUM(unsigned int, TCBuddyEvent) {
 	TCBuddyEventConnectedTor,
 	TCBuddyEventConnectedBuddy,
 	TCBuddyEventDisconnected,
@@ -93,10 +91,9 @@ typedef enum
 	TCBuddyEventProfileText,		// context: NSString (<text>)
 	TCBuddyEventProfileName,		// context: NSString (<name>)
 	TCBuddyEventProfileAvatar,		// context: TCImage
-} TCBuddyEvent;
+};
 
-typedef enum
-{
+typedef NS_ENUM(unsigned int, TCBuddyError) {
 	TCBuddyErrorResolveTor,
 	TCBuddyErrorConnectTor,
 	
@@ -114,21 +111,19 @@ typedef enum
 	TCBuddyErrorFileBlocked,		// context: NSString (<file_path>)
 	
 	TCBuddyErrorParse				// info: SMInfo (SMSocketInfoDomain)
-} TCBuddyError;
+};
 
 // == File ==
-typedef enum
-{
-	TCBuddyFileReceive,
-	TCBuddyFileSend
-} TCBuddyFileWay;
+typedef NS_ENUM(unsigned int, TCBuddyFileTransferDirection) {
+	TCBuddyFileTransferDirectionReceive,
+	TCBuddyFileTransferDirectionSend
+};
 
 // == Channel ==
-typedef enum
-{
+typedef NS_ENUM(unsigned int, TCBuddyChannel) {
 	TCBuddyChannelOut,	// Connection initied by TCBuddy
 	TCBuddyChannelIn,	// Connection received by TControlClient
-} TCBuddyChannel;
+};
 
 
 
@@ -154,14 +149,16 @@ typedef enum
 @interface TCBuddy : NSObject
 
 // -- Instance --
-- (instancetype)initWithCoreManager:(TCCoreManager *)core configuration:(id <TCConfigCore>)configuration identifier:(NSString *)identifier alias:(nullable NSString *)alias notes:(nullable NSString *)notes;
+- (instancetype)initWithCoreManager:(TCCoreManager *)core configuration:(id <TCConfigCore>)configuration identifier:(NSString *)identifier alias:(nullable NSString *)alias notes:(nullable NSString *)notes NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // -- Run --
 - (void)start;
 - (void)stopWithCompletionHandler:(nullable dispatch_block_t)handler;
 
-- (BOOL)isRunning;
-- (BOOL)isPonged;
+@property (atomic, getter=isRunning, readonly) BOOL running;
+@property (atomic, getter=isPonged, readonly) BOOL ponged;
 
 // -- Properties --
 @property (nullable, strong, atomic) NSString	*alias;
@@ -182,11 +179,11 @@ typedef enum
 @property (nullable, strong, readonly) NSString	*profileName;
 @property (nullable, strong, readonly) NSString	*finalName; // Best name representation (alias / profile name)
 
-// -- Files Info --
-- (nullable NSString *)fileNameForUUID:(NSString *)uuid way:(TCBuddyFileWay)way;
-- (nullable NSString *)filePathForUUID:(NSString *)uuid way:(TCBuddyFileWay)way;
-- (BOOL)fileStatForUUID:(NSString *)uuid way:(TCBuddyFileWay)way done:(uint64_t *)done total:(uint64_t *)total;
-- (void)fileCancelOfUUID:(NSString *)uuid way:(TCBuddyFileWay)way;
+// -- Transfer Info --
+- (nullable NSString *)fileNameForTransferUUID:(NSString *)uuid transferDirection:(TCBuddyFileTransferDirection)direction;
+- (nullable NSString *)filePathForTransferUUID:(NSString *)uuid transferDirection:(TCBuddyFileTransferDirection)direction;
+- (BOOL)transferStatForTransferUUID:(NSString *)uuid transferDirection:(TCBuddyFileTransferDirection)direction done:(uint64_t *)done total:(uint64_t *)total;
+- (void)cancelTransferForTransferUUID:(NSString *)uuid transferDirection:(TCBuddyFileTransferDirection)direction;
 
 // -- Messages --
 - (NSArray *)popMessages;
@@ -197,7 +194,8 @@ typedef enum
 - (void)sendProfileName:(nullable NSString *)name;
 - (void)sendProfileText:(nullable NSString *)text;
 - (void)sendMessage:(NSString *)message completionHanndler:(void (^)(SMInfo *info))handler;
-- (void)sendFile:(NSString *)filepath;
+- (void)sendFileAtPath:(NSString *)filepath;
+- (void)sendFileWithData:(NSData *)filedata filename:(NSString *)filename;
 
 // -- Action --
 - (void)handlePingWithRandomToken:(NSString *)remoteRandom;
@@ -218,13 +216,13 @@ typedef enum
 
 @interface TCFileInfo : NSObject
 
-- (NSString *)uuid;
+@property (nonatomic, readonly) NSString *uuid;
 
-- (uint64_t)fileSizeCompleted;
-- (uint64_t)fileSizeTotal;
+@property (nonatomic, readonly) uint64_t fileSizeCompleted;
+@property (nonatomic, readonly) uint64_t fileSizeTotal;
 
-- (NSString *)fileName;
-- (NSString *)filePath;
+@property (nonatomic, readonly) NSString *fileName;
+@property (nullable, nonatomic, readonly) NSString *filePath;
 
 @end
 

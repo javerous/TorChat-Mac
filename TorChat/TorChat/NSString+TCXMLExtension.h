@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSString (TCXMLExtension)
 
-- (NSString *)stringByEscapingXMLEntities;
+@property (nonatomic, readonly, copy) NSString *escapedXMLEntities;
 
 @end
 

@@ -61,12 +61,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic, readonly) TCBuddy *buddy;
 
 // -- Instance --
-+ (TCChatViewController *)chatViewWithBuddy:(TCBuddy *)buddy configuration:(id <TCConfigApp>)config;
++ (instancetype)chatViewWithBuddy:(TCBuddy *)buddy configuration:(id <TCConfigApp>)config;
+
+- (instancetype)initWithBuddy:(TCBuddy *)buddy configuration:(id <TCConfigApp>)config NS_DESIGNATED_INITIALIZER;
+
+- (nullable instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 
 // -- Content --
 - (void)setLocalAvatar:(NSImage *)image;
 
-- (NSUInteger)messagesCount;
+@property (nonatomic, readonly) NSUInteger messagesCount;
 
 // -- Focus --
 - (void)makeFirstResponder;

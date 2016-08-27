@@ -70,7 +70,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TCConnection : NSObject
 
 // -- Instance --
-- (instancetype)initWithDelegate:(id <TCConnectionDelegate>)delegate andSocket:(int)sock;
+- (instancetype)initWithDelegate:(id <TCConnectionDelegate>)delegate socket:(int)socketFD NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
 
 // -- Life --
 - (void)start;

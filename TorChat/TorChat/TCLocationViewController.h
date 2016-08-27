@@ -35,8 +35,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TCLocationViewController : NSViewController
 
-- (instancetype)initWithConfiguration:(id <TCConfigCore>)configuration component:(TCConfigPathComponent)component;
+// -- Instance --
+- (instancetype)initWithConfiguration:(id <TCConfigCore>)configuration component:(TCConfigPathComponent)component NS_DESIGNATED_INITIALIZER;
 
+- (nullable instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
+
+// -- Tools --
 - (void)addToView:(NSView *)view;
 
 @end

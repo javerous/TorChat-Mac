@@ -33,11 +33,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TCValue : NSObject
 
+// -- Instance --
 + (TCValue *)valueWithWeakObject:(id)object;
 
-- (instancetype)initWithWeakObject:(id)object;
+- (instancetype)initWithWeakObject:(id)object NS_DESIGNATED_INITIALIZER;
 
-- (nullable id)object;
+- (instancetype)init NS_UNAVAILABLE;
+
+// -- Properties --
+@property (nullable, nonatomic, readonly) id object;
 
 @end
 

@@ -99,9 +99,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable id)panelContent
 {
 	if ([modeMatrix selectedTag] == 1)
-		[_currentConfig setMode:TCConfigModeBundled];
+		_currentConfig.mode = TCConfigModeBundled;
 	else
-		[_currentConfig setMode:TCConfigModeCustom];
+		_currentConfig.mode = TCConfigModeCustom;
 	
 	return _currentConfig;
 }
