@@ -45,14 +45,14 @@
 "app_delegate_start_error_title" = "Start Error";
 "app_delegate_start_error_code" =  "TorChat can't be started because of a fatal error.\n\nError code %ld - %@";
 
+"app_delegate_fatal_error" = "Fatal Error";
+"app_delegate_fatal_error_message" = "A fatal error happened with bundled tor binary: %@";
+"app_delegate_fatal_quit" = "Quit";
+
 
 /* Main Controller */
 "main_ctrl_conf_error_tor_manager" =  "Can't create Tor manager - check your configuration file.";
 "main_ctrl_conf_error_core_manager" =  "Can't create Core manager - check your configuration file.";
-
-"main_ctrl_fatal_error" = "Fatal Error";
-"main_ctrl_fatal_error_message" = "A fatal error happened with bundled tor binary: %@";
-"main_ctrl_fatal_quit" = "Quit";
 
 
 /* Configuration Helper */

@@ -48,6 +48,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
+** Types
+*/
+#pragma mark - Types
+
+typedef NS_ENUM(unsigned int, TCMainControllerResult) {
+	TCMainControllerResultStarted,	// context = nil
+	TCMainControllerResultCanceled,	// context = nil
+	TCMainControllerResultErrored,	// context = NSError
+};
+
+
+
+/*
 ** TCMainController
 */
 #pragma mark - TCMainController
@@ -55,8 +68,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TCMainController : NSObject
 
 // -- Life --
-- (void)startWithCompletionHandler:(void (^)(NSError * _Nullable error))handler;
+- (void)startWithCompletionHandler:(void (^)(TCMainControllerResult result, id _Nullable context))handler;
 - (void)stopWithCompletionHandler:(dispatch_block_t)handler;
+
+@property (nonatomic) void (^fatalErrorHandler)(NSString *errorCause);
 
 // -- Controllers --
 @property (nonatomic, readonly) TCPreferencesWindowController	*preferencesController;

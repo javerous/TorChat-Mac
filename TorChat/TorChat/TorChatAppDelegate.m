@@ -92,39 +92,85 @@ NS_ASSUME_NONNULL_BEGIN
 	// Create controller, and start it.
 	_mainController = [[TCMainController alloc] init];
 	
-	[_mainController startWithCompletionHandler:^(NSError * _Nullable error) {
+	_mainController.fatalErrorHandler = ^(NSString *errorCause) {
 		
-		if (error)
+		CFRunLoopRef runLoop = CFRunLoopGetMain();
+		
+		CFRunLoopPerformBlock(runLoop, kCFRunLoopCommonModes, ^{
+			
+			NSAlert *alert = [[NSAlert alloc] init];
+			
+			alert.messageText = NSLocalizedString(@"app_delegate_fatal_error", @"");
+			alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"app_delegate_fatal_error_message", @""), errorCause];
+			
+			[alert addButtonWithTitle:NSLocalizedString(@"app_delegate_fatal_quit", @"")];
+			
+			[alert runModal];
+			
+			exit(0);
+		});
+		
+		CFRunLoopWakeUp(runLoop);
+	};
+	
+	[_mainController startWithCompletionHandler:^(TCMainControllerResult result, id  _Nullable context) {
+	
+		switch (result)
 		{
-			// Note:
-			//  We have to show the error alert in the main thread (AppKit constraint), and because we have to wait for its end before calling terminate,
-			//    all our code should run in a row in the main thread.
-			//
-			//  When we call [NSApplication terminate] method, if [NSApplication applicationShouldTerminate] return NSTerminateLater, then a new run-loop is
-			//    launched, waiting for [NSApplication replyToApplicationShouldTerminate] to be called.
-			//  If we call terminate in dispatch_get_main_queue(), then this new run-loop is going to run in our dispatched block,
-			//    which makes our block waiting for the end of this run-loop, which makes the main run-loop waiting for the end of this run-loop. As our
-			//    "stopWithCompletionHandler" relies on some code executed on the main queue to finish, we are dead-locking (the stop wait on the main-queue,
-			//    itself waiting on the termination new run-loop, itself waiting for the termination-reply, itself waiting for the stop to be finished, etc.).
-			//  Because of the mode in which the "terminate" new run-loop run, the sources scheduled on the main-run loop (including blocks dispatched
-			//    on the main queue) continues to be executed. So we perform our termination on the main run-loop instead of the main queue : this way we
-			//    prevent the described dead-lock.
-			
-			CFRunLoopRef runLoop = CFRunLoopGetMain();
-			
-			CFRunLoopPerformBlock(runLoop, kCFRunLoopCommonModes, ^{
+			case TCMainControllerResultStarted:
+			{
+				// Nothing to do.
+				break;
+			}
+
+			case TCMainControllerResultCanceled:
+			{
+				CFRunLoopRef runLoop = CFRunLoopGetMain();
 				
-				NSAlert *alert = [[NSAlert alloc] init];
+				CFRunLoopPerformBlock(runLoop, kCFRunLoopCommonModes, ^{
+					[[NSApplication sharedApplication] terminate:nil];
+				});
 				
-				alert.messageText = NSLocalizedString(@"app_delegate_start_error_title", @"");
-				alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"app_delegate_start_error_code", @""), error.code, error.localizedDescription];
+				CFRunLoopWakeUp(runLoop);
+
+				break;
+			}
 				
-				[alert runModal];
+			case TCMainControllerResultErrored:
+			{
+				NSError			*error = context;
+				CFRunLoopRef	runLoop = CFRunLoopGetMain();
 				
-				[[NSApplication sharedApplication] terminate:nil];
-			});
-			
-			CFRunLoopWakeUp(runLoop);
+				// Note:
+				//  We have to show the error alert in the main thread (AppKit constraint), and because we have to wait for its end before calling terminate,
+				//    all our code should run in a row in the main thread.
+				//
+				//  When we call [NSApplication terminate] method, if [NSApplication applicationShouldTerminate] return NSTerminateLater, then a new run-loop is
+				//    launched, waiting for [NSApplication replyToApplicationShouldTerminate] to be called.
+				//  If we call terminate in dispatch_get_main_queue(), then this new run-loop is going to run in our dispatched block,
+				//    which makes our block waiting for the end of this run-loop, which makes the main run-loop waiting for the end of this run-loop. As our
+				//    "stopWithCompletionHandler" relies on some code executed on the main queue to finish, we are dead-locking (the stop wait on the main-queue,
+				//    itself waiting on the termination new run-loop, itself waiting for the termination-reply, itself waiting for the stop to be finished, etc.).
+				//  Because of the mode in which the "terminate" new run-loop run, the sources scheduled on the main-run loop (including blocks dispatched
+				//    on the main queue) continues to be executed. So we perform our termination on the main run-loop instead of the main queue : this way we
+				//    prevent the described dead-lock.
+				
+				CFRunLoopPerformBlock(runLoop, kCFRunLoopCommonModes, ^{
+					
+					NSAlert *alert = [[NSAlert alloc] init];
+					
+					alert.messageText = NSLocalizedString(@"app_delegate_start_error_title", @"");
+					alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"app_delegate_start_error_code", @""), error.code, error.localizedDescription];
+					
+					[alert runModal];
+					
+					[[NSApplication sharedApplication] terminate:nil];
+				});
+				
+				CFRunLoopWakeUp(runLoop);
+				
+				break;
+			}
 		}
 	}];
 }

@@ -170,7 +170,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 			if (info.kind == SMInfoError)
 			{
+				imIdentifierField.stringValue = [info renderMessage];
+				imIdentifierField.textColor = [NSColor redColor];
+				
 				[_loadingIndicator stopAnimation:self];
+				
 				[self.panelProxy setDisableContinue:YES];
 			}
 			else if (info.kind == SMInfoInfo)

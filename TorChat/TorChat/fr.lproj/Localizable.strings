@@ -45,14 +45,14 @@
 "app_delegate_start_error_title" = "Erreur de démarrage";
 "app_delegate_start_error_code" =  "TorChat ne peut pas être démarré à cause d'une erreur fatale.\n\nCode d'erreur %ld - %@";
 
+"app_delegate_fatal_error" = "Erreur fatale";
+"app_delegate_fatal_error_message" = "Une erreur fatale est survenue avec le binaire tor préinclus : %@";
+"app_delegate_fatal_quit" = "Quitter";
+
 
 /* Main Controller */
 "main_ctrl_conf_error_tor_manager" =  "Impossible de créer le gestionnaire Tor - veuillez vérifier votre fichier de configuration.";
 "main_ctrl_conf_error_core_manager" =  "Impossible de créer le gestionnaire Core - veuillez vérifier votre fichier de configuration.";
-
-"main_ctrl_fatal_error" = "Erreur fatale";
-"main_ctrl_fatal_error_message" = "Une erreur fatale est survenue avec le binaire tor préinclus : %@";
-"main_ctrl_fatal_quit" = "Quitter";
 
 
 /* Configuration Helper */

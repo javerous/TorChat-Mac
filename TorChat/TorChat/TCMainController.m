@@ -117,17 +117,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark Start
 
-- (void)startWithCompletionHandler:(void (^)(NSError * _Nullable error))handler
+- (void)startWithCompletionHandler:(void (^)(TCMainControllerResult result, id _Nullable context))handler
 {
 	if (!handler)
-		handler = ^(NSError * _Nullable error) { };
+		handler = ^(TCMainControllerResult result, id _Nullable context) { };
 	
 	[_opQueue scheduleBlock:^(SMOperationsControl  _Nonnull opCtrl) {
 		
 		SMOperationsQueue *operations = [[SMOperationsQueue alloc] init];
 		
-		__block id <TCConfigAppEncryptable> configuration = nil;
-		__block NSError *error = nil;
+		__block TCMainControllerResult	startResult = TCMainControllerResultErrored;
+		__block id						startResultContext = nil;
 		
 		// -- Stop if necessary --
 		[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
@@ -138,6 +138,8 @@ NS_ASSUME_NONNULL_BEGIN
 		
 		
 		// -- Try loading config from file --
+		__block id <TCConfigAppEncryptable> configuration = nil;
+
 		[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
 			
 			// Search an accessible config path.
@@ -175,13 +177,15 @@ NS_ASSUME_NONNULL_BEGIN
 				{
 					case TCConfigurationHelperCompletionTypeCanceled:
 					{
+						startResult = TCMainControllerResultCanceled;
 						ctrl(SMOperationsControlFinish);
 						break;
 					}
 						
 					case TCConfigurationHelperCompletionTypeError:
 					{
-						error = result;
+						startResult = TCMainControllerResultErrored;
+						startResultContext = result;
 						ctrl(SMOperationsControlFinish);
 						break;
 					}
@@ -216,6 +220,7 @@ NS_ASSUME_NONNULL_BEGIN
 				{
 					case SMAssistantCompletionTypeCanceled:
 					{
+						startResult = TCMainControllerResultCanceled;
 						ctrl(SMOperationsControlFinish);
 						break;
 					}
@@ -231,13 +236,15 @@ NS_ASSUME_NONNULL_BEGIN
 								{
 									case TCConfigurationHelperCompletionTypeCanceled:
 									{
+										startResult = TCMainControllerResultCanceled;
 										ctrl(SMOperationsControlFinish);
 										break;
 									}
 										
 									case TCConfigurationHelperCompletionTypeError:
 									{
-										error = result;
+										startResult = TCMainControllerResultErrored;
+										startResultContext = result;
 										ctrl(SMOperationsControlFinish);
 										break;
 									}
@@ -283,7 +290,8 @@ NS_ASSUME_NONNULL_BEGIN
 			
 			if (!torManager)
 			{
-				error = [NSError errorWithDomain:TCMainControllerErrorDomain code:10 userInfo:@{ NSLocalizedDescriptionKey: NSLocalizedString(@"main_ctrl_conf_error_tor_manager", @"") }];
+				startResult = TCMainControllerResultErrored;
+				startResultContext = [NSError errorWithDomain:TCMainControllerErrorDomain code:10 userInfo:@{ NSLocalizedDescriptionKey: NSLocalizedString(@"main_ctrl_conf_error_tor_manager", @"") }];
 				ctrl(SMOperationsControlFinish);
 				return;
 			}
@@ -301,26 +309,8 @@ NS_ASSUME_NONNULL_BEGIN
 						break;
 				}
 				
-				if (fatalLog)
-				{
-					CFRunLoopRef runLoop = CFRunLoopGetMain();
-					
-					CFRunLoopPerformBlock(runLoop, kCFRunLoopCommonModes, ^{
-						
-						NSAlert *alert = [[NSAlert alloc] init];
-						
-						alert.messageText = NSLocalizedString(@"main_ctrl_fatal_error", @"");
-						alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"main_ctrl_fatal_error_message", @""), log];
-						
-						[alert addButtonWithTitle:NSLocalizedString(@"main_ctrl_fatal_quit", @"")];
-						
-						[alert runModal];
-						
-						exit(0);
-					});
-					
-					CFRunLoopWakeUp(runLoop);
-				}
+				if (fatalLog && _fatalErrorHandler)
+					_fatalErrorHandler(log);
 			};
 			
 			// Start tor manager via UI.
@@ -358,7 +348,8 @@ NS_ASSUME_NONNULL_BEGIN
 						
 					case SMInfoError:
 					{
-						error = [NSError errorWithDomain:TCMainControllerErrorDomain code:11 userInfo:@{ NSLocalizedDescriptionKey: [startInfo renderMessage] }];
+						startResult = TCMainControllerResultErrored;
+						startResultContext = [NSError errorWithDomain:TCMainControllerErrorDomain code:11 userInfo:@{ NSLocalizedDescriptionKey: [startInfo renderMessage] }];
 						torManager = nil;
 						
 						ctrl(SMOperationsControlFinish);
@@ -414,7 +405,9 @@ NS_ASSUME_NONNULL_BEGIN
 			
 			if (!core)
 			{
-				error = [NSError errorWithDomain:TCMainControllerErrorDomain code:12 userInfo:@{ NSLocalizedDescriptionKey: NSLocalizedString(@"main_ctrl_conf_error_core_manager", @"") }];
+				startResult = TCMainControllerResultErrored;
+				startResultContext = [NSError errorWithDomain:TCMainControllerErrorDomain code:12 userInfo:@{ NSLocalizedDescriptionKey: NSLocalizedString(@"main_ctrl_conf_error_core_manager", @"") }];
+				
 				torManager = nil;
 				
 				ctrl(SMOperationsControlFinish);
@@ -453,6 +446,10 @@ NS_ASSUME_NONNULL_BEGIN
 				[core start];
 				ctrl(SMOperationsControlContinue);
 			});
+			
+			// Set result.
+			startResult = TCMainControllerResultStarted;
+			startResultContext = nil;
 		}];
 		
 		// -- Finish --
@@ -464,7 +461,7 @@ NS_ASSUME_NONNULL_BEGIN
 			
 			opCtrl(SMOperationsControlContinue);
 			
-			handler(error);
+			handler(startResult, startResultContext);
 		};
 		
 		// Start.
