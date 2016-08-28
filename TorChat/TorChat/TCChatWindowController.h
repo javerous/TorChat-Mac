@@ -46,14 +46,13 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TCChatWindowController : NSWindowController
 
 // -- Instance --
-+ (TCChatWindowController *)sharedController;
+- (instancetype)initWithConfiguration:(id <TCConfigApp>)configuration coreManager:(TCCoreManager *)coreMananager NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 - (instancetype)initWithWindow:(nullable NSWindow *)window NS_UNAVAILABLE;
 
-// -- Life --
-- (void)startWithConfiguration:(id <TCConfigApp>)configuration coreManager:(TCCoreManager *)coreMananager completionHandler:(dispatch_block_t)handler;
-- (void)stopWithCompletionHandler:(dispatch_block_t)handler;
+// -- Synchronize --
+- (void)synchronizeWithCompletionHandler:(dispatch_block_t)handler;
 
 // -- Chat --
 - (void)openChatWithBuddy:(nullable TCBuddy *)buddy select:(BOOL)select;

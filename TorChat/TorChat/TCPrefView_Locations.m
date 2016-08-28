@@ -68,6 +68,13 @@ NS_ASSUME_NONNULL_BEGIN
 	return self;
 }
 
+
+
+/*
+** TCPrefView_Locations - NSViewController
+*/
+#pragma mark - TCPrefView_Locations - NSViewController
+
 - (void)viewDidLoad
 {
 	[super viewDidLoad];
@@ -88,17 +95,9 @@ NS_ASSUME_NONNULL_BEGIN
 	[_torDownloadsLocation addToView:downloadsView];
 }
 
-
-
-/*
-** TCPrefView_Locations - TCPrefView
-*/
-#pragma mark - TCPrefView_Locations - TCPrefView
-
-- (void)panelDidAppear
+- (void)viewWillAppear
 {
-	// Load configuration.
-	[self reloadConfiguration];
+	[super viewWillAppear];
 	
 	// Observe referral change.
 	__weak TCPrefView_Locations *weakSelf = self;
@@ -108,10 +107,23 @@ NS_ASSUME_NONNULL_BEGIN
 	}];
 }
 
-- (void)panelDidDisappear
+- (void)viewDidDisappear
 {
-	// Remove observer.
+	[super viewDidDisappear];
+	
 	[self.config removePathObserver:_pathObserver];
+}
+
+
+/*
+** TCPrefView_Locations - TCPrefView
+*/
+#pragma mark - TCPrefView_Locations - TCPrefView
+
+- (void)panelLoadConfiguration
+{
+	// Load configuration.
+	[self reloadConfiguration];
 }
 
 

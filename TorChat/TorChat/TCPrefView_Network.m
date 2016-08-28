@@ -89,19 +89,13 @@ static BOOL isNumber(NSString *str);
 
 
 /*
-** TCPrefView_Network - TCPrefView
+** TCPrefView_Network - NSViewController
 */
-#pragma mark - TCPrefView_Network - TCPrefView
+#pragma mark - TCPrefView_Network - NSViewController
 
-- (void)panelDidAppear
+- (void)viewDidLoad
 {
-	// Load configuration.
-	[self _reloadConfiguration];
-	
-	_customIMIdentifier = self.config.selfIdentifier;
-	_customIMPort = @(self.config.selfPort);
-	_customTorAddress = self.config.torAddress;
-	_customTorPort = @(self.config.torPort);
+	[super viewDidLoad];
 	
 	// Configure validation.
 	TCPrefView_Network *weakSekf = self;
@@ -140,7 +134,25 @@ static BOOL isNumber(NSString *str);
 	};
 }
 
-- (void)panelDidDisappear
+
+
+/*
+** TCPrefView_Network - TCPrefView
+*/
+#pragma mark - TCPrefView_Network - TCPrefView
+
+- (void)panelLoadConfiguration
+{
+	// Load configuration.
+	[self _reloadConfiguration];
+	
+	_customIMIdentifier = self.config.selfIdentifier;
+	_customIMPort = @(self.config.selfPort);
+	_customTorAddress = self.config.torAddress;
+	_customTorPort = @(self.config.torPort);
+}
+
+- (void)panelSaveConfiguration
 {
 	BOOL changes = NO;
 	
@@ -166,13 +178,10 @@ static BOOL isNumber(NSString *str);
 		self.config.torPort = (uint16_t)_torPortField.intValue;
 		
 		// Reload config.
-		__weak TCPrefView_Network *weakSelf = self;
-		
-		[self reloadConfigurationWithCompletionHandler:^{
-			dispatch_async(dispatch_get_main_queue(), ^{
-				[weakSelf _reloadConfiguration];
-			});
-		}];
+		// FIXME: ask TCMainController to reload configuration (eg : load bundled tor binary).
+		// [self.mainController reloadConfigurationWithCompletionHandler:^{
+		//		dispatch_async(dispatch_get_main_queue(), { [self _reloadConfiguration]; });
+		//}];
 	}
 }
 
@@ -301,7 +310,7 @@ static BOOL isNumber(NSString *str);
 	
 	_modePopup.enabled = valid;
 	
-	[self disableDisappearance:!valid];
+	[self disablePanelSaving:!valid];
 }
 
 @end

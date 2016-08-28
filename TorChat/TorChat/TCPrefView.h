@@ -49,13 +49,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic, readonly) TCCoreManager				*core;
 
 // Event.
-- (void)panelDidAppear;		// can be subclassed.
-- (void)panelDidDisappear;	// can be subclassed.
+- (void)panelLoadConfiguration;		// can be subclassed.
+- (void)panelSaveConfiguration;	// can be subclassed.
 
 // Tools.
-- (void)reloadConfigurationWithCompletionHandler:(dispatch_block_t)handler;
-
-- (void)disableDisappearance:(BOOL)disable;
+- (void)disablePanelSaving:(BOOL)disable;
 
 @end
 

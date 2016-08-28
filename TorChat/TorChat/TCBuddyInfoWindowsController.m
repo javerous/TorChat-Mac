@@ -58,6 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	NSMutableArray		*_windowsControllers;
 	dispatch_queue_t	_localQueue;
+	
+	id <TCConfigApp>	_configuration;
 	TCCoreManager		*_coreManager;
 }
 
@@ -78,8 +80,10 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	NSDateFormatter			*_dateFormatter;
 	
+	id <TCConfigApp>		_configuration;
+	TCCoreManager			*_coreManager;
+	
 	TCBuddyInfoWindowsController *_windowsController;
-	TCCoreManager *_coreManager;
 }
 
 // -- Properties --
@@ -100,10 +104,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, readonly, nonatomic) TCBuddy	*buddy;
 
 // -- Instance --
-- (instancetype)initWithWindowsController:(TCBuddyInfoWindowsController *)windowsController buddy:(TCBuddy *)buddy coreManager:(TCCoreManager *)coreManager NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithWindowsController:(TCBuddyInfoWindowsController *)windowsController buddy:(TCBuddy *)buddy configuration:(id <TCConfigApp>)configuration coreManager:(TCCoreManager *)coreManager NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 - (instancetype)initWithWindow:(nullable NSWindow *)window NS_UNAVAILABLE;
+
+// -- Synchronize --
+- (void)synchronizeWithCompletionHandler:(dispatch_block_t)handler;
 
 // -- IBAction --
 - (IBAction)doToolBar:(id)sender;
@@ -125,7 +132,7 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCBuddyInfoWindowsController - Instance
 
-- (instancetype)initWithCoreManager:(TCCoreManager *)coreManager
+- (instancetype)initWithConfiguration:(id <TCConfigApp>)configuration coreManager:(TCCoreManager *)coreManager
 {
 	self = [super init];
 	
@@ -133,7 +140,9 @@ NS_ASSUME_NONNULL_BEGIN
 	{
 		NSAssert(coreManager, @"coreManager is nil");
 		
+		_configuration = configuration;
 		_coreManager = coreManager;
+		
 		_windowsControllers = [[NSMutableArray alloc] init];
 		_localQueue = dispatch_queue_create("com.torchat.app.buddy-info-window-controller.global", DISPATCH_QUEUE_SERIAL);
 		
@@ -169,7 +178,7 @@ NS_ASSUME_NONNULL_BEGIN
 		// Create new controller.
 		if (!ctrl)
 		{
-			ctrl = [[TCBuddyInfoWindowController alloc] initWithWindowsController:self buddy:buddy coreManager:_coreManager];
+			ctrl = [[TCBuddyInfoWindowController alloc] initWithWindowsController:self buddy:buddy configuration:_configuration coreManager:_coreManager];
 		
 			if (ctrl)
 				[_windowsControllers addObject:ctrl];
@@ -182,11 +191,13 @@ NS_ASSUME_NONNULL_BEGIN
 	});
 }
 
-- (void)closeInfoForBuddy:(TCBuddy *)buddy
+- (void)closeInfoForBuddy:(TCBuddy *)buddy completionHandler:(nullable  dispatch_block_t)handler
 {
 	NSAssert(buddy, @"buddy is nil");
+	
+	dispatch_group_t group = dispatch_group_create();
 
-	dispatch_async(_localQueue, ^{
+	dispatch_group_async(group, _localQueue, ^{
 		
 		NSUInteger i, cnt = _windowsControllers.count;
 		
@@ -194,20 +205,48 @@ NS_ASSUME_NONNULL_BEGIN
 		{
 			TCBuddyInfoWindowController *ctrl = _windowsControllers[i];
 			
-			if (ctrl.buddy == buddy)
-			{
-				[[TCLogsManager sharedManager] removeObserverForKey:ctrl.buddy.identifier];
-				
-				dispatch_async(dispatch_get_main_queue(), ^{
-					[ctrl.window orderOut:nil];
-				});
-				
-				[_windowsControllers removeObjectAtIndex:i];
-				
-				return;
-			}
+			if (ctrl.buddy != buddy)
+				continue;
+			
+			[[TCLogsManager sharedManager] removeObserverForKey:ctrl.buddy.identifier];
+			
+			dispatch_group_async(group, dispatch_get_main_queue(), ^{
+				[ctrl close];
+			});
+			
+			[_windowsControllers removeObjectAtIndex:i];
+			
+			return;
 		}
 	});
+	
+	if (handler)
+		dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), handler);
+}
+
+
+/*
+** TCBuddyInfoWindowsController - Synchronize
+*/
+#pragma mark - TCBuddyInfoWindowsController - Synchronize
+
+- (void)synchronizeWithCompletionHandler:(dispatch_block_t)handler
+{
+	dispatch_group_t group = dispatch_group_create();
+
+	dispatch_group_async(group, _localQueue, ^{
+
+		for (TCBuddyInfoWindowController *ctrl in _windowsControllers)
+		{
+			dispatch_group_enter(group);
+			
+			[ctrl synchronizeWithCompletionHandler:^{
+				dispatch_group_leave(group);
+			}];
+		}
+	});
+	
+	dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), handler);
 }
 
 
@@ -224,7 +263,7 @@ NS_ASSUME_NONNULL_BEGIN
 	{
 		TCBuddy *buddy = info.context;
 
-		[self closeInfoForBuddy:buddy];
+		[self closeInfoForBuddy:buddy completionHandler:nil];
 	}
 }
 
@@ -245,7 +284,7 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCBuddyInfoWindowController - Instance
 
-- (instancetype)initWithWindowsController:(TCBuddyInfoWindowsController *)windowsController buddy:(TCBuddy *)buddy coreManager:(TCCoreManager *)coreManager
+- (instancetype)initWithWindowsController:(TCBuddyInfoWindowsController *)windowsController buddy:(TCBuddy *)buddy configuration:(id <TCConfigApp>)configuration coreManager:(TCCoreManager *)coreManager
 {
 	self = [super initWithWindow:nil];
 
@@ -257,6 +296,7 @@ NS_ASSUME_NONNULL_BEGIN
 		// Hold parameters.
 		_windowsController = windowsController;
 		_buddy = buddy;
+		_configuration = configuration;
 		_coreManager = coreManager;
 		
 		// Containers.
@@ -302,7 +342,7 @@ NS_ASSUME_NONNULL_BEGIN
 /*
 ** TCBuddyInfoWindowController - NSWindowController
 */
-#pragma mark - TCBuddyInfoWindowController - Instance
+#pragma mark - TCBuddyInfoWindowController - NSWindowController
 
 - (nullable NSString *)windowNibName
 {
@@ -316,14 +356,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)windowDidLoad
 {
-    [super windowDidLoad];
+	[super windowDidLoad];
 
-	// -- Configure Window --
+	// Place window.
+	NSString *windowFrame = [_configuration generalSettingValueForKey:@"window-frame-buddy-info"];
+	
+	if (windowFrame)
+		[self.window setFrameFromString:windowFrame];
+	else
+		[self.window center];
+	
 	self.window.delegate = self;
-	[self.window center];
-	self.windowFrameAutosaveName = @"InfoWindow";
-
-	// -- Configure content --
+	
 	// Name.
 	NSString *name = _buddy.profileName;
 
@@ -380,6 +424,42 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
+** TCBuddyInfoWindowController - NSWindowDelegate
+*/
+#pragma mark - TCBuddyInfoWindowController - NSWindowDelegate
+
+- (void)windowWillClose:(NSNotification *)notification
+{
+	[[TCLogsManager sharedManager] removeObserverForKey:self.buddy.identifier];
+	
+	[_windowsController closeInfoForBuddy:self.buddy completionHandler:nil];
+}
+
+- (void)windowDidResize:(NSNotification *)notification
+{
+	[self updateToolbar];
+}
+
+
+
+/*
+** TCBuddyInfoWindowController - Synchronize
+*/
+#pragma mark - TCBuddyInfoWindowController - Synchronize
+
+- (void)synchronizeWithCompletionHandler:(dispatch_block_t)handler
+{
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		[_configuration setGeneralSettingValue:self.window.stringWithSavedFrame forKey:@"window-frame-buddy-info"];
+
+		handler();
+	});
+}
+
+
+
+/*
 ** TCBuddyInfoWindowController - IBAction
 */
 #pragma mark - TCBuddyInfoWindowController - IBAction
@@ -406,25 +486,6 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	for (i = 0; i < count; i++)
 		[_toolBar setWidth:swidth forSegment:i];
-}
-
-
-
-/*
-** TCBuddyInfoWindowController - NSWindowDelegate
-*/
-#pragma mark - TCBuddyInfoWindowController - NSWindowDelegate
-
-- (void)windowWillClose:(NSNotification *)notification
-{	
-	[[TCLogsManager sharedManager] removeObserverForKey:self.buddy.identifier];
-	
-	[_windowsController closeInfoForBuddy:self.buddy];
-}
-
-- (void)windowDidResize:(NSNotification *)notification
-{
-	[self updateToolbar];
 }
 
 

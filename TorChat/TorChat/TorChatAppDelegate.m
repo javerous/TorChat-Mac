@@ -43,6 +43,9 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - TorChatAppDelegate - Private
 
 @interface TorChatAppDelegate ()
+{
+	TCMainController *_mainController;
+}
 
 @property (strong, nonatomic) IBOutlet NSMenuItem	*buddyShowMenu;
 @property (strong, nonatomic) IBOutlet NSMenuItem	*buddyDeleteMenu;
@@ -86,10 +89,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-	// Start TorChat.
-	[[TCMainController sharedController] startWithCompletionHandler:^(id <TCConfigAppEncryptable> _Nullable configuration, TCCoreManager * _Nullable core, NSError * _Nullable error) {
+	// Create controller, and start it.
+	_mainController = [[TCMainController alloc] init];
+	
+	[_mainController startWithCompletionHandler:^(NSError * _Nullable error) {
 		
-		if (!configuration || !core)
+		if (error)
 		{
 			// Note:
 			//  We have to show the error alert in the main thread (AppKit constraint), and because we have to wait for its end before calling terminate,
@@ -109,15 +114,12 @@ NS_ASSUME_NONNULL_BEGIN
 			
 			CFRunLoopPerformBlock(runLoop, kCFRunLoopCommonModes, ^{
 				
-				if (error)
-				{
-					NSAlert *alert = [[NSAlert alloc] init];
-					
-					alert.messageText = NSLocalizedString(@"app_delegate_start_error_title", @"");
-					alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"app_delegate_start_error_code", @""), error.code, error.localizedDescription];
-					
-					[alert runModal];
-				}
+				NSAlert *alert = [[NSAlert alloc] init];
+				
+				alert.messageText = NSLocalizedString(@"app_delegate_start_error_title", @"");
+				alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"app_delegate_start_error_code", @""), error.code, error.localizedDescription];
+				
+				[alert runModal];
 				
 				[[NSApplication sharedApplication] terminate:nil];
 			});
@@ -129,7 +131,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
-	[[TCMainController sharedController] stopWithCompletionHandler:^{
+	if (!_mainController)
+		return NSTerminateNow;
+	
+	[_mainController stopWithCompletionHandler:^{
 		[sender replyToApplicationShouldTerminate:YES];
 	}];
 
@@ -147,29 +152,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (IBAction)showPreferences:(id)sender
 {
-	[[TCPreferencesWindowController sharedController] showWindow:nil];
+	[_mainController.preferencesController showWindow:sender];
 }
 
 #pragma mark Windows
 
 - (IBAction)showTransfers:(id)sender
 {
-	[[TCFilesWindowController sharedController] showWindow:sender];
+	[_mainController.filesController showWindow:sender];
 }
 
 - (IBAction)showBuddies:(id)sender
 {
-	[[TCBuddiesWindowController sharedController] showWindow:sender];
+	[_mainController.buddiesController showWindow:sender];
 }
 
 - (IBAction)showLogs:(id)sender
 {
-	[[TCLogsWindowController sharedController] showWindow:sender];
+	[_mainController.logsController showWindow:sender];
 }
 
 - (IBAction)showMessages:(id)sender
 {
-	[[TCChatWindowController sharedController] openChatWithBuddy:nil select:YES];
+	[_mainController.chatController openChatWithBuddy:nil select:YES];
 }
 
 
@@ -177,37 +182,37 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (IBAction)doBuddyShowInfo:(id)sender
 {
-	[[TCBuddiesWindowController sharedController] doShowInfo:sender];
+	[_mainController.buddiesController showBuddyInfo];
 }
 
 - (IBAction)doBuddyAdd:(id)sender
 {
-	[[TCBuddiesWindowController sharedController] doAdd:sender];
+	[_mainController.buddiesController addBuddy];
 }
 
 - (IBAction)doBuddyRemove:(id)sender
 {
-	[[TCBuddiesWindowController sharedController] doRemove:sender];
+	[_mainController.buddiesController removeBuddy];
 }
 
 - (IBAction)doBuddyChat:(id)sender
 {
-	[[TCBuddiesWindowController sharedController] doChat:sender];
+	[_mainController.buddiesController startChat];
 }
 
 - (IBAction)doBuddySendFile:(id)sender
 {
-	[[TCBuddiesWindowController sharedController] doSendFile:sender];
+	[_mainController.buddiesController sendFile];
 }
 
 - (IBAction)doBuddyToggleBlocked:(id)sender
 {
-	[[TCBuddiesWindowController sharedController] doToggleBlock:sender];
+	[_mainController.buddiesController toggleBlock];
 }
 
 - (IBAction)doEditProfile:(id)sender
 {
-	[[TCBuddiesWindowController sharedController] doEditProfile:sender];
+	[_mainController.buddiesController editProfile];
 }
 
 
@@ -221,7 +226,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	if (menuItem == _buddyShowMenu || menuItem == _buddyDeleteMenu || menuItem == _buddyChatMenu || menuItem == _buddyBlockMenu || menuItem == _buddyFileMenu)
 	{
-		TCBuddy *buddy = [[TCBuddiesWindowController sharedController] selectedBuddy];
+		TCBuddy *buddy = [_mainController.buddiesController selectedBuddy];
 		
 		if (buddy.blocked)
 			[_buddyBlockMenu setTitle:NSLocalizedString(@"menu_unblock_buddy", @"")];

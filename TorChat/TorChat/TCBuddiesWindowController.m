@@ -36,6 +36,7 @@
 
 // -- Interface --
 // > Controllers
+#import "TCMainController.h"
 #import "TCBuddyInfoWindowsController.h"
 #import "TCChatWindowController.h"
 
@@ -62,17 +63,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TCBuddiesWindowController () <TCCoreManagerObserver, TCBuddyObserver, TCDropButtonDelegate>
 {
-	id <TCConfigAppEncryptable>	_configuration;
-	TCCoreManager		*_core;
+	__weak TCMainController *_mainController;
+	id <TCConfigApp>		_configuration;
+	TCCoreManager			*_core;
 	
 	dispatch_queue_t	_localQueue;
 
-	NSMutableArray		*_buddies;
-	id					_lastSelected;
+	NSMutableArray	*_buddies;
+	id				_lastSelected;
 	
-	BOOL				_running;
+	NSDictionary	*_infos;
 	
-	NSDictionary		*_infos;
+	BOOL _coreStarted;
 	
 	TCBuddyInfoWindowsController *_infoWindowsController;
 }
@@ -130,29 +132,35 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCBuddiesController - Instance
 
-+ (TCBuddiesWindowController *)sharedController
-{
-	static dispatch_once_t		pred;
-	static TCBuddiesWindowController	*instance = nil;
-		
-	dispatch_once(&pred, ^{
-		instance = [[TCBuddiesWindowController alloc] init];
-	});
-	
-	return instance;
-}
 
-- (instancetype)init
+- (instancetype)initWithMainController:(TCMainController *)mainController configuration:(id <TCConfigApp>)configuration coreManager:(TCCoreManager *)coreMananager
 {
-	self = [super initWithWindowNibName:@"BuddiesWindow"];
+	self = [super initWithWindow:nil];
 	
 	if (self)
 	{
-		// Build an event dispatch queue
+		// Hold parameters.
+		_mainController = mainController;
+		_configuration = configuration;
+		_core = coreMananager;
+		
+		// Queue.
 		_localQueue = dispatch_queue_create("com.torchat.app.buddies.local", DISPATCH_QUEUE_SERIAL);
-
-		// Build array of cocoa buddy
+		
+		// Containers.
 		_buddies = [[NSMutableArray alloc] init];
+		
+		// Register observer.
+		[_core addObserver:self];
+		
+		// Add current buddies.
+		NSArray *buddies = _core.buddies;
+		
+		for (TCBuddy *buddy in buddies)
+		{
+			[buddy addObserver:self];
+			[_buddies addObject:buddy];
+		}
 	}
 	
 	return self;
@@ -165,17 +173,67 @@ NS_ASSUME_NONNULL_BEGIN
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+
+
+/*
+** TCBuddiesController - NSWindowController + NSWindowDelegate
+*/
+#pragma mark - TCBuddiesController - NSWindowController + NSWindowDelegate
+
+- (nullable NSString *)windowNibName
+{
+	return @"BuddiesWindow";
+}
+
+- (id)owner
+{
+	return self;
+}
+
 - (void)windowDidLoad
 {
-	// Place Window.
-	[self.window center];
-	[self.window setFrameAutosaveName:@"BuddiesWindow"];
+	[super windowDidLoad];
+
+	// Place window.
+	NSString *windowFrame = [_configuration generalSettingValueForKey:@"window-frame-buddies"];
+	
+	if (windowFrame)
+		[self.window setFrameFromString:windowFrame];
+	else
+		[self.window center];
+	
+	// Start load indicator.
+	if (_coreStarted == NO)
+		[_indicator startAnimation:self];
+	
+	// Init title.
+	[self updateTitleUI];
+	
+	// Init status
+	[self updateStatusUI:_core.status];
+	
+	// Configure avatar.
+	NSImage *avatar = [_core.profileAvatar imageRepresentation];
+	
+	if (avatar.representations.count > 0)
+		_imAvatar.image = avatar;
+	else
+	{
+		NSImage *img = [NSImage imageNamed:NSImageNameUser];
+		
+		img.size = NSMakeSize(64, 64);
+		
+		_imAvatar.image = img;
+	}
 	
 	// Configure table view.
+	[_tableView registerForDraggedTypes:@[NSFilenamesPboardType]];
+	[_tableView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:NO];
+	
 	_tableView.target = self;
 	_tableView.doubleAction = @selector(tableViewDoubleClick:);
 	
-	// Configura bar.
+	// Configure footbar.
 	_barView.startCap = (NSImage *)[NSImage imageNamed:@"bar"];
 	_barView.centerFill = (NSImage *)[NSImage imageNamed:@"bar"];
 	_barView.endCap = (NSImage *)[NSImage imageNamed:@"bar"];
@@ -190,127 +248,39 @@ NS_ASSUME_NONNULL_BEGIN
 	_addIdentifierField.textDidChange = ^(NSString *content) {
 		okButton.enabled = (content.length == 16);
 	};
+	
+	// Configure avatar.
+	_imAvatar.delegate = self;
+	
+	// Reload table.
+	[_tableView reloadData];
 }
 
 
 
 /*
-** TCBuddiesController - Running
+** TCBuddiesController - Synchronize
 */
-#pragma mark - TCBuddiesController - Running
+#pragma mark - TCBuddiesController - Synchronize
 
-- (void)startWithConfiguration:(id <TCConfigAppEncryptable>)configuration coreManager:(TCCoreManager *)coreMananager completionHandler:(dispatch_block_t)handler
-{
-	dispatch_group_t group = dispatch_group_create();
-
-	if (!handler)
-		handler = ^{ };
-	
-	dispatch_group_async(group, dispatch_get_main_queue(), ^{
-		
-		if (_running)
-			return;
-		
-		_running = YES;
-		
-		// Load window.
-		[self window];
-		
-		// Hold the config & core.
-		_configuration = configuration;
-		_core = coreMananager;
-		
-		// -- Init window content --
-		// > Show load indicator.
-		[_indicator startAnimation:self];
-		
-		// > Init title.
-		[self updateTitleUI];
-		
-		// > Init status
-		[self updateStatusUI:_core.status];
-		
-		// > Init avatar.
-		NSImage *avatar = [_core.profileAvatar imageRepresentation];
-				
-		if (avatar.representations.count > 0)
-			_imAvatar.image = avatar;
-		else
-		{
-			NSImage *img = [NSImage imageNamed:NSImageNameUser];
-			
-			img.size = NSMakeSize(64, 64);
-		 
-			_imAvatar.image = img;
-		}
-		
-		// > Init table file drag.
-		[_tableView registerForDraggedTypes:@[NSFilenamesPboardType]];
-		[_tableView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:NO];
-		
-		// > Redirect avatar drop.
-		_imAvatar.delegate = self;
-		
-		// Create windows info controller.
-		_infoWindowsController = [[TCBuddyInfoWindowsController alloc] initWithCoreManager:coreMananager];
-		
-		// Add ourself as observer.
-		[_core addObserver:self];
-		
-		// Add current buddies.
-		NSArray *buddies = _core.buddies;
-		
-		for (TCBuddy *buddy in buddies)
-		{
-			[buddy addObserver:self];
-			[_buddies addObject:buddy];
-		}
-		
-		[_tableView reloadData];
-		
-		// Show the window.
-		[self showWindow:nil];
-	});
-	
-	// Wait end.
-	dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), handler);
-}
-
-- (void)stopWithCompletionHandler:(dispatch_block_t)handler
+- (void)synchronizeWithCompletionHandler:(dispatch_block_t)handler
 {
 	dispatch_group_t group = dispatch_group_create();
 	
 	dispatch_group_async(group, dispatch_get_main_queue(), ^{
 		
-		if (!_running)
-			return;
+		// Save window frame.
+		[_configuration setGeneralSettingValue:self.window.stringWithSavedFrame forKey:@"window-frame-buddies"];
 		
-		// Close the window.
-		[self close];
-		
-		// Clean buddies.
-		for (TCBuddy *buddy in _buddies)
+		// Synchronize info window.
+		if (_infoWindowsController)
 		{
-			[buddy removeObserver:self];
-			[_infoWindowsController closeInfoForBuddy:buddy];
+			dispatch_group_enter(group);
+
+			[_infoWindowsController synchronizeWithCompletionHandler:^{
+				dispatch_group_leave(group);
+			}];
 		}
-		
-		[_buddies removeAllObjects];
-		[_tableView reloadData];
-		
-		// Clean controller.
-		if (_core)
-		{
-			[_core removeObserver:self];
-			_core = nil;
-		}
-		
-		// Set status to offline.
-		[_imStatus selectItemWithTag:0];
-		[self updateTitleUI];
-		
-		// Update status.
-		_running = NO;
 	});
 	
 	// Wait for end.
@@ -434,6 +404,7 @@ NS_ASSUME_NONNULL_BEGIN
 				case TCCoreEventStarted:
 				{
 					dispatch_async(dispatch_get_main_queue(), ^{
+						_coreStarted = YES;
 						[_indicator stopAnimation:self];
 					});
 					
@@ -674,129 +645,21 @@ NS_ASSUME_NONNULL_BEGIN
 			break;
 			
 		case 3:
-			[self doEditProfile:sender];			
+			[self editProfile];
 			break;
 	}
 	
 	[self updateTitleUI];
 }
 
-- (IBAction)doShowInfo:(id)sender
+- (IBAction)doAdd:(id)sender
 {
-	// Get selected buddy.
-	TCBuddy *buddy = [self selectedBuddy];
-	
-	if (!buddy)
-	{
-		NSBeep();
-		return;
-	}
-	
-	// Show.
-	[_infoWindowsController showInfoForBuddy:buddy];
+	[self addBuddy];
 }
 
 - (IBAction)doRemove:(id)sender
 {
-	NSInteger	row = _tableView.selectedRow;
-	TCBuddy		*buddy;
-	NSString	*identifier;
-	
-	if (row < 0 || row >= _buddies.count)
-		return;
-	
-	// Get the buddy identifier.
-	buddy = _buddies[(NSUInteger)row];
-	identifier = buddy.identifier;
-
-	// Remove the buddy from the controller.
-	[_core removeBuddyWithIdentifier:identifier];
-}
-
-- (IBAction)doAdd:(id)sender
-{
-	_addIdentifierField.stringValue = @"";
-	_addNameField.stringValue = @"";
-	[_addNotesField.textStorage.mutableString setString:@""];
-	
-	_addOkButton.enabled = NO;
-
-	[self.window beginSheet:_addWindow completionHandler:nil];
-	
-	[_addWindow makeFirstResponder:_addIdentifierField];
-}
-
-- (IBAction)doChat:(id)sender
-{
-	NSInteger	row = _tableView.selectedRow;
-	TCBuddy		*buddy;
-	
-	if (row < 0 || row >= _buddies.count)
-		return;
-
-	buddy = _buddies[(NSUInteger)row];
-	
-	[self startChatForBuddy:buddy];
-}
-
-- (IBAction)doSendFile:(id)sender
-{
-	NSInteger	row = _tableView.selectedRow;
-	TCBuddy		*buddy;
-	
-	if (row < 0 || row >= _buddies.count)
-		return;
-	
-	buddy = _buddies[(NSUInteger)row];
-	
-	// Show dialog to select files to send
-	NSOpenPanel	*openDlg = [NSOpenPanel openPanel];
-	
-	// Ask for a file
-	[openDlg setCanChooseFiles:YES];
-	[openDlg setCanChooseDirectories:NO];
-	[openDlg setCanCreateDirectories:NO];
-	[openDlg setAllowsMultipleSelection:YES];
-	
-	if ([openDlg runModal] == NSModalResponseOK)
-	{
-		NSArray *urls = openDlg.URLs;
-
-		for (NSURL *url in urls)
-		{
-			NSString *path = url.path;
-			
-			if (path)
-				[buddy sendFileAtPath:path];
-		}
-	}
-}
-
-- (IBAction)doToggleBlock:(id)sender
-{
-	NSInteger	row = _tableView.selectedRow;
-	TCBuddy		*buddy;
-	
-	if (row < 0 || row >= _buddies.count)
-		return;
-	
-	buddy = _buddies[(NSUInteger)row];
-		
-	if (buddy.blocked)
-		[_core removeBlockedBuddyWithIdentifier:buddy.identifier];
-	else
-		[_core addBlockedBuddyWithIdentifier:buddy.identifier];
-}
-
-- (IBAction)doEditProfile:(id)sender
-{
-	NSString *tname = _core.profileName;
-	NSString *ttext = _core.profileText;
-	
-	_profileName.stringValue = (tname ?: @"");
-	[_profileText.textStorage.mutableString setString:(ttext ?: @"")];
-	
-	[self.window beginSheet:_profileWindow completionHandler:nil];
+	[self removeBuddy];
 }
 
 - (IBAction)doAddOk:(id)sender
@@ -841,6 +704,134 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	[self.window endSheet:_profileWindow];
 	[_profileWindow orderOut:self];
+}
+
+
+
+/*
+** TCBuddiesController - Actions
+*/
+#pragma mark - TCBuddiesController - Actions
+
+- (void)showBuddyInfo
+{
+	// Get selected buddy.
+	TCBuddy *buddy = [self selectedBuddy];
+	
+	if (!buddy)
+	{
+		NSBeep();
+		return;
+	}
+	
+	// Show info window.
+	if (!_infoWindowsController)
+		_infoWindowsController = [[TCBuddyInfoWindowsController alloc] initWithConfiguration:_configuration coreManager:_core];
+	
+	[_infoWindowsController showInfoForBuddy:buddy];
+}
+
+- (void)addBuddy;
+{
+	_addIdentifierField.stringValue = @"";
+	_addNameField.stringValue = @"";
+	[_addNotesField.textStorage.mutableString setString:@""];
+	
+	_addOkButton.enabled = NO;
+	
+	[self.window beginSheet:_addWindow completionHandler:nil];
+	
+	[_addWindow makeFirstResponder:_addIdentifierField];
+}
+
+- (void)removeBuddy
+{
+	NSInteger	row = _tableView.selectedRow;
+	TCBuddy		*buddy;
+	NSString	*identifier;
+	
+	if (row < 0 || row >= _buddies.count)
+		return;
+	
+	// Get the buddy identifier.
+	buddy = _buddies[(NSUInteger)row];
+	identifier = buddy.identifier;
+	
+	// Remove the buddy from the controller.
+	[_core removeBuddyWithIdentifier:identifier];
+}
+
+- (void)startChat
+{
+	NSInteger	row = _tableView.selectedRow;
+	TCBuddy		*buddy;
+	
+	if (row < 0 || row >= _buddies.count)
+		return;
+	
+	buddy = _buddies[(NSUInteger)row];
+	
+	[self startChatForBuddy:buddy];
+}
+
+- (void)sendFile
+{
+	NSInteger	row = _tableView.selectedRow;
+	TCBuddy		*buddy;
+	
+	if (row < 0 || row >= _buddies.count)
+		return;
+	
+	buddy = _buddies[(NSUInteger)row];
+	
+	// Show dialog to select files to send
+	NSOpenPanel	*openDlg = [NSOpenPanel openPanel];
+	
+	// Ask for a file
+	[openDlg setCanChooseFiles:YES];
+	[openDlg setCanChooseDirectories:NO];
+	[openDlg setCanCreateDirectories:NO];
+	[openDlg setAllowsMultipleSelection:YES];
+	
+	if ([openDlg runModal] == NSModalResponseOK)
+	{
+		NSArray *urls = openDlg.URLs;
+		
+		for (NSURL *url in urls)
+		{
+			NSString *path = url.path;
+			
+			if (path)
+				[buddy sendFileAtPath:path];
+		}
+	}
+}
+
+- (void)toggleBlock
+{
+	NSInteger	row = _tableView.selectedRow;
+	TCBuddy		*buddy;
+	
+	if (row < 0 || row >= _buddies.count)
+		return;
+	
+	buddy = _buddies[(NSUInteger)row];
+	
+	if (buddy.blocked)
+		[_core removeBlockedBuddyWithIdentifier:buddy.identifier];
+	else
+		[_core addBlockedBuddyWithIdentifier:buddy.identifier];
+}
+
+- (void)editProfile
+{
+	NSString *tname = _core.profileName;
+	NSString *ttext = _core.profileText;
+	
+	_profileName.stringValue = (tname ?: @"");
+	[_profileText.textStorage.mutableString setString:(ttext ?: @"")];
+	
+	[self.window beginSheet:_profileWindow completionHandler:nil];
 }
 
 
@@ -920,7 +911,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	NSAssert(buddy, @"buddy is nil");
 
-	[[TCChatWindowController sharedController] openChatWithBuddy:buddy select:YES];
+	[_mainController.chatController openChatWithBuddy:buddy select:YES];
 }
 
 - (nullable TCBuddy *)selectedBuddy

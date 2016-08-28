@@ -22,7 +22,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "TCConfigAppEncryptable.h"
+#import "TCConfigApp.h"
 
 
 NS_ASSUME_NONNULL_BEGIN
@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - Forward
 
+@class TCMainController;
 @class TCCoreManager;
 @class TCDropButton;
 @class TCBuddy;
@@ -47,26 +48,25 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TCBuddiesWindowController : NSWindowController
 
 // -- Instance --
-+ (TCBuddiesWindowController *)sharedController;
+- (instancetype)initWithMainController:(TCMainController *)mainController configuration:(id <TCConfigApp>)configuration coreManager:(TCCoreManager *)coreMananager NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 - (instancetype)initWithWindow:(nullable NSWindow *)window NS_UNAVAILABLE;
 
 // -- IBAction --
-- (IBAction)doShowInfo:(id)sender;
-- (IBAction)doRemove:(id)sender;
-- (IBAction)doAdd:(id)sender;
-- (IBAction)doChat:(id)sender;
-- (IBAction)doSendFile:(id)sender;
-- (IBAction)doToggleBlock:(id)sender;
-- (IBAction)doEditProfile:(id)sender;
+- (void)showBuddyInfo;
+- (void)addBuddy;
+- (void)removeBuddy;
+- (void)startChat;
+- (void)sendFile;
+- (void)toggleBlock;
+- (void)editProfile;
 
 // -- Selection --
 @property (nullable, nonatomic, readonly) TCBuddy *selectedBuddy;
 
-// -- Running --
-- (void)startWithConfiguration:(id <TCConfigAppEncryptable>)configuration coreManager:(TCCoreManager *)coreMananager completionHandler:(dispatch_block_t)handler;
-- (void)stopWithCompletionHandler:(dispatch_block_t)handler;
+// -- Synchronize --
+- (void)synchronizeWithCompletionHandler:(dispatch_block_t)handler;
 
 @end
 

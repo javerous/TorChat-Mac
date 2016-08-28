@@ -23,7 +23,7 @@
 #import "TCPanel_Mode.h"
 
 #import "TCDebugLog.h"
-#import "TCConfigAppEncryptable.h"
+#import "TCConfigApp.h"
 
 
 NS_ASSUME_NONNULL_BEGIN
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	IBOutlet NSMatrix *modeMatrix;
 
-	id <TCConfigAppEncryptable> _currentConfig;
+	id <TCConfigApp> _currentConfig;
 }
 
 @property (strong, nonatomic) IBOutlet NSMatrix *buttonMatrix;

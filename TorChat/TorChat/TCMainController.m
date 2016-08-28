@@ -30,10 +30,12 @@
 
 #import "TCLogsManager.h"
 
+#import "TCConfigurationHelperController.h"
+#import "TCPreferencesWindowController.h"
 #import "TCBuddiesWindowController.h"
 #import "TCChatWindowController.h"
 #import "TCFilesWindowController.h"
-#import "TCConfigurationHelperController.h"
+#import "TCLogsWindowController.h"
 
 #import "TCPanel_Welcome.h"
 #import "TCPanel_Security.h"
@@ -61,6 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 	SMOperationsQueue	*_opQueue;
 	
 	id <TCConfigAppEncryptable> _configuration;
+	TCCoreManager				*_core;
 	SMTorManager				*_torManager;
 	
 	// Buddies.
@@ -90,18 +93,6 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCMainController - Instance
 
-+ (TCMainController *)sharedController
-{
-	static dispatch_once_t	pred;
-	static TCMainController	*instance = nil;
-	
-	dispatch_once(&pred, ^{
-		instance = [[TCMainController alloc] init];
-	});
-	
-	return instance;
-}
-
 - (instancetype)init
 {
 	self = [super init];
@@ -126,10 +117,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark Start
 
-- (void)startWithCompletionHandler:(void (^)(id <TCConfigAppEncryptable> _Nullable configuration, TCCoreManager * _Nullable core, NSError * _Nullable error))handler
+- (void)startWithCompletionHandler:(void (^)(NSError * _Nullable error))handler
 {
 	if (!handler)
-		handler = ^(id <TCConfigAppEncryptable> _Nullable configuration, TCCoreManager * _Nullable core, NSError * _Nullable error) { };
+		handler = ^(NSError * _Nullable error) { };
 	
 	[_opQueue scheduleBlock:^(SMOperationsControl  _Nonnull opCtrl) {
 		
@@ -144,6 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
 				ctrl(SMOperationsControlContinue);
 			}];
 		}];
+		
 		
 		// -- Try loading config from file --
 		[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
@@ -271,288 +263,213 @@ NS_ASSUME_NONNULL_BEGIN
 			}];
 		}];
 		
-		// -- Start with configuration --
-		__block TCCoreManager *core = nil;
 		
-		[operations scheduleBlock:^(SMOperationsControl ctrl) {
-			[self _startWithConfiguration:configuration completionHandler:^(TCCoreManager * _Nullable aCore, NSError * _Nullable anError) {
-				core = aCore;
-				error = anError;
-				ctrl(SMOperationsControlContinue);
-			}];
-		}];
-		
-		// -- Finish --
-		operations.finishHandler = ^(BOOL canceled) {
-			opCtrl(SMOperationsControlContinue);
-			handler(configuration, core, error);
-		};
-		
-		// Start.
-		[operations start];
-	}];
-}
+		// -- Start bundled tor if necessary --
+		__block SMTorManager *torManager = nil;
 
-- (void)startWithConfiguration:(id <TCConfigAppEncryptable>)configuration completionHandler:(void (^)(TCCoreManager * _Nullable core, NSError * _Nullable anError))handler
-{
-	if (!handler)
-		handler = ^(TCCoreManager * _Nullable core, NSError * _Nullable error) { };
-	
-	[_opQueue scheduleBlock:^(SMOperationsControl  _Nonnull opCtrl) {
-		
-		SMOperationsQueue *operations = [[SMOperationsQueue alloc] init];
-		
-		__block NSError *error = nil;
-		
-		// -- Stop if necessary --
 		[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
-			[self _stopWithCompletionHandler:^{
+			
+			// Start tor only in bundled mode.
+			if (configuration.mode != TCConfigModeBundled)
+			{
 				ctrl(SMOperationsControlContinue);
+				return;
+			}
+			
+			// Create tor manager.
+			SMTorConfiguration *torConfig = [[SMTorConfiguration alloc] initWithTorChatConfiguration:configuration];
+			
+			torManager = [[SMTorManager alloc] initWithConfiguration:torConfig];
+			
+			if (!torManager)
+			{
+				error = [NSError errorWithDomain:TCMainControllerErrorDomain code:10 userInfo:@{ NSLocalizedDescriptionKey: NSLocalizedString(@"main_ctrl_conf_error_tor_manager", @"") }];
+				ctrl(SMOperationsControlFinish);
+				return;
+			}
+			
+			torManager.logHandler = ^(SMTorLogKind kind, NSString *log, BOOL fatalLog) {
+				
+				switch (kind)
+				{
+					case SMTorLogStandard:
+						[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogInfo message:@"tor_out_log", log];
+						break;
+						
+					case SMTorLogError:
+						[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"tor_error_log", log];
+						break;
+				}
+				
+				if (fatalLog)
+				{
+					CFRunLoopRef runLoop = CFRunLoopGetMain();
+					
+					CFRunLoopPerformBlock(runLoop, kCFRunLoopCommonModes, ^{
+						
+						NSAlert *alert = [[NSAlert alloc] init];
+						
+						alert.messageText = NSLocalizedString(@"main_ctrl_fatal_error", @"");
+						alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"main_ctrl_fatal_error_message", @""), log];
+						
+						[alert addButtonWithTitle:NSLocalizedString(@"main_ctrl_fatal_quit", @"")];
+						
+						[alert runModal];
+						
+						exit(0);
+					});
+					
+					CFRunLoopWakeUp(runLoop);
+				}
+			};
+			
+			// Start tor manager via UI.
+			[SMTorStartController startWithTorManager:torManager infoHandler:^(SMInfo *startInfo) {
+				
+				[[TCLogsManager sharedManager] addGlobalLogWithInfo:startInfo];
+				
+				if ([startInfo.domain isEqualToString:SMTorInfoStartDomain] == NO)
+					return;
+				
+				switch (startInfo.kind)
+				{
+					case SMInfoInfo:
+					{
+						if (startInfo.code == SMTorEventStartServiceID)
+						{
+							configuration.selfIdentifier = startInfo.context;
+						}
+						else if (startInfo.code == SMTorEventStartDone)
+						{
+							ctrl(SMOperationsControlContinue);
+						}
+						break;
+					}
+						
+					case SMInfoWarning:
+					{
+						if (startInfo.code == SMTorWarningStartCanceled)
+						{
+							torManager = nil;
+							ctrl(SMOperationsControlFinish);
+						}
+						break;
+					}
+						
+					case SMInfoError:
+					{
+						error = [NSError errorWithDomain:TCMainControllerErrorDomain code:11 userInfo:@{ NSLocalizedDescriptionKey: [startInfo renderMessage] }];
+						torManager = nil;
+						
+						ctrl(SMOperationsControlFinish);
+						
+						break;
+					}
+				}
 			}];
+			
+			// Monitor paths changes.
+			[self monitorPathsChanges];
 		}];
 		
-		// -- Start with configuration --
+		// -- Update Tor if necessary --
+		[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
+			
+			if (configuration.mode != TCConfigModeBundled)
+			{
+				ctrl(SMOperationsControlContinue);
+				return;
+			}
+			
+			// Launch update check.
+			[torManager checkForUpdateWithInfoHandler:^(SMInfo *updateInfo) {
+				
+				// > Log check.
+				[[TCLogsManager sharedManager] addGlobalLogWithInfo:updateInfo];
+				
+				// > Handle update.
+				if (updateInfo.kind == SMInfoInfo && [updateInfo.domain isEqualToString:SMTorInfoCheckUpdateDomain] && updateInfo.code == SMTorEventCheckUpdateAvailable)
+				{
+					NSDictionary	*context = updateInfo.context;
+					NSString		*oldVersion = context[@"old_version"];
+					NSString		*newVersion = context[@"new_version"];
+					
+					[SMTorUpdateController handleUpdateWithTorManager:torManager oldVersion:oldVersion newVersion:newVersion infoHandler:^(SMInfo * _Nonnull info) {
+						[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
+					}];
+				}
+			}];
+			
+			// Don't wait for end.
+			ctrl(SMOperationsControlContinue);
+		}];
+		
+		// -- Create core --
 		__block TCCoreManager *core = nil;
 
-		[operations scheduleBlock:^(SMOperationsControl ctrl) {
-			[self _startWithConfiguration:configuration completionHandler:^(TCCoreManager * _Nullable aCore, NSError * _Nullable anError) {
-				core = aCore;
-				error = anError;
+		[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
+			
+			// Create core manager.
+			core = [[TCCoreManager alloc] initWithConfiguration:configuration];
+			
+			if (!core)
+			{
+				error = [NSError errorWithDomain:TCMainControllerErrorDomain code:12 userInfo:@{ NSLocalizedDescriptionKey: NSLocalizedString(@"main_ctrl_conf_error_core_manager", @"") }];
+				torManager = nil;
+				
+				ctrl(SMOperationsControlFinish);
+				
+				return;
+			}
+			
+			[core addObserver:self];
+			
+			// Handle current buddies.
+			NSArray *buddies = core.buddies;
+			
+			for (TCBuddy *buddy in buddies)
+			{
+				[buddy addObserver:self];
+				[_buddies addObject:buddy];
+			};
+			
+			ctrl(SMOperationsControlContinue);
+		}];
+		
+		// -- Create controllers --
+		[operations scheduleOnQueue:dispatch_get_main_queue() block:^(SMOperationsControl ctrl) {
+
+			_preferencesController = [[TCPreferencesWindowController alloc] initWithConfiguration:configuration coreManager:core];
+			_buddiesController = [[TCBuddiesWindowController alloc] initWithMainController:self configuration:configuration coreManager:core];
+			_chatController = [[TCChatWindowController alloc] initWithConfiguration:configuration coreManager:core];
+			_filesController = [[TCFilesWindowController alloc] initWithConfiguration:configuration coreManager:core];
+			_logsController = [[TCLogsWindowController alloc] initWithConfiguration:configuration];
+			
+			// Show buddies.
+			[_buddiesController showWindow:nil];
+			
+			// Start core.
+			dispatch_async(_localQueue, ^{
+				[core start];
 				ctrl(SMOperationsControlContinue);
-			}];
+			});
 		}];
 		
 		// -- Finish --
 		operations.finishHandler = ^(BOOL canceled) {
+			
+			_configuration = configuration;
+			_torManager = torManager;
+			_core = core;
+			
 			opCtrl(SMOperationsControlContinue);
-			handler(core, error);
+			
+			handler(error);
 		};
 		
 		// Start.
 		[operations start];
 	}];
-}
-
-
-- (void)_startWithConfiguration:(id <TCConfigAppEncryptable>)configuration completionHandler:(void (^)(TCCoreManager * _Nullable core, NSError * _Nullable error))handler
-{
-	// > opQueue <
-
-	SMOperationsQueue *operations = [[SMOperationsQueue alloc] init];
-	
-	__block TCCoreManager	*core = nil;
-	__block SMTorManager	*torManager = nil;
-
-	__block NSError			*error = nil;
-	
-	// -- Start Tor if necessary --
-	[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
-		
-		// Start tor only in bundled mode.
-		if (configuration.mode != TCConfigModeBundled)
-		{
-			ctrl(SMOperationsControlContinue);
-			return;
-		}
-		
-		// Create tor manager.
-		SMTorConfiguration *torConfig = [[SMTorConfiguration alloc] initWithTorChatConfiguration:configuration];
-		
-		torManager = [[SMTorManager alloc] initWithConfiguration:torConfig];
-		
-		if (!torManager)
-		{
-			error = [NSError errorWithDomain:TCMainControllerErrorDomain code:10 userInfo:@{ NSLocalizedDescriptionKey: NSLocalizedString(@"main_ctrl_conf_error_tor_manager", @"") }];
-			ctrl(SMOperationsControlFinish);
-			return;
-		}
-		
-		torManager.logHandler = ^(SMTorLogKind kind, NSString *log, BOOL fatalLog) {
-			
-			switch (kind)
-			{
-				case SMTorLogStandard:
-					[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogInfo message:@"tor_out_log", log];
-					break;
-					
-				case SMTorLogError:
-					[[TCLogsManager sharedManager] addGlobalLogWithKind:TCLogError message:@"tor_error_log", log];
-					break;
-			}
-			
-			if (fatalLog)
-			{
-				CFRunLoopRef runLoop = CFRunLoopGetMain();
-				
-				CFRunLoopPerformBlock(runLoop, kCFRunLoopCommonModes, ^{
-
-					NSAlert *alert = [[NSAlert alloc] init];
-					
-					alert.messageText = NSLocalizedString(@"main_ctrl_fatal_error", @"");
-					alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"main_ctrl_fatal_error_message", @""), log];
-					
-					[alert addButtonWithTitle:NSLocalizedString(@"main_ctrl_fatal_quit", @"")];
-					
-					[alert runModal];
-					
-					exit(0);
-				});
-				
-				CFRunLoopWakeUp(runLoop);
-			}
-		};
-
-		// Start tor manager via UI.
-		[SMTorStartController startWithTorManager:torManager infoHandler:^(SMInfo *startInfo) {
-			
-			[[TCLogsManager sharedManager] addGlobalLogWithInfo:startInfo];
-			
-			if ([startInfo.domain isEqualToString:SMTorInfoStartDomain] == NO)
-				return;
-			
-			switch (startInfo.kind)
-			{
-				case SMInfoInfo:
-				{
-					if (startInfo.code == SMTorEventStartServiceID)
-					{
-						configuration.selfIdentifier = startInfo.context;
-					}
-					else if (startInfo.code == SMTorEventStartDone)
-					{
-						ctrl(SMOperationsControlContinue);
-					}
-					break;
-				}
-					
-				case SMInfoWarning:
-				{
-					if (startInfo.code == SMTorWarningStartCanceled)
-					{
-						torManager = nil;
-						ctrl(SMOperationsControlFinish);
-					}
-					break;
-				}
-					
-				case SMInfoError:
-				{
-					error = [NSError errorWithDomain:TCMainControllerErrorDomain code:11 userInfo:@{ NSLocalizedDescriptionKey: [startInfo renderMessage] }];
-					torManager = nil;
-					
-					ctrl(SMOperationsControlFinish);
-					
-					break;
-				}
-			}
-		}];
-		
-		// Monitor paths changes.
-		[self monitorPathsChanges];
-	}];
-	
-	// -- Update Tor if necessary --
-	[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
-		
-		if (configuration.mode != TCConfigModeBundled)
-		{
-			ctrl(SMOperationsControlContinue);
-			return;
-		}
-		
-		// Launch update check.
-		[torManager checkForUpdateWithInfoHandler:^(SMInfo *updateInfo) {
-			
-			// > Log check.
-			[[TCLogsManager sharedManager] addGlobalLogWithInfo:updateInfo];
-			
-			// > Handle update.
-			if (updateInfo.kind == SMInfoInfo && [updateInfo.domain isEqualToString:SMTorInfoCheckUpdateDomain] && updateInfo.code == SMTorEventCheckUpdateAvailable)
-			{
-				NSDictionary	*context = updateInfo.context;
-				NSString		*oldVersion = context[@"old_version"];
-				NSString		*newVersion = context[@"new_version"];
-				
-				[SMTorUpdateController handleUpdateWithTorManager:torManager oldVersion:oldVersion newVersion:newVersion infoHandler:^(SMInfo * _Nonnull info) {
-					[[TCLogsManager sharedManager] addGlobalLogWithInfo:info];
-				}];
-			}
-		}];
-		
-		// Don't wait for end.
-		ctrl(SMOperationsControlContinue);
-	}];
-	
-	// -- Launch controllers --
-	[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
-
-		// Create core manager.
-		core = [[TCCoreManager alloc] initWithConfiguration:configuration];
-
-		if (!core)
-		{
-			error = [NSError errorWithDomain:TCMainControllerErrorDomain code:12 userInfo:@{ NSLocalizedDescriptionKey: NSLocalizedString(@"main_ctrl_conf_error_core_manager", @"") }];
-			torManager = nil;
-			
-			ctrl(SMOperationsControlFinish);
-			
-			return;
-		}
-		
-		[core addObserver:self];
-		
-		// Handle current buddies.
-		NSArray *buddies = core.buddies;
-		
-		for (TCBuddy *buddy in buddies)
-		{
-			[buddy addObserver:self];
-			[_buddies addObject:buddy];
-		};
-		
-		// Start controllers.
-		dispatch_group_t group = dispatch_group_create();
-		
-		// > Buddies.
-		dispatch_group_enter(group);
-		
-		[[TCBuddiesWindowController sharedController] startWithConfiguration:configuration coreManager:core completionHandler:^{
-			dispatch_group_leave(group);
-		}];
-		
-		// > Chat.
-		dispatch_group_enter(group);
-
-		[[TCChatWindowController sharedController] startWithConfiguration:configuration coreManager:core completionHandler:^{
-			dispatch_group_leave(group);
-		}];
-	
-		// > Files.
-		dispatch_group_enter(group);
-		
-		[[TCFilesWindowController sharedController] startWithCoreManager:core completionHandler:^{
-			dispatch_group_leave(group);
-		}];
-		
-		// Wait.
-		dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			[core start];
-			ctrl(SMOperationsControlContinue);
-		});
-	}];
-	
-	// -- Finish --
-	operations.finishHandler = ^(BOOL canceled) {
-		
-		_configuration = configuration;
-		_torManager = torManager;
-		_core = core;
-		
-		handler(core, error);
-	};
-	
-	// Start.
-	[operations start];
 }
 
 
@@ -564,6 +481,7 @@ NS_ASSUME_NONNULL_BEGIN
 		handler = ^{ };
 	
 	[_opQueue scheduleOnQueue:_localQueue block:^(SMOperationsControl  _Nonnull ctrl) {
+		
 		[self _stopWithCompletionHandler:^{
 			handler();
 			ctrl(SMOperationsControlContinue);
@@ -580,27 +498,56 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	dispatch_group_t group = dispatch_group_create();
 	
-	// Stop controlers.
-	// > Buddies.
-	dispatch_group_enter(group);
+	// Synchronize controllers.
+	// > Preferences.
+	if (_preferencesController)
+	{
+		dispatch_group_enter(group);
+		
+		[_preferencesController synchronizeWithCompletionHandler:^{
+			dispatch_group_leave(group);
+		}];
+	}
 	
-	[[TCBuddiesWindowController sharedController] stopWithCompletionHandler:^{
-		dispatch_group_leave(group);
-	}];
+	// > Buddies.
+	if (_buddiesController)
+	{
+		dispatch_group_enter(group);
+	
+		[_buddiesController synchronizeWithCompletionHandler:^{
+			dispatch_group_leave(group);
+		}];
+	}
 	
 	// > Chat.
-	dispatch_group_enter(group);
-
-	[[TCChatWindowController sharedController] stopWithCompletionHandler:^{
-		dispatch_group_leave(group);
-	}];
+	if (_chatController)
+	{
+		dispatch_group_enter(group);
+		
+		[_chatController synchronizeWithCompletionHandler:^{
+			dispatch_group_leave(group);
+		}];
+	}
 	
 	// > File.
-	dispatch_group_enter(group);
-
-	[[TCFilesWindowController sharedController] stopWithCompletionHandler:^{
-		dispatch_group_leave(group);
-	}];
+	if (_filesController)
+	{
+		dispatch_group_enter(group);
+		
+		[_filesController synchronizeWithCompletionHandler:^{
+			dispatch_group_leave(group);
+		}];
+	}
+	
+	// > Logs.
+	if (_logsController)
+	{
+		dispatch_group_enter(group);
+		
+		[_logsController synchronizeWithCompletionHandler:^{
+			dispatch_group_leave(group);
+		}];
+	}
 
 	// Unmonitor.
 	for (TCBuddy *buddy in _buddies)
@@ -635,12 +582,25 @@ NS_ASSUME_NONNULL_BEGIN
 	// Wait for end.
 	dispatch_group_notify(group, _localQueue, ^{
 		
-		// > Clean configuration.
-		if (_configuration)
-		{
-			[_configuration synchronize];
-			_configuration = nil;
-		}
+		// > Unset controllers.
+		[_preferencesController close];
+		_preferencesController = nil;
+		
+		[_buddiesController close];
+		_buddiesController = nil;
+		
+		[_chatController close];
+		_chatController = nil;
+		
+		[_filesController close];
+		_filesController = nil;
+		
+		[_logsController close];
+		_logsController = nil;
+		
+		// > Close configuration.
+		[_configuration close];
+		_configuration = nil;
 		
 		// > Notify.
 		handler();

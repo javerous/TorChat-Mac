@@ -101,24 +101,16 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCChatWindowController - Instance
 
-+ (TCChatWindowController*)sharedController
+- (instancetype)initWithConfiguration:(id <TCConfigApp>)configuration coreManager:(TCCoreManager *)coreMananager
 {
-	static dispatch_once_t			onceToken;
-	static TCChatWindowController	*shr;
-	
-	dispatch_once(&onceToken, ^{
-		shr = [[TCChatWindowController alloc] init];
-	});
-	
-	return shr;
-}
-
-- (instancetype)init
-{
-	self = [super initWithWindowNibName:@"ChatWindow"];
+	self = [super initWithWindow:nil];
 	
 	if (self)
 	{
+		// Hold parameters.
+		_configuration = configuration;
+		_core = coreMananager;
+		
 		// Containers
 		_chatEntries = [[NSMutableArray alloc] init];
 		_buddies = [[NSMutableSet alloc] init];
@@ -130,104 +122,96 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
-** TCChatWindowController - Life
+** TCChatWindowController - NSWindowController + NSWindowDelegate
 */
-#pragma mark - TCChatWindowController - Life
+#pragma mark - TCChatWindowController - NSWindowController + NSWindowDelegate
 
-- (void)startWithConfiguration:(id <TCConfigApp>)configuration coreManager:(TCCoreManager *)coreMananager completionHandler:(dispatch_block_t)handler
+- (nullable NSString *)windowNibName
 {
-	dispatch_group_t group = dispatch_group_create();
-	
-	if (!handler)
-		handler = ^{ };
-	
-	dispatch_group_async(group, dispatch_get_main_queue(), ^{
-		
-		// Hold parameters.
-		_configuration = configuration;
-		_core = coreMananager;
-		
-		// Observe.
-		[_core addObserver:self];
-		
-		// Get current buddies.
-		NSArray *buddies = _core.buddies;
-		
-		for (TCBuddy *buddy in buddies)
-		{
-			[_buddies addObject:buddy];
-			[buddy addObserver:self];
-		}
-		
-		// Load transcripted buddies.
-		dispatch_group_enter(group);
-		
-		[_configuration transcriptBuddiesIdentifiersWithCompletionHandler:^(NSArray *buddiesIdentifiers) {
-
-			dispatch_group_async(group, dispatch_get_main_queue(), ^{
-
-				for (NSString *buddyIdentifier in buddiesIdentifiers)
-				{
-					TCBuddy *buddy = [coreMananager buddyWithIdentifier:buddyIdentifier];
-					
-					if (!buddy)
-						continue;
-					
-					[self _addChatWithBuddy:buddy select:NO];
-				}
-			});
-			
-			dispatch_group_leave(group);
-		}];
-	});
-	
-	// Wait end.
-	dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), handler);
+	return @"ChatWindow";
 }
 
-- (void)stopWithCompletionHandler:(dispatch_block_t)handler
+- (id)owner
 {
-	dispatch_group_t group = dispatch_group_create();
+	return self;
+}
+
+- (void)windowDidLoad
+{
+	[super windowDidLoad];
 	
-	if (!handler)
-		handler = ^{ };
+	// Place window.
+	NSString *windowFrame = [_configuration generalSettingValueForKey:@"window-frame-chat"];
 	
-	dispatch_group_async(group, dispatch_get_main_queue(), ^{
-		
-		// Close.
-		[self close];
-		
-		// Remove observers.
-		[_core removeObserver:self];
-		
-		for (TCBuddy *buddy in _buddies)
-			[buddy removeObserver:self];
-		
-		// Unreference.
-		_core = nil;
-		_configuration = nil;
-		
-		// Clean containers.
-		[_buddies removeAllObjects];
-		[_chatEntries removeAllObjects];
-	});
+	if (windowFrame)
+		[self.window setFrameFromString:windowFrame];
+	else
+		[self.window center];
 	
-	// Wait end.
-	dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), handler);
+	// Observe.
+	[_core addObserver:self];
+	
+	// Get current buddies.
+	NSArray *buddies = _core.buddies;
+	
+	for (TCBuddy *buddy in buddies)
+	{
+		[_buddies addObject:buddy];
+		[buddy addObserver:self];
+	}
+	
+	// Load transcripted buddies.
+	// FIXME: add loading view ?
+	[_configuration transcriptBuddiesIdentifiersWithCompletionHandler:^(NSArray *buddiesIdentifiers) {
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			
+			for (NSString *buddyIdentifier in buddiesIdentifiers)
+			{
+				TCBuddy *buddy = [_core buddyWithIdentifier:buddyIdentifier];
+				
+				if (!buddy)
+					continue;
+				
+				[self _addChatWithBuddy:buddy select:NO];
+			}
+		});
+	}];
+}
+
+- (void)windowDidBecomeMain:(NSNotification *)notification
+{
+	NSLog(@"become main");
+	
+	NSInteger index = _userList.selectedRow;
+	
+	if (index < 0 || index >= _chatEntries.count)
+		return;
+	
+	// Clean last message.
+	TCChatEntry *entry = _chatEntries[(NSUInteger)index];
+	
+	entry.lastMessage = nil;
+	
+	[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 }
 
 
 
 /*
-** TCChatWindowController - NSWindowController
+** TCChatWindowController - Synchronize
 */
-#pragma mark - TCChatWindowController - NSWindowController
+#pragma mark - TCChatWindowController - Synchronize
 
-- (void)windowDidLoad
+- (void)synchronizeWithCompletionHandler:(dispatch_block_t)handler
 {
-	// Configure window.
-	[self.window center];
-	self.windowFrameAutosaveName = @"ChatWindow";
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		[_configuration setGeneralSettingValue:self.window.stringWithSavedFrame forKey:@"window-frame-chat"];
+		
+		handler();
+
+	});
 }
 
 
@@ -277,28 +261,6 @@ NS_ASSUME_NONNULL_BEGIN
 		else
 			[self closeChatWithBuddy:buddy];
 	});
-}
-
-
-
-/*
-** TCChatWindowController - Window
-*/
-#pragma mark - TCChatWindowController - Window
-
-- (void)windowDidBecomeMain:(NSNotification *)notification
-{
-	NSInteger index = _userList.selectedRow;
-	
-	if (index < 0 || index >= _chatEntries.count)
-		return;
-	
-	// Clean last message.
-	TCChatEntry *entry = _chatEntries[(NSUInteger)index];
-
-	entry.lastMessage = nil;
-	
-	[_userList reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:(NSUInteger)index] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 }
 
 

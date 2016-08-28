@@ -389,23 +389,6 @@
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="Zdk-zQ-aP9" customClass="TCColoredView">
                     <rect key="frame" x="0.0" y="0.0" width="800" height="35"/>
                     <subviews>
-                        <popUpButton focusRingType="none" translatesAutoresizingMaskIntoConstraints="NO" id="rEF-gk-aHo">
-                            <rect key="frame" x="20" y="7" width="70" height="21"/>
-                            <popUpButtonCell key="cell" type="square" title="Camera" bezelStyle="shadowlessSquare" alignment="left" lineBreakMode="truncatingTail" state="on" focusRingType="none" imageScaling="proportionallyDown" inset="2" selectedItem="8tY-SJ-IGg" id="4Zu-sM-pxV">
-                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                <font key="font" metaFont="menu"/>
-                                <menu key="menu" id="OOa-9i-vlK">
-                                    <items>
-                                        <menuItem title="Camera" state="on" id="8tY-SJ-IGg">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                        </menuItem>
-                                    </items>
-                                </menu>
-                            </popUpButtonCell>
-                            <connections>
-                                <action selector="doCameraSelect:" target="Mnz-c5-t50" id="n5S-AU-Rip"/>
-                            </connections>
-                        </popUpButton>
                         <button translatesAutoresizingMaskIntoConstraints="NO" id="Jbb-BQ-iWH">
                             <rect key="frame" x="385" y="3" width="30" height="30"/>
                             <constraints>
@@ -427,6 +410,23 @@
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
                         </button>
+                        <popUpButton focusRingType="none" translatesAutoresizingMaskIntoConstraints="NO" id="rEF-gk-aHo">
+                            <rect key="frame" x="20" y="7" width="70" height="21"/>
+                            <popUpButtonCell key="cell" type="square" title="Camera" bezelStyle="shadowlessSquare" alignment="left" lineBreakMode="truncatingTail" state="on" focusRingType="none" imageScaling="proportionallyDown" inset="2" selectedItem="8tY-SJ-IGg" id="4Zu-sM-pxV">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="menu"/>
+                                <menu key="menu" id="OOa-9i-vlK">
+                                    <items>
+                                        <menuItem title="Camera" state="on" id="8tY-SJ-IGg">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </popUpButtonCell>
+                            <connections>
+                                <action selector="doCameraSelect:" target="Mnz-c5-t50" id="n5S-AU-Rip"/>
+                            </connections>
+                        </popUpButton>
                     </subviews>
                     <constraints>
                         <constraint firstItem="Jbb-BQ-iWH" firstAttribute="centerY" secondItem="Zdk-zQ-aP9" secondAttribute="centerY" id="5A2-Y1-zr2"/>

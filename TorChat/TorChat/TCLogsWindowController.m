@@ -92,6 +92,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TCLogsWindowController () <TCLogsObserver>
 {
+	id <TCConfigApp> _configuration;
+	
 	NSMutableDictionary	*_logs;
 	NSMutableArray		*_klogs;
 	
@@ -127,24 +129,15 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCLogsWindowController - Instance
 
-+ (TCLogsWindowController *)sharedController
+- (instancetype)initWithConfiguration:(id <TCConfigApp>)configuration
 {
-	static dispatch_once_t	pred;
-	static TCLogsWindowController	*shr;
-	
-	dispatch_once(&pred, ^{
-		shr = [[TCLogsWindowController alloc] init];
-	});
-	
-	return shr;
-}
-
-- (instancetype)init
-{
-	self = [super initWithWindowNibName:@"LogsWindow"];
+	self = [super initWithWindow:nil];
 	
     if (self)
 	{
+		// Hold configuration.
+		_configuration = configuration;
+		
 		// Build logs containers.
 		_logs = [[NSMutableDictionary alloc] init];
 		_klogs = [[NSMutableArray alloc] init];
@@ -170,11 +163,44 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (nullable NSString *)windowNibName
+{
+	return @"LogsWindow";
+}
+
+- (id)owner
+{
+	return self;
+}
+
 - (void)windowDidLoad
 {
-	// Place Window.
-	[self.window center];
-	[self.window setFrameAutosaveName:@"LogsWindow"];
+	[super windowDidLoad];
+	
+	// Place window.
+	NSString *windowFrame = [_configuration generalSettingValueForKey:@"window-frame-logs"];
+	
+	if (windowFrame)
+		[self.window setFrameFromString:windowFrame];
+	else
+		[self.window center];
+}
+
+
+
+/*
+** TCLogsWindowController - Synchronize
+*/
+#pragma mark - TCLogsWindowController - Synchronize
+
+- (void)synchronizeWithCompletionHandler:(dispatch_block_t)handler
+{
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		[_configuration setGeneralSettingValue:self.window.stringWithSavedFrame forKey:@"window-frame-logs"];
+
+		handler();
+	});
 }
 
 

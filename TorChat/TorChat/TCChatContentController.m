@@ -1137,6 +1137,7 @@ static NSString *generateToken(void);
 	[dropZone addConstraint:[NSLayoutConstraint constraintWithItem:dropZone attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:size.width]];
 	[dropZone addConstraint:[NSLayoutConstraint constraintWithItem:dropZone attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:size.height]];
 	
+	// FIXME: localize
 	dropZone.dropString = [[NSAttributedString alloc] initWithString:@"Drop File" attributes:@{ NSForegroundColorAttributeName : dropZone.dashColor, NSFontAttributeName : [NSFont systemFontOfSize:20] }];
 	dropZone.droppedFilesHandler = ^(NSArray * _Nonnull files) {
 		

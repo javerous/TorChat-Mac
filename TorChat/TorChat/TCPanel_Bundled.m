@@ -26,7 +26,7 @@
 #import "TCPanel_Bundled.h"
 
 #import "TCLogsManager.h"
-#import "TCConfigAppEncryptable.h"
+#import "TCConfigApp.h"
 
 #import "TCLocationViewController.h"
 
@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TCPanel_Bundled ()
 {
-	id <TCConfigAppEncryptable> _currentConfig;
+	id <TCConfigApp> _currentConfig;
 	SMTorManager *_tor;
 	
 	TCLocationViewController *_torDownloadsLocation;

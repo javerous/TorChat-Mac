@@ -57,6 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TCFilesWindowController () <TCCoreManagerObserver, TCBuddyObserver>
 {
+	id <TCConfigApp> _configuration;
 	TCCoreManager	*_core;
 
 	NSMutableArray	*_files;
@@ -84,50 +85,19 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCFilesWindowController - Instance
 
-+ (TCFilesWindowController *)sharedController
+- (instancetype)initWithConfiguration:(id <TCConfigApp>)configuration coreManager:(TCCoreManager *)coreMananager
 {
-	static dispatch_once_t		onceToken;
-	static TCFilesWindowController	*shr;
-	
-	dispatch_once(&onceToken, ^{
-		shr = [[TCFilesWindowController alloc] init];
-	});
-
-	return shr;
-}
-
-- (instancetype)init
-{
-	self = [super initWithWindowNibName:@"FilesWindow"];
+	self = [super initWithWindow:nil];
 	
     if (self)
 	{
+		// Hold parameters.
+		_configuration = configuration;
+		_core = coreMananager;
+		
 		// Alloc containers.
 		_files =  [[NSMutableArray alloc] init];
 		_buddies = [[NSMutableSet alloc] init];
-    }
-    
-    return self;
-}
-
-
-
-/*
-** TCFilesWindowController - Life
-*/
-#pragma mark - TCFilesWindowController - Life
-
-- (void)startWithCoreManager:(TCCoreManager *)coreMananager completionHandler:(dispatch_block_t)handler
-{
-	dispatch_group_t group = dispatch_group_create();
-	
-	if (!handler)
-		handler = ^{ };
-	
-	dispatch_group_async(group, dispatch_get_main_queue(), ^{
-		
-		// Hold parameters.
-		_core = coreMananager;
 		
 		// Observe.
 		[_core addObserver:self];
@@ -140,50 +110,59 @@ NS_ASSUME_NONNULL_BEGIN
 			[buddy addObserver:self];
 			[_buddies addObject:buddy];
 		};
-	});
-	
-	// Wait end.
-	dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), handler);
-}
-
-- (void)stopWithCompletionHandler:(dispatch_block_t)handler
-{
-	dispatch_group_t group = dispatch_group_create();
-	
-	if (!handler)
-		handler = ^{ };
-	
-	dispatch_group_async(group, dispatch_get_main_queue(), ^{
-		
-		// Unmonitor buddies.
-		for (TCBuddy *buddy in _buddies)
-			[buddy removeObserver:self];
-		
-		[_buddies removeAllObjects];
-		
-		// Unmonitor core.
-		[_core removeObserver:self];
-		_core = nil;
-	});
-	
-	// Wait end.
-	dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), handler);
+    }
+    
+    return self;
 }
 
 
 
 /*
-** TCFilesWindowController - NSWindowController
+** TCFilesWindowController - NSWindowController + NSWindowDelegate
 */
-#pragma mark - TCFilesWindowController - NSWindowController
+#pragma mark - TCFilesWindowController - NSWindowController + NSWindowDelegate
+
+- (nullable NSString *)windowNibName
+{
+	return @"FilesWindow";
+}
+
+- (id)owner
+{
+	return self;
+}
 
 - (void)windowDidLoad
 {
-	// Update window.
-	[self.window center];
-	[self.window setFrameAutosaveName:@"FilesWindow"];
+	[super windowDidLoad];
 	
+	// Place window.
+	NSString *windowFrame = [_configuration generalSettingValueForKey:@"window-frame-files"];
+	
+	if (windowFrame)
+		[self.window setFrameFromString:windowFrame];
+	else
+		[self.window center];
+	
+	// Update count.
 	[self _updateCount];
+}
+
+
+
+/*
+** TCFilesWindowController - Synchronize
+*/
+#pragma mark - TCFilesWindowController - Synchronize
+
+- (void)synchronizeWithCompletionHandler:(dispatch_block_t)handler
+{
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		[_configuration setGeneralSettingValue:self.window.stringWithSavedFrame forKey:@"window-frame-files"];
+
+		handler();
+	});
 }
 
 

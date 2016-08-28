@@ -22,7 +22,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "TCConfigAppEncryptable.h"
+#import "TCConfigApp.h"
 
 
 NS_ASSUME_NONNULL_BEGIN
@@ -47,13 +47,16 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TCBuddyInfoWindowsController : NSObject
 
 // -- Instance --
-- (instancetype)initWithCoreManager:(TCCoreManager *)coreManager NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithConfiguration:(id <TCConfigApp>)configuration coreManager:(TCCoreManager *)coreManager NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 // -- Tools --
 - (void)showInfoForBuddy:(TCBuddy *)buddy;
-- (void)closeInfoForBuddy:(TCBuddy *)buddy;
+- (void)closeInfoForBuddy:(TCBuddy *)buddy completionHandler:(nullable  dispatch_block_t)handler;
+
+// -- Sync --
+- (void)synchronizeWithCompletionHandler:(dispatch_block_t)handler;
 
 @end
 

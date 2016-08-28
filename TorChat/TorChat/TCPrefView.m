@@ -33,8 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TCPrefView ()
 
-@property (strong, nonatomic) void (^reloadConfig)(dispatch_block_t doneHandler);
-@property (strong, nonatomic) void (^disableDisappearance)(BOOL disable);
+@property (strong, nonatomic) void (^disablePanelSaving)(BOOL disable);
 
 @property (strong, nonatomic) id <TCConfigAppEncryptable>	config;
 @property (strong, nonatomic) TCCoreManager				*core;
@@ -56,26 +55,20 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCPrefView - Config
 
-- (void)panelDidAppear
+- (void)panelLoadConfiguration
 {
 	// Must be redefined
 }
 
-- (void)panelDidDisappear
+- (void)panelSaveConfiguration
 {
 	// Must be redefined
 }
 
-- (void)reloadConfigurationWithCompletionHandler:(dispatch_block_t)handler
+- (void)disablePanelSaving:(BOOL)disable
 {
-	if (_reloadConfig)
-		_reloadConfig(handler);
-}
-
-- (void)disableDisappearance:(BOOL)disable
-{
-	if (_disableDisappearance)
-		_disableDisappearance(disable);
+	if (_disablePanelSaving)
+		_disablePanelSaving(disable);
 }
 
 @end

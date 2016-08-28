@@ -23,7 +23,7 @@
 #import "TCPanel_Custom.h"
 
 #import "TCLogsManager.h"
-#import "TCConfigAppEncryptable.h"
+#import "TCConfigApp.h"
 
 #import "TCLocationViewController.h"
 
@@ -60,7 +60,7 @@ static BOOL isNumber(NSString *str);
 
 @interface TCPanel_Custom ()
 {
-	id <TCConfigAppEncryptable> _currentConfig;
+	id <TCConfigApp> _currentConfig;
 
 	TCLocationViewController *_torDownloadsLocation;
 }

@@ -22,6 +22,9 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "TCConfigAppEncryptable.h"
+#import "TCCoreManager.h"
+
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -33,11 +36,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TCPreferencesWindowController : NSWindowController
 
-// -- Singleton --
-+ (TCPreferencesWindowController *)sharedController;
+// -- Instance --
+- (instancetype)initWithConfiguration:(id <TCConfigAppEncryptable>)configuration coreManager:(TCCoreManager *)coreManager NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 - (instancetype)initWithWindow:(nullable NSWindow *)window NS_UNAVAILABLE;
+
+// -- Synchronize --
+- (void)synchronizeWithCompletionHandler:(dispatch_block_t)handler;
 
 @end
 

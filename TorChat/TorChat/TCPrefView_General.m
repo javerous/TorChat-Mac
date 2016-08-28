@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCPrefView_General - TCPrefView
 
-- (void)panelDidAppear
+- (void)panelLoadConfiguration
 {
 	// Client info.
 	_clientNameField.placeholderString = ([self.config clientName:TCConfigGetDefault] ?: @"");
@@ -115,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
 		[_themesPopup selectItemAtIndex:0];
 }
 
-- (void)panelDidDisappear
+- (void)panelSaveConfiguration
 {
 	// CLient info.
 	// > name.

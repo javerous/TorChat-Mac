@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCPrefView_Security - TCPrefView
 
-- (void)panelDidAppear
+- (void)panelLoadConfiguration
 {
 	[self updateConfig];
 }

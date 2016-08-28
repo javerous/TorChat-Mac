@@ -22,8 +22,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "TCConfigAppEncryptable.h"
-
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -36,13 +34,16 @@ NS_ASSUME_NONNULL_BEGIN
 #define TCMainControllerErrorDomain @"TCMainControllerErrorDomain"
 
 
-
 /*
 ** Forward
 */
 #pragma mark - Forward
 
-@class TCCoreManager;
+@class TCPreferencesWindowController;
+@class TCBuddiesWindowController;
+@class TCChatWindowController;
+@class TCFilesWindowController;
+@class TCLogsWindowController;
 
 
 
@@ -53,20 +54,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TCMainController : NSObject
 
-// -- Instance --
-+ (TCMainController *)sharedController;
-
 // -- Life --
-- (void)startWithCompletionHandler:(void (^)(id <TCConfigAppEncryptable> _Nullable configuration, TCCoreManager * _Nullable core, NSError * _Nullable error))handler;
-- (void)startWithConfiguration:(id <TCConfigAppEncryptable>)configuration completionHandler:(void (^)(TCCoreManager * _Nullable core, NSError * _Nullable error))handler;
-
+- (void)startWithCompletionHandler:(void (^)(NSError * _Nullable error))handler;
 - (void)stopWithCompletionHandler:(dispatch_block_t)handler;
 
-// -- Properties --
-@property (strong, readonly, nonatomic) id <TCConfigAppEncryptable>	configuration;
-@property (strong, readonly, nonatomic) TCCoreManager				*core;
+// -- Controllers --
+@property (nonatomic, readonly) TCPreferencesWindowController	*preferencesController;
+@property (nonatomic, readonly) TCBuddiesWindowController		*buddiesController;
+@property (nonatomic, readonly) TCChatWindowController			*chatController;
+@property (nonatomic, readonly) TCFilesWindowController			*filesController;
+@property (nonatomic, readonly) TCLogsWindowController			*logsController;
 
 @end
-
 
 NS_ASSUME_NONNULL_END

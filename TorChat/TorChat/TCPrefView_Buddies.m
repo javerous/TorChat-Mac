@@ -81,16 +81,16 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 
-
 /*
-** TCPrefView_Buddies - TCPrefView
+** TCPrefView_Buddies - NSViewController
 */
-#pragma mark - TCPrefView_Buddies - TCPrefView
+#pragma mark - TCPrefView_Buddies - NSViewController
 
-- (void)panelDidAppear
+- (void)viewDidLoad
 {
-	// Monitor core info.
-	[self.core addObserver:self];
+	[super viewDidLoad];
+	
+	NSLog(@"did load");
 	
 	// Identifier validation.
 	__weak TCPrefView_Buddies *weakSelf = self;
@@ -102,12 +102,20 @@ NS_ASSUME_NONNULL_BEGIN
 	_addBlockedField.textDidChange = ^(NSString *content) {
 		weakSelf.addOkButton.enabled = (content.length == 16);
 	};
-	
 }
 
-- (void)panelDidDisappear
+- (void)viewWillAppear
 {
-	// Unmonitor core info.
+	[super viewWillAppear];
+	
+	// Monitor core info.
+	[self.core addObserver:self];
+}
+
+- (void)viewDidDisappear
+{
+	[super viewDidDisappear];
+
 	[self.core removeObserver:self];
 }
 

@@ -22,6 +22,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "TCConfigApp.h"
+
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -34,10 +36,13 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TCLogsWindowController : NSWindowController
 
 // -- Instance --
-+ (TCLogsWindowController *)sharedController;
+- (instancetype)initWithConfiguration:(id <TCConfigApp>)configuration NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 - (instancetype)initWithWindow:(nullable NSWindow *)window NS_UNAVAILABLE;
+
+// -- Synchronize --
+- (void)synchronizeWithCompletionHandler:(dispatch_block_t)handler;
 
 @end
 

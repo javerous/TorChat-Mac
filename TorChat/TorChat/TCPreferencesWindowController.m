@@ -46,8 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) id <TCConfigAppEncryptable>	config;
 @property (strong, nonatomic) TCCoreManager					*core;
 
-@property (strong, nonatomic) void (^reloadConfig)(dispatch_block_t doneHandler);
-@property (strong, nonatomic) void (^disableDisappearance)(BOOL disable);
+@property (strong, nonatomic) void (^disablePanelSaving)(BOOL disable);
 
 @end
 
@@ -58,15 +57,14 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCPreferencesWindowController - Private
 
-@interface TCPreferencesWindowController ()
+@interface TCPreferencesWindowController () <NSWindowDelegate>
 {
-	
-	IBOutlet NSWindow				*_loadingWindow;
-	IBOutlet NSProgressIndicator	*_loadingIndicator;
-	
+	id <TCConfigAppEncryptable> _configuration;
+	TCCoreManager				*_core;
+
 	TCPrefView	*_currentCtrl;
 	
-	BOOL _disabledDisappearance;
+	BOOL _disabledSaving;
 }
 
 @end
@@ -86,24 +84,14 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCPreferencesWindowController - Instance
 
-+ (TCPreferencesWindowController *)sharedController
+- (instancetype)initWithConfiguration:(id <TCConfigAppEncryptable>)configuration coreManager:(TCCoreManager *)coreManager
 {
-	static dispatch_once_t					onceToken;
-	static TCPreferencesWindowController	*instance = nil;
-	
-	dispatch_once(&onceToken, ^{
-		instance = [[TCPreferencesWindowController alloc] init];
-	});
-	
-	return instance;
-}
-
-- (instancetype)init
-{
-	self = [super initWithWindowNibName:@"PreferencesWindow"];
+	self = [super initWithWindow:nil];
 	
     if (self)
 	{
+		_configuration = configuration;
+		_core = coreManager;
     }
     
     return self;
@@ -112,43 +100,64 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
-** TCPreferencesWindowController - NSWindow
+** TCPreferencesWindowController - NSWindowController
 */
-#pragma mark - TCPreferencesWindowController - NSWindow
+#pragma mark - TCPreferencesWindowController - NSWindowController
+
+- (nullable NSString *)windowNibName
+{
+	return @"PreferencesWindow";
+}
+
+- (id)owner
+{
+	return self;
+}
 
 - (void)windowDidLoad
 {
+	// Delegate.
+	self.window.delegate = self;
+
 	// Select the view.
-	NSString *identifier = [[NSUserDefaults standardUserDefaults] valueForKey:@"preference_id"];
+	NSString *identifier = [_configuration generalSettingValueForKey:@"preference_id"];
 	
 	if (!identifier)
 		identifier = @"general";
 	
 	[self loadViewIdentifier:identifier animated:NO];
 	
-	// Place Window.
-	[self.window center];
-	[self.window setFrameAutosaveName:@"PreferencesWindow"];
+	// Place window.
+	NSString *windowFrame = [_configuration generalSettingValueForKey:@"window-frame-preferences"];
+	
+	if (windowFrame)
+		[self.window setFrameFromString:windowFrame];
+	else
+		[self.window center];
 }
 
 - (void)windowWillClose:(NSNotification *)notification
 {
-	if (_disabledDisappearance)
-		return;
-	
-	id <TCConfigAppEncryptable> config = [TCMainController sharedController].configuration;
-	TCCoreManager				*core = [TCMainController sharedController].core;
-	
-	_currentCtrl.config = config;
-	_currentCtrl.core = core;
-	
-	[_currentCtrl panelDidDisappear];
+	[self saveCurrentPanel];
 }
 
-- (void)windowDidResize:(NSNotification *)notification
+
+
+/*
+** TCPreferencesWindowController - Synchronize
+*/
+#pragma mark - TCPreferencesWindowController - Synchronize
+
+- (void)synchronizeWithCompletionHandler:(dispatch_block_t)handler
 {
-	if (_loadingWindow.isVisible)
-		[_loadingWindow setFrame:self.window.frame display:YES];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		[_configuration setGeneralSettingValue:self.window.stringWithSavedFrame forKey:@"window-frame-preferences"];
+		
+		[self saveCurrentPanel];
+		
+		handler();
+	});
 }
 
 
@@ -176,8 +185,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)loadViewIdentifier:(NSString *)identifier animated:(BOOL)animated
 {
 	TCPrefView *viewCtrl = nil;
-	id <TCConfigAppEncryptable> config = [TCMainController sharedController].configuration;
-	TCCoreManager *core = [TCMainController sharedController].core;
 
 	if ([identifier isEqualToString:@"general"])
 		viewCtrl = [[TCPrefView_General alloc] init];
@@ -193,29 +200,26 @@ NS_ASSUME_NONNULL_BEGIN
 	NSAssert(viewCtrl, @"viewCtrl is nil - unknown identifier");
 	
 	// Save current identifier.
-	[[NSUserDefaults standardUserDefaults] setValue:identifier forKey:@"preference_id"];
+	[_configuration setGeneralSettingValue:identifier forKey:@"preference_id"];
 	
 	// Check if the toolbar item is well selected
 	if ([self.window.toolbar.selectedItemIdentifier isEqualToString:identifier] == NO)
 		self.window.toolbar.selectedItemIdentifier = identifier;
 	
 	// Save current view config.
-	_currentCtrl.config = config;
-	_currentCtrl.core = core;
+	_currentCtrl.config = _configuration;
+	_currentCtrl.core = _core;
 	
-	[_currentCtrl panelDidDisappear];
+	[_currentCtrl panelSaveConfiguration];
 	
-	
-	// Load new view config.
-	__weak TCPrefView *weakViewCtrl = viewCtrl;
-	
-	viewCtrl.config = config;
-	viewCtrl.core = core;
-	viewCtrl.disableDisappearance = ^(BOOL disable) {
+	// Load new view config.	
+	viewCtrl.config = _configuration;
+	viewCtrl.core = _core;
+	viewCtrl.disablePanelSaving = ^(BOOL disable) {
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
 			
-			if (disable == _disabledDisappearance)
+			if (disable == _disabledSaving)
 				return;
 			
 			// > Disable tool bar.
@@ -231,65 +235,14 @@ NS_ASSUME_NONNULL_BEGIN
 			[self.window standardWindowButton:NSWindowCloseButton].enabled = !disable;
 			
 			// > Set disable flag.
-			_disabledDisappearance = disable;
+			_disabledSaving = disable;
 		});
-	};
-	viewCtrl.reloadConfig = ^(dispatch_block_t doneHandler) {
-		
-		// Lock UI.
-		__block BOOL isVisible;
-		
-		dispatch_async(dispatch_get_main_queue(), ^{
-			isVisible = self.window.isVisible;
-			
-			if (isVisible)
-				[self _lockForLoading];
-		});
-		
-		// Restart main controller.
-		[[TCMainController sharedController] startWithConfiguration:config completionHandler:^(TCCoreManager * _Nullable aCore, NSError *_Nullable error) {
-
-			if (!aCore)
-			{
-				// Note: See explanation of run-loop perform in TorChatAppDelegate -> applicationDidFinishLaunching.
-				CFRunLoopRef runLoop = CFRunLoopGetMain();
-				
-				CFRunLoopPerformBlock(runLoop, kCFRunLoopCommonModes, ^{
-					
-					if (error)
-					{
-						NSAlert *alert = [[NSAlert alloc] init];
-						
-						alert.messageText = NSLocalizedString(@"app_delegate_start_error_title", @"");
-						alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"app_delegate_start_error_code", @""), error.code, error.localizedDescription];
-						
-						[alert runModal];
-					}
-					
-					[[NSApplication sharedApplication] terminate:nil];
-				});
-
-				CFRunLoopWakeUp(runLoop);
-
-				return;
-			}
-			
-			dispatch_async(dispatch_get_main_queue(), ^{
-				
-				weakViewCtrl.core = (TCCoreManager *)aCore;
-				
-				if (doneHandler)
-					doneHandler();
-				
-				if (isVisible)
-					[self _unlockForLoading];
-			});
-		}];
 	};
 	
+	// Load view, then load configuration.
 	NSView *view = viewCtrl.view;
 
-	[viewCtrl panelDidAppear];
+	[viewCtrl panelLoadConfiguration];
 	
 	// Compute target rect.
 	NSRect	rect = self.window.frame;
@@ -325,23 +278,16 @@ NS_ASSUME_NONNULL_BEGIN
 	_currentCtrl = viewCtrl;
 }
 
-- (void)_lockForLoading
+- (void)saveCurrentPanel
 {
-	// > main queue <
-
-	[_loadingWindow setFrame:self.window.frame display:NO];
-	_loadingWindow.backgroundColor = [NSColor colorWithWhite:1.0 alpha:0.5];
-	[_loadingIndicator startAnimation:nil];
+	// If disappearance is disabled (invalid panel settings, etc.), then... just ignore close
+	if (_disabledSaving)
+		return;
 	
-	[self.window addChildWindow:_loadingWindow ordered:NSWindowAbove];
-}
-
-- (void)_unlockForLoading
-{
-	// > main queue <
+	_currentCtrl.config = _configuration;
+	_currentCtrl.core = _core;
 	
-	[self.window removeChildWindow:_loadingWindow];
-	[_loadingWindow close];
+	[_currentCtrl panelSaveConfiguration];
 }
 
 @end
