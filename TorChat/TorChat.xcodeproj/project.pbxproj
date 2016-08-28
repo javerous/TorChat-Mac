@@ -49,8 +49,6 @@
 		E849BDB11A66EEA60040E294 /* PrefView_General.xib in Resources */ = {isa = PBXBuildFile; fileRef = E849BDAF1A66EEA60040E294 /* PrefView_General.xib */; };
 		E84CBD3A1C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = E84CBD391C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.m */; };
 		E852235217B504CA00C6F585 /* TCChatCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E852235117B504CA00C6F585 /* TCChatCellView.m */; };
-		E857223F1D732D21001F9B42 /* relauncher.m in Sources */ = {isa = PBXBuildFile; fileRef = E857223E1D732D21001F9B42 /* relauncher.m */; };
-		E85722481D732EDA001F9B42 /* relauncher in Copy Executables */ = {isa = PBXBuildFile; fileRef = E857223C1D732D21001F9B42 /* relauncher */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		E85923F7120A9E060035C420 /* FilesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E85923F5120A9E060035C420 /* FilesWindow.xib */; };
 		E85A18791D6F896500E5E143 /* TCChatContentController.m in Sources */ = {isa = PBXBuildFile; fileRef = E85A18781D6F896500E5E143 /* TCChatContentController.m */; };
 		E85A187C1D6F899100E5E143 /* TCMediaCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E85A187B1D6F899100E5E143 /* TCMediaCellView.m */; };
@@ -125,16 +123,6 @@
 		E8F16D3411FF7E9700DFA05F /* TCParser.m in Sources */ = {isa = PBXBuildFile; fileRef = E8F16D3211FF7E9700DFA05F /* TCParser.m */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		E85722441D732DFB001F9B42 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E81FD9E711E7259B000614D5 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = E857223B1D732D21001F9B42;
-			remoteInfo = relauncher;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXCopyFilesBuildPhase section */
 		E844C4A21C77E69900D3AB2D /* Copy Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -149,22 +137,12 @@
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E857223A1D732D21001F9B42 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
 		E85722471D732EC9001F9B42 /* Copy Executables */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 6;
 			files = (
-				E85722481D732EDA001F9B42 /* relauncher in Copy Executables */,
 			);
 			name = "Copy Executables";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -228,8 +206,6 @@
 		E84CBD391C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SMTorConfiguration+TCConfig.m"; sourceTree = "<group>"; };
 		E852235017B504CA00C6F585 /* TCChatCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCChatCellView.h; sourceTree = "<group>"; };
 		E852235117B504CA00C6F585 /* TCChatCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatCellView.m; sourceTree = "<group>"; };
-		E857223C1D732D21001F9B42 /* relauncher */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = relauncher; sourceTree = BUILT_PRODUCTS_DIR; };
-		E857223E1D732D21001F9B42 /* relauncher.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = relauncher.m; sourceTree = "<group>"; };
 		E85903B011EC9877005CE53F /* TCTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCTools.m; sourceTree = "<group>"; };
 		E85903B111EC9877005CE53F /* TCTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCTools.h; sourceTree = "<group>"; };
 		E85A18771D6F896500E5E143 /* TCChatContentController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCChatContentController.h; sourceTree = "<group>"; };
@@ -407,13 +383,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E85722391D732D21001F9B42 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -442,7 +411,6 @@
 			children = (
 				E89E46FE1C8D9025004A5D72 /* Externals */,
 				E837DAD311E7739D004BC524 /* TorChat */,
-				E857223D1D732D21001F9B42 /* relauncher */,
 				E81FD9EF11E7259B000614D5 /* Links */,
 				E81FD9F511E7259B000614D5 /* Products */,
 			);
@@ -494,7 +462,6 @@
 			isa = PBXGroup;
 			children = (
 				E81FD9F411E7259B000614D5 /* TorChat.app */,
-				E857223C1D732D21001F9B42 /* relauncher */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -621,14 +588,6 @@
 				E80414C817A557B7008220C9 /* NSArray+TCTools.m */,
 			);
 			name = Categories;
-			sourceTree = "<group>";
-		};
-		E857223D1D732D21001F9B42 /* relauncher */ = {
-			isa = PBXGroup;
-			children = (
-				E857223E1D732D21001F9B42 /* relauncher.m */,
-			);
-			path = relauncher;
 			sourceTree = "<group>";
 		};
 		E8643D6E1A66D97800B8C55F /* Views */ = {
@@ -969,29 +928,11 @@
 			buildRules = (
 			);
 			dependencies = (
-				E85722451D732DFB001F9B42 /* PBXTargetDependency */,
 			);
 			name = TorChat;
 			productName = TorChat;
 			productReference = E81FD9F411E7259B000614D5 /* TorChat.app */;
 			productType = "com.apple.product-type.application";
-		};
-		E857223B1D732D21001F9B42 /* relauncher */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = E85722421D732D21001F9B42 /* Build configuration list for PBXNativeTarget "relauncher" */;
-			buildPhases = (
-				E85722381D732D21001F9B42 /* Sources */,
-				E85722391D732D21001F9B42 /* Frameworks */,
-				E857223A1D732D21001F9B42 /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = relauncher;
-			productName = relauncher;
-			productReference = E857223C1D732D21001F9B42 /* relauncher */;
-			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
@@ -1001,12 +942,6 @@
 			attributes = {
 				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = SourceMac;
-				TargetAttributes = {
-					E857223B1D732D21001F9B42 = {
-						CreatedOnToolsVersion = 8.0;
-						ProvisioningStyle = Automatic;
-					};
-				};
 			};
 			buildConfigurationList = E81FD9EA11E7259B000614D5 /* Build configuration list for PBXProject "TorChat" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -1023,7 +958,6 @@
 			projectRoot = "";
 			targets = (
 				E81FD9F311E7259B000614D5 /* TorChat */,
-				E857223B1D732D21001F9B42 /* relauncher */,
 			);
 		};
 /* End PBXProject section */
@@ -1163,23 +1097,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E85722381D732D21001F9B42 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E857223F1D732D21001F9B42 /* relauncher.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		E85722451D732DFB001F9B42 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = E857223B1D732D21001F9B42 /* relauncher */;
-			targetProxy = E85722441D732DFB001F9B42 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		E807B4B0124FB52700FDC769 /* LogsWindow.xib */ = {
@@ -1572,50 +1490,6 @@
 			};
 			name = Release;
 		};
-		E85722401D732D21001F9B42 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_SUSPICIOUS_MOVES = YES;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		E85722411D732D21001F9B42 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_SUSPICIOUS_MOVES = YES;
-				COPY_PHASE_STRIP = NO;
-				ENABLE_NS_ASSERTIONS = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1636,14 +1510,6 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
-		};
-		E85722421D732D21001F9B42 /* Build configuration list for PBXNativeTarget "relauncher" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E85722401D732D21001F9B42 /* Debug */,
-				E85722411D732D21001F9B42 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};

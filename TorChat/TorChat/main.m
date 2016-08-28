@@ -30,6 +30,33 @@
 
 int main(int argc, char *argv[])
 {
+	// Relauncher.
+	if (argc == 3 && [@(argv[1]) isEqualToString:@"relaunch"])
+	{
+		@autoreleasepool
+		{
+			NSString	*bundlePath = [[NSBundle mainBundle] bundlePath];
+			NSString	*processPID = @(argv[2]);
+			
+			dispatch_source_t exitSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_PROC, (uintptr_t)[processPID integerValue], DISPATCH_PROC_EXIT, dispatch_get_main_queue());
+			
+			dispatch_source_set_event_handler(exitSource, ^{
+				
+				dispatch_source_cancel(exitSource);
+				
+				NSTask *task = [NSTask launchedTaskWithLaunchPath:@"/usr/bin/open" arguments:@[ bundlePath ]];
+				
+				[task waitUntilExit];
+				
+				exit(0);
+			});
+			
+			dispatch_resume(exitSource);
+			
+			dispatch_main();
+		}
+	}
+	
 	// Ignore sigpipe
 	signal(SIGPIPE, SIG_IGN);
 

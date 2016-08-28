@@ -217,11 +217,11 @@ static BOOL isNumber(NSString *str);
 			[alert runModal];
 			
 			// > Terminate + relaunch.
-			NSString	*relauncher = [[NSBundle mainBundle] pathForAuxiliaryExecutable:@"relauncher"];
+			NSString	*relauncher = [[NSBundle mainBundle] executablePath];
 			NSTask		*task = [[NSTask alloc] init];
 			
 			task.launchPath = relauncher;
-			task.arguments = @[ [[NSBundle mainBundle] bundlePath], [@(getpid()) stringValue] ];
+			task.arguments = @[ @"relaunch", [@(getpid()) stringValue] ];
 			
 			@try {
 				[task launch];
