@@ -80,9 +80,14 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @property (strong, nonatomic) IBOutlet NSSplitView		*splitView;
-@property (strong, nonatomic) IBOutlet NSTableView		*userList;
+
 @property (strong, nonatomic) IBOutlet NSView			*userView;
+@property (strong, nonatomic) IBOutlet NSTableView		*userList;
+@property (strong, nonatomic) IBOutlet NSProgressIndicator *userListLoading;
+
 @property (strong, nonatomic) IBOutlet NSView			*chatView;
+
+
 
 @end
 
@@ -161,7 +166,8 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 	
 	// Load transcripted buddies.
-	// FIXME: add loading view ?
+	[_userListLoading startAnimation:nil];
+
 	[_configuration transcriptBuddiesIdentifiersWithCompletionHandler:^(NSArray *buddiesIdentifiers) {
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
@@ -175,6 +181,8 @@ NS_ASSUME_NONNULL_BEGIN
 				
 				[self _addChatWithBuddy:buddy select:NO];
 			}
+			
+			[_userListLoading stopAnimation:nil];
 		});
 	}];
 }
