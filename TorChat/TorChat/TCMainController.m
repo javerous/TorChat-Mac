@@ -576,23 +576,23 @@ NS_ASSUME_NONNULL_BEGIN
 		}];
 	}
 	
+	// > Close windows.
+	dispatch_group_async(group, dispatch_get_main_queue(), ^{
+		[_preferencesController close];
+		[_buddiesController close];
+		[_chatController close];
+		[_filesController close];
+		[_logsController close];
+	});
+	
 	// Wait for end.
 	dispatch_group_notify(group, _localQueue, ^{
-		
+
 		// > Unset controllers.
-		[_preferencesController close];
 		_preferencesController = nil;
-		
-		[_buddiesController close];
 		_buddiesController = nil;
-		
-		[_chatController close];
 		_chatController = nil;
-		
-		[_filesController close];
 		_filesController = nil;
-		
-		[_logsController close];
 		_logsController = nil;
 		
 		// > Close configuration.
