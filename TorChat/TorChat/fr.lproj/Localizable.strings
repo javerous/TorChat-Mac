@@ -69,6 +69,11 @@
 "pref_theme_standard-aqua" = "Aqua";
 "pref_theme_standard-flat" = "Plat";
 
+"pref_network_warning_tooltip" = "TorChat devra être relancé pour prendre en compte vos modifications.";
+"pref_network_relaunch_title" = "Relance nécessaire";
+"pref_network_relaunch_message" = "TorChat va se relancer pour prendre en compte vos modifications.";
+"pref_network_relaunch_button" = "Relancer";
+
 
 /* Menu */
 "menu_block_buddy" = "Bloquer le contact";

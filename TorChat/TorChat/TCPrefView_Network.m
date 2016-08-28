@@ -50,6 +50,7 @@ static BOOL isNumber(NSString *str);
 	NSNumber *_customTorPort;
 }
 
+@property (strong, nonatomic) IBOutlet NSImageView *warningView;
 
 @property (strong, nonatomic) IBOutlet NSPopUpButton *modePopup;
 
@@ -132,6 +133,9 @@ static BOOL isNumber(NSString *str);
 	_torPortField.textDidChange = ^(NSString *content) {
 		[weakSekf validateContent];
 	};
+	
+	// Configure warning.
+	[_warningView addToolTipRect:_warningView.bounds owner:NSLocalizedString(@"pref_network_warning_tooltip", @"") userData:NULL];
 }
 
 
@@ -144,8 +148,35 @@ static BOOL isNumber(NSString *str);
 - (void)panelLoadConfiguration
 {
 	// Load configuration.
-	[self _reloadConfiguration];
+	TCConfigMode mode = self.config.mode;
 	
+	// Set mode.
+	if (mode == TCConfigModeBundled)
+	{
+		[_modePopup selectItemAtIndex:0];
+		
+		_imIdentifierField.enabled = NO;
+		_imPortField.enabled = NO;
+		_torAddressField.enabled = NO;
+		_torPortField.enabled = NO;
+	}
+	else if (mode == TCConfigModeCustom)
+	{
+		[_modePopup selectItemAtIndex:1];
+		
+		_imIdentifierField.enabled = YES;
+		_imPortField.enabled = YES;
+		_torAddressField.enabled = YES;
+		_torPortField.enabled = YES;
+	}
+	
+	// Set value field.
+	_imIdentifierField.stringValue = self.config.selfIdentifier;
+	_imPortField. stringValue = @(self.config.selfPort).description;
+	_torAddressField.stringValue = self.config.torAddress;
+	_torPortField.stringValue = @(self.config.torPort).description;
+	
+	// Init temporary changes.
 	_customIMIdentifier = self.config.selfIdentifier;
 	_customIMPort = @(self.config.selfPort);
 	_customTorAddress = self.config.torAddress;
@@ -154,15 +185,7 @@ static BOOL isNumber(NSString *str);
 
 - (void)panelSaveConfiguration
 {
-	BOOL changes = NO;
-	
-	changes = changes || ((_modePopup.indexOfSelectedItem == 0 && self.config.mode != TCConfigModeBundled) || (_modePopup.indexOfSelectedItem == 1 && self.config.mode != TCConfigModeCustom));
-	changes = changes || ([self.config.selfIdentifier isEqualToString:_imIdentifierField.stringValue] == NO);
-	changes = changes || (self.config.selfPort != (uint16_t)_imPortField.intValue);
-	changes = changes || ([self.config.torAddress isEqualToString:_torAddressField.stringValue] == NO);
-	changes = changes || (self.config.torPort != (uint16_t)_torPortField.intValue);
-
-	if (changes)
+	if ([self contentChanged])
 	{
 		// Set config mode.
 		if (_modePopup.indexOfSelectedItem == 0)
@@ -170,18 +193,45 @@ static BOOL isNumber(NSString *str);
 		else if (_modePopup.indexOfSelectedItem == 1)
 			self.config.mode = TCConfigModeCustom;
 
-		
 		// Set config value.
 		self.config.selfIdentifier = _imIdentifierField.stringValue;
 		self.config.selfPort = (uint16_t)_imPortField.intValue;
 		self.config.torAddress = _torAddressField.stringValue;
 		self.config.torPort = (uint16_t)_torPortField.intValue;
 		
-		// Reload config.
-		// FIXME: ask TCMainController to reload configuration (eg : load bundled tor binary).
-		// [self.mainController reloadConfigurationWithCompletionHandler:^{
-		//		dispatch_async(dispatch_get_main_queue(), { [self _reloadConfiguration]; });
-		//}];
+		[self.config synchronize];
+		
+		// Relaunch TorChat.
+		CFRunLoopRef runLoop = CFRunLoopGetMain();
+		
+		CFRunLoopPerformBlock(runLoop, kCFRunLoopCommonModes, ^{
+			
+			// > Show alert.
+			NSAlert *alert = [[NSAlert alloc] init];
+			
+			alert.messageText = NSLocalizedString(@"pref_network_relaunch_title", @"");
+			alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"pref_network_relaunch_message", @"")];
+			
+			[alert addButtonWithTitle:NSLocalizedString(@"pref_network_relaunch_button", @"")];
+			
+			[alert runModal];
+			
+			// > Terminate + relaunch.
+			NSString	*relauncher = [[NSBundle mainBundle] pathForAuxiliaryExecutable:@"relauncher"];
+			NSTask		*task = [[NSTask alloc] init];
+			
+			task.launchPath = relauncher;
+			task.arguments = @[ [[NSBundle mainBundle] bundlePath], [@(getpid()) stringValue] ];
+			
+			@try {
+				[task launch];
+			} @catch (NSException *exception) {
+			}
+			
+			[[NSApplication sharedApplication] terminate:nil];
+		});
+		
+		CFRunLoopWakeUp(runLoop);
 	}
 }
 
@@ -194,6 +244,7 @@ static BOOL isNumber(NSString *str);
 
 - (IBAction)doChangeMode:(id)sender
 {
+	// Enabled / disable parts.
 	NSInteger index = _modePopup.indexOfSelectedItem;
 	
 	if (index == 0)
@@ -225,6 +276,9 @@ static BOOL isNumber(NSString *str);
 		_torAddressField.enabled = YES;
 		_torPortField.enabled = YES;
 	}
+	
+	// Validate content.
+	[self validateContent];
 }
 
 
@@ -234,37 +288,29 @@ static BOOL isNumber(NSString *str);
 */
 #pragma mark - TCPrefView_Network - Helper
 
-- (void)_reloadConfiguration
+- (BOOL)contentChanged
 {
-	// > main queue <
-	
-	TCConfigMode mode = self.config.mode;
-	
-	// Set mode.
-	if (mode == TCConfigModeBundled)
+	if (_modePopup.indexOfSelectedItem == 0)
 	{
-		[_modePopup selectItemAtIndex:0];
-		
-		_imIdentifierField.enabled = NO;
-		_imPortField.enabled = NO;
-		_torAddressField.enabled = NO;
-		_torPortField.enabled = NO;
+		if (self.config.mode != TCConfigModeBundled)
+			return YES;
 	}
-	else if (mode == TCConfigModeCustom)
+	else if (_modePopup.indexOfSelectedItem == 1)
 	{
-		[_modePopup selectItemAtIndex:1];
+		if (self.config.mode != TCConfigModeCustom)
+			return YES;
 		
-		_imIdentifierField.enabled = YES;
-		_imPortField.enabled = YES;
-		_torAddressField.enabled = YES;
-		_torPortField.enabled = YES;
+		BOOL changes = NO;
+		
+		changes = changes || ([self.config.selfIdentifier isEqualToString:_imIdentifierField.stringValue] == NO);
+		changes = changes || (self.config.selfPort != (uint16_t)_imPortField.intValue);
+		changes = changes || ([self.config.torAddress isEqualToString:_torAddressField.stringValue] == NO);
+		changes = changes || (self.config.torPort != (uint16_t)_torPortField.intValue);
+		
+		return changes;
 	}
 	
-	// Set value field.
-	_imIdentifierField.stringValue = self.config.selfIdentifier;
-	_imPortField. stringValue = @(self.config.selfPort).description;
-	_torAddressField.stringValue = self.config.torAddress;
-	_torPortField.stringValue = @(self.config.torPort).description;
+	return NO;
 }
 
 - (void)validateContent
@@ -311,6 +357,9 @@ static BOOL isNumber(NSString *str);
 	_modePopup.enabled = valid;
 	
 	[self disablePanelSaving:!valid];
+	
+	// Show change warning.
+	_warningView.hidden = ([self contentChanged] == NO);
 }
 
 @end

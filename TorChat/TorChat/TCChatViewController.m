@@ -129,7 +129,7 @@ NS_ASSUME_NONNULL_BEGIN
 			theme = themes.firstObject;
 		}
 		
-		// Create trasncript controller.
+		// Create transcript controller.
 		_chatTranscript = [[TCChatTranscriptViewController alloc] initWithTheme:theme];
 		
 		// Containers.

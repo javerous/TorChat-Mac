@@ -69,6 +69,11 @@
 "pref_theme_standard-aqua" = "Aqua";
 "pref_theme_standard-flat" = "Flat";
 
+"pref_network_warning_tooltip" = "TorChat will need to be relaunched for these changes to take effect.";
+"pref_network_relaunch_title" = "Relaunch Needed";
+"pref_network_relaunch_message" = "TorChat is going to relaunch itself for your changes to take effect.";
+"pref_network_relaunch_button" = "Relaunch";
+
 
 /* Menu */
 "menu_block_buddy" = "Block Buddy";

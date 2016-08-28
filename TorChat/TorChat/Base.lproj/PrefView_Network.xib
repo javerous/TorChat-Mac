@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11198.2" systemVersion="15G31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
+        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11198.2"/>
     </dependencies>
     <objects>
@@ -12,6 +13,7 @@
                 <outlet property="torAddressField" destination="eFL-vX-f66" id="nLh-Bi-YC9"/>
                 <outlet property="torPortField" destination="wxv-gf-iWN" id="037-Ax-I8e"/>
                 <outlet property="view" destination="ta5-FT-idY" id="g1t-fp-aez"/>
+                <outlet property="warningView" destination="vJf-K9-5Zq" id="Kxk-9n-vbo"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -137,6 +139,14 @@
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
+                <imageView hidden="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="vJf-K9-5Zq">
+                    <rect key="frame" x="384" y="233" width="16" height="16"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="16" id="4Vb-SQ-2RZ"/>
+                        <constraint firstAttribute="width" constant="16" id="m86-YM-SHJ"/>
+                    </constraints>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSCaution" id="TH5-c9-K4q"/>
+                </imageView>
             </subviews>
             <constraints>
                 <constraint firstItem="n9v-m5-SDF" firstAttribute="leading" secondItem="9KL-LP-wRq" secondAttribute="leading" id="0sS-zl-ai3"/>
@@ -145,6 +155,7 @@
                 <constraint firstItem="eFL-vX-f66" firstAttribute="leading" secondItem="sLC-d4-YEX" secondAttribute="trailing" constant="8" symbolic="YES" id="5Vn-42-mKh"/>
                 <constraint firstAttribute="width" constant="410" id="6oB-cA-pke"/>
                 <constraint firstItem="bdK-yS-Gq3" firstAttribute="leading" secondItem="ta5-FT-idY" secondAttribute="leading" constant="20" symbolic="YES" id="A06-dl-5AS"/>
+                <constraint firstAttribute="trailing" secondItem="vJf-K9-5Zq" secondAttribute="trailing" constant="10" id="BG7-lJ-1y5"/>
                 <constraint firstItem="0nW-gC-87P" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="hSj-3d-KVC" secondAttribute="leading" constant="20" id="FkI-rr-WS1"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="F3R-o7-O1A" secondAttribute="trailing" constant="20" symbolic="YES" id="JSK-gf-Jyq"/>
                 <constraint firstItem="wxv-gf-iWN" firstAttribute="leading" secondItem="eFL-vX-f66" secondAttribute="leading" id="LjB-po-fCR"/>
@@ -159,6 +170,7 @@
                 <constraint firstItem="n9v-m5-SDF" firstAttribute="leading" secondItem="m1X-8x-GIO" secondAttribute="trailing" constant="8" symbolic="YES" id="X8m-2c-PiC"/>
                 <constraint firstItem="2jV-hW-0oB" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Azi-XS-2Xy" secondAttribute="leading" constant="20" id="XJl-go-gKt"/>
                 <constraint firstItem="eFL-vX-f66" firstAttribute="leading" secondItem="n9v-m5-SDF" secondAttribute="leading" id="ZPm-iQ-dzA"/>
+                <constraint firstItem="vJf-K9-5Zq" firstAttribute="top" secondItem="ta5-FT-idY" secondAttribute="top" constant="10" id="ZxJ-bF-2eL"/>
                 <constraint firstItem="eFL-vX-f66" firstAttribute="top" secondItem="hSj-3d-KVC" secondAttribute="bottom" constant="8" symbolic="YES" id="a0g-U5-ueq"/>
                 <constraint firstItem="Azi-XS-2Xy" firstAttribute="top" secondItem="F3R-o7-O1A" secondAttribute="bottom" constant="20" id="bEi-qf-zdo"/>
                 <constraint firstItem="m1X-8x-GIO" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Azi-XS-2Xy" secondAttribute="leading" constant="20" id="dzN-43-VzQ"/>
@@ -175,4 +187,7 @@
             <point key="canvasLocation" x="464" y="194.5"/>
         </view>
     </objects>
+    <resources>
+        <image name="NSCaution" width="32" height="32"/>
+    </resources>
 </document>
