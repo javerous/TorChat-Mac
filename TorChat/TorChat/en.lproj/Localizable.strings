@@ -133,6 +133,8 @@
 "chat_media_images" = "Images";
 "chat_media_movies" = "Movies";
 
+"chat_file_drop" = "Drop File";
+
 
 /* Logs */
 "logs_all_logs" = "All logs";

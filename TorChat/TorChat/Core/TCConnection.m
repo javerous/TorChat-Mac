@@ -26,7 +26,6 @@
 
 #import "TCCoreManager.h"
 
-#import "TCDebugLog.h"
 #import "TCParser.h"
 #import "TCBuddy.h"
 

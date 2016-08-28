@@ -1132,13 +1132,18 @@ static NSString *generateToken(void);
 	__weak TCFileChatContentController *weakSelf = self;
 	
 	TCDropZoneView	*dropZone = (TCDropZoneView *)self.view;
-	NSSize		size = [dropZone computeSizeForSymmetricalDashesWithMinWidth:dropZone.bounds.size.width minHeight:dropZone.bounds.size.height];
+
+	// Compute string size.
+	NSString		*dropString = NSLocalizedString(@"chat_file_drop", @"");
+	NSDictionary	*dropStringAttributes = @{ NSForegroundColorAttributeName : dropZone.dashColor, NSFontAttributeName : [NSFont systemFontOfSize:20] };
+	NSSize			dropStringSize = [dropString sizeWithAttributes:dropStringAttributes];
 	
-	[dropZone addConstraint:[NSLayoutConstraint constraintWithItem:dropZone attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:size.width]];
-	[dropZone addConstraint:[NSLayoutConstraint constraintWithItem:dropZone attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:size.height]];
+	NSSize			dropZoneSize = [dropZone computeSizeForSymmetricalDashesWithMinWidth:(dropStringSize.width + 50.0) minHeight:(dropStringSize.width + 50.0) / 1.61803398875];
 	
-	// FIXME: localize
-	dropZone.dropString = [[NSAttributedString alloc] initWithString:@"Drop File" attributes:@{ NSForegroundColorAttributeName : dropZone.dashColor, NSFontAttributeName : [NSFont systemFontOfSize:20] }];
+	[dropZone addConstraint:[NSLayoutConstraint constraintWithItem:dropZone attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:dropZoneSize.width]];
+	[dropZone addConstraint:[NSLayoutConstraint constraintWithItem:dropZone attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:dropZoneSize.height]];
+	
+	dropZone.dropString = [[NSAttributedString alloc] initWithString:dropString attributes:@{ NSForegroundColorAttributeName : dropZone.dashColor, NSFontAttributeName : [NSFont systemFontOfSize:20] }];
 	dropZone.droppedFilesHandler = ^(NSArray * _Nonnull files) {
 		
 		TCFileChatContentController *strongSelf = weakSelf;

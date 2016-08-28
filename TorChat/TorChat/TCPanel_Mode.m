@@ -22,7 +22,6 @@
 
 #import "TCPanel_Mode.h"
 
-#import "TCDebugLog.h"
 #import "TCConfigApp.h"
 
 

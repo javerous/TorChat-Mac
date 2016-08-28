@@ -29,8 +29,6 @@
 #import "TCCoreManager.h"
 #import "TCConnection.h"
 
-#import "TCDebugLog.h"
-
 #import "TCConfigCore.h"
 #import "TCImage.h"
 

@@ -35,8 +35,6 @@
 
 #import "TCCoreManager.h"
 
-#import "TCDebugLog.h"
-
 #import "TCParser.h"
 #import "TCImage.h"
 

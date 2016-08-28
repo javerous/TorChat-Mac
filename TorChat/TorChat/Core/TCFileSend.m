@@ -23,7 +23,6 @@
 #import "TCFileSend.h"
 
 #import "TCTools.h"
-#import "TCDebugLog.h"
 
 
 NS_ASSUME_NONNULL_BEGIN

@@ -31,9 +31,6 @@
 #import "TCBuddy.h"
 #import "TCImage.h"
 
-// > Tools
-#import "TCDebugLog.h"
-
 // -- Interface --
 // > Controllers
 #import "TCMainController.h"

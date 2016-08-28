@@ -30,7 +30,6 @@
 
 #import "TCLocationViewController.h"
 
-#import "TCDebugLog.h"
 #import "SMTorConfiguration+TCConfig.h"
 
 
