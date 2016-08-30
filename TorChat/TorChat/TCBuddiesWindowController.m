@@ -117,18 +117,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
-** TCBuddiesController
+** TCBuddiesWindowController
 */
-#pragma mark - TCBuddiesController
+#pragma mark - TCBuddiesWindowController
 
 @implementation TCBuddiesWindowController
 
 
 /*
-** TCBuddiesController - Instance
+** TCBuddiesWindowController - Instance
 */
-#pragma mark - TCBuddiesController - Instance
-
+#pragma mark - TCBuddiesWindowController - Instance
 
 - (instancetype)initWithMainController:(TCMainController *)mainController configuration:(id <TCConfigApp>)configuration coreManager:(TCCoreManager *)coreMananager
 {
@@ -173,9 +172,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
-** TCBuddiesController - NSWindowController + NSWindowDelegate
+** TCBuddiesWindowController - NSWindowController + NSWindowDelegate
 */
-#pragma mark - TCBuddiesController - NSWindowController + NSWindowDelegate
+#pragma mark - TCBuddiesWindowController - NSWindowController + NSWindowDelegate
 
 - (nullable NSString *)windowNibName
 {
@@ -256,9 +255,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
-** TCBuddiesController - Synchronize
+** TCBuddiesWindowController - Synchronize
 */
-#pragma mark - TCBuddiesController - Synchronize
+#pragma mark - TCBuddiesWindowController - Synchronize
 
 - (void)synchronizeWithCompletionHandler:(dispatch_block_t)handler
 {
@@ -287,9 +286,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
-** TCBuddiesController - TableView
+** TCBuddiesWindowController - TableView
 */
-#pragma mark - TCBuddiesController - TableView
+#pragma mark - TCBuddiesWindowController - TableView
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
@@ -385,9 +384,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
-** TCBuddiesController - TCCoreManagerDelegate
+** TCBuddiesWindowController - TCCoreManagerDelegate
 */
-#pragma mark - TCBuddiesController - TCCoreManagerObserver
+#pragma mark - TCBuddiesWindowController - TCCoreManagerObserver
 
 - (void)torchatManager:(TCCoreManager *)manager information:(SMInfo *)info
 {
@@ -503,9 +502,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
-** TCBuddiesController - TCBuddyObserver
+** TCBuddiesWindowController - TCBuddyObserver
 */
-#pragma mark - TCBuddiesController - TCBuddyObserver
+#pragma mark - TCBuddiesWindowController - TCBuddyObserver
 
 - (void)buddy:(TCBuddy *)aBuddy information:(SMInfo *)info
 {
@@ -558,9 +557,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
-** TCBuddiesController - TCDropButtonDelegate
+** TCBuddiesWindowController - TCDropButtonDelegate
 */
-#pragma mark - TCBuddiesController - TCDropButtonDelegate
+#pragma mark - TCBuddiesWindowController - TCDropButtonDelegate
 
 - (void)dropButton:(TCDropButton *)button doppedImage:(NSImage *)avatar
 {
@@ -572,9 +571,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
-** TCBuddiesController - IBAction
+** TCBuddiesWindowController - IBAction
 */
-#pragma mark - TCBuddiesController - IBAction
+#pragma mark - TCBuddiesWindowController - IBAction
 
 - (IBAction)doStatus:(id)sender
 {
@@ -706,9 +705,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
-** TCBuddiesController - Actions
+** TCBuddiesWindowController - Actions
 */
-#pragma mark - TCBuddiesController - Actions
+#pragma mark - TCBuddiesWindowController - Actions
 
 - (void)showBuddyInfo
 {
@@ -834,9 +833,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
-** TCBuddiesController - Tools
+** TCBuddiesWindowController - Tools
 */
-#pragma mark - TCBuddiesController - Tools
+#pragma mark - TCBuddiesWindowController - Tools
 
 - (void)reloadBuddies
 {

@@ -149,7 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
 			NSArray *defaultSearchPaths = @[
 				[[NSBundle mainBundle].bundlePath.stringByDeletingLastPathComponent stringByAppendingPathComponent:@"torchat.conf"], // config in same folder of the app (autonomous USB-key, DMG, etc.) - best to be first.
 				@"~/torchat.conf".stringByExpandingTildeInPath,						// visible config in home directory.
-				@"~/.torchat.conf".stringByExpandingTildeInPath,						// hidden config in home directory.
+				@"~/.torchat.conf".stringByExpandingTildeInPath,					// hidden config in home directory.
 				@"~/.config/torchat.conf".stringByExpandingTildeInPath,				// visible config in config directory.
 				@"~/Library/Preferences/torchat.conf".stringByExpandingTildeInPath,	// visible config in OS X Preferences directory.
 			];
@@ -352,9 +352,6 @@ NS_ASSUME_NONNULL_BEGIN
 						{
 							startResult = TCMainControllerResultCanceled;
 
-							torManager = nil;
-							configuration = nil;
-
 							ctrl(SMOperationsControlFinish);
 						}
 						break;
@@ -364,9 +361,6 @@ NS_ASSUME_NONNULL_BEGIN
 					{
 						startResult = TCMainControllerResultErrored;
 						startResultContext = [NSError errorWithDomain:TCMainControllerErrorDomain code:11 userInfo:@{ NSLocalizedDescriptionKey: [startInfo renderMessage] }];
-						
-						torManager = nil;
-						configuration = nil;
 						
 						ctrl(SMOperationsControlFinish);
 						
@@ -424,9 +418,6 @@ NS_ASSUME_NONNULL_BEGIN
 				startResult = TCMainControllerResultErrored;
 				startResultContext = [NSError errorWithDomain:TCMainControllerErrorDomain code:12 userInfo:@{ NSLocalizedDescriptionKey: NSLocalizedString(@"main_ctrl_conf_error_core_manager", @"") }];
 				
-				configuration = nil;
-				torManager = nil;
-				
 				ctrl(SMOperationsControlFinish);
 				
 				return;
@@ -472,9 +463,12 @@ NS_ASSUME_NONNULL_BEGIN
 		// -- Finish --
 		operations.finishHandler = ^(BOOL canceled) {
 			
-			_configuration = configuration;
-			_torManager = torManager;
-			_core = core;
+			if (startResult == TCMainControllerResultStarted)
+			{
+				_configuration = configuration;
+				_torManager = torManager;
+				_core = core;
+			}
 			
 			handler(startResult, startResultContext);
 

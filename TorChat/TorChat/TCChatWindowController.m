@@ -119,6 +119,18 @@ NS_ASSUME_NONNULL_BEGIN
 		// Containers
 		_chatEntries = [[NSMutableArray alloc] init];
 		_buddies = [[NSMutableSet alloc] init];
+		
+		// Observe.
+		[_core addObserver:self];
+		
+		// Get current buddies.
+		NSArray *buddies = _core.buddies;
+		
+		for (TCBuddy *buddy in buddies)
+		{
+			[_buddies addObject:buddy];
+			[buddy addObserver:self];
+		}
 	}
 	
 	return self;
@@ -152,19 +164,7 @@ NS_ASSUME_NONNULL_BEGIN
 		[self.window setFrameFromString:windowFrame];
 	else
 		[self.window center];
-	
-	// Observe.
-	[_core addObserver:self];
-	
-	// Get current buddies.
-	NSArray *buddies = _core.buddies;
-	
-	for (TCBuddy *buddy in buddies)
-	{
-		[_buddies addObject:buddy];
-		[buddy addObserver:self];
-	}
-	
+
 	// Load transcripted buddies.
 	[_userListLoading startAnimation:nil];
 
@@ -189,8 +189,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)windowDidBecomeMain:(NSNotification *)notification
 {
-	NSLog(@"become main");
-	
 	NSInteger index = _userList.selectedRow;
 	
 	if (index < 0 || index >= _chatEntries.count)
