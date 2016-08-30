@@ -171,31 +171,33 @@ NS_ASSUME_NONNULL_BEGIN
 			}
 			
 			// Open configuration.
-			[TCConfigurationHelperController openConfigurationAtPath:path completionHandler:^(TCConfigurationHelperCompletionType type, id _Nullable result) {
+			[TCConfigurationHelperController openConfigurationAtPath:path completionHandler:^(TCConfigurationHelperResult result, id _Nullable context) {
 				
-				switch (type)
+				switch (result)
 				{
-					case TCConfigurationHelperCompletionTypeCanceled:
+						
+					case TCConfigurationHelperResultDone:
+					{
+						configuration = context;
+						ctrl(SMOperationsControlContinue);
+						break;
+					}
+						
+					case TCConfigurationHelperResultCanceled:
 					{
 						startResult = TCMainControllerResultCanceled;
 						ctrl(SMOperationsControlFinish);
 						break;
 					}
 						
-					case TCConfigurationHelperCompletionTypeError:
+					case TCConfigurationHelperResultErrored:
 					{
 						startResult = TCMainControllerResultErrored;
-						startResultContext = result;
+						startResultContext = context;
 						ctrl(SMOperationsControlFinish);
 						break;
 					}
-					
-					case TCConfigurationHelperCompletionTypeDone:
-					{
-						configuration = result;
-						ctrl(SMOperationsControlContinue);
-						break;
-					}
+
 				}
 			}];
 		}];
@@ -230,31 +232,33 @@ NS_ASSUME_NONNULL_BEGIN
 						if ([context isKindOfClass:[NSString class]])
 						{
 							// Open configuration.
-							[TCConfigurationHelperController openConfigurationAtPath:context completionHandler:^(TCConfigurationHelperCompletionType confCompType, id _Nullable result) {
+							[TCConfigurationHelperController openConfigurationAtPath:context completionHandler:^(TCConfigurationHelperResult confCompResult, id _Nullable confCompContext) {
 								
-								switch (confCompType)
+								switch (confCompResult)
 								{
-									case TCConfigurationHelperCompletionTypeCanceled:
+									case TCConfigurationHelperResultDone:
+									{
+										configuration = confCompContext;
+										ctrl(SMOperationsControlContinue);
+										break;
+									}
+										
+									case TCConfigurationHelperResultCanceled:
 									{
 										startResult = TCMainControllerResultCanceled;
 										ctrl(SMOperationsControlFinish);
 										break;
 									}
 										
-									case TCConfigurationHelperCompletionTypeError:
+									case TCConfigurationHelperResultErrored:
 									{
 										startResult = TCMainControllerResultErrored;
-										startResultContext = result;
+										startResultContext = confCompContext;
 										ctrl(SMOperationsControlFinish);
 										break;
 									}
 										
-									case TCConfigurationHelperCompletionTypeDone:
-									{
-										configuration = result;
-										ctrl(SMOperationsControlContinue);
-										break;
-									}
+
 								}
 							}];
 						}
@@ -283,6 +287,8 @@ NS_ASSUME_NONNULL_BEGIN
 				return;
 			}
 			
+			void (^fatalErrorHandler)(NSString *errorCause) = self.fatalErrorHandler;
+			
 			// Create tor manager.
 			SMTorConfiguration *torConfig = [[SMTorConfiguration alloc] initWithTorChatConfiguration:configuration];
 			
@@ -309,8 +315,8 @@ NS_ASSUME_NONNULL_BEGIN
 						break;
 				}
 				
-				if (fatalLog && _fatalErrorHandler)
-					_fatalErrorHandler(log);
+				if (fatalLog && fatalErrorHandler)
+					fatalErrorHandler(log);
 			};
 			
 			// Start tor manager via UI.
@@ -329,6 +335,10 @@ NS_ASSUME_NONNULL_BEGIN
 						{
 							configuration.selfIdentifier = startInfo.context;
 						}
+						if (startInfo.code == SMTorEventStartServicePrivateKey)
+						{
+							configuration.selfPrivateKey = startInfo.context;
+						}
 						else if (startInfo.code == SMTorEventStartDone)
 						{
 							ctrl(SMOperationsControlContinue);
@@ -340,7 +350,11 @@ NS_ASSUME_NONNULL_BEGIN
 					{
 						if (startInfo.code == SMTorWarningStartCanceled)
 						{
+							startResult = TCMainControllerResultCanceled;
+
 							torManager = nil;
+							configuration = nil;
+
 							ctrl(SMOperationsControlFinish);
 						}
 						break;
@@ -350,7 +364,9 @@ NS_ASSUME_NONNULL_BEGIN
 					{
 						startResult = TCMainControllerResultErrored;
 						startResultContext = [NSError errorWithDomain:TCMainControllerErrorDomain code:11 userInfo:@{ NSLocalizedDescriptionKey: [startInfo renderMessage] }];
+						
 						torManager = nil;
+						configuration = nil;
 						
 						ctrl(SMOperationsControlFinish);
 						
@@ -408,6 +424,7 @@ NS_ASSUME_NONNULL_BEGIN
 				startResult = TCMainControllerResultErrored;
 				startResultContext = [NSError errorWithDomain:TCMainControllerErrorDomain code:12 userInfo:@{ NSLocalizedDescriptionKey: NSLocalizedString(@"main_ctrl_conf_error_core_manager", @"") }];
 				
+				configuration = nil;
 				torManager = nil;
 				
 				ctrl(SMOperationsControlFinish);
@@ -441,15 +458,15 @@ NS_ASSUME_NONNULL_BEGIN
 			// Show buddies.
 			[_buddiesController showWindow:nil];
 			
+			// Set result.
+			startResult = TCMainControllerResultStarted;
+			startResultContext = nil;
+			
 			// Start core.
 			dispatch_async(_localQueue, ^{
 				[core start];
 				ctrl(SMOperationsControlContinue);
 			});
-			
-			// Set result.
-			startResult = TCMainControllerResultStarted;
-			startResultContext = nil;
 		}];
 		
 		// -- Finish --
@@ -459,9 +476,9 @@ NS_ASSUME_NONNULL_BEGIN
 			_torManager = torManager;
 			_core = core;
 			
-			opCtrl(SMOperationsControlContinue);
-			
 			handler(startResult, startResultContext);
+
+			opCtrl(SMOperationsControlContinue);
 		};
 		
 		// Start.
@@ -552,11 +569,11 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	[_buddies removeAllObjects];
 
-	[_core removeObserver:self];
-	
 	// Stop core.
 	if (_core)
 	{
+		[_core removeObserver:self];
+
 		dispatch_group_enter(group);
 
 		[_core stopWithCompletionHandler:^{
@@ -576,18 +593,16 @@ NS_ASSUME_NONNULL_BEGIN
 		}];
 	}
 	
-	// > Close windows.
-	dispatch_group_async(group, dispatch_get_main_queue(), ^{
+	// Wait for sync & stops.
+	dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+		
+		// > Close windows.
 		[_preferencesController close];
 		[_buddiesController close];
 		[_chatController close];
 		[_filesController close];
 		[_logsController close];
-	});
-	
-	// Wait for end.
-	dispatch_group_notify(group, _localQueue, ^{
-
+		
 		// > Unset controllers.
 		_preferencesController = nil;
 		_buddiesController = nil;
@@ -595,12 +610,15 @@ NS_ASSUME_NONNULL_BEGIN
 		_filesController = nil;
 		_logsController = nil;
 		
-		// > Close configuration.
-		[_configuration close];
-		_configuration = nil;
-		
-		// > Notify.
-		handler();
+		dispatch_async(_localQueue, ^{
+			
+			// > Close configuration.
+			[_configuration close];
+			_configuration = nil;
+			
+			// > Notify.
+			handler();
+		});
 	});
 }
 

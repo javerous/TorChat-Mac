@@ -77,19 +77,19 @@ NS_ASSUME_NONNULL_BEGIN
 	NSAssert(path, @"path is nil");
 	NSAssert(handler, @"handler is nil");
 	
-	[self openOrConvertConfigurationAtPath:path completionHandler:^(TCConfigurationHelperCompletionType type, id  _Nullable result) {
+	[self openOrConvertConfigurationAtPath:path completionHandler:^(TCConfigurationHelperResult result, id  _Nullable context) {
 		
 		// Import private key file.
 		NSError *error = nil;
 		
-		if (type == TCConfigurationHelperCompletionTypeDone && [self importPrivateKey:result error:&error] == NO)
+		if (result == TCConfigurationHelperResultDone && [self importPrivateKey:context error:&error] == NO)
 		{
-			handler(TCConfigurationHelperCompletionTypeError, error);
+			handler(TCConfigurationHelperResultErrored, error);
 			return;
 		}
 		
 		// Call original handler.
-		handler(type, result);
+		handler(result, context);
 	}];
 }
 
@@ -98,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
 	// Check file existente.
 	if ([[NSFileManager defaultManager] fileExistsAtPath:path] == NO)
 	{
-		handler(TCConfigurationHelperCompletionTypeError, [self errorWithCode:2 localizedMessage:@"conf_helper_error_file_dont_exist"]);
+		handler(TCConfigurationHelperResultErrored, [self errorWithCode:2 localizedMessage:@"conf_helper_error_file_dont_exist"]);
 		return;
 	}
 	
@@ -249,7 +249,7 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	if (!ctrl)
 	{
-		handler(TCConfigurationHelperCompletionTypeError, [TCConfigurationHelperController errorWithCode:20 localizedMessage:@"Internal error (nil ctrl)"]);
+		handler(TCConfigurationHelperResultErrored, [TCConfigurationHelperController errorWithCode:20 localizedMessage:@"Internal error (nil ctrl)"]);
 		return;
 	}
 	
@@ -305,7 +305,7 @@ NS_ASSUME_NONNULL_BEGIN
 	[[NSApplication sharedApplication] stopModal];
 
 	if (_completionHandler)
-		_completionHandler(TCConfigurationHelperCompletionTypeCanceled, nil);
+		_completionHandler(TCConfigurationHelperResultCanceled, nil);
 	
 	_selfRetain = nil;
 }
@@ -378,7 +378,7 @@ NS_ASSUME_NONNULL_BEGIN
 	[[NSApplication sharedApplication] stopModal];
 
 	if (_completionHandler)
-		_completionHandler(TCConfigurationHelperCompletionTypeDone, configSqlite);
+		_completionHandler(TCConfigurationHelperResultDone, configSqlite);
 	
 	_selfRetain = nil;
 }
@@ -445,7 +445,7 @@ NS_ASSUME_NONNULL_BEGIN
 	{
 		TCConfigSQLite *config = [[TCConfigSQLite alloc] initWithFile:path password:nil error:nil];
 		
-		handler(TCConfigurationHelperCompletionTypeDone, config);
+		handler(TCConfigurationHelperResultDone, config);
 	}
 	else
 	{
@@ -453,7 +453,7 @@ NS_ASSUME_NONNULL_BEGIN
 		
 		if (!ctrl)
 		{
-			handler(TCConfigurationHelperCompletionTypeError, [TCConfigurationHelperController errorWithCode:30 localizedMessage:@"Internal error (nil ctrl)"]);
+			handler(TCConfigurationHelperResultErrored, [TCConfigurationHelperController errorWithCode:30 localizedMessage:@"Internal error (nil ctrl)"]);
 			return;
 		}
 		
@@ -500,7 +500,7 @@ NS_ASSUME_NONNULL_BEGIN
 	[[NSApplication sharedApplication] stopModal];
 
 	if (_completionHandler)
-		_completionHandler(TCConfigurationHelperCompletionTypeCanceled, nil);
+		_completionHandler(TCConfigurationHelperResultCanceled, nil);
 	
 	_selfRetain = nil;
 }
@@ -513,7 +513,7 @@ NS_ASSUME_NONNULL_BEGIN
 	if (config)
 	{
 		if (_completionHandler)
-			_completionHandler(TCConfigurationHelperCompletionTypeDone, config);
+			_completionHandler(TCConfigurationHelperResultDone, config);
 		
 		[self close];
 		[[NSApplication sharedApplication] stopModal];

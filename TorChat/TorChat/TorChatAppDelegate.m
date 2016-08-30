@@ -156,7 +156,7 @@ NS_ASSUME_NONNULL_BEGIN
 				//    prevent the described dead-lock.
 				
 				CFRunLoopPerformBlock(runLoop, kCFRunLoopCommonModes, ^{
-					
+
 					NSAlert *alert = [[NSAlert alloc] init];
 					
 					alert.messageText = NSLocalizedString(@"app_delegate_start_error_title", @"");
@@ -168,7 +168,7 @@ NS_ASSUME_NONNULL_BEGIN
 				});
 				
 				CFRunLoopWakeUp(runLoop);
-				
+
 				break;
 			}
 		}

@@ -42,13 +42,13 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - Types
 
-typedef NS_ENUM(unsigned int, TCConfigurationHelperCompletionType) {
-	TCConfigurationHelperCompletionTypeCanceled,	// result = nil
-	TCConfigurationHelperCompletionTypeError,		// result = NSError
-	TCConfigurationHelperCompletionTypeDone,		// result = <TCConfigAppEncryptable>
+typedef NS_ENUM(unsigned int, TCConfigurationHelperResult) {
+	TCConfigurationHelperResultDone,		// result = <TCConfigAppEncryptable>
+	TCConfigurationHelperResultCanceled,	// result = nil
+	TCConfigurationHelperResultErrored,		// result = NSError
 };
 
-typedef void (^TCConfigurationHelperCompletionHandler)(TCConfigurationHelperCompletionType type, id _Nullable result);
+typedef void (^TCConfigurationHelperCompletionHandler)(TCConfigurationHelperResult result, id _Nullable context);
 
 
 
