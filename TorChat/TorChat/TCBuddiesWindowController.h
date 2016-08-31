@@ -54,12 +54,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithWindow:(nullable NSWindow *)window NS_UNAVAILABLE;
 
 // -- IBAction --
-- (void)showBuddyInfo;
+- (void)showSelectedBuddyInfo;
+
 - (void)addBuddy;
-- (void)removeBuddy;
-- (void)startChat;
-- (void)sendFile;
-- (void)toggleBlock;
+- (void)removeSelectedBuddy;
+- (void)toggleBlockForSelectedBuddy;
+
+- (void)startChatWithSelectedBuddy;
+- (void)sendFileToSelectedBuddy;
+
 - (void)editProfile;
 
 // -- Selection --

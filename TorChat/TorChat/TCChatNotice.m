@@ -1,5 +1,5 @@
 /*
- *  TCChatStatus.m
+ *  TCChatNotice.m
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,26 +20,27 @@
  *
  */
 
-#import "TCChatStatus.h"
+#import "TCChatNotice.h"
 
 
 NS_ASSUME_NONNULL_BEGIN
 
 
 /*
-** TCChatStatus
+** TCChatNotice
 */
-#pragma mark - TCChatStatus
+#pragma mark - TCChatNotice
 
-@implementation TCChatStatus
+@implementation TCChatNotice
 
-- (instancetype)initWithStatus:(NSString *)status
+- (instancetype)initWithType:(TCChatNoticeType)type content:(NSString *)content
 {
 	self = [super init];
 	
 	if (self)
 	{
-		_status = status;
+		_type = type;
+		_content = content;
 	}
 	
 	return self;

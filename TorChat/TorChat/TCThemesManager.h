@@ -29,14 +29,15 @@ NS_ASSUME_NONNULL_BEGIN
 /*
 ** Defines
 */
-#pragma mark - Defines
+#pragma mark - DefinesTCThemeChatSnippetNoticeErrKey
 
 // Chat keys.
 #define TCThemeChatSnippetsKey				@"Snippets"
 #define TCThemeChatSnippetLocalErrorKey		@"LocalMessageError"
 #define TCThemeChatSnippetLocalMessageKey	@"LocalMessage"
 #define TCThemeChatSnippetRemoteMessageKey	@"RemoteMessage"
-#define TCThemeChatSnippetStatusKey			@"Status"
+#define TCThemeChatSnippetNoticeStdKey		@"Notice-Standard"
+#define TCThemeChatSnippetNoticeErrorKey	@"Notice-Error"
 #define TCThemeChatSnippetCSSKey			@"CSS"
 
 #define TCThemeChatPropertiesKey			@"Properties"

@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCBuddiesController - Private
 
-@interface TCBuddiesWindowController () <TCCoreManagerObserver, TCBuddyObserver, TCDropButtonDelegate>
+@interface TCBuddiesWindowController () <NSMenuDelegate, TCCoreManagerObserver, TCBuddyObserver, TCDropButtonDelegate>
 {
 	__weak TCMainController *_mainController;
 	id <TCConfigApp>		_configuration;
@@ -223,11 +223,20 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 	
 	// Configure table view.
+	// > Drag & drop.
 	[_tableView registerForDraggedTypes:@[NSFilenamesPboardType]];
 	[_tableView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:NO];
 	
+	// > Double click.
 	_tableView.target = self;
 	_tableView.doubleAction = @selector(tableViewDoubleClick:);
+	
+	// > Contextual menu.
+	NSMenu *menu = [[NSMenu alloc] initWithTitle:@"<contextual>"];
+	
+	menu.delegate = self;
+	
+	_tableView.menu = menu;
 	
 	// Configure footbar.
 	_barView.startCap = (NSImage *)[NSImage imageNamed:@"bar"];
@@ -339,6 +348,37 @@ NS_ASSUME_NONNULL_BEGIN
 	[self startChatForBuddy:buddy];
 }
 
+- (NSArray<NSTableViewRowAction *> *)tableView:(NSTableView *)tableView rowActionsForRow:(NSInteger)row edge:(NSTableRowActionEdge)edge
+{
+	if (edge == NSTableRowActionEdgeTrailing)
+	{
+		TCCoreManager	*core = _core;
+		TCBuddy			*buddy = _buddies[(NSUInteger)row];
+		NSString		*blockString = nil;
+		
+		if (buddy.blocked)
+			blockString = NSLocalizedString(@"buddies_ctrl_unblock", @"");
+		else
+			blockString = NSLocalizedString(@"buddies_ctrl_block", @"");
+
+		NSTableViewRowAction *rowActionBlock = [NSTableViewRowAction rowActionWithStyle:NSTableViewRowActionStyleRegular title:blockString handler:^(NSTableViewRowAction * _Nonnull action, NSInteger actionIndex) {
+		
+			if (buddy.blocked)
+				[core removeBlockedBuddyWithIdentifier:buddy.identifier];
+			else
+				[core addBlockedBuddyWithIdentifier:buddy.identifier];
+			
+		}];
+		
+		NSTableViewRowAction *rowActionRemove = [NSTableViewRowAction rowActionWithStyle:NSTableViewRowActionStyleDestructive title:NSLocalizedString(@"buddies_ctrl_remove", @"") handler:^(NSTableViewRowAction * _Nonnull action, NSInteger actionIndex) {
+			[core removeBuddyWithIdentifier:buddy.identifier];
+		}];
+		
+		return @[ rowActionBlock, rowActionRemove ];
+	}
+	
+	return @[ ];
+}
 
 - (NSDragOperation)tableView:(NSTableView *)aTableView validateDrop:(id < NSDraggingInfo >)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)operation
 {	
@@ -361,26 +401,73 @@ NS_ASSUME_NONNULL_BEGIN
 	{
 		NSFileManager	*mng = [NSFileManager defaultManager];
 		NSArray			*fileList = [pboard propertyListForType:NSFilenamesPboardType];
+		BOOL			fileSent = NO;
 
 		for (NSString *fileName in fileList)
 		{
 			BOOL isDirectory = NO;
 			
-			if ([mng fileExistsAtPath:fileName isDirectory:&isDirectory])
-			{
-				if (isDirectory)
-					continue;
-				
-				[buddy sendFileAtPath:fileName];
-			}
+			if ([mng fileExistsAtPath:fileName isDirectory:&isDirectory] == NO || isDirectory)
+				continue;
+			
+			if ([mng isReadableFileAtPath:fileName] == NO)
+				continue;
+			
+			[buddy sendFileAtPath:fileName];
+			
+			fileSent = YES;
 		}
 		
-		return YES;
+		return fileSent;
 	}
 	
 	return NO;
 }
 
+
+
+/*
+** TCBuddiesWindowController - NSMenuDelegate
+*/
+#pragma mark - TCBuddiesWindowController - NSMenuDelegate
+
+- (void)menuNeedsUpdate:(NSMenu *)menu
+{
+	// Clean all.
+	[menu removeAllItems];
+
+	// Check if there is a selection.
+	NSInteger clickedRow = _tableView.clickedRow;
+	NSInteger clickedCol = _tableView.clickedColumn;
+	
+	if (clickedRow < 0 || clickedRow >= _buddies.count || clickedCol < 0)
+		return;
+	
+	TCBuddy *buddy = _buddies[(NSUInteger)clickedRow];
+
+	// Add items.
+	// > Block.
+	NSString	*blockString = nil;
+	NSMenuItem	*blockMenu;
+	
+	if (buddy.blocked)
+		blockString = NSLocalizedString(@"buddies_ctrl_unblock", @"");
+	else
+		blockString = NSLocalizedString(@"buddies_ctrl_block", @"");
+	
+	blockMenu = [[NSMenuItem alloc] initWithTitle:blockString action:@selector(toggleBlockForClickedBuddy:) keyEquivalent:@""];
+	
+	blockMenu.target = self;
+	
+	[menu addItem:blockMenu];
+	
+	// > Remove.
+	NSMenuItem *removeMenu = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"buddies_ctrl_remove", @"") action:@selector(removeClickedBuddy:) keyEquivalent:@""];
+	
+	removeMenu.target = self;
+
+	[menu addItem:removeMenu];
+}
 
 
 /*
@@ -655,7 +742,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (IBAction)doRemove:(id)sender
 {
-	[self removeBuddy];
+	[self removeSelectedBuddy];
 }
 
 - (IBAction)doAddOk:(id)sender
@@ -709,7 +796,7 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - TCBuddiesWindowController - Actions
 
-- (void)showBuddyInfo
+- (void)showSelectedBuddyInfo
 {
 	// Get selected buddy.
 	TCBuddy *buddy = [self selectedBuddy];
@@ -727,7 +814,7 @@ NS_ASSUME_NONNULL_BEGIN
 	[_infoWindowsController showInfoForBuddy:buddy];
 }
 
-- (void)addBuddy;
+- (void)addBuddy
 {
 	_addIdentifierField.stringValue = @"";
 	_addNameField.stringValue = @"";
@@ -740,7 +827,24 @@ NS_ASSUME_NONNULL_BEGIN
 	[_addWindow makeFirstResponder:_addIdentifierField];
 }
 
-- (void)removeBuddy
+- (void)removeClickedBuddy:(id)sender
+{
+	NSInteger	row = _tableView.clickedRow;
+	TCBuddy		*buddy;
+	NSString	*identifier;
+	
+	if (row < 0 || row >= _buddies.count)
+		return;
+	
+	// Get the buddy identifier.
+	buddy = _buddies[(NSUInteger)row];
+	identifier = buddy.identifier;
+	
+	// Remove the buddy from the controller.
+	[_core removeBuddyWithIdentifier:identifier];
+}
+
+- (void)removeSelectedBuddy
 {
 	NSInteger	row = _tableView.selectedRow;
 	TCBuddy		*buddy;
@@ -757,7 +861,7 @@ NS_ASSUME_NONNULL_BEGIN
 	[_core removeBuddyWithIdentifier:identifier];
 }
 
-- (void)startChat
+- (void)startChatWithSelectedBuddy
 {
 	NSInteger	row = _tableView.selectedRow;
 	TCBuddy		*buddy;
@@ -770,7 +874,7 @@ NS_ASSUME_NONNULL_BEGIN
 	[self startChatForBuddy:buddy];
 }
 
-- (void)sendFile
+- (void)sendFileToSelectedBuddy
 {
 	NSInteger	row = _tableView.selectedRow;
 	TCBuddy		*buddy;
@@ -803,7 +907,23 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 }
 
-- (void)toggleBlock
+- (void)toggleBlockForClickedBuddy:(id)sender
+{
+	NSInteger	row = _tableView.clickedRow;
+	TCBuddy		*buddy;
+	
+	if (row < 0 || row >= _buddies.count)
+		return;
+	
+	buddy = _buddies[(NSUInteger)row];
+	
+	if (buddy.blocked)
+		[_core removeBlockedBuddyWithIdentifier:buddy.identifier];
+	else
+		[_core addBlockedBuddyWithIdentifier:buddy.identifier];
+}
+
+- (void)toggleBlockForSelectedBuddy
 {
 	NSInteger	row = _tableView.selectedRow;
 	TCBuddy		*buddy;

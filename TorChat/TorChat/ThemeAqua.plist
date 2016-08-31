@@ -104,8 +104,8 @@ div.icon-pres-local {
 span.unselectable { -webkit-user-select: none; }
 
 
-/* status */
-.status {
+/* notice */
+.notice-standard {
 	color: rgb(139,146,165);
 	font-weight: bold;
 	margin-left: 3px;
@@ -118,7 +118,28 @@ span.unselectable { -webkit-user-select: none; }
 	visibility: visible;
 }
 
-.status .message-content {
+.notice-standard .message-content {
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+	white-space: nowrap;
+	padding-left: 10px;
+	-webkit-user-select: text;
+	padding-right: 10px;
+}
+
+.notice-error {
+	color: rgb(217,11,0);
+	font-style: italic;
+	margin-left: 3px;
+	text-align: center;
+	margin-bottom: 3px;
+	display: block;
+	font-size: 11px;
+	margin-top: 3px;
+	margin-right: 3px;
+	visibility: visible;
+}
+
+.notice-error .message-content {
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
 	white-space: nowrap;
 	padding-left: 10px;
@@ -257,8 +278,10 @@ span.fromRemote {
 			<string>&lt;div class=&quot;mc&quot; align=&quot;right&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;spacer-container&quot;&gt;&lt;/td&gt;&lt;td class=&quot;message-container-local&quot;&gt;&lt;div class=&quot;mc-local-sender balloon-local&quot;&gt;&lt;div class=&quot;balloon-inside&quot;&gt;&lt;message class=&quot;message&quot; &gt;&lt;span class=&quot;fromLocal&quot;&gt;&lt;span&gt;[TEXT]&lt;/span&gt;&lt;/span&gt;&lt;/message&gt;&lt;/div&gt;&lt;/div&gt;&lt;/td&gt;&lt;td width=&quot;32px&quot; class=&quot;icon-container-local&quot; nowrap=&quot;nowrap&quot;&gt;&lt;span class=&quot;icon-container&quot;&gt;&lt;div class=&quot;icon-pres-container&quot;&gt;&lt;div class=&quot;icon-pres icon-pres-local&quot;&gt;&lt;/div&gt;&lt;div class=&quot;icon-pres-shadow&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</string>
 			<key>LocalMessageError</key>
 			<string>&lt;div class=&quot;mc&quot; align=&quot;right&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;spacer-container&quot;&gt;&lt;/td&gt;&lt;td class=&quot;message-container-local&quot;&gt;&lt;div class=&quot;mc-local-sender balloon-local&quot;&gt;&lt;div class=&quot;balloon-inside&quot;&gt;&lt;message class=&quot;message&quot; &gt;&lt;span class=&quot;fromLocal&quot;&gt;&lt;span&gt;[TEXT]&lt;/span&gt;&lt;/span&gt;&lt;/message&gt;&lt;/div&gt;&lt;/div&gt;&lt;/td&gt;&lt;td width=&quot;32px&quot; class=&quot;icon-container-err-local&quot; nowrap=&quot;nowrap&quot;&gt;&lt;span class=&quot;icon-container&quot;&gt;&lt;div class=&quot;icon-pres-container&quot;&gt;&lt;div class=&quot;icon-pres icon-pres-local&quot;&gt;&lt;/div&gt;&lt;div class=&quot;icon-pres-shadow&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/span&gt;&lt;/td&gt;&lt;td width=&quot;32px&quot; style=&quot;vertical-align:middle;&quot; nowrap=&quot;nowrap&quot;&gt;&lt;a class=&quot;error-button&quot; href=&quot;[HREF-ERROR]&quot;&gt;&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</string>
-			<key>Status</key>
-			<string>&lt;div class=&quot;status&quot;&gt;&lt;div class=&quot;message-content&quot;&gt;&lt;span class=&quot;unselectable&quot;&gt;[TEXT]&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</string>
+			<key>Notice-Standard</key>
+			<string>&lt;div class=&quot;notice-standard&quot;&gt;&lt;div class=&quot;message-content&quot;&gt;&lt;span class=&quot;unselectable&quot;&gt;[TEXT]&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</string>
+			<key>Notice-Error</key>
+			<string>&lt;div class=&quot;notice-error&quot;&gt;&lt;div class=&quot;message-content&quot;&gt;&lt;span class=&quot;unselectable&quot;&gt;[TEXT]&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</string>
 		</dict>
 		<key>Properties</key>
 		<dict>

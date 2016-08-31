@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil NS_UNAVAILABLE;
 
 // -- Content --
-- (void)addItems:(NSArray *)items endOfTranscript:(BOOL)endOfTranscript; // items: array of TCChatMessage and / or TCChatStatus
+- (void)addItems:(NSArray *)items endOfTranscript:(BOOL)endOfTranscript; // items: array of TCChatMessage and / or TCChatNotice
 - (void)removeMessageID:(int64_t)msgID;
 
 - (void)setLocalAvatar:(NSImage *)image;

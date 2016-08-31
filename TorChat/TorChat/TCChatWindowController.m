@@ -164,6 +164,10 @@ NS_ASSUME_NONNULL_BEGIN
 		[self.window setFrameFromString:windowFrame];
 	else
 		[self.window center];
+	
+	// Configure table view.
+	[_userList registerForDraggedTypes:@[NSFilenamesPboardType]];
+	[_userList setDraggingSourceOperationMask:NSDragOperationEvery forLocal:NO];
 
 	// Load transcripted buddies.
 	[_userListLoading startAnimation:nil];
@@ -461,6 +465,51 @@ NS_ASSUME_NONNULL_BEGIN
 	TCChatEntry *entry = _chatEntries[(NSUInteger)rowIndex];
 
 	[self _selectChatWithBuddy:entry.buddy];
+}
+
+- (NSDragOperation)tableView:(NSTableView *)aTableView validateDrop:(id < NSDraggingInfo >)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)operation
+{
+	if (operation == NSTableViewDropOn)
+		return NSDragOperationMove;
+	else
+		return NSDragOperationNone;
+}
+
+- (BOOL)tableView:(NSTableView *)aTableView acceptDrop:(id < NSDraggingInfo >)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation
+{
+	if (row < 0 || row >= _chatEntries.count)
+		return NO;
+	
+	TCChatEntry		*entry = _chatEntries[(NSUInteger)row];
+	TCBuddy			*buddy = entry.buddy;
+	NSPasteboard	*pboard = [info draggingPasteboard];
+	NSArray			*types = pboard.types;
+	
+	if ([types containsObject:NSFilenamesPboardType])
+	{
+		NSFileManager	*mng = [NSFileManager defaultManager];
+		NSArray			*fileList = [pboard propertyListForType:NSFilenamesPboardType];
+		BOOL			fileSent = NO;
+		
+		for (NSString *fileName in fileList)
+		{
+			BOOL isDirectory = NO;
+			
+			if ([mng fileExistsAtPath:fileName isDirectory:&isDirectory] == NO || isDirectory)
+				continue;
+			
+			if ([mng isReadableFileAtPath:fileName] == NO)
+				continue;
+			
+			[buddy sendFileAtPath:fileName];
+			
+			fileSent = YES;
+		}
+		
+		return fileSent;
+	}
+	
+	return NO;
 }
 
 

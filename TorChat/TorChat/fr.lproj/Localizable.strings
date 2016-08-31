@@ -55,6 +55,12 @@
 "main_ctrl_conf_error_core_manager" =  "Impossible de créer le gestionnaire Core - veuillez vérifier votre fichier de configuration.";
 
 
+/* Buddies Controller */
+"buddies_ctrl_block" = "Bloquer";
+"buddies_ctrl_unblock" = "Débloquer";
+"buddies_ctrl_remove" = "Supprimer";
+
+
 /* Configuration Helper */
 "conf_helper_info_import_sucess" = "Clef privée importé avec succès.";
 
@@ -128,6 +134,11 @@
 "chat_error_send_blocked" = "Ce message n'a pas pu être envoyé parce que le contact était bloqué. Voulez-vous le réenvoyer ?";
 "chat_send_resend" = "Réenvoyer";
 "chat_send_cancel" = "Annuler";
+
+"chat_error_send_file" = "Le fichier '%@' ne peut pas être envoyé.";
+"chat_error_receive_file" = "Le fichier '%@' ne peut pas être reçu.";
+"chat_error_send_file_offline" = "Le fichier '%@' ne peut pas être envoyé, car l'utilisateur est hors ligne.";
+"chat_error_send_file_blocked" = "Le fichier '%@' ne peut pas être envoyé, car l'utilisateur est bloqué.";
 
 "chat_media_audio" = "Audio";
 "chat_media_images" = "Images";

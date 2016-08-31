@@ -1,5 +1,5 @@
 /*
- *  TCChatStatus.h
+ *  TCChatNotice.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -27,19 +27,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
-** TCChatStatus
+** Types
 */
-#pragma mark - TCChatStatus
+#pragma mark - Types
 
-@interface TCChatStatus : NSObject
+typedef NS_ENUM(NSUInteger, TCChatNoticeType)
+{
+	TCChatNoticeTypeStandard,
+	TCChatNoticeTypeError,
+};
+
+
+
+/*
+** TCChatNotice
+*/
+#pragma mark - TCChatNotice
+
+@interface TCChatNotice : NSObject
 
 // -- Instance --
-- (instancetype)initWithStatus:(NSString *)status NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithType:(TCChatNoticeType)type content:(NSString *)content NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 // -- Properties --
-@property (atomic) NSString *status;
+@property (atomic, readonly) TCChatNoticeType type;
+@property (atomic) NSString *content;
 
 @end
 

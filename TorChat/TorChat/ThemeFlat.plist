@@ -88,8 +88,8 @@ div.icon-pres-local {
 span.unselectable { -webkit-user-select: none; }
 
 
-/* status */
-.status {
+/* notices */
+.notice-standard {
 	color: rgb(139,146,165);
 	font-weight: bold;
 	margin-left: 3px;
@@ -102,7 +102,27 @@ span.unselectable { -webkit-user-select: none; }
 	visibility: visible;
 }
 
-.status .message-content {
+.notice-standard .message-content {
+	white-space: nowrap;
+	padding-left: 10px;
+	-webkit-user-select: text;
+	padding-right: 10px;
+}
+
+.notice-error {
+	color: rgb(217,11,0);
+	font-style: italic;
+	margin-left: 3px;
+	text-align: center;
+	margin-bottom: 3px;
+	display: block;
+	font-size: 11px;
+	margin-top: 3px;
+	margin-right: 3px;
+	visibility: visible;
+}
+
+.notice-error .message-content {
 	white-space: nowrap;
 	padding-left: 10px;
 	-webkit-user-select: text;
@@ -314,8 +334,14 @@ span.fromRemote {
 	&lt;/table&gt;
 &lt;/div&gt;
 </string>
-			<key>Status</key>
-			<string>&lt;div class=&quot;status&quot;&gt;
+			<key>Notice-Standard</key>
+			<string>&lt;div class=&quot;notice-standard&quot;&gt;
+	&lt;div class=&quot;message-content&quot;&gt;
+		&lt;span class=&quot;unselectable&quot;&gt;[TEXT]&lt;/span&gt;
+	&lt;/div&gt;
+&lt;/div&gt;</string>
+			<key>Notice-Error</key>
+			<string>&lt;div class=&quot;notice-error&quot;&gt;
 	&lt;div class=&quot;message-content&quot;&gt;
 		&lt;span class=&quot;unselectable&quot;&gt;[TEXT]&lt;/span&gt;
 	&lt;/div&gt;

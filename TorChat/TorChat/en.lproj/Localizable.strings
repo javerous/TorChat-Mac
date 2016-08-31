@@ -55,6 +55,12 @@
 "main_ctrl_conf_error_core_manager" =  "Can't create Core manager - check your configuration file.";
 
 
+/* Buddies Controller */
+"buddies_ctrl_block" = "Block";
+"buddies_ctrl_unblock" = "Unblock";
+"buddies_ctrl_remove" = "Remove";
+
+
 /* Configuration Helper */
 "conf_helper_info_import_sucess" = "Private key imported with success.";
 
@@ -128,6 +134,11 @@
 "chat_error_send_blocked" = "This message couldn't be sent because the user was blocked. Do you want to resend it ?";
 "chat_send_resend" = "Resend";
 "chat_send_cancel" = "Cancel";
+
+"chat_error_send_file" = "The file '%@' can't be sent.";
+"chat_error_receive_file" = "The file '%@' can't be received.";
+"chat_error_send_file_offline" = "The file '%@' can't be sent because the user is offline.";
+"chat_error_send_file_blocked" = "The file '%@' can't be sent because the user is blocked.";
 
 "chat_media_audio" = "Audio";
 "chat_media_images" = "Images";

@@ -16,7 +16,7 @@
 		E809B1E71859F186001664E1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E809B1E61859F186001664E1 /* Images.xcassets */; };
 		E80A357C1A67F5FA00896518 /* LocationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E80A357A1A67F5FA00896518 /* LocationView.xib */; };
 		E80A357F1A67F61800896518 /* TCLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E80A357E1A67F61800896518 /* TCLocationViewController.m */; };
-		E80E0A3B1CA9A370001E64F9 /* TCChatStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = E80E0A3A1CA9A370001E64F9 /* TCChatStatus.m */; };
+		E80E0A3B1CA9A370001E64F9 /* TCChatNotice.m in Sources */ = {isa = PBXBuildFile; fileRef = E80E0A3A1CA9A370001E64F9 /* TCChatNotice.m */; };
 		E8127AA91854CB1100FEDA7F /* TCChatTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = E8127AA81854CB1100FEDA7F /* TCChatTextField.m */; };
 		E812A5BD1D661F24009D69A6 /* ThemeAqua.plist in Resources */ = {isa = PBXBuildFile; fileRef = E812A5BC1D661F24009D69A6 /* ThemeAqua.plist */; };
 		E812A5BF1D661F2B009D69A6 /* ThemeFlat.plist in Resources */ = {isa = PBXBuildFile; fileRef = E812A5BE1D661F2B009D69A6 /* ThemeFlat.plist */; };
@@ -162,8 +162,8 @@
 		E80A357B1A67F5FA00896518 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LocationView.xib; sourceTree = "<group>"; };
 		E80A357D1A67F61800896518 /* TCLocationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCLocationViewController.h; sourceTree = "<group>"; };
 		E80A357E1A67F61800896518 /* TCLocationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCLocationViewController.m; sourceTree = "<group>"; };
-		E80E0A391CA9A370001E64F9 /* TCChatStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCChatStatus.h; sourceTree = "<group>"; };
-		E80E0A3A1CA9A370001E64F9 /* TCChatStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatStatus.m; sourceTree = "<group>"; };
+		E80E0A391CA9A370001E64F9 /* TCChatNotice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCChatNotice.h; sourceTree = "<group>"; };
+		E80E0A3A1CA9A370001E64F9 /* TCChatNotice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatNotice.m; sourceTree = "<group>"; };
 		E8127AA71854CB1100FEDA7F /* TCChatTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCChatTextField.h; sourceTree = "<group>"; };
 		E8127AA81854CB1100FEDA7F /* TCChatTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCChatTextField.m; sourceTree = "<group>"; };
 		E812A5BC1D661F24009D69A6 /* ThemeAqua.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = ThemeAqua.plist; path = TorChat/ThemeAqua.plist; sourceTree = "<group>"; };
@@ -391,8 +391,8 @@
 			children = (
 				E81D4E7B1C99DC4E00DD0925 /* TCChatMessage.h */,
 				E81D4E7C1C99DC4E00DD0925 /* TCChatMessage.m */,
-				E80E0A391CA9A370001E64F9 /* TCChatStatus.h */,
-				E80E0A3A1CA9A370001E64F9 /* TCChatStatus.m */,
+				E80E0A391CA9A370001E64F9 /* TCChatNotice.h */,
+				E80E0A3A1CA9A370001E64F9 /* TCChatNotice.m */,
 			);
 			name = Chat;
 			sourceTree = "<group>";
@@ -1066,7 +1066,7 @@
 				E84CBD3A1C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.m in Sources */,
 				E8742543199B682F002A34DD /* NSString+TCPathExtension.m in Sources */,
 				E809B1481859C5BC001664E1 /* NSImage+TCExtension.m in Sources */,
-				E80E0A3B1CA9A370001E64F9 /* TCChatStatus.m in Sources */,
+				E80E0A3B1CA9A370001E64F9 /* TCChatNotice.m in Sources */,
 				E85A187F1D6F89FE00E5E143 /* TCKVOHelper.m in Sources */,
 				E8742546199B6A61002A34DD /* NSString+TCXMLExtension.m in Sources */,
 				E89E47021C8D904D004A5D72 /* SMCryptoFile.c in Sources */,

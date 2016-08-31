@@ -28,7 +28,7 @@
 #import "NSString+TCXMLExtension.h"
 
 #import "TCChatMessage.h"
-#import "TCChatStatus.h"
+#import "TCChatNotice.h"
 
 #import "TCThemesManager.h"
 
@@ -396,16 +396,30 @@ NSMutableDictionary	*gThemeCache;
 					}
 				}
 			}
-			else if ([item isKindOfClass:[TCChatStatus class]])
+			else if ([item isKindOfClass:[TCChatNotice class]])
 			{
-				TCChatStatus *stat = item;
+				TCChatNotice *stat = item;
 				
-				NSString	*snippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatSnippetStatusKey];
-				NSString	*status = stat.status;
+				NSString *snippet = nil;
 				
-				status = status.escapedXMLEntities;
-				snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:status];
+				switch (stat.type)
+				{
+					case TCChatNoticeTypeStandard:
+						snippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatSnippetNoticeStdKey];
+						break;
+						
+					case TCChatNoticeTypeError:
+						snippet = _theme.chatTheme[TCThemeChatSnippetsKey][TCThemeChatSnippetNoticeErrorKey];
+						break;
+				}
 				
+				if (!snippet)
+					return;
+				
+				// Set status content in snippet.
+				snippet = [snippet stringByReplacingOccurrencesOfString:@"[TEXT]" withString:stat.content.escapedXMLEntities];
+				
+				// Add result.
 				[result addObject:@{ @"html" : snippet }];
 			}
 		}];

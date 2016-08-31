@@ -228,7 +228,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (IBAction)doBuddyShowInfo:(id)sender
 {
-	[_mainController.buddiesController showBuddyInfo];
+	[_mainController.buddiesController showSelectedBuddyInfo];
 }
 
 - (IBAction)doBuddyAdd:(id)sender
@@ -238,22 +238,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (IBAction)doBuddyRemove:(id)sender
 {
-	[_mainController.buddiesController removeBuddy];
+	[_mainController.buddiesController removeSelectedBuddy];
 }
 
 - (IBAction)doBuddyChat:(id)sender
 {
-	[_mainController.buddiesController startChat];
+	[_mainController.buddiesController startChatWithSelectedBuddy];
 }
 
 - (IBAction)doBuddySendFile:(id)sender
 {
-	[_mainController.buddiesController sendFile];
+	[_mainController.buddiesController sendFileToSelectedBuddy];
 }
 
 - (IBAction)doBuddyToggleBlocked:(id)sender
 {
-	[_mainController.buddiesController toggleBlock];
+	[_mainController.buddiesController toggleBlockForSelectedBuddy];
 }
 
 - (IBAction)doEditProfile:(id)sender

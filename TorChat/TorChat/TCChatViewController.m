@@ -30,7 +30,7 @@
 #import "TCThemesManager.h"
 
 #import "TCChatMessage.h"
-#import "TCChatStatus.h"
+#import "TCChatNotice.h"
 
 #import "TCImage.h"
 #import "TCBuddy.h"
@@ -142,7 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
 		{
 			NSString *timestampString = [_timestampFormater stringFromDate:[NSDate date]];
 			
-			[_chatTranscript addItems:@[ [[TCChatStatus alloc] initWithStatus:timestampString] ] endOfTranscript:NO];
+			[_chatTranscript addItems:@[ [[TCChatNotice alloc] initWithType:TCChatNoticeTypeStandard content:timestampString] ] endOfTranscript:NO];
 			
 			_transcriptFirstMsgID = -1;
 			_transcriptLastMsgID = -1;
@@ -350,59 +350,100 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)buddy:(TCBuddy *)buddy information:(SMInfo *)info
 {
-	if (info.kind == SMInfoInfo)
+	switch (info.kind)
 	{
-		switch (info.code)
+		case SMInfoInfo:
 		{
-			case TCBuddyEventProfileAvatar:
+			switch ((TCBuddyEvent)info.code)
 			{
-				TCImage *tcAvatar = (TCImage *)info.context;
-				NSImage *avatar = [tcAvatar imageRepresentation];
-				
-				if (!avatar)
-					return;
-				
-				[_chatTranscript setRemoteAvatar:avatar];
-				
-				break;
-			}
-				
-			case TCBuddyEventStatus:
-			{
-				TCStatus		status = (TCStatus)((NSNumber *)info.context).intValue;
-				TCChatStatus	*chatStatus = [[TCChatStatus alloc] initWithStatus:@""];
-				
-				// Render status.
-				switch (status)
+				case TCBuddyEventProfileAvatar:
 				{
-					case TCStatusOffline:
-						chatStatus.status = NSLocalizedString(@"bd_status_offline", @"");
-						break;
-						
-					case TCStatusAvailable:
-						chatStatus.status = NSLocalizedString(@"bd_status_available", @"");
-						break;
-						
-					case TCStatusAway:
-						chatStatus.status = NSLocalizedString(@"bd_status_away", @"");
-						break;
-						
-					case TCStatusXA:
-						chatStatus.status = NSLocalizedString(@"bd_status_xa", @"");
-						break;
+					TCImage *tcAvatar = (TCImage *)info.context;
+					NSImage *avatar = [tcAvatar imageRepresentation];
+					
+					if (!avatar)
+						return;
+					
+					[_chatTranscript setRemoteAvatar:avatar];
+					
+					break;
 				}
-				
-				// Show status change.
-				[_chatTranscript addItems:@[ chatStatus ] endOfTranscript:YES];
-				
-				break;
+					
+				case TCBuddyEventStatus:
+				{
+					TCStatus		status = (TCStatus)((NSNumber *)info.context).intValue;
+					TCChatNotice	*chatStatus = [[TCChatNotice alloc] initWithType:TCChatNoticeTypeStandard content:@""];
+					
+					// Render status.
+					switch (status)
+					{
+						case TCStatusOffline:
+							chatStatus.content = NSLocalizedString(@"bd_status_offline", @"");
+							break;
+							
+						case TCStatusAvailable:
+							chatStatus.content = NSLocalizedString(@"bd_status_available", @"");
+							break;
+							
+						case TCStatusAway:
+							chatStatus.content = NSLocalizedString(@"bd_status_away", @"");
+							break;
+							
+						case TCStatusXA:
+							chatStatus.content = NSLocalizedString(@"bd_status_xa", @"");
+							break;
+					}
+					
+					// Show status change.
+					[_chatTranscript addItems:@[ chatStatus ] endOfTranscript:YES];
+					
+					break;
+				}
+					
+				case TCBuddyEventMessage:
+				{
+					[self handleRemoteMessages:[buddy popMessages]];
+					break;
+				}
+					
+				default:
+					break;
 			}
-				
-			case TCBuddyEventMessage:
+			
+			break;
+		}
+		
+		case SMInfoWarning:
+			break;
+			
+		case SMInfoError:
+		{
+			NSString *status = nil;
+			
+			switch ((TCBuddyError)info.code)
 			{
-				[self handleRemoteMessages:[buddy popMessages]];
-				break;
+				case TCBuddyErrorSendFile:
+					status = [NSString stringWithFormat:NSLocalizedString(@"chat_error_send_file", @""), ((NSString *)info.context).lastPathComponent];
+					break;
+					
+				case TCBuddyErrorReceiveFile:
+					status = [NSString stringWithFormat:NSLocalizedString(@"chat_error_receive_file", @""), ((NSString *)info.context).lastPathComponent];
+					break;
+					
+				case TCBuddyErrorFileOffline:
+					status = [NSString stringWithFormat:NSLocalizedString(@"chat_error_send_file_offline", @""), ((NSString *)info.context).lastPathComponent];
+					break;
+					
+				case TCBuddyErrorFileBlocked:
+					status = [NSString stringWithFormat:NSLocalizedString(@"chat_error_send_file_blocked", @""), ((NSString *)info.context).lastPathComponent];
+					break;
+					
+				default:
+					break;
 			}
+			
+			if (status)
+				[_chatTranscript addItems:@[ [[TCChatNotice alloc] initWithType:TCChatNoticeTypeError content:status] ] endOfTranscript:YES];
 		}
 	}
 }
@@ -551,7 +592,7 @@ NS_ASSUME_NONNULL_BEGIN
 	void (^insertTimestamp)(NSTimeInterval timestamp, NSUInteger index) = ^(NSTimeInterval timestamp, NSUInteger index) {
 		
 		NSDate			*date = [NSDate dateWithTimeIntervalSinceReferenceDate:timestamp];
-		TCChatStatus	*status = [[TCChatStatus alloc] initWithStatus:[_timestampFormater stringFromDate:date]];
+		TCChatNotice	*status = [[TCChatNotice alloc] initWithType:TCChatNoticeTypeStandard content:[_timestampFormater stringFromDate:date]];
 		
 		if (index == NSNotFound)
 			[result addObject:status];
@@ -694,7 +735,7 @@ NS_ASSUME_NONNULL_BEGIN
 				NSDate		*timestamp = [NSDate dateWithTimeIntervalSinceReferenceDate:topMsg.timestamp];
 				NSString	*timestampString = [_timestampFormater stringFromDate:timestamp];
 				
-				[_chatTranscript addItems:@[ [[TCChatStatus alloc] initWithStatus:timestampString] ] endOfTranscript:NO];
+				[_chatTranscript addItems:@[ [[TCChatNotice alloc] initWithType:TCChatNoticeTypeStandard content:timestampString] ] endOfTranscript:NO];
 			}
 			
 			// > Re-fetch if pending.
