@@ -691,11 +691,11 @@ NS_ASSUME_NONNULL_BEGIN
 	NSOpenPanel	*openDlg = [NSOpenPanel openPanel];
 	
 	// Ask for a file
-	[openDlg setCanChooseFiles:YES];
-	[openDlg setCanChooseDirectories:NO];
-	[openDlg setCanCreateDirectories:NO];
-	[openDlg setAllowsMultipleSelection:NO];
-	[openDlg setAllowedFileTypes:[NSImage imageTypes]];
+	openDlg.canChooseFiles = YES;
+	openDlg.canChooseDirectories = NO;
+	openDlg.canCreateDirectories = NO;
+	openDlg.allowsMultipleSelection = NO;
+	openDlg.allowedFileTypes = [NSImage imageTypes];
 	
 	if ([openDlg runModal] == NSModalResponseOK)
 	{
@@ -888,10 +888,10 @@ NS_ASSUME_NONNULL_BEGIN
 	NSOpenPanel	*openDlg = [NSOpenPanel openPanel];
 	
 	// Ask for a file
-	[openDlg setCanChooseFiles:YES];
-	[openDlg setCanChooseDirectories:NO];
-	[openDlg setCanCreateDirectories:NO];
-	[openDlg setAllowsMultipleSelection:YES];
+	openDlg.canChooseFiles = YES;
+	openDlg.canChooseDirectories = NO;
+	openDlg.canCreateDirectories = NO;
+	openDlg.allowsMultipleSelection = YES;
 	
 	if ([openDlg runModal] == NSModalResponseOK)
 	{

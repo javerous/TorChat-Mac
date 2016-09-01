@@ -135,10 +135,10 @@ NS_ASSUME_NONNULL_BEGIN
 	NSOpenPanel	*openDlg = [NSOpenPanel openPanel];
 	
 	// Ask for a file.
-	[openDlg setCanChooseFiles:YES];
-	[openDlg setCanChooseDirectories:NO];
-	[openDlg setCanCreateDirectories:NO];
-	[openDlg setAllowsMultipleSelection:NO];
+	openDlg.canChooseFiles = YES;
+	openDlg.canChooseDirectories = NO;
+	openDlg.canCreateDirectories = NO;
+	openDlg.allowsMultipleSelection = NO;
 	
 	if ([openDlg runModal] == NSFileHandlingPanelOKButton)
 	{
