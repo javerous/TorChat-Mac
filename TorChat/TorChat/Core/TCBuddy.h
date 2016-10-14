@@ -99,8 +99,10 @@ typedef NS_ENUM(unsigned int, TCBuddyError) {
 	
 	TCBuddyErrorSocket,				// info: SMInfo (SMSocketInfoDomain)
 	
+	TCBuddyErrorSocketData,
+
 	TCBuddyErrorSocks,				// context: NSNumber (<socks_error>)
-	TCBuddyErrorSocksRequest,
+	TCBuddyErrorSocksSend,
 
 	TCBuddyErrorMessageOffline,		// context: NSString (<message>)
 	TCBuddyErrorMessageBlocked,		// context: NSString (<message>)

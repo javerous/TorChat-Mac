@@ -166,8 +166,8 @@
 
 /* Core */
 // TCBuddyInfoDomain
-"core_bd_event_connected" = "Buddy is connected on the remote buddy through tor SOCKS.";
-"core_bd_event_tor_connected" = "Buddy connected on tor SOCKS.";
+"core_bd_event_tor_connected" = "Connected to tor SOCKS.";
+"core_bd_event_connected" = "Connected to the remote buddy through tor SOCKS.";
 "core_bd_event_stopped" = "Buddy is stopped.";
 "core_bd_event_identified" = "Buddy is fully identified. All action are activated.";
 "core_bd_event_status_changed" = "Buddy status has changed (%@).";
@@ -191,11 +191,24 @@
 "core_bd_error_tor_resolve" = "The tor SOCKS address can't be resolved.";
 "core_bd_error_tor_connect" = "Unable to make a connection to the tor SOCKS.";
 "core_bd_error_socket" = "Buddy socket error.";
-"core_bd_error_socks_91" = "SOCKS request rejected or failed.";
-"core_bd_error_socks_92" = "SOCKS request rejected because SOCKS server cannot connect to identd on the client.";
-"core_bd_error_socks_93" = "SOCKS request rejected because the client program and identd report different user-ids.";
+
+"core_bd_error_data_internal" = "Unexpected data received.";
+
+"core_bd_error_socks_invalid_reply" = "SOCKS server replied with invalid data.";
+"core_bd_error_socks_needs_authentication" = "SOCKS server needs authentication.";
+
+"core_bd_error_socks_general" = "Tor encountered general error.";
+"core_bd_error_socks_not_allowed" = "Tor can't allow this request.";
+"core_bd_error_socks_network_unreachable" = "Tor doesn't have access to network. Please check your internet connectivity.";
+"core_bd_error_socks_host_unreachable" = "Tor can't reach this buddy (he is perhaps offline).";
+"core_bd_error_socks_connection_refused" = "Tor refused connection to buddy (he is perhaps offline).";
+"core_bd_error_socks_ttl_expired" = "Tor timed out (buddy is perhaps offline).";
+"core_bd_error_command_not_supported" = "Tor is not able to understand our SOCKS command.";
+"core_bd_error_address_not_supported" = "Tor is not able to understand our SOCKS address type.";
 "core_bd_error_socks_unknown" = "SOCKS request failed for an unknown reason.";
-"core_bd_error_socks_request" = "Can't send the SOCKS request.";
+
+"core_bd_error_socks_send" = "Can't send SOCKS message to tor.";
+
 "core_bd_error_message_offline" = "Can't send a message to an offline buddy.";
 "core_bd_error_message_blocked" = "Can't send a message to an blocked buddy";
 "core_bd_error_filesend" = "Can't open file for sending.";

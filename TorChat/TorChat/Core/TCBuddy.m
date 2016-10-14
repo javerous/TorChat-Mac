@@ -43,6 +43,7 @@
 
 #import "NSArray+TCTools.h"
 #import "NSData+TCTools.h"
+#import "NSData+TCIntegerAppend.h"
 
 
 NS_ASSUME_NONNULL_BEGIN
@@ -62,36 +63,16 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - Types
 
-// == SOCKS ==
-// -- Structure representing a Socks connection request --
-struct sockreq
-{
-	uint8_t		version;
-	uint8_t		command;
-	uint16_t	dstport;
-	uint32_t	dstip;
-	// A null terminated username goes here
+// Socks.
+typedef NS_ENUM(unsigned int, TCSocksState) {
+	TCSocksStateNone,
+	TCSocksStateRunning,
+	TCSocksStateDone,
 };
 
-// -- Structure representing a Socks connection request response --
-struct sockrep
-{
-	uint8_t		version;
-	uint8_t		result;
-	uint16_t	ignore1;
-	uint32_t	ignore2;
-};
-
-// -- Socks State --
-typedef NS_ENUM(unsigned int, socks_state) {
-	socks_nostate,
-	socks_running,
-	socks_finish,
-};
-
-// -- Socks trame type --
-typedef NS_ENUM(unsigned int, socks_trame) {
-	socks_v4_reply,
+typedef NS_ENUM(unsigned int, TCSocksTag) {
+	TCSocksTagMethodChoice,
+	TCSocksTagConnect,
 };
 
 
@@ -142,7 +123,7 @@ static char gLocalQueueContext;
 	TCParser			*_parser;
 	
 	// > Status
-	int					_socksstate;
+	TCSocksState		_socksState;
 	BOOL				_running;
 	BOOL				_ponged;
 	
@@ -252,7 +233,7 @@ static char gLocalQueueContext;
 		_parser.delegate = self;
 		
 		// Init status
-		_socksstate = socks_nostate;
+		_socksState = TCSocksStateNone;
 		_status = TCStatusOffline;
 		
 		// Init profiles
@@ -386,7 +367,7 @@ static char gLocalQueueContext;
 			TCStatus lstatus = [self _status];
 			
 			_status = TCStatusOffline;
-			_socksstate = socks_nostate;
+			_socksState = TCSocksStateNone;
 			_ponged = NO;
 			_pingRandom = nil;
 			_pingHandled = NO;
@@ -418,7 +399,7 @@ static char gLocalQueueContext;
 			}
 			
 			// Reset socks stat.
-			_socksstate = socks_nostate;
+			_socksState = TCSocksStateNone;
 			
 			break;
 		}
@@ -1064,37 +1045,109 @@ static char gLocalQueueContext;
 		
 		if (operation == SMSocketOperationData)
 		{
-			// Get the reply
 			NSData			*data = content;
-			struct sockrep	*thisrep = (struct sockrep *)(data.bytes);
-			
-			// Check result
-			switch (thisrep->result)
+			const uint8_t	*bytes = data.bytes;
+
+			if (_socksState == TCSocksStateRunning)
 			{
-				case 90: // Socks v4 protocol finish
+				switch ((TCSocksTag)tag)
 				{
-					_socksstate = socks_finish;
-					
-					[_outSocket setGlobalOperation:SMSocketOperationLine size:0 tag:0];
-					
-					// Notify connected.
-					[self _notify:TCBuddyEventConnectedBuddy];
-					
-					// Proxy connected. Interract with remote.
-					[self _connectedSocks];
-					
-					break;
+					case TCSocksTagMethodChoice:
+					{
+						if (data.length != 2) // Should be 2 (version (1) + authentication-method (1))
+						{
+							[self _error:TCBuddyErrorSocks context:@(-1) info:nil channel:TCBuddyChannelOut];
+							break;
+						}
+						
+						if (bytes[0] != 0x05) // SOCKS version : should be SOCKS v5
+						{
+							[self _error:TCBuddyErrorSocks context:@(-2) info:nil channel:TCBuddyChannelOut];
+							break;
+						}
+						
+						if (bytes[1] == 0xff) // Selected authentication method : should not be 0xff (no acceptable methods were offered).
+						{
+							// No acceptable authentication sent.
+							[self _error:TCBuddyErrorSocks context:@(-3) info:nil channel:TCBuddyChannelOut];
+							break;
+						}
+						
+						if (bytes[1] != 0x00) // Selected authentication method : should be 0 (we don't support authentication so far).
+						{
+							[self _error:TCBuddyErrorSocks context:@(-4) info:nil channel:TCBuddyChannelOut];
+							break;
+						}
+						
+						// Forge connect message.
+						NSMutableData	*message = [[NSMutableData alloc] init];
+
+						[message appendUInt8:0x05]; // Version 5 SOCKS
+						[message appendUInt8:0x01]; // Connect request
+						[message appendUInt8:0x00]; // Reserved
+						[message appendUInt8:0x03]; // Domain name (3)
+
+						// > Add host
+						NSData *hostname = [[_identifier stringByAppendingString:@".onion"] dataUsingEncoding:NSASCIIStringEncoding];
+						
+						[message appendUInt8:(uint8_t)(hostname.length)];
+						[message appendData:hostname];
+
+						// > Add port.
+						uint16_t port = htons(TORCHAT_PORT);
+						
+						[message appendBytes:&port length:sizeof(port)];
+
+						// > Prepare reception of server reply.
+						[_outSocket scheduleOperation:SMSocketOperationData size:10 tag:TCSocksTagConnect];
+
+						// > Send message.
+						if ([self _sendData:message channel:TCBuddyChannelOut] == NO)
+							[self _error:TCBuddyErrorSocksSend context:nil info:nil channel:TCBuddyChannelOut];
+						
+						break;
+					}
+					 
+					case TCSocksTagConnect:
+					{
+						if (data.length != 10) // Should be 10 (version (1) + status (1) + reserved (1) + address-type (1) + address-IPv4 (4) + port (2))
+						{
+							[self _error:TCBuddyErrorSocks context:@(-1) info:nil channel:TCBuddyChannelOut];
+							break;
+						}
+						
+						if (bytes[0] != 0x05) // SOCKS version : should be SOCKS v5
+						{
+							[self _error:TCBuddyErrorSocks context:@(-2) info:nil channel:TCBuddyChannelOut];
+							break;
+						}
+						
+						if (bytes[1] != 0x00) // Status : should be 0 (request granted).
+						{
+							// Connection error.
+							[self _error:TCBuddyErrorSocks context:@(bytes[1]) info:nil channel:TCBuddyChannelOut];
+							break;
+						}
+						
+						// Stuff are done. Setup socket to handle TorChat messages.
+						_socksState = TCSocksStateDone;
+						
+						[_outSocket setGlobalOperation:SMSocketOperationLine size:0 tag:0];
+						
+						// Notify connected.
+						[self _notify:TCBuddyEventConnectedBuddy];
+						
+						// Proxy connected. Interract with remote.
+						[self _connectedSocks];
+						
+						break;
+					}
 				}
-					
-				case 91:
-				case 92:
-				case 93:
-					[self _error:TCBuddyErrorSocks context:@(thisrep->result) info:nil channel:TCBuddyChannelOut];
-					break;
-				
-				default:
-					[self _error:TCBuddyErrorSocks context:nil info:nil channel:TCBuddyChannelOut];
-					break;
+			}
+			else
+			{
+				// We are receiving data, but there is not SOCKS session. Internal error.
+				[self _error:TCBuddyErrorSocketData context:nil info:nil channel:TCBuddyChannelOut];
 			}
 		}
 		else if (operation == SMSocketOperationLine)
@@ -1826,7 +1879,7 @@ static char gLocalQueueContext;
 	
 	NSAssert(command, @"command is nil");
 	
-	if (_socksstate != socks_finish)
+	if (_socksState != TCSocksStateDone)
 		return NO;
 	
 	// -- Build the command line --
@@ -1949,48 +2002,22 @@ static char gLocalQueueContext;
 	// > Set ourself as delegate
 	_outSocket.delegate = self;
 	
-	// Send SOCKS 4a request.
-	const char			*user = "torchat";
-	struct sockreq		*thisreq;
-	char				*buffer;
-	size_t				datalen;
+	// Send SOCKS 5 greeting.
+	// > Forge message.
+	NSMutableData *message = [[NSMutableData alloc] init];
 	
-	// > Get the target connexion informations
-	NSString	*host = [_identifier stringByAppendingString:@".onion"];
-	const char	*c_host = host.UTF8String;
-	
-	// > Check data size
-	datalen = sizeof(struct sockreq) + strlen(user) + 1;
-	datalen += strlen(c_host) + 1;
-	
-	buffer = (char *)malloc(datalen);
-	thisreq = (struct sockreq *)buffer;
-	
-	// > Create the request
-	thisreq->version = 4;
-	thisreq->command = 1;
-	thisreq->dstport = htons(TORCHAT_PORT);
-	thisreq->dstip = htonl(0x00000042); // Socks v4a
-	
-	// > Copy the username
-	strcpy((char *)thisreq + sizeof(struct sockreq), user);
-	
-	// > Socks v4a : set the host name if we cant resolve it
-	char *pos = (char *)thisreq + sizeof(struct sockreq);
-	
-	pos += strlen(user) + 1;
-	strcpy(pos, c_host);
-	
-	// > Set the next input operation
-	[_outSocket scheduleOperation:SMSocketOperationData size:sizeof(struct sockrep) tag:socks_v4_reply];
-	
-	// > Send the request
-	if ([self _sendBytes:buffer length:datalen channel:TCBuddyChannelOut])
-		_socksstate = socks_running;
+	[message appendUInt8:0x05]; // Version 5 SOCKS
+	[message appendUInt8:0x01]; // List count (1)
+	[message appendUInt8:0x00]; // list[0] = no authentication
+
+	// > Prepare reception of server reply.
+	[_outSocket scheduleOperation:SMSocketOperationData size:2 tag:TCSocksTagMethodChoice];
+
+	// > Send the message.
+	if ([self _sendData:message channel:TCBuddyChannelOut])
+		_socksState = TCSocksStateRunning;
 	else
-		[self _error:TCBuddyErrorSocksRequest context:nil info:nil channel:TCBuddyChannelOut];
-	
-	free(buffer);
+		[self _error:TCBuddyErrorSocksSend context:nil info:nil channel:TCBuddyChannelOut];
 	
 	// Notify.
 	[self _notify:TCBuddyEventConnectedTor];
@@ -2054,7 +2081,7 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	if (_pingRandom == nil || _pingHandled || _socksstate != socks_finish)
+	if (_pingRandom == nil || _pingHandled || _socksState != TCSocksStateDone)
 		return;
 	
 	TCCoreManager *coreManager = _coreManager;
@@ -2451,30 +2478,69 @@ static char gLocalQueueContext;
 						};
 					}
 						
+					case TCBuddyErrorSocketData:
+					{
+						return @{
+							SMInfoNameKey : @"TCBuddyErrorSocketData",
+							SMInfoTextKey : @"core_bd_error_data_internal",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
 					case TCBuddyErrorSocks:
 					{
 						return @{
 							SMInfoNameKey : @"TCBuddyErrorSocks",
 							SMInfoDynTextKey : ^ NSString *(NSNumber *context) {
 								
-								if (context.intValue == 91)
-									return @"core_bd_error_socks_91";
-								else if (context.intValue == 92)
-									return @"core_bd_error_socks_92";
-								else if (context.intValue == 93)
-									return @"core_bd_error_socks_93";
-								else
-									return @"core_bd_error_socks_unknown";
+								switch (context.intValue)
+								{
+									case -1:
+									case -2:
+										return @"core_bd_error_socks_invalid_reply";
+
+									case -3:
+									case -4:
+										return @"core_bd_error_socks_needs_authentication";
+
+										
+									case 0x01: // SOCKS5_GENERAL_ERROR
+										return @"core_bd_error_socks_general";
+										
+									case 0x02: // SOCKS5_NOT_ALLOWED
+										return @"core_bd_error_socks_not_allowed";
+										
+									case 0x03: // SOCKS5_NET_UNREACHABLE
+										return @"core_bd_error_socks_network_unreachable";
+
+									case 0x04: // SOCKS5_HOST_UNREACHABLE
+										return @"core_bd_error_socks_host_unreachable";
+										
+									case 0x05: // SOCKS5_CONNECTION_REFUSED
+										return @"core_bd_error_socks_connection_refused";
+
+									case 0x06: // SOCKS5_TTL_EXPIRED
+										return @"core_bd_error_socks_ttl_expired";
+										
+									case 0x07: // SOCKS5_COMMAND_NOT_SUPPORTED
+										return @"core_bd_error_command_not_supported";
+
+									case 0x08: // SOCKS5_ADDRESS_TYPE_NOT_SUPPORTED
+										return @"core_bd_error_address_not_supported";
+
+									default:
+										return @"core_bd_error_socks_unknown";
+								}
 							},
 							SMInfoLocalizableKey : @YES,
 						};
 					}
 						
-					case TCBuddyErrorSocksRequest:
+					case TCBuddyErrorSocksSend:
 					{
 						return @{
-							SMInfoNameKey : @"TCBuddyErrorSocksRequest",
-							SMInfoTextKey : @"core_bd_error_socks_request",
+							SMInfoNameKey : @"TCBuddyErrorSocksSend",
+							SMInfoTextKey : @"core_bd_error_socks_send",
 							SMInfoLocalizableKey : @YES,
 						};
 					}

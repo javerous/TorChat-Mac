@@ -47,6 +47,7 @@
 		E845A34B1CC6B87400B98398 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E845A34A1CC6B87400B98398 /* libsqlite3.dylib */; };
 		E845A34D1CC6B8B100B98398 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E845A34C1CC6B8B100B98398 /* QuartzCore.framework */; };
 		E849BDB11A66EEA60040E294 /* PrefView_General.xib in Resources */ = {isa = PBXBuildFile; fileRef = E849BDAF1A66EEA60040E294 /* PrefView_General.xib */; };
+		E84A73561DB14CCD00CF1661 /* NSData+TCIntegerAppend.m in Sources */ = {isa = PBXBuildFile; fileRef = E84A73551DB14CCD00CF1661 /* NSData+TCIntegerAppend.m */; };
 		E84CBD3A1C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = E84CBD391C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.m */; };
 		E852235217B504CA00C6F585 /* TCChatCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E852235117B504CA00C6F585 /* TCChatCellView.m */; };
 		E85923F7120A9E060035C420 /* FilesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = E85923F5120A9E060035C420 /* FilesWindow.xib */; };
@@ -202,6 +203,8 @@
 		E84641AF186091FE0046BEFB /* TCDebugLog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TCDebugLog.h; sourceTree = "<group>"; };
 		E849BDB21A66EEBC0040E294 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/PrefView_General.xib; sourceTree = "<group>"; };
 		E849BDB61A66EF1B0040E294 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/PrefView_General.strings; sourceTree = "<group>"; };
+		E84A73541DB14CCD00CF1661 /* NSData+TCIntegerAppend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+TCIntegerAppend.h"; sourceTree = "<group>"; };
+		E84A73551DB14CCD00CF1661 /* NSData+TCIntegerAppend.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+TCIntegerAppend.m"; sourceTree = "<group>"; };
 		E84CBD381C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SMTorConfiguration+TCConfig.h"; sourceTree = "<group>"; };
 		E84CBD391C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SMTorConfiguration+TCConfig.m"; sourceTree = "<group>"; };
 		E852235017B504CA00C6F585 /* TCChatCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCChatCellView.h; sourceTree = "<group>"; };
@@ -799,6 +802,8 @@
 				E8742545199B6A61002A34DD /* NSString+TCXMLExtension.m */,
 				E809B1461859C5BC001664E1 /* NSImage+TCExtension.h */,
 				E809B1471859C5BC001664E1 /* NSImage+TCExtension.m */,
+				E84A73541DB14CCD00CF1661 /* NSData+TCIntegerAppend.h */,
+				E84A73551DB14CCD00CF1661 /* NSData+TCIntegerAppend.m */,
 				E84CBD381C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.h */,
 				E84CBD391C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.m */,
 			);
@@ -1043,6 +1048,7 @@
 				E8127AA91854CB1100FEDA7F /* TCChatTextField.m in Sources */,
 				E889F09A12531D07000C36B2 /* TCButton.m in Sources */,
 				E889F09D12531D12000C36B2 /* TCTableView.m in Sources */,
+				E84A73561DB14CCD00CF1661 /* NSData+TCIntegerAppend.m in Sources */,
 				E889F0A312531D33000C36B2 /* TCConfigPlist.m in Sources */,
 				E8643D731A66D9C100B8C55F /* TCPrefView_Buddies.m in Sources */,
 				E889F0A612531D3F000C36B2 /* TCBuddiesWindowController.m in Sources */,

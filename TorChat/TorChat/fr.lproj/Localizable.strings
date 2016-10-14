@@ -166,8 +166,8 @@
 
 /* Core */
 // TCBuddyInfoDomain
-"core_bd_event_connected" = "Le contact est connecté au contact distant via le SOCKS tor.";
-"core_bd_event_tor_connected" = "Contact connecté au SOCKS de tor.";
+"core_bd_event_tor_connected" = "Connecté au SOCKS de tor.";
+"core_bd_event_connected" = "Connecté au contact distant via le SOCKS de tor.";
 "core_bd_event_stopped" = "Le contact est arrêté.";
 "core_bd_event_identified" = "Le contact est complètement identifié. Toutes les actions sont activées.";
 "core_bd_event_status_changed" = "Le statut du contact a changé.";
@@ -190,12 +190,24 @@
 
 "core_bd_error_tor_resolve" = "L'adresse SOCKS de tor ne peut pas être résolue.";
 "core_bd_error_tor_connect" = "Impossible de créer une connexion vers le SOCKS de tor.";
-"core_bd_error_socket" = "Erreur du socket du contact.";
-"core_bd_error_socks_91" = "La requête SOCKS a été rejetée ou a échoué.";
-"core_bd_error_socks_92" = "La requête SOCKS a été rejetée, car il est impossible d'utiliser identd (ou non accessible depuis le serveur).";
-"core_bd_error_socks_93" = "La requête SOCKS a été rejetée, car le programme et identd utilisent des identifiants utilisateurs différents.";
+
+"core_bd_error_data_internal" = "Réception de données inattendu.";
+
+"core_bd_error_socks_invalid_reply" = "Le serveur SOCKS a répondu avec des données invalides.";
+"core_bd_error_socks_needs_authentication" = "Le serveur SOCKS nécessite une authentification.";
+
+"core_bd_error_socks_general" = "Tor a rencontré une erreur générale.";
+"core_bd_error_socks_not_allowed" = "Tor ne peut pas autoriser cette requête.";
+"core_bd_error_socks_network_unreachable" = "Tor n'a pas accès au réseau. Veuillez vérifier votre connectivité à internet.";
+"core_bd_error_socks_host_unreachable" = "Tor ne peut pas atteindre ce contact (il est peut-être hors ligne).";
+"core_bd_error_socks_connection_refused" = "Tor a refusé la connexion à ce contact (il est peut-être hors ligne).";
+"core_bd_error_socks_ttl_expired" = "Tor a expiré son délai d'attente (le contact est peut-être hors ligne).";
+"core_bd_error_command_not_supported" = "Tor n'est pas capable d'interpréter notre commande SOCKS.";
+"core_bd_error_address_not_supported" = "Tor n'est pas capable d'interpréter notre type d'adresse SOCKS.";
 "core_bd_error_socks_unknown" = "La requête SOCKS a échoué pour une raison inconnue.";
-"core_bd_error_socks_request" = "Impossible d'envoyer la requête SOCKS.";
+
+"core_bd_error_socks_send" = "Impossible d'envoyer un message SOCKS.";
+
 "core_bd_error_message_offline" = "Impossible d'envoyer un message à un contact hors ligne.";
 "core_bd_error_message_blocked" = "Impossible d'envoyer un message à un contact bloqué.";
 "core_bd_error_filesend" = "Impossible d'ouvrir un fichier pour l'envoi.";
