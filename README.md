@@ -6,7 +6,7 @@ TorChat for Mac is a macOS native and unofficial port of [torchat](https://githu
 
 ## Technics
 TorChat for Mac is written in Objective-C 2.0 with Cocoa framework.
-The current version needs macOS 10.10 (Yosemite) minimum to work.
+The current version needs macOS 10.11 (El Capitan) minimum to work.
 
 
 ## Modes
