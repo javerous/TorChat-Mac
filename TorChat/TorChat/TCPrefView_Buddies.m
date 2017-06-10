@@ -40,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TCPrefView_Buddies () <TCCoreManagerObserver>
 
 @property (strong, nonatomic) IBOutlet NSTableView	*tableView;
+@property (strong, nonatomic) IBOutlet NSScrollView	*tableViewRoot;
 @property (strong, nonatomic) IBOutlet NSButton		*removeButton;
 
 @property (strong, nonatomic) IBOutlet NSWindow				*addBlockedWindow;
@@ -90,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	[super viewDidLoad];
 	
-	NSLog(@"did load");
+	_tableViewRoot.hidden = YES;
 	
 	// Identifier validation.
 	__weak TCPrefView_Buddies *weakSelf = self;
@@ -117,6 +118,16 @@ NS_ASSUME_NONNULL_BEGIN
 	[super viewDidDisappear];
 
 	[self.core removeObserver:self];
+}
+
+- (void)switchingIn
+{
+	_tableViewRoot.hidden = NO;
+}
+
+- (void)switchingOut
+{
+	_tableViewRoot.hidden = YES;
 }
 
 

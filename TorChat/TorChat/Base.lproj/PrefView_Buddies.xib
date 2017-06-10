@@ -1,7 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11198.2" systemVersion="15G31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11198.2"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12121"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="TCPrefView_Buddies">
@@ -11,6 +13,7 @@
                 <outlet property="addOkButton" destination="qxq-BV-zAk" id="XRj-3e-WYN"/>
                 <outlet property="removeButton" destination="XwC-p8-FZN" id="RcN-lu-uZr"/>
                 <outlet property="tableView" destination="0HK-cq-rMH" id="m8j-Is-GfU"/>
+                <outlet property="tableViewRoot" destination="iRn-e0-r5h" id="Ka6-HT-oWg"/>
                 <outlet property="view" destination="VCL-50-a02" id="0mU-Np-w59"/>
             </connections>
         </customObject>
@@ -78,7 +81,7 @@
                         <action selector="doAddBlockedUser:" target="-2" id="xxu-Rf-wKt"/>
                     </connections>
                 </button>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ZPe-g8-zSB">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZPe-g8-zSB">
                     <rect key="frame" x="18" y="245" width="68" height="17"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Block List" id="ZLK-Qi-0I6">
                         <font key="font" metaFont="systemBold"/>
@@ -127,7 +130,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="255" height="88"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="JHW-YA-cBT">
+                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JHW-YA-cBT">
                         <rect key="frame" x="18" y="51" width="58" height="17"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Identifier" id="rvK-dY-7yO">
                             <font key="font" metaFont="system"/>
@@ -135,7 +138,7 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="01c-Fy-Ut7" customClass="TCValidatedTextField">
+                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="01c-Fy-Ut7" customClass="TCValidatedTextField">
                         <rect key="frame" x="82" y="46" width="153" height="22"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="j9P-Lo-9Y4">
                             <font key="font" metaFont="system"/>

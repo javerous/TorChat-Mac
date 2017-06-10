@@ -25,6 +25,8 @@
 #import "TCMainController.h"
 #import "TCBuddiesWindowController.h"
 
+#import "NSWindow+Content.h"
+
 #import "TCPrefView.h"
 #import "TCPrefView_General.h"
 #import "TCPrefView_Network.h"
@@ -151,10 +153,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)synchronizeWithCompletionHandler:(dispatch_block_t)handler
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
-		
-		[_configuration setGeneralSettingValue:self.window.stringWithSavedFrame forKey:@"window-frame-preferences"];
-		
-		[self saveCurrentPanel];
+				
+		if (self.windowLoaded)
+		{
+			[_configuration setGeneralSettingValue:self.window.stringWithSavedFrame forKey:@"window-frame-preferences"];
+			[self saveCurrentPanel];
+		}
 		
 		handler();
 	});
@@ -245,34 +249,14 @@ NS_ASSUME_NONNULL_BEGIN
 	[viewCtrl panelLoadConfiguration];
 	
 	// Compute target rect.
-	NSRect	rect = self.window.frame;
-	NSSize	csize = self.window.contentView.frame.size;
-	NSSize	size = view.frame.size;
-	CGFloat	previous = rect.size.height;
+	TCPrefView *oldCtrl = _currentCtrl;
 	
-	rect.size.width = (rect.size.width - csize.width) + size.width;
-	rect.size.height = (rect.size.height - csize.height) + size.height;
+	[oldCtrl switchingOut];
 	
-	rect.origin.y += (previous - rect.size.height);
-	
-	// Load view.
-	if (animated)
-	{
-		[NSAnimationContext beginGrouping];
-		{
-			[NSAnimationContext currentContext].duration = 0.125;
-			
-			[[self.window.contentView animator] replaceSubview:_currentCtrl.view with:view];
-			[[self.window animator] setFrame:rect display:YES];
-		}
-		[NSAnimationContext endGrouping];
-	}
-	else
-	{
-		[_currentCtrl.view removeFromSuperview];
-		[self.window.contentView addSubview:view];
-		[self.window setFrame:rect display:YES];
-	}
+	[self.window switchContentToView:view animated:animated completionHandler:^{
+		[viewCtrl switchingIn];
+	}];
+
 	
 	// Hold the current controller.
 	_currentCtrl = viewCtrl;

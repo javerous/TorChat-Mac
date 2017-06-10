@@ -65,6 +65,16 @@ NS_ASSUME_NONNULL_BEGIN
 	// Must be redefined
 }
 
+- (void)switchingIn
+{
+	// Must be redefined
+}
+
+- (void)switchingOut
+{
+	// Must be redefined
+}
+
 - (void)disablePanelSaving:(BOOL)disable
 {
 	if (_disablePanelSaving)

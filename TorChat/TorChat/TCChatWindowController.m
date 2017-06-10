@@ -217,7 +217,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		
-		[_configuration setGeneralSettingValue:self.window.stringWithSavedFrame forKey:@"window-frame-chat"];
+		if (self.windowLoaded)
+			[_configuration setGeneralSettingValue:self.window.stringWithSavedFrame forKey:@"window-frame-chat"];
 		
 		handler();
 

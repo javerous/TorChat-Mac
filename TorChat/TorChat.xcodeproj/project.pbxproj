@@ -35,6 +35,7 @@
 		E83423F111F6FA2100922152 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E83423EA11F6F97B00922152 /* Localizable.strings */; };
 		E837DAE011E7739D004BC524 /* TCBuddy.m in Sources */ = {isa = PBXBuildFile; fileRef = E837DAD511E7739D004BC524 /* TCBuddy.m */; };
 		E837DAE311E7739D004BC524 /* TCCoreManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E837DADB11E7739D004BC524 /* TCCoreManager.m */; };
+		E83C4E6D1EEB6FA000FE6DAA /* NSWindow+Content.m in Sources */ = {isa = PBXBuildFile; fileRef = E83C4E6C1EEB6FA000FE6DAA /* NSWindow+Content.m */; };
 		E844C4911C77E60900D3AB2D /* TCTools.m in Sources */ = {isa = PBXBuildFile; fileRef = E85903B011EC9877005CE53F /* TCTools.m */; };
 		E844C4A01C77E68600D3AB2D /* SMFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E844C49E1C77E68600D3AB2D /* SMFoundation.framework */; };
 		E844C4A11C77E68600D3AB2D /* SMTor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E844C49F1C77E68600D3AB2D /* SMTor.framework */; };
@@ -191,6 +192,8 @@
 		E837DADA11E7739D004BC524 /* TCConfigCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCConfigCore.h; sourceTree = "<group>"; };
 		E837DADB11E7739D004BC524 /* TCCoreManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCCoreManager.m; sourceTree = "<group>"; };
 		E837DADC11E7739D004BC524 /* TCCoreManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCCoreManager.h; sourceTree = "<group>"; };
+		E83C4E6B1EEB6FA000FE6DAA /* NSWindow+Content.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSWindow+Content.h"; sourceTree = "<group>"; };
+		E83C4E6C1EEB6FA000FE6DAA /* NSWindow+Content.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSWindow+Content.m"; sourceTree = "<group>"; };
 		E844C49E1C77E68600D3AB2D /* SMFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SMFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E844C49F1C77E68600D3AB2D /* SMTor.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SMTor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E844C4A91C77EAE700D3AB2D /* SMAssistant.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SMAssistant.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -806,6 +809,8 @@
 				E84A73551DB14CCD00CF1661 /* NSData+TCIntegerAppend.m */,
 				E84CBD381C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.h */,
 				E84CBD391C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.m */,
+				E83C4E6B1EEB6FA000FE6DAA /* NSWindow+Content.h */,
+				E83C4E6C1EEB6FA000FE6DAA /* NSWindow+Content.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -1072,6 +1077,7 @@
 				E84CBD3A1C78FF4D001B4ECE /* SMTorConfiguration+TCConfig.m in Sources */,
 				E8742543199B682F002A34DD /* NSString+TCPathExtension.m in Sources */,
 				E809B1481859C5BC001664E1 /* NSImage+TCExtension.m in Sources */,
+				E83C4E6D1EEB6FA000FE6DAA /* NSWindow+Content.m in Sources */,
 				E80E0A3B1CA9A370001E64F9 /* TCChatNotice.m in Sources */,
 				E85A187F1D6F89FE00E5E143 /* TCKVOHelper.m in Sources */,
 				E8742546199B6A61002A34DD /* NSString+TCXMLExtension.m in Sources */,

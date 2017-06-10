@@ -275,7 +275,8 @@ NS_ASSUME_NONNULL_BEGIN
 	dispatch_group_async(group, dispatch_get_main_queue(), ^{
 		
 		// Save window frame.
-		[_configuration setGeneralSettingValue:self.window.stringWithSavedFrame forKey:@"window-frame-buddies"];
+		if (self.windowLoaded)
+			[_configuration setGeneralSettingValue:self.window.stringWithSavedFrame forKey:@"window-frame-buddies"];
 		
 		// Synchronize info window.
 		if (_infoWindowsController)

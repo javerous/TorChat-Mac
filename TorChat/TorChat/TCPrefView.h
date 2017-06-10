@@ -49,8 +49,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic, readonly) TCCoreManager				*core;
 
 // Event.
-- (void)panelLoadConfiguration;		// can be subclassed.
+- (void)panelLoadConfiguration;	// can be subclassed.
 - (void)panelSaveConfiguration;	// can be subclassed.
+
+- (void)switchingIn;	// can be subclassed.
+- (void)switchingOut;	// can be subclassed.
+
 
 // Tools.
 - (void)disablePanelSaving:(BOOL)disable;
