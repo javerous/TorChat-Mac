@@ -1,7 +1,7 @@
 /*
  *  TCColoredView.m
  *
- *  Copyright 2016 Avérous Julien-Pierre
+ *  Copyright 2017 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
