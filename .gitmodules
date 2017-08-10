@@ -1,12 +1,12 @@
 [submodule "Externals/SMFoundation"]
 	path = Externals/SMFoundation
-	url = git@github.com:javerous/framework-foundation.git
+	url = https://github.com/javerous/framework-foundation.git
 [submodule "Externals/SMTor"]
 	path = Externals/SMTor
-	url = git@github.com:javerous/framework-tor.git
+	url = https://github.com/javerous/framework-tor.git
 [submodule "Externals/SMAssistant"]
 	path = Externals/SMAssistant
-	url = git@github.com:javerous/framework-assistant.git
+	url = https://github.com/javerous/framework-assistant.git
 [submodule "Externals/SMCryptoFile"]
 	path = Externals/SMCryptoFile
-	url = git@github.com:javerous/SMCryptoFile.git
+	url = https://github.com/javerous/SMCryptoFile.git

@@ -1,14 +1,5 @@
 language: objective-c
-xcode_workspace: TorChat.xcworkspace
-xcode_scheme: TorChat
 osx_image: xcode8.3
-
-git:
-    submodules: false
-
-before_install:
-    - sed -i '' 's/git@github.com:/https:\/\/github.com\//' .gitmodules
-    - git submodule update --init --recursive
 
 script:
     - xcodebuild clean build -workspace TorChat.xcworkspace -scheme TorChat CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
