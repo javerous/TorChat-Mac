@@ -168,7 +168,7 @@ NS_ASSUME_NONNULL_BEGIN
 	return @"LogsWindow";
 }
 
-- (nullable id)owner
+- (id)owner
 {
 	return self;
 }

@@ -181,7 +181,7 @@ NS_ASSUME_NONNULL_BEGIN
 	return @"BuddiesWindow";
 }
 
-- (nullable id)owner
+- (id)owner
 {
 	return self;
 }

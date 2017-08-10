@@ -148,7 +148,7 @@ NS_ASSUME_NONNULL_BEGIN
 	return @"ChatWindow";
 }
 
-- (nullable id)owner
+- (id)owner
 {
 	return self;
 }
