@@ -111,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
 	return @"PreferencesWindow";
 }
 
-- (id)owner
+- (nullable id)owner
 {
 	return self;
 }

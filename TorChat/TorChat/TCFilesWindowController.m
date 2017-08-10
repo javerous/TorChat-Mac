@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
 	return @"FilesWindow";
 }
 
-- (id)owner
+- (nullable id)owner
 {
 	return self;
 }

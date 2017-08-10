@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithTheme:(TCTheme *)theme NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
-- (nullable instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil NS_UNAVAILABLE;
 
 // -- Content --
 - (void)addItems:(NSArray *)items endOfTranscript:(BOOL)endOfTranscript; // items: array of TCChatMessage and / or TCChatNotice
