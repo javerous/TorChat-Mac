@@ -1,3 +1,5 @@
 /* Localized versions of Info.plist keys */
 
 NSHumanReadableCopyright = "© SourceMac, 2018";
+
+NSCameraUsageDescription = "TorChat peut utiliser votre caméra pour envoyer des instantanées à vos contacts."
