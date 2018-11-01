@@ -1,5 +1,5 @@
 language: objective-c
-osx_image: xcode8.3
+osx_image: xcode10
 
 script:
     - xcodebuild clean build -workspace TorChat.xcworkspace -scheme TorChat CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
