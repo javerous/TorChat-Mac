@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -307,6 +307,7 @@
 		E889F0CA12531DD6000C36B2 /* TorChatAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TorChatAppDelegate.m; sourceTree = "<group>"; };
 		E88AE83511EDE9D50037D808 /* TCConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCConnection.m; sourceTree = "<group>"; };
 		E88AE83611EDE9D50037D808 /* TCConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCConnection.h; sourceTree = "<group>"; };
+		E891D196218A9DCD005F0A58 /* TorChat.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TorChat.entitlements; sourceTree = "<group>"; };
 		E89E47001C8D904D004A5D72 /* SMCryptoFile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = SMCryptoFile.c; path = Sources/SMCryptoFile.c; sourceTree = "<group>"; };
 		E89E47011C8D904D004A5D72 /* SMCryptoFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMCryptoFile.h; path = Sources/SMCryptoFile.h; sourceTree = "<group>"; };
 		E89E47031C8D905E004A5D72 /* SMSQLiteCryptoVFS.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = SMSQLiteCryptoVFS.c; path = Sources/Extra/SQLite/SMSQLiteCryptoVFS.c; sourceTree = "<group>"; };
@@ -493,6 +494,7 @@
 		E837DAD311E7739D004BC524 /* TorChat */ = {
 			isa = PBXGroup;
 			children = (
+				E891D196218A9DCD005F0A58 /* TorChat.entitlements */,
 				E889F0C912531DD6000C36B2 /* TorChatAppDelegate.h */,
 				E889F0CA12531DD6000C36B2 /* TorChatAppDelegate.m */,
 				E837DAD411E7739D004BC524 /* Core */,
@@ -952,9 +954,18 @@
 			attributes = {
 				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = SourceMac;
+				TargetAttributes = {
+					E81FD9F311E7259B000614D5 = {
+						SystemCapabilities = {
+							com.apple.HardenedRuntime = {
+								enabled = 1;
+							};
+						};
+					};
+				};
 			};
 			buildConfigurationList = E81FD9EA11E7259B000614D5 /* Build configuration list for PBXProject "TorChat" */;
-			compatibilityVersion = "Xcode 3.2";
+			compatibilityVersion = "Xcode 10.0";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -1469,6 +1480,10 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = TorChat/TorChat.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4656ESDGU8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -1483,6 +1498,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.SourceMac.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = TorChat;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1492,6 +1508,10 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = TorChat/TorChat.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4656ESDGU8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PREFIX_HEADER = TorChat/TorChat_Prefix.pch;
@@ -1506,6 +1526,7 @@
 				OTHER_LDFLAGS = "-Wl,-sectcreate,__RESTRICT,__restrict,/dev/null";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.SourceMac.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = TorChat;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
