@@ -2,4 +2,5 @@
 
 NSHumanReadableCopyright = "© SourceMac, 2018";
 
-NSCameraUsageDescription = "TorChat can use your camera to send snapshots to your contacts."
+NSCameraUsageDescription = "TorChat can use your camera to send snapshots to your contacts.";
+NSPhotoLibraryUsageDescription = "TorChat can use your Photos library to directly send photos to your contacts.";
