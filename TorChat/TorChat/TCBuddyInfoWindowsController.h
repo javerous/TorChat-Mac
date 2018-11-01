@@ -1,7 +1,7 @@
 /*
  *  TCBuddyInfoWindowsController.h
  *
- *  Copyright 2017 Avérous Julien-Pierre
+ *  Copyright 2018 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *

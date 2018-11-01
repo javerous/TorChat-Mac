@@ -1,7 +1,7 @@
 /*
  *  TCChatViewController.m
  *
- *  Copyright 2017 Avérous Julien-Pierre
+ *  Copyright 2018 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -21,6 +21,8 @@
  */
 
 #import <SMFoundation/SMFoundation.h>
+
+#import <stdatomic.h>
 
 #import "TCChatViewController.h"
 
@@ -57,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 	int64_t		_topFetchedMsgID;
 	int64_t		_transcriptFirstMsgID;
 	int64_t		_transcriptLastMsgID;
-	int64_t		_tmpMsgID;
+	atomic_int_fast64_t _tmpMsgID;
 	
 	NSDateFormatter *_timestampFormater;
 	
@@ -516,7 +518,7 @@ NS_ASSUME_NONNULL_BEGIN
 		if (_configuration.saveTranscript)
 			[_configuration addTranscriptForBuddyIdentifier:buddy.identifier message:msg completionHandler:handleMessageWithID];
 		else
-			handleMessageWithID(OSAtomicDecrement64(&_tmpMsgID));
+			handleMessageWithID(atomic_fetch_sub(&_tmpMsgID, 1));
 	}];
 }
 
@@ -566,7 +568,7 @@ NS_ASSUME_NONNULL_BEGIN
 			msg.message = message;
 			msg.side = TCChatMessageSideRemote;
 			msg.timestamp = [NSDate timeIntervalSinceReferenceDate];
-			msg.messageID = OSAtomicDecrement64(&_tmpMsgID);
+			msg.messageID = atomic_fetch_sub(&_tmpMsgID, 1);
 			
 			[outMessages addObject:msg];
 		}

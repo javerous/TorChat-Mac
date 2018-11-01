@@ -1,7 +1,7 @@
 /*
  *  TCFilesWindowController.m
  *
- *  Copyright 2017 Avérous Julien-Pierre
+ *  Copyright 2018 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
 	return @"FilesWindow";
 }
 
-- (id)owner
+- (nullable id)owner
 {
 	return self;
 }
@@ -537,7 +537,7 @@ NS_ASSUME_NONNULL_BEGIN
 			badge = [NSImage imageNamed:@"file_down"];
 		
 		if (badge)
-			[badge drawAtPoint:NSMakePoint(50 - 16, 0) fromRect:NSMakeRect(0, 0, 16, 16) operation:NSCompositeSourceOver fraction:1.0];
+			[badge drawAtPoint:NSMakePoint(50 - 16, 0) fromRect:NSMakeRect(0, 0, 16, 16) operation:NSCompositingOperationSourceOver fraction:1.0];
 	}
 	[icon unlockFocus];
 	

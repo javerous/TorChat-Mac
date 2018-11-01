@@ -1,7 +1,7 @@
 /*
  *  TCThreePartImageView.m
  *
- *  Copyright 2017 Avérous Julien-Pierre
+ *  Copyright 2018 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	NSSize size = self.frame.size;
 	
-	NSDrawThreePartImage(NSMakeRect(0, 0, size.width, size.height), startCap, centerFill, endCap, _vertical, NSCompositeSourceOver, 1.0, self.isFlipped);
+	NSDrawThreePartImage(NSMakeRect(0, 0, size.width, size.height), startCap, centerFill, endCap, _vertical, NSCompositingOperationSourceOver, 1.0, self.isFlipped);
 }
 
 @end

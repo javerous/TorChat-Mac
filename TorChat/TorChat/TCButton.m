@@ -1,7 +1,7 @@
 /*
  *  TCButton.m
  *
- *  Copyright 2017 Avérous Julien-Pierre
+ *  Copyright 2018 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -176,10 +176,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)monitorEvents
 {
 	__weak TCButton *weakButton = self;
-	NSEventMask		mask = NSLeftMouseDownMask | NSLeftMouseUpMask |  NSLeftMouseDraggedMask;
+	NSEventMask		mask = NSEventMaskLeftMouseDown | NSEventMaskLeftMouseUp |  NSEventMaskLeftMouseDragged;
 	
 	if (_overImage)
-		mask |= NSMouseMovedMask;
+		mask |= NSEventMaskMouseMoved;
 	
 	if (_monitor)
 		[NSEvent removeMonitor:_monitor];
@@ -213,7 +213,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 	switch (event.type)
 	{
-		case NSLeftMouseDown:
+		case NSEventTypeLeftMouseDown:
 		{
 			if (_context.isOver)
 			{
@@ -229,7 +229,7 @@ NS_ASSUME_NONNULL_BEGIN
 			break;
 		}
 			
-		case NSLeftMouseUp:
+		case NSEventTypeLeftMouseUp:
 		{
 			if (_context.isOver && _context.isPushed)
 			{
@@ -248,7 +248,7 @@ NS_ASSUME_NONNULL_BEGIN
 			break;
 		}
 			
-		case NSLeftMouseDragged:
+		case NSEventTypeLeftMouseDragged:
 		{
 			if (_context.isPushed == NO)
 			{
@@ -259,7 +259,7 @@ NS_ASSUME_NONNULL_BEGIN
 			break;
 		}
 			
-		case NSMouseMoved:
+		case NSEventTypeMouseMoved:
 		{
 			break;
 		}

@@ -1,7 +1,7 @@
 /*
  *  TCChatContentController.m
  *
- *  Copyright 2017 Avérous Julien-Pierre
+ *  Copyright 2018 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -1039,7 +1039,7 @@ static NSString *generateToken(void);
 		
 		// Create image.
 		NSImage *targetImage = [NSImage imageWithSize:NSMakeSize(imgRect.size.width, imgRect.size.height) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
-			[image drawInRect:NSMakeRect(0, 0, imgRect.size.width, imgRect.size.height) fromRect:NSMakeRect(0, 0, imgRect.size.width, imgRect.size.height) operation:NSCompositeCopy fraction:1.0];
+			[image drawInRect:NSMakeRect(0, 0, imgRect.size.width, imgRect.size.height) fromRect:NSMakeRect(0, 0, imgRect.size.width, imgRect.size.height) operation:NSCompositingOperationCopy fraction:1.0];
 			return YES;
 		}];
 		

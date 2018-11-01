@@ -1,7 +1,7 @@
 /*
  *  TCFileCellView.m
  *
- *  Copyright 2017 Avérous Julien-Pierre
+ *  Copyright 2018 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -108,11 +108,11 @@ NS_ASSUME_NONNULL_BEGIN
 		
 		NSRect rect = NSMakeRect(0, 0, icon.size.width, icon.size.height);
 		
-		[icon drawInRect:rect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0f];
+		[icon drawInRect:rect fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0f];
 
 		[[NSColor colorWithWhite:0 alpha:0.5] set];
 		
-		NSRectFillUsingOperation(rect, NSCompositeSourceAtop);
+		NSRectFillUsingOperation(rect, NSCompositingOperationSourceAtop);
 		
 		return YES;
 	}];

@@ -1,7 +1,7 @@
 /*
  *  TCImage.m
  *
- *  Copyright 2017 Avérous Julien-Pierre
+ *  Copyright 2018 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -139,7 +139,7 @@ NS_ASSUME_NONNULL_BEGIN
 		[NSGraphicsContext saveGraphicsState];
 		[NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithGraphicsPort:(void *)bitmapContext flipped:NO]];
 		{
-			[image drawInRect:outRect fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0];
+			[image drawInRect:outRect fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0];
 		}
 		[NSGraphicsContext restoreGraphicsState];
 #endif

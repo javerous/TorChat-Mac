@@ -1,7 +1,7 @@
 /*
  *  NSImage+TCExtension.m
  *
- *  Copyright 2017 Avérous Julien-Pierre
+ *  Copyright 2018 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 		[translate scaleXBy:-1 yBy:1];
 		[translate concat];
 		
-		[self drawAtPoint:NSZeroPoint fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.0];
+		[self drawAtPoint:NSZeroPoint fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0];
 		
 		return YES;
 	}];

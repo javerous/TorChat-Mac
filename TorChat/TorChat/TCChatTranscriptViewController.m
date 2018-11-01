@@ -1,7 +1,7 @@
 /*
  *  TCChatTranscriptViewController.m
  *
- *  Copyright 2017 Avérous Julien-Pierre
+ *  Copyright 2018 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -21,6 +21,8 @@
  */
 
 #import <WebKit/WebKit.h>
+
+#import <stdatomic.h>
 
 #import "TCChatTranscriptViewController.h"
 
@@ -84,7 +86,7 @@ NSMutableDictionary	*gThemeCache;
 	NSString		*_tmpStyle;
 	NSMutableString	*_tmpBody;
 	
-	int32_t			_messagesCount;
+	atomic_uint_fast64_t _messagesCount;
 	
 	DOMHTMLElement	*_anchorElement;
 	CGFloat			_anchorOffset;
@@ -375,7 +377,7 @@ NSMutableDictionary	*gThemeCache;
 							[result addObject:@{ @"id" : @(msg.messageID), @"html" : snippet }];
 						}
 						
-						OSAtomicIncrement32(&_messagesCount);
+						atomic_fetch_add(&_messagesCount, 1);
 						
 						break;
 					}
@@ -390,7 +392,7 @@ NSMutableDictionary	*gThemeCache;
 						
 						[result addObject:@{ @"html" : snippet }];
 						
-						OSAtomicIncrement32(&_messagesCount);
+						atomic_fetch_add(&_messagesCount, 1);
 						
 						break;
 					}
@@ -468,7 +470,7 @@ NSMutableDictionary	*gThemeCache;
 
 - (NSUInteger)messagesCount
 {
-	return (NSUInteger)OSAtomicAdd32(0, &_messagesCount);
+	return (NSUInteger)atomic_load(&_messagesCount);
 }
 
 - (CGFloat)scrollOffset

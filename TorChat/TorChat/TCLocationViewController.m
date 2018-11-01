@@ -1,7 +1,7 @@
 /*
  *  TCLocationViewController.m
  *
- *  Copyright 2017 Avérous Julien-Pierre
+ *  Copyright 2018 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -142,7 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	NSUInteger flags = [NSApplication sharedApplication].currentEvent.modifierFlags;
 	
-	if (flags & NSAlternateKeyMask)
+	if (flags & NSEventModifierFlagOption)
 	{
 		// Configure alert panel.
 		NSAlert *alert = [[NSAlert alloc] init];

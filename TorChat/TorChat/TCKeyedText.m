@@ -1,7 +1,7 @@
 /*
  *  TCKeyedText.m
  *
- *  Copyright 2017 Avérous Julien-Pierre
+ *  Copyright 2018 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
@@ -99,8 +99,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addAttributedLineWithKey:(NSAttributedString *)key content:(NSAttributedString *)content
 {
-	[self addValue:key color:[NSColor grayColor] row:_rowIndex column:0 alignment:NSRightTextAlignment];
-	[self addValue:content color:nil row:_rowIndex column:1 alignment:NSLeftTextAlignment];
+	[self addValue:key color:[NSColor grayColor] row:_rowIndex column:0 alignment:NSTextAlignmentRight];
+	[self addValue:content color:nil row:_rowIndex column:1 alignment:NSTextAlignmentLeft];
 	
 	_rowIndex++;
 }
