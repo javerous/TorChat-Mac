@@ -297,7 +297,7 @@
 		E889F0CA12531DD6000C36B2 /* TorChatAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TorChatAppDelegate.m; sourceTree = "<group>"; };
 		E88AE83511EDE9D50037D808 /* TCConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCConnection.m; sourceTree = "<group>"; };
 		E88AE83611EDE9D50037D808 /* TCConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCConnection.h; sourceTree = "<group>"; };
-		E891D196218A9DCD005F0A58 /* TorChat.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TorChat.entitlements; sourceTree = "<group>"; };
+		E891D196218A9DCD005F0A58 /* TorChat.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = TorChat.entitlements; path = TorChat/TorChat.entitlements; sourceTree = "<group>"; };
 		E89E47001C8D904D004A5D72 /* SMCryptoFile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = SMCryptoFile.c; path = Sources/SMCryptoFile.c; sourceTree = "<group>"; };
 		E89E47011C8D904D004A5D72 /* SMCryptoFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMCryptoFile.h; path = Sources/SMCryptoFile.h; sourceTree = "<group>"; };
 		E89E47031C8D905E004A5D72 /* SMSQLiteCryptoVFS.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = SMSQLiteCryptoVFS.c; path = Sources/Extra/SQLite/SMSQLiteCryptoVFS.c; sourceTree = "<group>"; };
@@ -416,6 +416,7 @@
 		E81FD9ED11E7259B000614D5 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				E891D196218A9DCD005F0A58 /* TorChat.entitlements */,
 				E82D3F7F142D2AB400A33C7A /* TorChat-Info.plist */,
 				E82D3F81142D2ABF00A33C7A /* TorChat_Prefix.pch */,
 				E82D3F82142D2AF300A33C7A /* main.m */,
@@ -484,7 +485,6 @@
 		E837DAD311E7739D004BC524 /* TorChat */ = {
 			isa = PBXGroup;
 			children = (
-				E891D196218A9DCD005F0A58 /* TorChat.entitlements */,
 				E889F0C912531DD6000C36B2 /* TorChatAppDelegate.h */,
 				E889F0CA12531DD6000C36B2 /* TorChatAppDelegate.m */,
 				E837DAD411E7739D004BC524 /* Core */,
