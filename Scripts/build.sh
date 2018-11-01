@@ -160,7 +160,8 @@ fi
 # Create TorChat Symbols tarball.
 echo '[+] Create TorChat symbols tarball.'
 
-cd "${volume_path}/torchat.xcarchive/dSYMs/"
+cp -R "${volume_path}/torchat.xcarchive/dSYMs/TorChat.app.dSYM" "${volume_path}/output/"
+cd "${volume_path}/output/"
 /usr/bin/tar czf "TorChat-Symbols.tgz" "TorChat.app.dSYM"
 
 if [ $? -ne 0 ]; then
@@ -190,7 +191,8 @@ mkdir "${target_path}"
 cd "${target_path}"
 
 cp "${volume_path}/output/TorChat.tgz" "${target_path}"
-cp "${volume_path}/torchat.xcarchive/dSYMs/TorChat-Symbols.tgz" "${target_path}"
+cp "${volume_path}/output/TorChat-Symbols.tgz" "${target_path}"
+cp -R "${volume_path}/torchat.xcarchive" "${target_path}"
 
 if [ ! -z "$DISPLAY" ]; then
 	open "${target_path}"
