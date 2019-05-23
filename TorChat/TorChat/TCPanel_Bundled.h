@@ -1,7 +1,7 @@
 /*
  *  TCPanel_Bundled.h
  *
- *  Copyright 2018 Avérous Julien-Pierre
+ *  Copyright 2019 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *

@@ -1,7 +1,7 @@
 /*
  *  main.m
  *
- *  Copyright 2018 Avérous Julien-Pierre
+ *  Copyright 2019 Avérous Julien-Pierre
  *
  *  This file is part of TorChat.
  *
