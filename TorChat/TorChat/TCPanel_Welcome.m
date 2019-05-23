@@ -140,7 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
 	openDlg.canCreateDirectories = NO;
 	openDlg.allowsMultipleSelection = NO;
 	
-	if ([openDlg runModal] == NSFileHandlingPanelOKButton)
+	if ([openDlg runModal] == NSModalResponseOK)
 	{
 		NSArray			*urls = openDlg.URLs;
 		NSURL			*url = urls[0];

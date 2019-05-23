@@ -182,7 +182,7 @@ NS_ASSUME_NONNULL_BEGIN
 		// Ask user to select a directory.
 		[openPanel beginWithCompletionHandler:^(NSInteger result) {
 			
-			if (result != NSFileHandlingPanelOKButton)
+			if (result != NSModalResponseOK)
 				return;
 			
 			// > Set selected directory.

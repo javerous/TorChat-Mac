@@ -546,7 +546,7 @@ NS_ASSUME_NONNULL_BEGIN
 	// > Create speed helper.
 	SMSpeedHelper *speedHelper = [[SMSpeedHelper alloc] initWithCompleteAmount:size];
 
-	speedHelper.updateHandler = ^(NSTimeInterval remainingTime) {
+	speedHelper.updateHandler = ^(SMSpeedHelper *sh) {
 		dispatch_async(dispatch_get_main_queue(), ^{
 			
 			NSUInteger			idx = NSNotFound;
@@ -555,7 +555,7 @@ NS_ASSUME_NONNULL_BEGIN
 			if (!file)
 				return;
 			
-			file[TCFileTransferRemainingTimeKey] = @(remainingTime);
+			file[TCFileTransferRemainingTimeKey] = @(sh.remainingTime);
 			[_filesView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:idx] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 		});
 	};

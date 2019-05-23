@@ -80,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
 		// Get drag pastboard.
 		PasteboardRef pasteboard = NULL;
 		
-		err = PasteboardCreate((__bridge CFStringRef)NSDragPboard, &pasteboard);
+		err = PasteboardCreate((__bridge CFStringRef)NSPasteboardNameDrag, &pasteboard);
 		
 		if (err != noErr)
 			return nil;
