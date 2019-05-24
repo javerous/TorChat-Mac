@@ -5,8 +5,8 @@ TorChat for Mac is a macOS native and unofficial port of [torchat](https://githu
 
 
 ## Technics
-TorChat for Mac is written in Objective-C 2.0 with Cocoa framework.
-The current version needs macOS 10.11 (El Capitan) minimum to work.
+TorChat for Mac is written in Objective-C with Cocoa framework.
+The current version needs macOS 10.13 (High Sierra) minimum to work.
 
 
 ## Modes
@@ -77,15 +77,15 @@ Note: the `tor` binary is not launched from inside the `TorChat.app` bundle beca
 ## Functionalities
 ### File exchange
 
-TODO
+[Implemented but doc needs to be written]
 
 ### Buddies
 
-TODO
+[Implemented but doc needs to be written]
 
 ### Logs
 
-TODO
+[Implemented but doc needs to be written]
 
 
 
