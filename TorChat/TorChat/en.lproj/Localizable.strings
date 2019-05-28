@@ -51,6 +51,9 @@
 
 
 /* Main Controller */
+"main_ctrl_conf_start_open_conf_title" = "Configuration File";
+"main_ctrl_conf_start_open_conf_message" = "Select a TorChat configuration file";
+
 "main_ctrl_conf_error_tor_manager" =  "Can't create Tor manager - check your configuration file.";
 "main_ctrl_conf_error_core_manager" =  "Can't create Core manager - check your configuration file.";
 

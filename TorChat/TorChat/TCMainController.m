@@ -136,16 +136,71 @@ NS_ASSUME_NONNULL_BEGIN
 			}];
 		}];
 		
+		__block NSURL *configURL = nil;
 		
-		// -- Try loading config from file --
-		__block id <TCConfigAppEncryptable> configuration = nil;
+		// -- Give user a chance to select a configuration file by himself --
+		[operations scheduleOnQueue:dispatch_get_main_queue() block:^(SMOperationsControl ctrl) {
+			
+			// Check we don't have already a url.
+			if (configURL != nil)
+			{
+				ctrl(SMOperationsControlContinue);
+				return;
+			}
+			
+			// Check if user want to select the configuration file himself.
+			NSEventModifierFlags flags = NSEvent.modifierFlags;
+			
+			if ((flags & NSEventModifierFlagOption) != NSEventModifierFlagOption)
+			{
+				ctrl(SMOperationsControlContinue);
+				return;
+			}
 
+			// Configure open panel.
+			NSOpenPanel *openPanel = [NSOpenPanel openPanel];
+			
+			openPanel.title = NSLocalizedString(@"main_ctrl_conf_start_open_conf_title", @"");
+			openPanel.message = NSLocalizedString(@"main_ctrl_conf_start_open_conf_message", @"");
+			
+			openPanel.directoryURL = [NSURL fileURLWithPath:@"/"];
+			openPanel.canCreateDirectories = NO;
+			openPanel.showsHiddenFiles = YES;
+			openPanel.allowedFileTypes = @[ @"conf" ];
+			openPanel.allowsOtherFileTypes = NO;
+			
+			openPanel.canChooseFiles = YES;
+			openPanel.canChooseDirectories = NO;
+			openPanel.allowsMultipleSelection = NO;
+			
+			// Show open panel.
+			NSModalResponse result = [openPanel runModal];
+
+			if (result == NSModalResponseOK)
+			{
+				configURL = openPanel.URLs.firstObject;
+				ctrl(SMOperationsControlContinue);
+			}
+			else
+			{
+				startResult = TCMainControllerResultCanceled;
+				ctrl(SMOperationsControlFinish);
+			}
+		}];
+		
+		// -- Search a configuration file from standard places --
 		[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
 			
+			// Check we don't have already a url.
+			if (configURL != nil)
+			{
+				ctrl(SMOperationsControlContinue);
+				return;
+			}
+			
 			// Search an accessible config path.
-			NSFileManager	*mng = [NSFileManager defaultManager];
-			NSString		*path = nil;
-
+			NSFileManager *mng = [NSFileManager defaultManager];
+			
 			NSArray *defaultSearchPaths = @[
 				[[NSBundle mainBundle].bundlePath.stringByDeletingLastPathComponent stringByAppendingPathComponent:@"torchat.conf"], // config in same folder of the app (autonomous USB-key, DMG, etc.) - best to be first.
 				@"~/torchat.conf".stringByExpandingTildeInPath,						// visible config in home directory.
@@ -158,20 +213,28 @@ NS_ASSUME_NONNULL_BEGIN
 			{
 				if ([mng isReadableFileAtPath:tryPath])
 				{
-					path = tryPath;
+					configURL = [NSURL fileURLWithPath:tryPath];
 					break;
 				}
 			}
 			
-			// No path found : continue on assistant.
-			if (!path)
+			ctrl(SMOperationsControlContinue);
+		}];
+		
+		// -- Try to open config file --
+		__block id <TCConfigAppEncryptable> configuration = nil;
+
+		[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
+			
+			// Check we have a url.
+			if (configURL == nil)
 			{
 				ctrl(SMOperationsControlContinue);
 				return;
 			}
 			
 			// Open configuration.
-			[TCConfigurationHelperController openConfigurationAtPath:path completionHandler:^(TCConfigurationHelperResult result, id _Nullable context) {
+			[TCConfigurationHelperController openConfigurationAtPath:configURL.path completionHandler:^(TCConfigurationHelperResult result, id _Nullable context) {
 				
 				switch (result)
 				{
@@ -197,11 +260,9 @@ NS_ASSUME_NONNULL_BEGIN
 						ctrl(SMOperationsControlFinish);
 						break;
 					}
-
 				}
 			}];
 		}];
-		
 		
 		// -- Try to create a config with assistant --
 		[operations scheduleOnQueue:_localQueue block:^(SMOperationsControl ctrl) {
