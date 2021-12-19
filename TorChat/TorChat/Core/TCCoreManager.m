@@ -893,7 +893,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	// > localQueue <
 	
-	SMInfo *err = [SMInfo infoOfKind:SMInfoError domain:TCCoreManagerInfoDomain code:code];
+	SMInfo *err = [SMInfo infoOfKind:SMInfoError domain:TCCoreManagerInfoDomain code:(int)code];
 
 	[self _sendEvent:err];
 		
@@ -905,7 +905,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	// > localQueue <
 		
-	SMInfo *err = [SMInfo infoOfKind:SMInfoError domain:TCCoreManagerInfoDomain code:code context:ctx];
+	SMInfo *err = [SMInfo infoOfKind:SMInfoError domain:TCCoreManagerInfoDomain code:(int)code context:ctx];
 	
 	[self _sendEvent:err];
 	
@@ -917,7 +917,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	// > localQueue <
 		
-	SMInfo *ifo = [SMInfo infoOfKind:SMInfoInfo domain:TCCoreManagerInfoDomain code:notice];
+	SMInfo *ifo = [SMInfo infoOfKind:SMInfoInfo domain:TCCoreManagerInfoDomain code:(int)notice];
 
 	[self _sendEvent:ifo];
 }
@@ -926,7 +926,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	// > localQueue <
 	
-	SMInfo *ifo = [SMInfo infoOfKind:SMInfoInfo domain:TCCoreManagerInfoDomain code:notice context:ctx];
+	SMInfo *ifo = [SMInfo infoOfKind:SMInfoInfo domain:TCCoreManagerInfoDomain code:(int)notice context:ctx];
 
 	[self _sendEvent:ifo];
 }

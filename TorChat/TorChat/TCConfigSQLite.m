@@ -1805,7 +1805,7 @@ extern int sqlite3_db_cacheflush(sqlite3 *) __attribute__((weak_import));
 		// Bind.
 		sqlite3_bind_int64(_stmtInsertTranscript, 1, buddyID);
 		sqlite3_bind_text(_stmtInsertTranscript, 2, message.message.UTF8String, -1, SQLITE_TRANSIENT);
-		sqlite3_bind_int(_stmtInsertTranscript, 3, message.side);
+		sqlite3_bind_int(_stmtInsertTranscript, 3, (int)message.side);
 		sqlite3_bind_double(_stmtInsertTranscript, 4, message.timestamp);
 		
 		if (message.error)
