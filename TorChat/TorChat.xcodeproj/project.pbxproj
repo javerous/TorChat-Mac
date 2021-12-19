@@ -941,7 +941,7 @@
 		E81FD9E711E7259B000614D5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1020;
+				LastUpgradeCheck = 1320;
 				ORGANIZATIONNAME = SourceMac;
 				TargetAttributes = {
 					E81FD9F311E7259B000614D5 = {

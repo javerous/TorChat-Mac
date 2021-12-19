@@ -372,7 +372,7 @@ NS_ASSUME_NONNULL_BEGIN
 	id <TCConnectionDelegate> delegate = _delegate;
 	
 	if (delegate)
-		[delegate connection:self information:[SMInfo infoOfKind:SMInfoError domain:TCConnectionInfoDomain code:code]];
+		[delegate connection:self information:[SMInfo infoOfKind:SMInfoError domain:TCConnectionInfoDomain code:(int)code]];
 		
 	if (fatal)
 		[self stopWithCompletionHandler:nil];
@@ -383,7 +383,7 @@ NS_ASSUME_NONNULL_BEGIN
 	id <TCConnectionDelegate> delegate = _delegate;
 	
 	if (delegate)
-		[delegate connection:self information:[SMInfo infoOfKind:SMInfoError domain:TCConnectionInfoDomain code:code context:ctx]];
+		[delegate connection:self information:[SMInfo infoOfKind:SMInfoError domain:TCConnectionInfoDomain code:(int)code context:ctx]];
 
 	if (fatal)
 		[self stopWithCompletionHandler:nil];
@@ -394,7 +394,7 @@ NS_ASSUME_NONNULL_BEGIN
 	id <TCConnectionDelegate> delegate = _delegate;
 
 	if (delegate)
-		[delegate connection:self information:[SMInfo infoOfKind:SMInfoError domain:TCConnectionInfoDomain code:code info:subInfo]];
+		[delegate connection:self information:[SMInfo infoOfKind:SMInfoError domain:TCConnectionInfoDomain code:(int)code info:subInfo]];
 	
 	if (fatal)
 		[self stopWithCompletionHandler:nil];
@@ -405,7 +405,7 @@ NS_ASSUME_NONNULL_BEGIN
 	id <TCConnectionDelegate> delegate = _delegate;
 
 	if (delegate)
-		[delegate connection:self information:[SMInfo infoOfKind:SMInfoInfo domain:TCConnectionInfoDomain code:notice]];
+		[delegate connection:self information:[SMInfo infoOfKind:SMInfoInfo domain:TCConnectionInfoDomain code:(int)notice]];
 }
 
 

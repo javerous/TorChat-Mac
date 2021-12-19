@@ -1578,7 +1578,7 @@ static char gLocalQueueContext;
 		return;
 	
 	// Don't get parse error on blocked buddy (prevent spam, etc.)
-	SMInfo *info = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:error context:information];
+	SMInfo *info = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:(int)error context:information];
 		
 	[self _error:TCBuddyErrorParse info:info];
 }
@@ -2136,7 +2136,7 @@ static char gLocalQueueContext;
 	// > localQueue <
 
 	// Notify error.
-	SMInfo *err = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:code context:context info:info];
+	SMInfo *err = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:(int)code context:context info:info];
 	
 	[self _sendEvent:err];
 	
@@ -2148,7 +2148,7 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	SMInfo *err = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:code];
+	SMInfo *err = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:(int)code];
 	
 	[self _sendEvent:err];
 }
@@ -2157,7 +2157,7 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	SMInfo *err = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:code context:ctx];
+	SMInfo *err = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:(int)code context:ctx];
 
 	[self _sendEvent:err];
 }
@@ -2166,7 +2166,7 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	SMInfo *err = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:code info:subInfo];
+	SMInfo *err = [SMInfo infoOfKind:SMInfoError domain:TCBuddyInfoDomain code:(int)code info:subInfo];
 	
 	[self _sendEvent:err];
 }
@@ -2175,7 +2175,7 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	SMInfo *ifo = [SMInfo infoOfKind:SMInfoInfo domain:TCBuddyInfoDomain code:notice];
+	SMInfo *ifo = [SMInfo infoOfKind:SMInfoInfo domain:TCBuddyInfoDomain code:(int)notice];
 	
 	[self _sendEvent:ifo];
 }
@@ -2184,7 +2184,7 @@ static char gLocalQueueContext;
 {
 	// > localQueue <
 	
-	SMInfo *ifo = [SMInfo infoOfKind:SMInfoInfo domain:TCBuddyInfoDomain code:notice context:ctx];
+	SMInfo *ifo = [SMInfo infoOfKind:SMInfoInfo domain:TCBuddyInfoDomain code:(int)notice context:ctx];
 	
 	[self _sendEvent:ifo];
 }
